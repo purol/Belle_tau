@@ -1,0 +1,3 @@
+[submodule "Belle2_analysis"]
+	path = Belle2_analysis
+	url = https://github.com/purol/Belle2_analysis.git
