@@ -174,7 +174,7 @@ inputfile="/group/belle2/dataprod/MC/SkimTraining/mixed_BGx1.mdst_000001_prod000
 ma.inputMdst(environmentType='default',filename=inputfile,path=my_path)
 
 # merge particle lists
-ma.copyLists(outputListName="tau+:LFV_lll", inputListNames=["tau+:LFV_lll0", "tau+:LFV_lll1", "tau+:LFV_lll2", "tau+:LFV_lll3", "tau+:LFV_lll4", "tau+:LFV_lll5", path=my_path)
+ma.copyLists(outputListName="tau+:LFV_lll", inputListNames=["tau+:LFV_lll0", "tau+:LFV_lll1", "tau+:LFV_lll2", "tau+:LFV_lll3", "tau+:LFV_lll4", "tau+:LFV_lll5"], path=my_path)
 
 # treefit
 vertex.treeFit(list_name="tau+:LFV_lll", conf_level=-1, updateAllDaughters=False, path=my_path)
@@ -195,9 +195,9 @@ ma.buildContinuumSuppression(list_name="tau+:LFV_lll", roe_mask = "cleanMask", p
 ma.fillParticleList("pi+:evtshape_kinematics", cut='[dr < 1] and [abs(dz) < 3]', path=my_path)
 ma.fillParticleList("gamma:case_base", cut='[inCDCAcceptance] and [clusterNHits > 1.5]', path=my_path)
 ma.reconstructDecay(decayString="pi0:case_1 -> gamma:case_base gamma:case_base", cut="0.115 < M < 0.152", path=my_path)
-ma.cutAndCopyList("gamma:case_1", "gamma:case_base", cut="[isDaughterOfList(pi0:case_1)] and [E>0.1]", path=my_path)
+ma.cutAndCopyList("gamma:case_1", "gamma:case_base", cut="[isDescendantOfList(pi0:case_1, 1)] and [E>0.1]", path=my_path)
 ma.cutAndCopyList("gamma:case_2", "gamma:case_base", cut="[E>0.2]", path=my_path)
-ma.copyLists(outputListName="gamma:evtshape_kinematics", inputListNames=["gamma:case_1", "gamma:case_2", path=my_path)
+ma.copyLists(outputListName="gamma:evtshape_kinematics", inputListNames=["gamma:case_1", "gamma:case_2"], path=my_path)
 
 # --- build Event Kinematics ---
 ma.buildEventKinematics(inputListNames = ["pi+:evtshape_kinematics", "gamma:evtshape_kinematics"], path=my_path)
@@ -246,10 +246,7 @@ for photon_name in photon_names:
     event_vars.append("totalEnergyOfParticlesInList(" + photon_name + ")")
 
 # Ntuple output
-ma.variablesToNtuple(decayString="tau+:LFV_lll" ,variables=sig_vars,filename=output_file,treename="tau_lfv",path=my_path)
-ma.variablesToNtuple(decayString="tau+:LFV_lll",variables=tag_vars,filename=output_file,treename="tau_lfv",path=my_path)
-ma.variablesToNtuple(decayString="tau+:LFV_lll",variables=event_vars,filename=output_file,treename="tau_lfv",path=my_path)
-ma.variablesToNtuple(decayString="tau+:LFV_lll",variables=MC_vars,filename=output_file,treename="tau_lfv",path=my_path)
+ma.variablesToNtuple(decayString="tau+:LFV_lll" ,variables=sig_vars + tag_vars + event_vars + MC_vars,filename=output_file,treename="tau_lfv",path=my_path)
 
 # hashmap
 my_path.add_module('ParticleMCDecayString', listName='tau+:LFV_lll', fileName=hashmapName)
