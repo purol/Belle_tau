@@ -71,8 +71,7 @@ ma.buildRestOfEvent("tau+:LFV_lll", path=my_path)
 ma.appendROEMasks("tau+:LFV_lll", [cleanMask], path=my_path)
 
 # --- build Continuum suppression ---
-for ch in range(6):
-    ma.buildContinuumSuppression(list_name="tau+:LFV_lll" + str(ch),roe_mask = "cleanMask", path=my_path)
+ma.buildContinuumSuppression(list_name="tau+:LFV_lll", roe_mask = "cleanMask", path=my_path)
 
 # --- build Event Kinematics ---
 track_default = 'pt > 0.1 and thetaInCDCAcceptance and abs(dz) < 3 and dr < 0.5'
