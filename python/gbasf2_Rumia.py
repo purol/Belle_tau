@@ -212,8 +212,8 @@ photon_names = FillSeveralPhotons(my_path)
 ma.matchMCTruth("tau+:LFV_lll", path=my_path)
 
 # add event type / sample type
-my_path.add_module("VariablesToEventExtraInfo", particleList="tau+:LFV_lll", variables = {"constant(" + str(sample_index) + ")" : "MySampleType"})
-my_path.add_module("VariablesToEventExtraInfo", particleList="tau+:LFV_lll", variables = {"constant(" + str(type_index) + ")" : "MyEventType"})
+ma.variablesToExtraInfo(particleList="tau+:LFV_lll", variables = {"constant(" + str(sample_index) + ")" : "MySampleType"}, path=my_path)
+ma.variablesToExtraInfo(particleList="tau+:LFV_lll", variables = {"constant(" + str(type_index) + ")" : "MyEventType"}, path=my_path)
 
 # define vars
 sig_vars = ["daughter(0,muonID)", "daughter(1,muonID)", "daughter(2,muonID)"] + \
