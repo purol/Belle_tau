@@ -88,10 +88,75 @@ def FillSeveralPhotons(path):
 parser = argparse.ArgumentParser(description='Sample type')
 
 # data or MC
-parser.add_argument('--IsItMC', required=True, type=bool, help='Specify it is MC or data')
-parser.add_argument('--type', required=True, type=str, help='type of sample. list) ')
+parser.add_argument('--sample', required=True, type=str, help='type of sample. list) data, MC15ri, MC15rd')
+parser.add_argument('--type', required=True, type=str, help='type of event. list) data, signal, charged, mixed, uubar, ddbar, ssbar, ccbar, mumu, ee, eeee, eemumu, eepipi, eeKK, eepp, pipiISR, KKISR, gg, eetautau, K0K0barISR, mumumumu, mumutautau, tautautautau, taupair')
 
 args = parser.parse_args()
+
+sample_index = -1
+if(args.sample=="data"):
+    sample_index = -1
+elif(args.sample=="MC15ri"):
+    sample_index = 1
+elif(args.sample=="MC15rd"):
+    sample_index = 2
+else:
+    print("enter the proper sample type")
+    exit(1)
+
+type_index = -1
+if(args.type=="data"):
+    type_index = -1
+elif(args.type=="signal"):
+    type_index = 0
+elif(args.type=="charged"):
+    type_index = 1
+elif(args.type=="mixed"):
+    type_index = 2
+elif(args.type=="uubar"):
+    type_index = 3
+elif(args.type=="ddbar"):
+    type_index = 4
+elif(args.type=="ssbar"):
+    type_index = 5
+elif(args.type=="ccbar"):
+    type_index = 6
+elif(args.type=="mumu"):
+    type_index = 7
+elif(args.type=="ee"):
+    type_index = 8
+elif(args.type=="eeee"):
+    type_index = 9
+elif(args.type=="eemumu"):
+    type_index = 10
+elif(args.type=="eepipi"):
+    type_index = 11
+elif(args.type=="eeKK"):
+    type_index = 12
+elif(args.type=="eepp"):
+    type_index = 13
+elif(args.type=="pipiISR"):
+    type_index = 14
+elif(args.type=="KKISR"):
+    type_index = 15
+elif(args.type=="gg"):
+    type_index = 16
+elif(args.type=="eetautau"):
+    type_index = 17
+elif(args.type=="K0K0barISR"):
+    type_index = 18
+elif(args.type=="mumumumu"):
+    type_index = 19
+elif(args.type=="mumutautau"):
+    type_index = 20
+elif(args.type=="tautautautau"):
+    type_index = 21
+elif(args.type=="taupair"):
+    type_index = 22
+else:
+    print("enter the proper event type")
+    exit(1)
+
 
 basf2.conditions.prepend_globaltag(ma.getAnalysisGlobaltag())
 
@@ -146,6 +211,10 @@ photon_names = FillSeveralPhotons(my_path)
 # true match
 ma.matchMCTruth("tau+:LFV_lll", path=my_path)
 
+# add event type / sample type
+my_path.add_module("VariablesToEventExtraInfo", particleList="tau+:LFV_lll", variables = {"constant(" + str(sample_index) + ")" : "MySampleType"})
+my_path.add_module("VariablesToEventExtraInfo", particleList="tau+:LFV_lll", variables = {"constant(" + str(type_index) + ")" : "MyEventType"})
+
 # define vars
 sig_vars = ["daughter(0,muonID)", "daughter(1,muonID)", "daughter(2,muonID)"] + \
            ["daughter(0,electronID)", "daughter(1,electronID)", "daughter(2,electronID)"] + \
@@ -167,7 +236,8 @@ sig_vars = ["daughter(0,muonID)", "daughter(1,muonID)", "daughter(2,muonID)"] + 
             "flightTime", "flightTimeErr", "chiProb", "angleToClosestInList(pi+:evtshape_kinematics)"]
 tag_vars = vc.recoil_kinematics + GetROEVariables("cleanMask") + vc.track + vc.vertex 
 event_vars = ["beamE"] + vc.event_shape + vc.event_kinematics + ["eventExtraInfo(EventCode)"] + ["nParticlesInList(pi+:evtshape_kinematics)", "nParticlesInList(gamma:evtshape_kinematics)"] + \
-             ["totalEnergyOfParticlesInList(gamma:evtshape_kinematics)"]
+             ["totalEnergyOfParticlesInList(gamma:evtshape_kinematics)"] + \
+             ["eventExtraInfo(MySampleType)", "eventExtraInfo(MyEventType)"]
 MC_vars = ["isSignal", "isSignalAcceptMissingNeutrino"]
 
 # add variables about other photon candidates
