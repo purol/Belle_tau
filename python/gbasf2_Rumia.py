@@ -164,7 +164,7 @@ basf2.conditions.prepend_globaltag(ma.getAnalysisGlobaltag())
 basf2.set_random_seed(42)
 
 # names
-hashmapName = "hashmap_Upsilon.root"
+hashmapName = "hashmap_tau.root"
 output_file = "Ntuple.root"
     
 # Read uDST
