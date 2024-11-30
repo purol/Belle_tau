@@ -233,7 +233,8 @@ sig_vars = ["daughter(0,muonID)", "daughter(1,muonID)", "daughter(2,muonID)"] + 
            ["extraInfo(decayModeID)"] + \
            GetContinuumSuppressionVariables("cleanMask") + \
            ["cosAngleBetweenMomentumAndVertexVector", "charge", \
-            "flightTime", "flightTimeErr", "chiProb", "angleToClosestInList(pi+:evtshape_kinematics)"]
+            "flightTime", "flightTimeErr", "angleToClosestInList(pi+:evtshape_kinematics)"] + \
+           vc.vertex
 tag_vars = vc.recoil_kinematics + GetROEVariables("cleanMask") + vc.track + vc.vertex 
 event_vars = ["beamE"] + vc.event_shape + vc.event_kinematics + ["eventExtraInfo(EventCode)"] + ["nParticlesInList(pi+:evtshape_kinematics)", "nParticlesInList(gamma:evtshape_kinematics)"] + \
              ["totalEnergyOfParticlesInList(gamma:evtshape_kinematics)"] + \
