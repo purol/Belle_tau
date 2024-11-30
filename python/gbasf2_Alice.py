@@ -296,7 +296,7 @@ MakeNtupleandHashmap("tau+:LFV_lll", photon_names=photon_names, IsItNominal=True
 if(args.vertex):
     pdg.add_particle('phi_test', 9000008, 999., 999., 0, 0)  # name, PDG, mass, width, charge, spin
     tauLFVCuts3 = "nParticlesInList(pi+:taulfv) < 7 and 1.4 < M < 2.0 and -1.0 < deltaE < 0.5"
-    ma.reconstructDecay("phi_test:LFV_vertex -> mu+:taulfv mu-:taulfv", path=my_path)
+    ma.reconstructDecay("phi_test:LFV_vertex -> mu+:taulfv mu-:taulfv", cut="", path=my_path)
     ma.reconstructDecay("tau+:LFV_vertex -> phi_test:LFV_vertex mu+:taulfv", tauLFVCuts3, 10, path=my_path)
     BasicAnalysisForTau("tau+:LFV_vertex", sample_index=sample_index, type_index=type_index, path=my_path)
     MakeNtupleandHashmap("tau+:LFV_vertex", photon_names=photon_names, IsItNominal=False, path=my_path)
