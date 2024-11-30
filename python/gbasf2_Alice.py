@@ -294,6 +294,8 @@ MakeNtupleandHashmap("tau+:LFV_lll", photon_names=photon_names, IsItNominal=True
 
 # do the same thing for the vertex displacement
 if(args.vertex):
+    trackCuts = "-3.0 < dz < 3.0 and dr < 1.0"
+    ma.cutAndCopyList("mu+:taulfv", "mu+:all", trackCuts, path=my_path)
     pdg.add_particle('phi_test', 9000008, 999., 999., 0, 0)  # name, PDG, mass, width, charge, spin
     tauLFVCuts3 = "nParticlesInList(pi+:taulfv) < 7 and 1.4 < M < 2.0 and -1.0 < deltaE < 0.5"
     ma.reconstructDecay("phi_test:LFV_vertex -> mu+:taulfv mu-:taulfv", cut="", path=my_path)
