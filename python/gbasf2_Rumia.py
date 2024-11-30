@@ -164,7 +164,7 @@ basf2.conditions.prepend_globaltag(ma.getAnalysisGlobaltag())
 basf2.set_random_seed(42)
 
 # names
-hashmapName = "hashmap_tau.root"
+hashmapName = "hashmap_Upsilon.root"
 output_file = "Ntuple.root"
     
 # Read uDST
@@ -233,8 +233,7 @@ sig_vars = ["daughter(0,muonID)", "daughter(1,muonID)", "daughter(2,muonID)"] + 
            ["extraInfo(decayModeID)"] + \
            GetContinuumSuppressionVariables("cleanMask") + \
            ["cosAngleBetweenMomentumAndVertexVector", "charge", \
-            "flightTime", "flightTimeErr", "angleToClosestInList(pi+:evtshape_kinematics)"] + \
-           vc.vertex
+            "flightTime", "flightTimeErr", "chiProb", "angleToClosestInList(pi+:evtshape_kinematics)"]
 tag_vars = vc.recoil_kinematics + GetROEVariables("cleanMask") + vc.track + vc.vertex 
 event_vars = ["beamE"] + vc.event_shape + vc.event_kinematics + ["eventExtraInfo(EventCode)"] + ["nParticlesInList(pi+:evtshape_kinematics)", "nParticlesInList(gamma:evtshape_kinematics)"] + \
              ["totalEnergyOfParticlesInList(gamma:evtshape_kinematics)"] + \
