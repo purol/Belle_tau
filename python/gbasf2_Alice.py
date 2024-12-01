@@ -279,10 +279,10 @@ ma.cutAndCopyList("gamma:for_brem", "gamma:case_base", cut="[isDescendantOfList(
 
 # fill particles for tau reconstruction
 trackCuts = "-3.0 < dz < 3.0 and dr < 1.0"
-ma.cutAndCopyList("e+:taulfv", "e+:all", trackCuts, path=my_path)
+ma.fillParticleList(decayString="e+:taulfv", cut=trackCuts, path=my_path)
 ma.correctBremsBelle('e+:taulfv_brem', 'e+:taulfv', 'gamma:for_brem', multiplePhotons=True, angleThreshold=0.15, path=my_path)
-ma.cutAndCopyList("mu+:taulfv", "mu+:all", trackCuts, path=my_path)
-ma.cutAndCopyList("pi+:taulfv", "pi+:all", trackCuts, path=my_path)
+ma.fillParticleList(decayString="mu+:taulfv", cut=trackCuts, path=my_path)
+ma.fillParticleList(decayString="pi+:taulfv", cut=trackCuts, path=my_path)
 
 # fill photons with several cuts
 photon_names = FillSeveralPhotons(my_path)
