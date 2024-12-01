@@ -266,13 +266,23 @@ my_path = basf2.create_path()
 inputfile="/group/belle2/dataprod/MC/SkimTraining/mixed_BGx1.mdst_000001_prod00009434_task10020000001.root"
 ma.inputMdst(environmentType='default',filename=inputfile,path=my_path)
 
-# file particles for Event shape and kinematics
+# fill photon for Event shape and kinematics
 ma.fillParticleList("pi+:evtshape_kinematics", cut='[dr < 1] and [abs(dz) < 3]', path=my_path)
 ma.fillParticleList("gamma:case_base", cut='[inCDCAcceptance] and [clusterNHits > 1.5]', path=my_path)
 ma.reconstructDecay(decayString="pi0:case_1 -> gamma:case_base gamma:case_base", cut="0.115 < M < 0.152", path=my_path)
 ma.cutAndCopyList("gamma:case_1", "gamma:case_base", cut="[isDescendantOfList(pi0:case_1, 1)] and [E>0.1]", path=my_path)
 ma.cutAndCopyList("gamma:case_2", "gamma:case_base", cut="[E>0.2]", path=my_path)
 ma.copyLists(outputListName="gamma:evtshape_kinematics", inputListNames=["gamma:case_1", "gamma:case_2"], path=my_path)
+
+# fill photon for brem correction
+ma.cutAndCopyList("gamma:for_brem", "gamma:case_base", cut="[isDescendantOfList(pi0:case_1, 1) == 0] and [E>0.02]", path=my_path)
+
+# fill particles for tau reconstruction
+trackCuts = "-3.0 < dz < 3.0 and dr < 1.0"
+ma.cutAndCopyList("e+:taulfv", "e+:all", trackCuts, path=my_path)
+ma.correctBremsBelle('e+:taulfv_brem', 'e+:taulfv', 'gamma:for_brem', multiplePhotons=True, angleThreshold=0.15, path=my_path)
+ma.cutAndCopyList("mu+:taulfv", "mu+:all", trackCuts, path=my_path)
+ma.cutAndCopyList("pi+:taulfv", "pi+:all", trackCuts, path=my_path)
 
 # fill photons with several cuts
 photon_names = FillSeveralPhotons(my_path)
@@ -283,8 +293,20 @@ ma.buildEventKinematics(inputListNames = ["pi+:evtshape_kinematics", "gamma:evts
 # --- build Event shape ---
 ma.buildEventShape(inputListNames=['pi+:evtshape_kinematics', 'gamma:evtshape_kinematics'], path=my_path)
 
+# here, we reconstruct tau -> ell ell ell, because skimmed sample does not include brem correction
+tauLFVCuts3 = "nParticlesInList(pi+:taulfv) < 7 and 1.4 < M < 2.0 and -1.0 < deltaE < 0.5"
+tau_lll_Channels = ["e+:taulfv_brem e+:taulfv_brem e-:taulfv_brem", \
+                    "mu+:taulfv mu+:taulfv mu-:taulfv", \
+                    "mu+:taulfv e+:taulfv_brem e-:taulfv_brem", \
+                    "e+:taulfv_brem mu+:taulfv mu-:taulfv", \
+                    "e+:taulfv_brem e+:taulfv_brem mu-:taulfv", \
+                    "mu+:taulfv mu+:taulfv e-:taulfv_brem" \
+                    ]
+for chID, channel in enumerate(tau_lll_Channels):
+    ma.reconstructDecay("tau+:LFV_lll_brem" + str(chID) + " -> " + channel, tauLFVCuts3, chID, path=my_path)
+
 # merge particle lists
-ma.copyLists(outputListName="tau+:LFV_lll", inputListNames=["tau+:LFV_lll0", "tau+:LFV_lll1", "tau+:LFV_lll2", "tau+:LFV_lll3", "tau+:LFV_lll4", "tau+:LFV_lll5"], path=my_path)
+ma.copyLists(outputListName="tau+:LFV_lll", inputListNames=["tau+:LFV_lll_brem0", "tau+:LFV_lll_brem1", "tau+:LFV_lll_brem2", "tau+:LFV_lll_brem3", "tau+:LFV_lll_brem4", "tau+:LFV_lll_brem5"], path=my_path)
 
 # basic analysis for tau: treefit, buildROE, continuum suppression, truth match, assign event type / sample type
 BasicAnalysisForTau("tau+:LFV_lll", sample_index=sample_index, type_index=type_index, path=my_path)
@@ -294,11 +316,7 @@ MakeNtupleandHashmap("tau+:LFV_lll", photon_names=photon_names, IsItNominal=True
 
 # do the same thing for the vertex displacement
 if(args.vertex):
-    trackCuts = "-3.0 < dz < 3.0 and dr < 1.0"
-    ma.cutAndCopyList("mu+:taulfv", "mu+:all", trackCuts, path=my_path)
-    ma.cutAndCopyList("pi+:taulfv", "pi+:all", trackCuts, path=my_path)
     pdg.add_particle('phi_test', 9000008, 999., 999., 0, 0)  # name, PDG, mass, width, charge, spin
-    tauLFVCuts3 = "nParticlesInList(pi+:taulfv) < 7 and 1.4 < M < 2.0 and -1.0 < deltaE < 0.5"
     ma.reconstructDecay("phi_test:LFV_vertex -> mu+:taulfv mu-:taulfv", cut="", path=my_path)
     ma.reconstructDecay("tau+:LFV_vertex -> phi_test:LFV_vertex mu+:taulfv", tauLFVCuts3, 10, path=my_path)
     BasicAnalysisForTau("tau+:LFV_vertex", sample_index=sample_index, type_index=type_index, path=my_path)
