@@ -30,6 +30,7 @@ double reserve_function(std::vector<Data>::iterator data_) {
     else if (data_.find("MUMUTAUTAU_") != std::string::npos) return Scale_MUMUTAUTAU_MC15ri;
     else if (data_.find("TAUTAUTAUTAU_") != std::string::npos) return Scale_TAUTAUTAUTAU_MC15ri;
     else if (data_.find("TAUPARI_") != std::string::npos) return Scale_TAUPAIR_MC15ri;
+    else if (data_.find("SIGNAL_") != std::string::npos) return 1.0;
     else {
         printf("unexpected sample type\n");
         exit(1);
