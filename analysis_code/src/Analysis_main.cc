@@ -61,11 +61,15 @@ int main(int argc, char* argv[]) {
     Loader loader("tau_lfv");
 
     loader.Load(argv[1], ".root", "label");
-    loader.Cut("(0.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 1.5)"); // select tau -> mu mu mu only
+    loader.FastCut("extraInfo__bodecayModeID__bc", ">", 0.5);
+    loader.FastCut("extraInfo__bodecayModeID__bc", "<", 1.5);
+    //loader.Cut("(0.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 1.5)"); // select tau -> mu mu mu only
 
     loader.PrintInformation("========== initial ==========");
 
-    loader.Cut("(-0.296904 < deltaE) && (deltaE < 0.20147)");
+    //loader.Cut("(-0.296904 < deltaE) && (deltaE < 0.20147)");
+    loader.FastCut("deltaeE", ">", -0.296904);
+    loader.FastCut("deltaeE", "<", 0.20147);
     loader.PrintInformation("========== -0.296904 < deltaE < 0.20147 ==========");
 
     loader.Cut("(1.681298 < (E*E-px*px-py*py-pz*pz)^0.5) && ((E*E-px*px-py*py-pz*pz)^0.5 < 1.8656)");
@@ -75,9 +79,15 @@ int main(int argc, char* argv[]) {
 
     loader.PrintSeparateRootFile((std::string(argv[2]) + "/before_muon_selection").c_str(), "", "");
 
-    loader.Cut("(0.3 < daughter__bo0__cm__sppx__bc) && (0.6 < daughter__bo0__cmmuonID__bc)");
-    loader.Cut("(0.3 < daughter__bo1__cm__sppx__bc) && (0.6 < daughter__bo1__cmmuonID__bc)");
-    loader.Cut("(0.3 < daughter__bo2__cm__sppx__bc) && (0.6 < daughter__bo2__cmmuonID__bc)");
+    //loader.Cut("(0.3 < daughter__bo0__cm__sppx__bc) && (0.6 < daughter__bo0__cmmuonID__bc)");
+    //loader.Cut("(0.3 < daughter__bo1__cm__sppx__bc) && (0.6 < daughter__bo1__cmmuonID__bc)");
+    //loader.Cut("(0.3 < daughter__bo2__cm__sppx__bc) && (0.6 < daughter__bo2__cmmuonID__bc)");
+    loader.FastCut("daughter__bo0__cm__sppx__bc", ">", 0.3);
+    loader.FastCut("daughter__bo0__cmmuonID__bc", ">", 0.6);
+    loader.FastCut("daughter__bo1__cm__sppx__bc", ">", 0.3);
+    loader.FastCut("daughter__bo1__cmmuonID__bc", ">", 0.6);
+    loader.FastCut("daughter__bo2__cm__sppx__bc", ">", 0.3);
+    loader.FastCut("daughter__bo2__cmmuonID__bc", ">", 0.6);
     loader.PrintInformation("========== 0.3 < p_muon && 0.6 < muonID ==========");
 
     //loader.DrawTH1D("(E*E-px*px-py*py-pz*pz)^0.5", "M_after_cut", "M_after_cut.png");
@@ -87,13 +97,17 @@ int main(int argc, char* argv[]) {
     loader.PrintSeparateRootFile((std::string(argv[2]) + "/before_theta_miss_cut").c_str(), "", "");
 
     //loader.DrawTH1D("missingMomentumOfEventCMS_theta", "theta_miss", "theta_miss.png");
-    loader.Cut("(0.3 < missingMomentumOfEventCMS_theta) && (missingMomentumOfEventCMS_theta < 2.7)");
+    //loader.Cut("(0.3 < missingMomentumOfEventCMS_theta) && (missingMomentumOfEventCMS_theta < 2.7)");
+    loader.FastCut("missingMomentumOfEventCMS_theta", ">", 0.3);
+    loader.FastCut("missingMomentumOfEventCMS_theta", "<", 2.7);
     loader.PrintInformation("========== 0.3 < theta_miss < 2.7 ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[2]) + "/before_thrust_cut").c_str(), "", "");
 
     //loader.DrawTH1D("thrust", "thrust", "thrust.png");
-    loader.Cut("(0.89 < thrust) && (thrust < 0.97)");
+    //loader.Cut("(0.89 < thrust) && (thrust < 0.97)");
+    loader.FastCut("thrust", "<", 0.89);
+    loader.FastCut("thrust", "<", 0.97);
     loader.PrintInformation("========== 0.89 < thrust < 0.97 ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[2]) + "/final_output").c_str(), "", "");
