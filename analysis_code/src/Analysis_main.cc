@@ -68,8 +68,8 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== initial ==========");
 
     //loader.Cut("(-0.296904 < deltaE) && (deltaE < 0.20147)");
-    loader.FastCut("deltaeE", ">", -0.296904);
-    loader.FastCut("deltaeE", "<", 0.20147);
+    loader.FastCut("deltaE", ">", -0.296904);
+    loader.FastCut("deltaE", "<", 0.20147);
     loader.PrintInformation("========== -0.296904 < deltaE < 0.20147 ==========");
 
     loader.Cut("(1.681298 < (E*E-px*px-py*py-pz*pz)^0.5) && ((E*E-px*px-py*py-pz*pz)^0.5 < 1.8656)");
