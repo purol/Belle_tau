@@ -7,6 +7,15 @@
 #include "Loader.h"
 #include "constants.h"
 
+# define tau_crosssection 0.919 // nb
+# define Nevt_taupair ((0.36537/0.000000001) * tau_crosssection)
+
+# define Nevt_SIGNAL_MC15ri 3597981
+
+# define BR_SIGNAL 0.00000001 // just set 10^(-8) 
+# define Nevt_SIGNAL (Nevt_taupair * BR_SIGNAL * 2.0)
+# define Scale_SIGNAL_MC15ri (Nevt_SIGNAL/Nevt_SIGNAL_MC15ri)
+
 double reserve_function(std::vector<Data>::iterator data_) {
     if (data_.find("CHG_") != std::string::npos) return Scale_CHG_MC15ri;
     else if (data_.find("MIX_") != std::string::npos) return Scale_MIX_MC15ri;
@@ -30,7 +39,7 @@ double reserve_function(std::vector<Data>::iterator data_) {
     else if (data_.find("MUMUTAUTAU_") != std::string::npos) return Scale_MUMUTAUTAU_MC15ri;
     else if (data_.find("TAUTAUTAUTAU_") != std::string::npos) return Scale_TAUTAUTAUTAU_MC15ri;
     else if (data_.find("TAUPAIR_") != std::string::npos) return Scale_TAUPAIR_MC15ri;
-    else if (data_.find("SIGNAL_") != std::string::npos) return 1.0;
+    else if (data_.find("SIGNAL_") != std::string::npos) return Scale_SIGNAL_MC15ri;
     else {
         printf("unexpected sample type\n");
         exit(1);
