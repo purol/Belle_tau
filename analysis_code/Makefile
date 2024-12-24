@@ -11,23 +11,21 @@ LIBDIR = ./lib
 CFLAGS = `root-config --cflags` -I$(ROOTSYS)/include
 LDFLAGS = `root-config --ldflags --glibs`
 LIBS = -lRooFit -lRooStats -lRooFitCore -lMinuit -lFastBDT_static
-#LIBS += -lTMVA -lTMVAGui
 INCLUDES = -I$(INCDIR) -I$(ROOTSYS)/include -I../Belle2_analysis/include -I../Belle2_analysis/include_FBDT
 
 MAINS = $(wildcard $(SRCDIR)/*.cc)
-TARGETS = $(MAINS:%.cc=$(BINDIR)/%)
-
-SRCS = $(wildcard $(SRCDIR)/*.cc)
-OBJS = $(MAINS:%.cc=$(TMPDIR)/%.o)
-#OBJS = $(SRCS:$(SRCDIR)/%.cc=$(TMPDIR)/%.o)
+TARGETS = $(MAINS:$(SRCDIR)/%.cc=$(BINDIR)/%)
+OBJS = $(MAINS:$(SRCDIR)/%.cc=$(TMPDIR)/%.o)
 
 .PHONY : all clean
 
 all: $(BINDIR) $(TMPDIR) $(TARGETS)
 
-force:
-	@ $(RM) $(BINDIR)/* $(TMPDIR)/*
-	@ make all
+$(BINDIR):
+	@mkdir -p $(BINDIR)
+
+$(TMPDIR):
+	@mkdir -p $(TMPDIR)
 
 clean:
 	@ echo '<< cleaning directory >>'
@@ -37,17 +35,8 @@ clean:
 $(TARGETS): $(BINDIR)/% : $(TMPDIR)/%.o
 	@ echo '<< creating executable $@ >>'
 	@ $(CXX) -o $@ $< $(LDFLAGS) $(LIBS) $(INCLUDES) -L$(LIBDIR)
-	@ $(RM) *~ */*~ \#*\#* */\#*\#*
-	@ echo '<< compiling succeded!! >>'
+	@ echo '<< compilation succeeded!! >>'
 
-$(OBJS): $(TMPDIR)/%.o : %.cc
+$(OBJS): $(TMPDIR)/%.o : $(SRCDIR)/%.cc
 	@ echo '<< compiling $@ >>'
 	@ $(CXX) $(CFLAGS) $(INCLUDES) -L$(LIBDIR) -c $< -o $@
-
-$(BINDIR):
-	@mkdir -p $(BINDIR)
-
-$(TMPDIR):
-	@mkdir -p $(TMPDIR)
-
-
