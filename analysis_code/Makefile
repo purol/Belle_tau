@@ -14,7 +14,7 @@ LIBS = -lRooFit -lRooStats -lRooFitCore -lMinuit -lFastBDT_static
 #LIBS += -lTMVA -lTMVAGui
 INCLUDES = -I$(INCDIR) -I$(ROOTSYS)/include -I../Belle2_analysis/include -I../Belle2_analysis/include_FBDT
 
-MAINS = $(wildcard *.cc)
+MAINS = $(wildcard $(SRCDIR)/*.cc)
 TARGETS = $(MAINS:%.cc=$(BINDIR)/%)
 
 SRCS = $(wildcard $(SRCDIR)/*.cc)
