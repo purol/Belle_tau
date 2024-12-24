@@ -23,7 +23,7 @@ OBJS = $(MAINS:%.cc=$(TMPDIR)/%.o)
 
 .PHONY : all clean
 
-all: $(TARGETS)
+all: $(BINDIR) $(TMPDIR) $(TARGETS)
 
 force:
 	@ $(RM) $(BINDIR)/* $(TMPDIR)/*
@@ -44,4 +44,8 @@ $(OBJS): $(TMPDIR)/%.o : %.cc
 	@ echo '<< compiling $@ >>'
 	@ $(CXX) $(CFLAGS) $(INCLUDES) -L$(LIBDIR) -c $< -o $@
 
+$(BINDIR):
+	@mkdir -p $(BINDIR)
 
+$(TMPDIR):
+	@mkdir -p $(TMPDIR)
