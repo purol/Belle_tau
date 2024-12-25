@@ -66,13 +66,15 @@ int main(int argc, char* argv[]) {
 
     loader.PrintInformation("========== initial ==========");
 
-    loader.Cut("(-0.296904 < deltaE) && (deltaE < 0.20147)");
-    loader.PrintInformation("========== -0.296904 < deltaE < 0.20147 ==========");
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_M_deltaE_selection").c_str(), "", "");
 
-    loader.Cut("(1.681298 < (E*E-px*px-py*py-pz*pz)^0.5) && ((E*E-px*px-py*py-pz*pz)^0.5 < 1.8656)");
-    loader.PrintInformation("========== 1.681298 < M < 1.8656 ==========");
+    loader.Cut("(-0.9 < deltaE) && (deltaE < 0.4)");
+    loader.PrintInformation("========== -0.9 < deltaE < 0.4 ==========");
 
-    //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.681298, 1.8656, 50, -0.296904, 0.20147, "M_deltaE_before_cut.png");
+    loader.Cut("(1.3 < (E*E-px*px-py*py-pz*pz)^0.5) && ((E*E-px*px-py*py-pz*pz)^0.5 < 1.9)");
+    loader.PrintInformation("========== 1.3 < M < 1.9 ==========");
+
+    //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.3, 1.9, 50, -0.9, 0.4, "M_deltaE_before_cut.png");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_muon_selection").c_str(), "", "");
 
@@ -86,7 +88,7 @@ int main(int argc, char* argv[]) {
 
     //loader.DrawTH1D("(E*E-px*px-py*py-pz*pz)^0.5", "M_after_cut", "M_after_cut.png");
     //loader.DrawTH1D("deltaE", "deltaE_after_cut", "deltaE_after_cut.png");
-    //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.681298, 1.8656, 50, -0.296904, 0.20147, "M_deltaE_after_cut.png");
+    //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.3, 1.9, 50, -0.9, 0.4, "M_deltaE_after_cut.png");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_theta_miss_cut").c_str(), "", "");
 
