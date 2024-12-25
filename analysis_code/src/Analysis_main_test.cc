@@ -37,13 +37,13 @@ namespace Module {
 
         void Start() {
             std::vector<std::string>::iterator iter;
-            
+
             iter = std::find(variable_names->begin(), variable_names->end(), "E");
             if (iter != variable_names->end()) {
                 index_E = std::distance(variable_names->begin(), iter);
             }
             else {
-                printf("[CutM] unknown variable: %s\n", variable_name.c_str());
+                printf("[CutM] unknown variable: E\n");
                 exit(1);
             }
 
@@ -52,7 +52,7 @@ namespace Module {
                 index_px = std::distance(variable_names->begin(), iter);
             }
             else {
-                printf("[CutM] unknown variable: %s\n", variable_name.c_str());
+                printf("[CutM] unknown variable: px\n");
                 exit(1);
             }
 
@@ -61,7 +61,7 @@ namespace Module {
                 index_py = std::distance(variable_names->begin(), iter);
             }
             else {
-                printf("[CutM] unknown variable: %s\n", variable_name.c_str());
+                printf("[CutM] unknown variable: py\n");
                 exit(1);
             }
 
@@ -70,7 +70,7 @@ namespace Module {
                 index_pz = std::distance(variable_names->begin(), iter);
             }
             else {
-                printf("[CutM] unknown variable: %s\n", variable_name.c_str());
+                printf("[CutM] unknown variable: pz\n");
                 exit(1);
             }
         }
