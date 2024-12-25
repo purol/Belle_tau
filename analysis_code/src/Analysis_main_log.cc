@@ -79,10 +79,10 @@ int main(int argc, char* argv[]) {
     loader.Cut("0.3 < (daughter__bo0__cm__sppx__bc*daughter__bo0__cm__sppx__bc+daughter__bo0__cm__sppy__bc*daughter__bo0__cm__sppy__bc+daughter__bo0__cm__sppz__bc*daughter__bo0__cm__sppz__bc)^0.5");
     loader.Cut("0.3 < (daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5");
     loader.Cut("0.3 < (daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5");
-    loader.Cut("0.6 < daughter__bo0__cmmuonID__bc");
-    loader.Cut("0.6 < daughter__bo1__cmmuonID__bc");
-    loader.Cut("0.6 < daughter__bo2__cmmuonID__bc");
-    loader.PrintInformation("========== 0.3 < p_muon && 0.6 < muonID ==========");
+    loader.Cut("0.5 < daughter__bo0__cmmuonID__bc");
+    loader.Cut("0.5 < daughter__bo1__cmmuonID__bc");
+    loader.Cut("0.5 < daughter__bo2__cmmuonID__bc");
+    loader.PrintInformation("========== 0.3 < p_muon && 0.5 < muonID ==========");
 
     //loader.DrawTH1D("(E*E-px*px-py*py-pz*pz)^0.5", "M_after_cut", "M_after_cut.png");
     //loader.DrawTH1D("deltaE", "deltaE_after_cut", "deltaE_after_cut.png");
