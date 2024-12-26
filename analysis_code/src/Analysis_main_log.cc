@@ -60,7 +60,6 @@ int main(int argc, char* argv[]) {
     Loader loader("tau_lfv");
 
     loader.Load(argv[1], ".root", "label");
-    loader.Cut("(0.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 1.5)"); // select tau -> mu mu mu only
 
     loader.PrintInformation("========== initial ==========");
 
