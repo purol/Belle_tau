@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
 
     loader.RandomEventSelection(atoi(argv[2]), atoi(argv[3]));
 
-    loader.PrintSeparateRootFile(argv[4], "", ("split_" + std::to_string(argv[2]) + "_" + std::to_string(argv[3])).c_str());
+    loader.PrintSeparateRootFile(argv[4], "", ("split_" + std::string(argv[2]) + "_" + std::string(argv[3])).c_str());
 
     loader.end();
 
