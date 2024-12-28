@@ -7,16 +7,6 @@
 #include "Loader.h"
 #include "constants.h"
 
-# define tau_crosssection 0.919 // nb
-# define Nevt_taupair ((0.36537/0.000000001) * tau_crosssection)
-
-// I only use `mdst_000001_prod00026883_task10020000001.root`
-# define Nevt_SIGNAL_MC15ri 552000
-
-# define BR_SIGNAL 0.00000001 // just set 10^(-8) 
-# define Nevt_SIGNAL (Nevt_taupair * BR_SIGNAL * 2.0)
-# define Scale_SIGNAL_MC15ri (Nevt_SIGNAL/Nevt_SIGNAL_MC15ri)
-
 double MyScaleFunction(std::vector<Data>::iterator data_) {
     if ((*data_).filename.find("CHG_") != std::string::npos) return Scale_CHG_MC15ri;
     else if ((*data_).filename.find("MIX_") != std::string::npos) return Scale_MIX_MC15ri;
@@ -64,6 +54,11 @@ int main(int argc, char* argv[]) {
 
     loader.Load(argv[1], argv[2], "label");
 
+    loader.Cut("0.1 < daughter__bo0__cmmuonID__bc");
+    loader.Cut("0.1 < daughter__bo1__cmmuonID__bc");
+    loader.Cut("0.1 < daughter__bo2__cmmuonID__bc");
+    loader.Cut("(0.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 1.5)");
+
     loader.PrintInformation("========== initial ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_M_deltaE_selection").c_str(), "", "");
@@ -76,15 +71,19 @@ int main(int argc, char* argv[]) {
 
     //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.3, 1.9, 50, -0.9, 0.4, "M_deltaE_before_cut.png");
 
-    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_muon_selection").c_str(), "", "");
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_momentum_selection").c_str(), "", "");
 
     loader.Cut("0.3 < (daughter__bo0__cm__sppx__bc*daughter__bo0__cm__sppx__bc+daughter__bo0__cm__sppy__bc*daughter__bo0__cm__sppy__bc+daughter__bo0__cm__sppz__bc*daughter__bo0__cm__sppz__bc)^0.5");
     loader.Cut("0.3 < (daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5");
     loader.Cut("0.3 < (daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5");
+    loader.PrintInformation("========== 0.3 < p_muon ==========");
+    
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_muonID_selection").c_str(), "", "");
+
     loader.Cut("0.5 < daughter__bo0__cmmuonID__bc");
     loader.Cut("0.5 < daughter__bo1__cmmuonID__bc");
     loader.Cut("0.5 < daughter__bo2__cmmuonID__bc");
-    loader.PrintInformation("========== 0.3 < p_muon && 0.5 < muonID ==========");
+    loader.PrintInformation("========== 0.5 < muonID ==========");
 
     //loader.DrawTH1D("(E*E-px*px-py*py-pz*pz)^0.5", "M_after_cut", "M_after_cut.png");
     //loader.DrawTH1D("deltaE", "deltaE_after_cut", "deltaE_after_cut.png");
