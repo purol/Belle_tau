@@ -44,7 +44,7 @@ double MyScaleFunction(std::vector<Data>::iterator data_) {
 int main(int argc, char* argv[]) {
     /*
     * argv[1]: dirname
-    * argv[2]: filename
+    * argv[2]: including string
     * argv[3]: output path
     */
 
