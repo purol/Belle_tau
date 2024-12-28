@@ -72,8 +72,8 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> background_paths;
     std::vector<std::string> background_labels;
     for (int i = 0; i < background_num; i++) {
-        background_paths.push_back(argv[4 + 2 * signal_num + 2 * i]]);
-        background_labels.push_back(argv[5 + 2 * signal_num + 2 * i]]);
+        background_paths.push_back(argv[4 + 2 * signal_num + 2 * i]);
+        background_labels.push_back(argv[5 + 2 * signal_num + 2 * i]);
     }
 
     if (argc == (4 + 2 * signal_num + 2 * background_num)) {}
@@ -92,8 +92,8 @@ int main(int argc, char* argv[]) {
     // Create a new vector to hold the combined elements
     std::vector<std::string> all_label;
     all_label.reserve(signal_labels.size() + background_labels.size());
-    all_label.insert(merged.end(), signal_labels.begin(), signal_labels.end());
-    all_label.insert(merged.end(), background_labels.begin(), background_labels.end());
+    all_label.insert(all_label.end(), signal_labels.begin(), signal_labels.end());
+    all_label.insert(all_label.end(), background_labels.begin(), background_labels.end());
 
     loader.SetMC(all_label);
     loader.SetData({});
