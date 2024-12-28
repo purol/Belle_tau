@@ -10,7 +10,8 @@
 # define tau_crosssection 0.919 // nb
 # define Nevt_taupair ((0.36537/0.000000001) * tau_crosssection)
 
-# define Nevt_SIGNAL_MC15ri 3597981
+// I only use `mdst_000001_prod00026883_task10020000001.root`
+# define Nevt_SIGNAL_MC15ri 552000
 
 # define BR_SIGNAL 0.00000001 // just set 10^(-8) 
 # define Nevt_SIGNAL (Nevt_taupair * BR_SIGNAL * 2.0)
