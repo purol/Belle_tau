@@ -11,53 +11,41 @@
 int main(int argc, char* argv[]) {
     /*
     * argv[1]: variable name
-    * argv[2]: signal num
-    * argv[3], ...: signal path, signal label
-    * argv[]: background num
-    * argv[], ...: background path, background label
+    * argv[2]: input path 1
+    * argv[3]: input path 2
+    * argv[4]: output path
+    * (argv[5]): min value
+    * (argv[6]): max value
     */
 
     std::string variable_name(argv[1]);
-    int signal_num = atoi(argv[2]);
-    std::vector<std::string> signal_paths;
-    std::vector<std::string> signal_labels;
-    for (int i = 0; i < signal_num; i++) {
-        signal_paths.push_back(argv[3 + 2 * i]);
-        signal_labels.push_back(argv[4 + 2 * i]);
-    }
-    int background_num = atoi(argv[3 + 2 * signal_num]);
-    std::vector<std::string> background_paths;
-    std::vector<std::string> background_labels;
-    for (int i = 0; i < background_num; i++) {
-        background_paths.push_back(argv[4 + 2 * signal_num + 2 * i]);
-        background_labels.push_back(argv[5 + 2 * signal_num + 2 * i]);
-    }
 
-    if (argc == (4 + 2 * signal_num + 2 * background_num)) {}
-    else {
-        printf("improper argument\n");
-        exit(1);
-    }
+    std::vector<std::string> signal_list = { "SIGNAL" };
+    std::vector<std::string> background_list = { "CHARM", "CHG", "DDBAR", "EE", "EEEE", 
+        "EEKK", "EEMUMU", "EEPIPI", "EEPP", "EETAUTAU", "GG", 
+        "K0K0BARISR", "KKISR", "MIX", "MUMU", "MUMUMUMU", 
+        "MUMUTAUTAU", "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
 
     ObtainWeight = MyScaleFunction;
 
     Loader loader("tau_lfv");
 
-    for (int i = 0; i < signal_num; i++) loader.Load(signal_paths.at(i).c_str(), "root", signal_labels.at(i).c_str());
-    for (int i = 0; i < signal_num; i++) loader.Load(background_paths.at(i).c_str(), "root", background_labels.at(i).c_str());
+    for (int i = 0; i < signal_list.size(); i++) loader.Load(argv[2] + std::string("/") + signal_list.at(i) + std::string("/") + std::string(argv[3]), "root", signal_list.at(i).c_str());
+    for (int i = 0; i < background_list.size(); i++) loader.Load(argv[2] + std::string("/") + background_list.at(i) + std::string("/") + std::string(argv[3]), "root", background_list.at(i).c_str());
 
     // Create a new vector to hold the combined elements
     std::vector<std::string> all_label;
-    all_label.reserve(signal_labels.size() + background_labels.size());
-    all_label.insert(all_label.end(), signal_labels.begin(), signal_labels.end());
-    all_label.insert(all_label.end(), background_labels.begin(), background_labels.end());
+    all_label.reserve(signal_list.size() + background_list.size());
+    all_label.insert(all_label.end(), signal_list.begin(), signal_list.end());
+    all_label.insert(all_label.end(), background_list.begin(), background_list.end());
 
     loader.SetMC(all_label);
     loader.SetData({});
-    loader.SetSignal(signal_labels);
-    loader.SetBackground(background_labels);
+    loader.SetSignal(signal_list);
+    loader.SetBackground(background_list);
 
-    loader.DrawStack(argv[1], (";" + variable_name + ";events").c_str(), (variable_name + ".png").c_str());
+    if(argc == 5) loader.DrawStack(variable_name.c_str(), (";" + variable_name + ";events").c_str(), (argv[4] + std::string("/") + variable_name + ".png").c_str());
+    else if (argc == 7) loader.DrawStack(variable_name.c_str(), (";" + variable_name + ";events").c_str(), 50, std::stod(argv[5]), std::stod(argv[6]), (argv[4] + std::string("/") + variable_name + ".png").c_str());
 
     loader.end();
 
