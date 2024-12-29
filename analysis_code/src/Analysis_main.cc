@@ -21,11 +21,6 @@ int main(int argc, char* argv[]) {
 
     loader.Load(argv[1], argv[2], "label");
 
-    loader.Cut("0.1 < daughter__bo0__cmmuonID__bc");
-    loader.Cut("0.1 < daughter__bo1__cmmuonID__bc");
-    loader.Cut("0.1 < daughter__bo2__cmmuonID__bc");
-    loader.Cut("(0.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 1.5)");
-
     loader.PrintInformation("========== initial ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_M_deltaE_selection").c_str(), "", "");
@@ -37,20 +32,17 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== 1.3 < M < 1.9 ==========");
 
     //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.3, 1.9, 50, -0.9, 0.4, "M_deltaE_before_cut.png");
-
-    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_momentum_selection").c_str(), "", "");
-
-    loader.Cut("0.3 < (daughter__bo0__cm__sppx__bc*daughter__bo0__cm__sppx__bc+daughter__bo0__cm__sppy__bc*daughter__bo0__cm__sppy__bc+daughter__bo0__cm__sppz__bc*daughter__bo0__cm__sppz__bc)^0.5");
-    loader.Cut("0.3 < (daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5");
-    loader.Cut("0.3 < (daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5");
-    loader.PrintInformation("========== 0.3 < p_muon ==========");
     
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_muonID_selection").c_str(), "", "");
 
-    loader.Cut("0.5 < daughter__bo0__cmmuonID__bc");
-    loader.Cut("0.5 < daughter__bo1__cmmuonID__bc");
-    loader.Cut("0.5 < daughter__bo2__cmmuonID__bc");
-    loader.PrintInformation("========== 0.5 < muonID ==========");
+    std::map momentum_muonID = { 
+        {"(daughter__bo0__cm__sppx__bc*daughter__bo0__cm__sppx__bc+daughter__bo0__cm__sppy__bc*daughter__bo0__cm__sppy__bc+daughter__bo0__cm__sppz__bc*daughter__bo0__cm__sppz__bc)^0.5", "daughter__bo0__cmmuonID__bc"},
+        {"(daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5", "daughter__bo1__cmmuonID__bc"},
+        {"(daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5", "daughter__bo2__cmmuonID__bc"}
+    };
+    Module::Module* muonID_module = new Module::ConditionalPairCut(momentum_muonID, "highest", ">", 0.9, loader.Getvariable_names_address(), loader.VariableTypes_address());
+    loader.InsertCustomizedModule(muonID_module)
+    loader.PrintInformation("========== 0.9 < muonID for leading muon ==========");
 
     //loader.DrawTH1D("(E*E-px*px-py*py-pz*pz)^0.5", "M_after_cut", "M_after_cut.png");
     //loader.DrawTH1D("deltaE", "deltaE_after_cut", "deltaE_after_cut.png");

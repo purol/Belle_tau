@@ -118,7 +118,7 @@ namespace Module {
     private:
         /*
         * contition equation - criteria equation
-        * conditional euqaition is used to select criteria equation. It is determined by highest or lowest
+        * conditional equation is used to select criteria equation. It is determined by highest or lowest
         * criteria equation is used to select candidates.
         */
         std::map<std::string, std::string> condition_equation__criteria_equation_list;
