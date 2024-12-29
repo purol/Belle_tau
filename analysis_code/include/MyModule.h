@@ -14,7 +14,7 @@ namespace Module {
         std::vector<std::string> equation_list;
         std::vector<std::string> replaced_expr_list;
 
-        std::string condition;
+        int condition_order; // start from 0. 0 means highest
         std::string inequality;
         double value;
 
@@ -26,7 +26,7 @@ namespace Module {
         }
 
     public:
-        ConditionalCut(std::vector<std::string> equation_list_, const char* condition_, const char* inequality_, double value_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), equation_list(equation_list_), condition(condition_), inequality(inequality_), value(value_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
+        ConditionalCut(std::vector<std::string> equation_list_, int condition_order_, const char* inequality_, double value_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), equation_list(equation_list_), condition_order(condition_order_), inequality(inequality_), value(value_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
         ~ConditionalCut() {}
 
         void Start() {
@@ -35,11 +35,13 @@ namespace Module {
                 replaced_expr_list.push_back(replaced_expr);
             }
 
-            // convert `condition` into upper case
-            std::transform(condition.begin(), condition.end(), condition.begin(), to_upper);
-
-            if ((condition != "HIGHEST") && (condition != "LOWEST")) {
-                printf("condition for ConditionalCut should be `highest` or `lowest`\n");
+            // check `condition_order` is valid
+            if (condition_order >= equation_list.size()) {
+                printf("[ConditionalCut] condition order (%d) should be smaller than size of equation list (%d)\n", condition_order, equation_list.size());
+                exit(1);
+            }
+            if (condition_order < 0) {
+                printf("[ConditionalCut] condition order (%d) should be larger or equal to 0.\n");
                 exit(1);
             }
 
@@ -59,14 +61,22 @@ namespace Module {
         int Process(std::vector<Data>* data) override {
             for (std::vector<Data>::iterator iter = data->begin(); iter != data->end(); ) {
                 double result = -1;
-                if (condition != "HIGHEST") result = std::numeric_limits<double>::lowest();
-                else result = std::numeric_limits<double>::max();
+                std::vector<double> results;
 
                 for (int i = 0; i < replaced_expr_list.size(); i++) {
                     double temp_ = evaluateExpression(replaced_expr_list.at(i), iter->variable, VariableTypes);
-                    if ((condition != "HIGHEST") && (temp_ > result)) result = temp_;
-                    else if ((condition != "LOWEST") && (temp_ < result)) result = temp_;
+                    results.push_back(temp_);
                 }
+
+                std::vector<double> temp_results = results;
+                std::nth_element(temp_results.begin(), temp_results.begin() + condition_order, temp_results.end(), std::greater<double>());
+
+                // The n-th largest value
+                result = temp_results.at(condition_order);
+
+                // Find the original index of the n-th largest value
+                std::vector<double>::iterator iter_results = std::find(results.begin(), results.end(), result);
+                std::size_t index = std::distance(results.begin(), iter_results);
 
                 // then consider about (in)equality
                 if (inequality == "<") {
@@ -124,7 +134,7 @@ namespace Module {
         std::map<std::string, std::string> condition_equation__criteria_equation_list;
         std::map<std::string, std::string> condition_replaced_expr__criteria_replaced_expr_list;
 
-        std::string condition;
+        int condition_order; // start from 0. 0 means highest
         std::string inequality;
         double value;
 
@@ -136,7 +146,7 @@ namespace Module {
         }
 
     public:
-        ConditionalPairCut(std::map<std::string, std::string> condition_equation__criteria_equation_list_, const char* condition_, const char* inequality_, double value_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition(condition_), inequality(inequality_), value(value_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
+        ConditionalPairCut(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* inequality_, double value_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), inequality(inequality_), value(value_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
         ~ConditionalPairCut() {}
 
         void Start() {
@@ -147,11 +157,13 @@ namespace Module {
                 condition_replaced_expr__criteria_replaced_expr_list.insert(std::make_pair(condition_replaced_expr, criteria_replaced_expr));
             }
 
-            // convert `condition` into upper case
-            std::transform(condition.begin(), condition.end(), condition.begin(), to_upper);
-
-            if ((condition != "HIGHEST") && (condition != "LOWEST")) {
-                printf("condition for ConditionalPairCut should be `highest` or `lowest`\n");
+            // check `condition_order` is valid
+            if (condition_order >= condition_equation__criteria_equation_list.size()) {
+                printf("[ConditionalPairCut] condition order (%d) should be smaller than size of condition_equation__criteria_equation_list (%d)\n", condition_order, condition_equation__criteria_equation_list.size());
+                exit(1);
+            }
+            if (condition_order < 0) {
+                printf("[ConditionalPairCut] condition order (%d) should be larger or equal to 0.\n");
                 exit(1);
             }
 
@@ -171,21 +183,27 @@ namespace Module {
         int Process(std::vector<Data>* data) override {
             for (std::vector<Data>::iterator iter = data->begin(); iter != data->end(); ) {
                 double condition_result = -1;
+                std::vector<double> condition_results;
                 double criteria_result = std::numeric_limits<double>::max();
-                if (condition != "HIGHEST") condition_result = std::numeric_limits<double>::lowest();
-                else condition_result = std::numeric_limits<double>::max();
+                std::vector<std::string> criteria_replaced_exprs;
 
                 for (std::map<std::string, std::string>::iterator iter_eq = condition_replaced_expr__criteria_replaced_expr_list.begin(); iter_eq != condition_replaced_expr__criteria_replaced_expr_list.end(); ++iter_eq) {
                     double temp_ = evaluateExpression(iter_eq->first, iter->variable, VariableTypes);
-                    if ((condition != "HIGHEST") && (temp_ > condition_result)) {
-                        condition_result = temp_;
-                        criteria_result = evaluateExpression(iter_eq->second, iter->variable, VariableTypes);
-                    }
-                    else if ((condition != "LOWEST") && (temp_ < condition_result)) {
-                        condition_result = temp_;
-                        criteria_result = evaluateExpression(iter_eq->second, iter->variable, VariableTypes);
-                    }
+                    condition_results.push_back(temp_);
+                    criteria_replaced_exprs.push_back(iter_eq->second);
                 }
+
+                std::vector<double> temp_condition_results = condition_results;
+                std::nth_element(temp_condition_results.begin(), temp_condition_results.begin() + condition_order, temp_condition_results.end(), std::greater<double>());
+
+                // The n-th largest value
+                condition_result = temp_condition_results.at(condition_order);
+
+                // Find the original index of the n-th largest value
+                std::vector<double>::iterator iter_condition_results = std::find(condition_results.begin(), condition_results.end(), condition_result);
+                std::size_t index = std::distance(condition_results.begin(), iter_condition_results);
+
+                criteria_result = evaluateExpression(criteria_replaced_exprs.at(index), iter->variable, VariableTypes);
 
                 // then consider about (in)equality
                 if (inequality == "<") {
