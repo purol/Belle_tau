@@ -179,11 +179,11 @@ namespace Module {
                     double temp_ = evaluateExpression(iter_eq->first, iter->variable, VariableTypes);
                     if ((condition != "HIGHEST") && (temp_ > condition_result)) {
                         condition_result = temp_;
-                        criteria_result = iter_eq->second;
+                        criteria_result = evaluateExpression(iter_eq->second, iter->variable, VariableTypes);
                     }
                     else if ((condition != "LOWEST") && (temp_ < condition_result)) {
                         condition_result = temp_;
-                        criteria_result = iter_eq->second;
+                        criteria_result = evaluateExpression(iter_eq->second, iter->variable, VariableTypes);
                     }
                 }
 
