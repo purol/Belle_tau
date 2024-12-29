@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <map>
 
 #include "TFile.h"
 
@@ -35,13 +36,13 @@ int main(int argc, char* argv[]) {
     
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_muonID_selection").c_str(), "", "");
 
-    std::map momentum_muonID = { 
+    std::map<std::string, std::string> momentum_muonID = {
         {"(daughter__bo0__cm__sppx__bc*daughter__bo0__cm__sppx__bc+daughter__bo0__cm__sppy__bc*daughter__bo0__cm__sppy__bc+daughter__bo0__cm__sppz__bc*daughter__bo0__cm__sppz__bc)^0.5", "daughter__bo0__cmmuonID__bc"},
         {"(daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5", "daughter__bo1__cmmuonID__bc"},
         {"(daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5", "daughter__bo2__cmmuonID__bc"}
     };
     Module::Module* muonID_module = new Module::ConditionalPairCut(momentum_muonID, "highest", ">", 0.9, loader.Getvariable_names_address(), loader.VariableTypes_address());
-    loader.InsertCustomizedModule(muonID_module)
+    loader.InsertCustomizedModule(muonID_module);
     loader.PrintInformation("========== 0.9 < muonID for leading muon ==========");
 
     //loader.DrawTH1D("(E*E-px*px-py*py-pz*pz)^0.5", "M_after_cut", "M_after_cut.png");
