@@ -30,8 +30,8 @@ int main(int argc, char* argv[]) {
 
     Loader loader("tau_lfv");
 
-    for (int i = 0; i < signal_list.size(); i++) loader.Load(argv[2] + std::string("/") + signal_list.at(i) + std::string("/") + std::string(argv[3]), "root", signal_list.at(i).c_str());
-    for (int i = 0; i < background_list.size(); i++) loader.Load(argv[2] + std::string("/") + background_list.at(i) + std::string("/") + std::string(argv[3]), "root", background_list.at(i).c_str());
+    for (int i = 0; i < signal_list.size(); i++) loader.Load((argv[2] + std::string("/") + signal_list.at(i) + std::string("/") + std::string(argv[3])).c_str(), "root", signal_list.at(i).c_str());
+    for (int i = 0; i < background_list.size(); i++) loader.Load((argv[2] + std::string("/") + background_list.at(i) + std::string("/") + std::string(argv[3])).c_str(), "root", background_list.at(i).c_str());
 
     // Create a new vector to hold the combined elements
     std::vector<std::string> all_label;
