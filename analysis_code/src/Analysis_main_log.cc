@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
         {"(daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5", "daughter__bo1__cmmuonID__bc"},
         {"(daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5", "daughter__bo2__cmmuonID__bc"}
     };
-    Module::Module* muonID_module = new Module::ConditionalPairCut(momentum_muonID, "highest", ">", 0.9, loader.Getvariable_names_address(), loader.VariableTypes_address());
+    Module::Module* muonID_module = new Module::ConditionalPairCut(momentum_muonID, "highest", ">", 0.5, loader.Getvariable_names_address(), loader.VariableTypes_address());
     loader.InsertCustomizedModule(muonID_module);
     loader.PrintInformation("========== 0.5 < muonID for leading muon ==========");
 
