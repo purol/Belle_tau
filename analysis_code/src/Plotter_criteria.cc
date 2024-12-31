@@ -60,8 +60,8 @@ int main(int argc, char* argv[]) {
     loader.SetSignal(signal_list);
     loader.SetBackground(background_list);
 
-    if(argc == (7 + 2 * variable_num)) loader.ConditionalPairDrawStack(variable_pair, condition_order, (";" + argv[6 + 2 * variable_num] + ";arbitrary unit").c_str(), (argv[5 + 2 * variable_num] + std::string("/") + argv[6 + 2 * variable_num] + ".png").c_str(), true);
-    else if (argc == (9 + 2 * variable_num)) loader.ConditionalPairDrawStack(variable_pair, condition_order, (";" + argv[6 + 2 * variable_num] + ";arbitrary unit").c_str(), 50, std::stod(argv[7 + 2 * variable_num]), std::stod(argv[8 + 2 * variable_num]), (argv[5 + 2 * variable_num] + std::string("/") + argv[6 + 2 * variable_num] + ".png").c_str(), true);
+    if(argc == (7 + 2 * variable_num)) loader.ConditionalPairDrawStack(variable_pair, condition_order, (";" + std::string(argv[6 + 2 * variable_num]) + ";arbitrary unit").c_str(), (argv[5 + 2 * variable_num] + std::string("/") + argv[6 + 2 * variable_num] + ".png").c_str(), true);
+    else if (argc == (9 + 2 * variable_num)) loader.ConditionalPairDrawStack(variable_pair, condition_order, (";" + std::string(argv[6 + 2 * variable_num]) + ";arbitrary unit").c_str(), 50, std::stod(argv[7 + 2 * variable_num]), std::stod(argv[8 + 2 * variable_num]), (argv[5 + 2 * variable_num] + std::string("/") + argv[6 + 2 * variable_num] + ".png").c_str(), true);
 
     loader.end();
 
