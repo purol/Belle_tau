@@ -14,8 +14,9 @@ int main(int argc, char* argv[]) {
     * argv[2]: input path 1
     * argv[3]: input path 2
     * argv[4]: output path
-    * (argv[5]): min value
-    * (argv[6]): max value
+    * argv[5]: output name
+    * (argv[6]): min value
+    * (argv[7]): max value
     */
 
     std::string variable_name(argv[1]);
@@ -44,8 +45,8 @@ int main(int argc, char* argv[]) {
     loader.SetSignal(signal_list);
     loader.SetBackground(background_list);
 
-    if(argc == 5) loader.DrawStack(variable_name.c_str(), (";" + variable_name + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + variable_name + ".png").c_str(), true);
-    else if (argc == 7) loader.DrawStack(variable_name.c_str(), (";" + variable_name + ";arbitrary unit").c_str(), 50, std::stod(argv[5]), std::stod(argv[6]), (argv[4] + std::string("/") + variable_name + ".png").c_str(), true);
+    if(argc == 6) loader.DrawStack(variable_name.c_str(), (";" + variable_name + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), true);
+    else if (argc == 8) loader.DrawStack(variable_name.c_str(), (";" + variable_name + ";arbitrary unit").c_str(), 50, std::stod(argv[6]), std::stod(argv[7]), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), true);
 
     loader.end();
 
