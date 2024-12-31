@@ -148,6 +148,7 @@ namespace Module {
         double x_low;
         double x_high;
         bool normalized;
+        bool LogScale;
 
         std::vector<std::string>* variable_names;
         std::vector<std::string>* VariableTypes;
@@ -178,10 +179,10 @@ namespace Module {
         int hist_draw_option;
 
     public:
-        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, int nbins_, double x_low_, double x_high_, const char* png_name_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(nbins_), x_low(x_low_), x_high(x_high_), png_name(png_name_), normalized(false), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
-        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, int nbins_, double x_low_, double x_high_, const char* png_name_, bool normalized_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(nbins_), x_low(x_low_), x_high(x_high_), png_name(png_name_), normalized(normalized_), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
-        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, const char* png_name_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(50), x_low(std::numeric_limits<double>::max()), x_high(std::numeric_limits<double>::max()), png_name(png_name_), normalized(false), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
-        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, const char* png_name_, bool normalized_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(50), x_low(std::numeric_limits<double>::max()), x_high(std::numeric_limits<double>::max()), png_name(png_name_), normalized(normalized_), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
+        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, int nbins_, double x_low_, double x_high_, const char* png_name_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(nbins_), x_low(x_low_), x_high(x_high_), png_name(png_name_), normalized(false), LogScale(false), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
+        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, int nbins_, double x_low_, double x_high_, const char* png_name_, bool normalized_, bool LogScale_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(nbins_), x_low(x_low_), x_high(x_high_), png_name(png_name_), normalized(normalized_), LogScale(LogScale_), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
+        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, const char* png_name_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(50), x_low(std::numeric_limits<double>::max()), x_high(std::numeric_limits<double>::max()), png_name(png_name_), normalized(false), LogScale(false), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
+        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, const char* png_name_, bool normalized_, bool LogScale_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(50), x_low(std::numeric_limits<double>::max()), x_high(std::numeric_limits<double>::max()), png_name(png_name_), normalized(normalized_), LogScale(LogScale_), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
 
         ~ConditionalPairDrawStack() {
             delete stack;
@@ -458,6 +459,8 @@ namespace Module {
                 TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.3, 1.0, 1.0);
                 pad1->SetBottomMargin(0.02); pad1->SetLeftMargin(0.15);
                 pad1->SetGridx(); pad1->Draw(); pad1->cd();
+                if (LogScale) pad1->SetLogy(1);
+                else pad1->SetLogy(0);
 
                 stack->Draw("pfc Hist"); stack->GetXaxis()->SetLabelSize(0.0); stack->GetXaxis()->SetTitleSize(0.0);
 
@@ -514,6 +517,8 @@ namespace Module {
             else if (hist_draw_option == 1) {
                 // define Canvas and pad
                 TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
+                if (LogScale) gPad->SetLogy(1);
+                else gPad->SetLogy(0);
 
                 stack->Draw("pfc Hist");
 
@@ -551,6 +556,8 @@ namespace Module {
             else if (hist_draw_option == 2) {
                 // define Canvas and pad
                 TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
+                if(LogScale) gPad->SetLogy(1);
+                else gPad->SetLogy(0);
 
                 stack->Draw("pfc Hist");
 
