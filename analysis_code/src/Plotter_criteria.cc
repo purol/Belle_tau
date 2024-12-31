@@ -7,6 +7,7 @@
 #include "Loader.h"
 #include "constants.h"
 #include "MyObtainWeight.h"
+#include "MyModule.h"
 
 int main(int argc, char* argv[]) {
     /*
