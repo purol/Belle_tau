@@ -44,8 +44,8 @@ int main(int argc, char* argv[]) {
     loader.SetSignal(signal_list);
     loader.SetBackground(background_list);
 
-    if(argc == 5) loader.DrawStack(variable_name.c_str(), (";" + variable_name + ";events").c_str(), (argv[4] + std::string("/") + variable_name + ".png").c_str(), true);
-    else if (argc == 7) loader.DrawStack(variable_name.c_str(), (";" + variable_name + ";events").c_str(), 50, std::stod(argv[5]), std::stod(argv[6]), (argv[4] + std::string("/") + variable_name + ".png").c_str(), true);
+    if(argc == 5) loader.DrawStack(variable_name.c_str(), (";" + variable_name + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + variable_name + ".png").c_str(), true);
+    else if (argc == 7) loader.DrawStack(variable_name.c_str(), (";" + variable_name + ";arbitrary unit").c_str(), 50, std::stod(argv[5]), std::stod(argv[6]), (argv[4] + std::string("/") + variable_name + ".png").c_str(), true);
 
     loader.end();
 
