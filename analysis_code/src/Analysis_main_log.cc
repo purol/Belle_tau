@@ -52,12 +52,12 @@ int main(int argc, char* argv[]) {
         {"(daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5", "daughter__bo1__cmmuonID__bc"},
         {"(daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5", "daughter__bo2__cmmuonID__bc"}
     };
-    Module::Module* muonID_module = new Module::ConditionalPairCut(momentum_muonID, 0, ">", 0.1, loader.Getvariable_names_address(), loader.VariableTypes_address());
-    loader.InsertCustomizedModule(muonID_module);
+    Module::Module* muonID_module_1 = new Module::ConditionalPairCut(momentum_muonID, 0, ">", 0.1, loader.Getvariable_names_address(), loader.VariableTypes_address());
+    loader.InsertCustomizedModule(muonID_module_1);
     loader.PrintInformation("========== 0.1 < muonID for leading muon ==========");
 
-    Module::Module* muonID_module = new Module::ConditionalPairCut(momentum_muonID, 1, ">", 0.1, loader.Getvariable_names_address(), loader.VariableTypes_address());
-    loader.InsertCustomizedModule(muonID_module);
+    Module::Module* muonID_module_2 = new Module::ConditionalPairCut(momentum_muonID, 1, ">", 0.1, loader.Getvariable_names_address(), loader.VariableTypes_address());
+    loader.InsertCustomizedModule(muonID_module_2);
     loader.PrintInformation("========== 0.1 < muonID for secondary muon ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/final_output").c_str(), "", "");
