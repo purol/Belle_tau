@@ -595,6 +595,187 @@ namespace Module {
         }
     };
 
+    class ConditionalPairFastBDTTrain : public Module {
+    private:
+        std::vector<std::map<std::string, std::string>> condition_equation__criteria_equation_lists;
+        std::vector<std::map<std::string, std::string>> condition_replaced_expr__criteria_replaced_expr_lists;
+        std::vector<int> condition_orders;
+
+        std::string Signal_equation;
+        std::string Signal_replaced_expr;
+
+        std::string Background_equation;
+        std::string Background_replaced_expr;
+
+        std::vector<std::string> Signal_label_list;
+        std::vector<std::string> Background_label_list;
+
+        std::vector<std::string>* variable_names;
+        std::vector<std::string>* VariableTypes;
+
+        std::map<std::string, double> hyperparameters;
+
+        // input variables
+        std::vector<std::vector<float>> InputVariables;
+        std::vector<float>* InputVariable;
+        std::vector<bool> IsItSignal;
+        std::vector<float> weight;
+
+        std::string path;
+
+        // FBDT class
+        FastBDT::Classifier classifier;
+
+        // memory safe option
+        bool MEMORY_SAFE;
+
+    public:
+        ConditionalPairFastBDTTrain(std::vector<std::map<std::string, std::string>> condition_equation__criteria_equation_lists_, std::vector<int> condition_orders_, const char* Signal_preselection_, const char* Background_preselection_, std::map<std::string, double> hyperparameters_, bool MEMORY_SAFE_, const char* path_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_lists(condition_equation__criteria_equation_lists_), condition_orders(condition_orders_), Signal_equation(Signal_preselection_), Background_equation(Background_preselection_), hyperparameters(hyperparameters_), MEMORY_SAFE(MEMORY_SAFE_), path(path_), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), variable_names(variable_names_), VariableTypes(VariableTypes_) {
+        }
+
+        ~ConditionalPairFastBDTTrain() {}
+
+        void Start() {
+            if (Signal_label_list.size() == 0) {
+                printf("signal should be defined. Use `SetSignal`\n");
+                exit(1);
+            }
+            else if (Background_label_list.size() == 0) {
+                printf("background should be defined. Use `SetBackground`\n");
+                exit(1);
+            }
+
+            // change variable name into placeholder
+            for (int i = 0; i < condition_equation__criteria_equation_lists.size(); i++) {
+                std::map<std::string, std::string> condition_equation__criteria_equation_list = condition_equation__criteria_equation_lists.at(i);
+                std::map<std::string, std::string> condition_replaced_expr__criteria_replaced_expr_list;
+                int condition_order = condition_orders.at(i);
+                for (std::map<std::string, std::string>::iterator iter_eq = condition_equation__criteria_equation_list.begin(); iter_eq != condition_equation__criteria_equation_list.end(); ++iter_eq) {
+                    std::string condition_replaced_expr = replaceVariables(iter_eq->first, variable_names);
+                    std::string criteria_replaced_expr = replaceVariables(iter_eq->second, variable_names);
+
+                    condition_replaced_expr__criteria_replaced_expr_list.insert(std::make_pair(condition_replaced_expr, criteria_replaced_expr));
+                }
+                condition_replaced_expr__criteria_replaced_expr_lists.push_back(condition_replaced_expr__criteria_replaced_expr_list);
+
+                // check `condition_order` is valid
+                if (condition_order >= condition_equation__criteria_equation_list.size()) {
+                    printf("[ConditionalPairFastBDTTrain] condition order (%d) should be smaller than size of condition_equation__criteria_equation_list (%d)\n", condition_order, condition_equation__criteria_equation_list.size());
+                    exit(1);
+                }
+                if (condition_order < 0) {
+                    printf("[ConditionalPairFastBDTTrain] condition order (%d) should be larger or equal to 0.\n");
+                    exit(1);
+                }
+            }
+            Signal_replaced_expr = replaceVariables(Signal_equation, variable_names);
+            Background_replaced_expr = replaceVariables(Background_equation, variable_names);
+
+            // set hyperparmater
+            if (hyperparameters.find("NTrees") == hyperparameters.end()) hyperparameters["NTrees"] = 100;
+            if (hyperparameters.find("Depth") == hyperparameters.end()) hyperparameters["Depth"] = 3;
+            if (hyperparameters.find("Shrinkage") == hyperparameters.end()) hyperparameters["Shrinkage"] = 0.1;
+            if (hyperparameters.find("Subsample") == hyperparameters.end()) hyperparameters["Subsample"] = 0.5;
+            if (hyperparameters.find("Binning") == hyperparameters.end()) hyperparameters["Binning"] = 8;
+
+            classifier.SetNTrees(static_cast<unsigned int>(hyperparameters["NTrees"]));
+            classifier.SetDepth(static_cast<unsigned int>(hyperparameters["Depth"]));
+            classifier.SetShrinkage(static_cast<double>(hyperparameters["Shrinkage"]));
+            classifier.SetSubsample(static_cast<double>(hyperparameters["Subsample"]));
+            std::vector<unsigned int> binning(condition_replaced_expr__criteria_replaced_expr_lists.size(), static_cast<unsigned int>(hyperparameters["Binning"]));
+            classifier.SetBinning(binning);
+
+            // malloc input variables
+            InputVariable = new std::vector<float>[condition_replaced_expr__criteria_replaced_expr_lists.size()];
+        }
+
+        int Process(std::vector<Data>* data) {
+
+            for (std::vector<Data>::iterator iter = data->begin(); iter != data->end(); ) {
+
+                // care about preselection first
+                double preselection_result = -1;
+
+                if (std::find(Signal_label_list.begin(), Signal_label_list.end(), iter->label) != Signal_label_list.end()) {
+                    if (Signal_replaced_expr == "") preselection_result = 1;
+                    else {
+                        preselection_result = evaluateExpression(Signal_replaced_expr, iter->variable, VariableTypes);
+                    }
+                }
+                else if (std::find(Background_label_list.begin(), Background_label_list.end(), iter->label) != Background_label_list.end()) {
+                    if (Background_replaced_expr == "") preselection_result = 1;
+                    else {
+                        preselection_result = evaluateExpression(Background_replaced_expr, iter->variable, VariableTypes);
+                    }
+                }
+                else {
+                    preselection_result = -1; // label is not registered. Do not use this data
+                }
+
+                if (preselection_result > 0.5) { // put input variables
+                    for (int i = 0; i < condition_replaced_expr__criteria_replaced_expr_lists.size(); i++) {
+                        std::map<std::string, std::string> condition_replaced_expr__criteria_replaced_expr_list = condition_replaced_expr__criteria_replaced_expr_lists.at(i);
+                        int condition_order = condition_orders.at(i);
+                        double condition_result = -1;
+                        std::vector<double> condition_results;
+                        double criteria_result = std::numeric_limits<double>::max();
+                        std::vector<std::string> criteria_replaced_exprs;
+
+                        for (std::map<std::string, std::string>::iterator iter_eq = condition_replaced_expr__criteria_replaced_expr_list.begin(); iter_eq != condition_replaced_expr__criteria_replaced_expr_list.end(); ++iter_eq) {
+                            double temp_ = evaluateExpression(iter_eq->first, iter->variable, VariableTypes);
+                            condition_results.push_back(temp_);
+                            criteria_replaced_exprs.push_back(iter_eq->second);
+                        }
+
+                        std::vector<double> temp_condition_results = condition_results;
+                        std::nth_element(temp_condition_results.begin(), temp_condition_results.begin() + condition_order, temp_condition_results.end(), std::greater<double>());
+
+                        // The n-th largest value
+                        condition_result = temp_condition_results.at(condition_order);
+
+                        // Find the original index of the n-th largest value
+                        std::vector<double>::iterator iter_condition_results = std::find(condition_results.begin(), condition_results.end(), condition_result);
+                        std::size_t index = std::distance(condition_results.begin(), iter_condition_results);
+
+                        criteria_result = evaluateExpression(criteria_replaced_exprs.at(index), iter->variable, VariableTypes);
+
+                        InputVariable[i].push_back(criteria_result);
+                    }
+
+                    // put answer
+                    if (std::find(Signal_label_list.begin(), Signal_label_list.end(), iter->label) != Signal_label_list.end()) IsItSignal.push_back(true);
+                    else if (std::find(Background_label_list.begin(), Background_label_list.end(), iter->label) != Background_label_list.end()) IsItSignal.push_back(false);
+
+                    // put weight
+                    weight.push_back(static_cast<float>(ObtainWeight(iter)));
+                }
+
+                if (MEMORY_SAFE) data->erase(iter);
+                else ++iter;
+            }
+
+            return 1;
+        }
+
+        void End() {
+            // fill
+            for (int i = 0; i < condition_replaced_expr__criteria_replaced_expr_lists.size(); i++) {
+                InputVariables.push_back(InputVariable[i]);
+            }
+
+            // fit
+            classifier.fit(InputVariables, IsItSignal, weight);
+
+            // free memory
+            delete[] InputVariable;
+
+            // save model
+            std::fstream out_stream((path + "/" + std::to_string(hyperparameters["NTrees"]) + "_" + std::to_string(hyperparameters["Depth"]) + "_" + std::to_string(hyperparameters["Shrinkage"]) + "_" + std::to_string(hyperparameters["Subsample"]) + "_" + std::to_string(hyperparameters["Binning"]) + ".weightfile").c_str(), std::ios_base::out | std::ios_base::trunc);
+            out_stream << classifier << std::endl;
+            out_stream.close();
+        }
+    };
+
 }
 
 #endif 
