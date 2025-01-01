@@ -17,8 +17,6 @@ int main(int argc, char* argv[]) {
     * argv[5]: output path
     */
 
-    ObtainWeight = MyScaleFunction_halfsplit;
-
     Loader loader("tau_lfv");
 
     loader.Load(argv[1], argv[2], "label");
