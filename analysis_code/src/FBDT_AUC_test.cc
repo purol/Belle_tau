@@ -116,7 +116,7 @@ int main(int argc, char* argv[]) {
     loader.SetBackground(background_list);
 
     std::string weightfile_path = (std::string(argv[3 + variable_num]) + "/" + std::to_string(hyperparameters["NTrees"]) + "_" + std::to_string(hyperparameters["Depth"]) + "_" + std::to_string(hyperparameters["Shrinkage"]) + "_" + std::to_string(hyperparameters["Subsample"]) + "_" + std::to_string(hyperparameters["Binning"]) + ".weightfile");
-    Module::Module* temp_module = new Module::ConditionalPairFastBDTApplication(condition_variable_criteria_variable, condition_orders, "", "", weightfile_path.c_str(), "FBDT_output", loader.Getvariable_names_address(), loader.VariableTypes_address());
+    Module::Module* temp_module = new Module::ConditionalPairFastBDTApplication(condition_variable_criteria_variable, condition_orders, weightfile_path.c_str(), "FBDT_output", loader.Getvariable_names_address(), loader.VariableTypes_address());
     loader.InsertCustomizedModule(temp_module);
 
     std::string AUC_path = (std::string(argv[3 + variable_num]) + "/" + std::to_string(hyperparameters["NTrees"]) + "_" + std::to_string(hyperparameters["Depth"]) + "_" + std::to_string(hyperparameters["Shrinkage"]) + "_" + std::to_string(hyperparameters["Subsample"]) + "_" + std::to_string(hyperparameters["Binning"]) + ".auc");
