@@ -772,6 +772,121 @@ namespace Module {
         }
     };
 
+    class ConditionalPairFastBDTApplication : public Module {
+    private:
+        std::vector<std::map<std::string, std::string>> condition_equation__criteria_equation_lists;
+        std::vector<std::map<std::string, std::string>> condition_replaced_expr__criteria_replaced_expr_lists;
+        std::vector<int> condition_orders;
+
+        std::vector<std::string> variable_names;
+        std::vector<std::string> VariableTypes;
+
+        // FBDT class
+        std::string classifier_path;
+        FastBDT::Classifier classifier;
+
+        std::string branch_name;
+
+    public:
+        ConditionalPairFastBDTApplication(std::vector<std::map<std::string, std::string>> condition_equation__criteria_equation_lists_, std::vector<int> condition_orders_, const char* classifier_path_, const char* branch_name_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_lists(condition_equation__criteria_equation_lists_), condition_orders(condition_orders_), classifier_path(classifier_path_), branch_name(branch_name_) {
+            // change variable name into placeholder
+            for (int i = 0; i < condition_equation__criteria_equation_lists.size(); i++) {
+                std::map<std::string, std::string> condition_equation__criteria_equation_list = condition_equation__criteria_equation_lists.at(i);
+                std::map<std::string, std::string> condition_replaced_expr__criteria_replaced_expr_list;
+                int condition_order = condition_orders.at(i);
+                for (std::map<std::string, std::string>::iterator iter_eq = condition_equation__criteria_equation_list.begin(); iter_eq != condition_equation__criteria_equation_list.end(); ++iter_eq) {
+                    std::string condition_replaced_expr = replaceVariables(iter_eq->first, variable_names_);
+                    std::string criteria_replaced_expr = replaceVariables(iter_eq->second, variable_names_);
+
+                    condition_replaced_expr__criteria_replaced_expr_list.insert(std::make_pair(condition_replaced_expr, criteria_replaced_expr));
+                }
+                condition_replaced_expr__criteria_replaced_expr_lists.push_back(condition_replaced_expr__criteria_replaced_expr_list);
+
+                // check `condition_order` is valid
+                if (condition_order >= condition_equation__criteria_equation_list.size()) {
+                    printf("[ConditionalPairFastBDTApplication] condition order (%d) should be smaller than size of condition_equation__criteria_equation_list (%d)\n", condition_order, condition_equation__criteria_equation_list.size());
+                    exit(1);
+                }
+                if (condition_order < 0) {
+                    printf("[ConditionalPairFastBDTApplication] condition order (%d) should be larger or equal to 0.\n");
+                    exit(1);
+                }
+            }
+
+            // check there is the same branch name or not
+            if (std::find(variable_names_->begin(), variable_names_->end(), branch_name) != variable_names_->end()) {
+                printf("[ConditionalPairFastBDTApplication] there is already %s variable\n", branch_name.c_str());
+                exit(1);
+            }
+
+            // copy variable list first, because we use it inside the module
+            variable_names = (*variable_names_);
+            VariableTypes = (*VariableTypes_);
+
+            // add variable
+            variable_names_->push_back(branch_name);
+            VariableTypes_->push_back("Float_t");
+        }
+
+        ~ConditionalPairFastBDTApplication() {}
+
+        void Start() {
+
+            // load FBDT
+            std::fstream in_stream(classifier_path.c_str(), std::ios_base::in);
+            classifier = FastBDT::Classifier(in_stream);
+
+        }
+
+        int Process(std::vector<Data>* data) {
+
+            for (std::vector<Data>::iterator iter = data->begin(); iter != data->end(); ) {
+
+                std::vector<float> inputs;
+                for (int i = 0; i < condition_replaced_expr__criteria_replaced_expr_lists.size(); i++) {
+                    std::map<std::string, std::string> condition_replaced_expr__criteria_replaced_expr_list = condition_replaced_expr__criteria_replaced_expr_lists.at(i);
+                    int condition_order = condition_orders.at(i);
+                    double condition_result = -1;
+                    std::vector<double> condition_results;
+                    double criteria_result = std::numeric_limits<double>::max();
+                    std::vector<std::string> criteria_replaced_exprs;
+
+                    for (std::map<std::string, std::string>::iterator iter_eq = condition_replaced_expr__criteria_replaced_expr_list.begin(); iter_eq != condition_replaced_expr__criteria_replaced_expr_list.end(); ++iter_eq) {
+                        double temp_ = evaluateExpression(iter_eq->first, iter->variable, &VariableTypes);
+                        condition_results.push_back(temp_);
+                        criteria_replaced_exprs.push_back(iter_eq->second);
+                    }
+
+                    std::vector<double> temp_condition_results = condition_results;
+                    std::nth_element(temp_condition_results.begin(), temp_condition_results.begin() + condition_order, temp_condition_results.end(), std::greater<double>());
+
+                    // The n-th largest value
+                    condition_result = temp_condition_results.at(condition_order);
+
+                    // Find the original index of the n-th largest value
+                    std::vector<double>::iterator iter_condition_results = std::find(condition_results.begin(), condition_results.end(), condition_result);
+                    std::size_t index = std::distance(condition_results.begin(), iter_condition_results);
+
+                    criteria_result = evaluateExpression(criteria_replaced_exprs.at(index), iter->variable, &VariableTypes);
+
+                    inputs.push_back(criteria_result);
+                }
+
+
+                float Output_FBDT = classifier.predict(inputs);
+                iter->variable.push_back(static_cast<float>(Output_FBDT));
+
+                ++iter;
+            }
+
+            return 1;
+        }
+
+        void End() {
+
+        }
+    };
+
 }
 
 #endif 
