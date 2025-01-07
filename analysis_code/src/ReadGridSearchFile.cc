@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     std::vector<Data> Datas;
 
     // read auc files
-    for (std::filesystem::directory_entry entry : std::filesystem::directory_iterator(directory)) {
+    for (std::filesystem::directory_entry entry : std::filesystem::directory_iterator(input_path)) {
         if (entry.path().extension() == ".auc") {
             std::string filename = entry.path().filename().string();
             std::smatch match;
@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
                 double test_AUC_;
                 file >> train_AUC_ >> test_AUC_;
 
-                data.push_back({ nTrees_, depth_, shrinkage_, subsample_, binning_, train_AUC_, test_AUC_ });
+                Datas.push_back({ nTrees_, depth_, shrinkage_, subsample_, binning_, train_AUC_, test_AUC_ });
 
             }
         }
