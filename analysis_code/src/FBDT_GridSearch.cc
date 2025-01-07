@@ -115,7 +115,7 @@ int main(int argc, char* argv[]) {
     loader.SetSignal(signal_list);
     loader.SetBackground(background_list);
 
-    Module::Module* temp_module = new Module::ConditionalPairFastBDTTrain(condition_variable_criteria_variable, condition_orders, "", "", hyperparameters, true, argv[3 + variable_num], *loader.SignalLabel_address(), *loader.BackgroundLabel_address(), loader.Getvariable_names_address(), loader.VariableTypes_address());
+    Module::Module* temp_module = new Module::ConditionalPairFastBDTTrain(condition_variable_criteria_variable, condition_orders, "", "", hyperparameters, argv[3 + variable_num], *loader.SignalLabel_address(), *loader.BackgroundLabel_address(), loader.Getvariable_names_address(), loader.VariableTypes_address());
     loader.InsertCustomizedModule(temp_module);
 
     loader.end();

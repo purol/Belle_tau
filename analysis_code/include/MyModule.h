@@ -626,11 +626,8 @@ namespace Module {
         // FBDT class
         FastBDT::Classifier classifier;
 
-        // memory safe option
-        bool MEMORY_SAFE;
-
     public:
-        ConditionalPairFastBDTTrain(std::vector<std::map<std::string, std::string>> condition_equation__criteria_equation_lists_, std::vector<int> condition_orders_, const char* Signal_preselection_, const char* Background_preselection_, std::map<std::string, double> hyperparameters_, bool MEMORY_SAFE_, const char* path_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_lists(condition_equation__criteria_equation_lists_), condition_orders(condition_orders_), Signal_equation(Signal_preselection_), Background_equation(Background_preselection_), hyperparameters(hyperparameters_), MEMORY_SAFE(MEMORY_SAFE_), path(path_), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), variable_names(*variable_names_), VariableTypes(*VariableTypes_) {
+        ConditionalPairFastBDTTrain(std::vector<std::map<std::string, std::string>> condition_equation__criteria_equation_lists_, std::vector<int> condition_orders_, const char* Signal_preselection_, const char* Background_preselection_, std::map<std::string, double> hyperparameters_, const char* path_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_lists(condition_equation__criteria_equation_lists_), condition_orders(condition_orders_), Signal_equation(Signal_preselection_), Background_equation(Background_preselection_), hyperparameters(hyperparameters_), path(path_), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), variable_names(*variable_names_), VariableTypes(*VariableTypes_) {
         }
 
         ~ConditionalPairFastBDTTrain() {}
@@ -750,8 +747,7 @@ namespace Module {
                     weight.push_back(static_cast<float>(ObtainWeight(iter)));
                 }
 
-                if (MEMORY_SAFE) data->erase(iter);
-                else ++iter;
+                ++iter;
             }
 
             return 1;
