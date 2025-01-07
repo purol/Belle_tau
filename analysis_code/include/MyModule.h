@@ -23,21 +23,21 @@ namespace Module {
         std::string inequality;
         double value;
 
-        std::vector<std::string>* variable_names;
-        std::vector<std::string>* VariableTypes;
+        std::vector<std::string> variable_names;
+        std::vector<std::string> VariableTypes;
 
         static char to_upper(char c) {
             return std::toupper(static_cast<unsigned char>(c));
         }
 
     public:
-        ConditionalPairCut(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* inequality_, double value_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), inequality(inequality_), value(value_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
+        ConditionalPairCut(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* inequality_, double value_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), inequality(inequality_), value(value_), variable_names(*variable_names_), VariableTypes(*VariableTypes_) {}
         ~ConditionalPairCut() {}
 
         void Start() {
             for (std::map<std::string, std::string>::iterator iter_eq = condition_equation__criteria_equation_list.begin(); iter_eq != condition_equation__criteria_equation_list.end(); ++iter_eq) {
-                std::string condition_replaced_expr = replaceVariables(iter_eq->first, variable_names);
-                std::string criteria_replaced_expr = replaceVariables(iter_eq->second, variable_names);
+                std::string condition_replaced_expr = replaceVariables(iter_eq->first, &variable_names);
+                std::string criteria_replaced_expr = replaceVariables(iter_eq->second, &variable_names);
 
                 condition_replaced_expr__criteria_replaced_expr_list.insert(std::make_pair(condition_replaced_expr, criteria_replaced_expr));
             }
@@ -73,7 +73,7 @@ namespace Module {
                 std::vector<std::string> criteria_replaced_exprs;
 
                 for (std::map<std::string, std::string>::iterator iter_eq = condition_replaced_expr__criteria_replaced_expr_list.begin(); iter_eq != condition_replaced_expr__criteria_replaced_expr_list.end(); ++iter_eq) {
-                    double temp_ = evaluateExpression(iter_eq->first, iter->variable, VariableTypes);
+                    double temp_ = evaluateExpression(iter_eq->first, iter->variable, &VariableTypes);
                     condition_results.push_back(temp_);
                     criteria_replaced_exprs.push_back(iter_eq->second);
                 }
@@ -88,7 +88,7 @@ namespace Module {
                 std::vector<double>::iterator iter_condition_results = std::find(condition_results.begin(), condition_results.end(), condition_result);
                 std::size_t index = std::distance(condition_results.begin(), iter_condition_results);
 
-                criteria_result = evaluateExpression(criteria_replaced_exprs.at(index), iter->variable, VariableTypes);
+                criteria_result = evaluateExpression(criteria_replaced_exprs.at(index), iter->variable, &VariableTypes);
 
                 // then consider about (in)equality
                 if (inequality == "<") {
@@ -150,8 +150,8 @@ namespace Module {
         bool normalized;
         bool LogScale;
 
-        std::vector<std::string>* variable_names;
-        std::vector<std::string>* VariableTypes;
+        std::vector<std::string> variable_names;
+        std::vector<std::string> VariableTypes;
         std::map<std::string, std::string> condition_equation__criteria_equation_list;
         std::map<std::string, std::string> condition_replaced_expr__criteria_replaced_expr_list;
         int condition_order; // start from 0. 0 means highest
@@ -179,10 +179,10 @@ namespace Module {
         int hist_draw_option;
 
     public:
-        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, int nbins_, double x_low_, double x_high_, const char* png_name_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(nbins_), x_low(x_low_), x_high(x_high_), png_name(png_name_), normalized(false), LogScale(false), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
-        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, int nbins_, double x_low_, double x_high_, const char* png_name_, bool normalized_, bool LogScale_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(nbins_), x_low(x_low_), x_high(x_high_), png_name(png_name_), normalized(normalized_), LogScale(LogScale_), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
-        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, const char* png_name_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(50), x_low(std::numeric_limits<double>::max()), x_high(std::numeric_limits<double>::max()), png_name(png_name_), normalized(false), LogScale(false), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
-        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, const char* png_name_, bool normalized_, bool LogScale_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(50), x_low(std::numeric_limits<double>::max()), x_high(std::numeric_limits<double>::max()), png_name(png_name_), normalized(normalized_), LogScale(LogScale_), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(variable_names_), VariableTypes(VariableTypes_) {}
+        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, int nbins_, double x_low_, double x_high_, const char* png_name_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(nbins_), x_low(x_low_), x_high(x_high_), png_name(png_name_), normalized(false), LogScale(false), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(*variable_names_), VariableTypes(*VariableTypes_) {}
+        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, int nbins_, double x_low_, double x_high_, const char* png_name_, bool normalized_, bool LogScale_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(nbins_), x_low(x_low_), x_high(x_high_), png_name(png_name_), normalized(normalized_), LogScale(LogScale_), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(*variable_names_), VariableTypes(*VariableTypes_) {}
+        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, const char* png_name_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(50), x_low(std::numeric_limits<double>::max()), x_high(std::numeric_limits<double>::max()), png_name(png_name_), normalized(false), LogScale(false), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(*variable_names_), VariableTypes(*VariableTypes_) {}
+        ConditionalPairDrawStack(std::map<std::string, std::string> condition_equation__criteria_equation_list_, int condition_order_, const char* stack_title_, const char* png_name_, bool normalized_, bool LogScale_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string> data_label_list_, std::vector<std::string> MC_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_list(condition_equation__criteria_equation_list_), condition_order(condition_order_), stack_title(stack_title_), nbins(50), x_low(std::numeric_limits<double>::max()), x_high(std::numeric_limits<double>::max()), png_name(png_name_), normalized(normalized_), LogScale(LogScale_), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), data_label_list(data_label_list_), MC_label_list(MC_label_list_), variable_names(*variable_names_), VariableTypes(*VariableTypes_) {}
 
         ~ConditionalPairDrawStack() {
             delete stack;
@@ -233,8 +233,8 @@ namespace Module {
 
             // change variable name into placeholder
             for (std::map<std::string, std::string>::iterator iter_eq = condition_equation__criteria_equation_list.begin(); iter_eq != condition_equation__criteria_equation_list.end(); ++iter_eq) {
-                std::string condition_replaced_expr = replaceVariables(iter_eq->first, variable_names);
-                std::string criteria_replaced_expr = replaceVariables(iter_eq->second, variable_names);
+                std::string condition_replaced_expr = replaceVariables(iter_eq->first, &variable_names);
+                std::string criteria_replaced_expr = replaceVariables(iter_eq->second, &variable_names);
 
                 condition_replaced_expr__criteria_replaced_expr_list.insert(std::make_pair(condition_replaced_expr, criteria_replaced_expr));
             }
@@ -266,7 +266,7 @@ namespace Module {
                 std::vector<std::string> criteria_replaced_exprs;
 
                 for (std::map<std::string, std::string>::iterator iter_eq = condition_replaced_expr__criteria_replaced_expr_list.begin(); iter_eq != condition_replaced_expr__criteria_replaced_expr_list.end(); ++iter_eq) {
-                    double temp_ = evaluateExpression(iter_eq->first, iter->variable, VariableTypes);
+                    double temp_ = evaluateExpression(iter_eq->first, iter->variable, &VariableTypes);
                     condition_results.push_back(temp_);
                     criteria_replaced_exprs.push_back(iter_eq->second);
                 }
@@ -281,7 +281,7 @@ namespace Module {
                 std::vector<double>::iterator iter_condition_results = std::find(condition_results.begin(), condition_results.end(), condition_result);
                 std::size_t index = std::distance(condition_results.begin(), iter_condition_results);
 
-                criteria_result = evaluateExpression(criteria_replaced_exprs.at(index), iter->variable, VariableTypes);
+                criteria_result = evaluateExpression(criteria_replaced_exprs.at(index), iter->variable, &VariableTypes);
 
                 if ((std::find(stack_label_list.begin(), stack_label_list.end(), iter->label) != stack_label_list.end()) || (std::find(hist_label_list.begin(), hist_label_list.end(), iter->label) != hist_label_list.end())) {
 
@@ -610,8 +610,8 @@ namespace Module {
         std::vector<std::string> Signal_label_list;
         std::vector<std::string> Background_label_list;
 
-        std::vector<std::string>* variable_names;
-        std::vector<std::string>* VariableTypes;
+        std::vector<std::string> variable_names;
+        std::vector<std::string> VariableTypes;
 
         std::map<std::string, double> hyperparameters;
 
@@ -630,7 +630,7 @@ namespace Module {
         bool MEMORY_SAFE;
 
     public:
-        ConditionalPairFastBDTTrain(std::vector<std::map<std::string, std::string>> condition_equation__criteria_equation_lists_, std::vector<int> condition_orders_, const char* Signal_preselection_, const char* Background_preselection_, std::map<std::string, double> hyperparameters_, bool MEMORY_SAFE_, const char* path_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_lists(condition_equation__criteria_equation_lists_), condition_orders(condition_orders_), Signal_equation(Signal_preselection_), Background_equation(Background_preselection_), hyperparameters(hyperparameters_), MEMORY_SAFE(MEMORY_SAFE_), path(path_), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), variable_names(variable_names_), VariableTypes(VariableTypes_) {
+        ConditionalPairFastBDTTrain(std::vector<std::map<std::string, std::string>> condition_equation__criteria_equation_lists_, std::vector<int> condition_orders_, const char* Signal_preselection_, const char* Background_preselection_, std::map<std::string, double> hyperparameters_, bool MEMORY_SAFE_, const char* path_, std::vector<std::string> Signal_label_list_, std::vector<std::string> Background_label_list_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), condition_equation__criteria_equation_lists(condition_equation__criteria_equation_lists_), condition_orders(condition_orders_), Signal_equation(Signal_preselection_), Background_equation(Background_preselection_), hyperparameters(hyperparameters_), MEMORY_SAFE(MEMORY_SAFE_), path(path_), Signal_label_list(Signal_label_list_), Background_label_list(Background_label_list_), variable_names(*variable_names_), VariableTypes(*VariableTypes_) {
         }
 
         ~ConditionalPairFastBDTTrain() {}
@@ -651,8 +651,8 @@ namespace Module {
                 std::map<std::string, std::string> condition_replaced_expr__criteria_replaced_expr_list;
                 int condition_order = condition_orders.at(i);
                 for (std::map<std::string, std::string>::iterator iter_eq = condition_equation__criteria_equation_list.begin(); iter_eq != condition_equation__criteria_equation_list.end(); ++iter_eq) {
-                    std::string condition_replaced_expr = replaceVariables(iter_eq->first, variable_names);
-                    std::string criteria_replaced_expr = replaceVariables(iter_eq->second, variable_names);
+                    std::string condition_replaced_expr = replaceVariables(iter_eq->first, &variable_names);
+                    std::string criteria_replaced_expr = replaceVariables(iter_eq->second, &variable_names);
 
                     condition_replaced_expr__criteria_replaced_expr_list.insert(std::make_pair(condition_replaced_expr, criteria_replaced_expr));
                 }
@@ -668,8 +668,8 @@ namespace Module {
                     exit(1);
                 }
             }
-            Signal_replaced_expr = replaceVariables(Signal_equation, variable_names);
-            Background_replaced_expr = replaceVariables(Background_equation, variable_names);
+            Signal_replaced_expr = replaceVariables(Signal_equation, &variable_names);
+            Background_replaced_expr = replaceVariables(Background_equation, &variable_names);
 
             // set hyperparmater
             if (hyperparameters.find("NTrees") == hyperparameters.end()) hyperparameters["NTrees"] = 100;
@@ -699,13 +699,13 @@ namespace Module {
                 if (std::find(Signal_label_list.begin(), Signal_label_list.end(), iter->label) != Signal_label_list.end()) {
                     if (Signal_replaced_expr == "") preselection_result = 1;
                     else {
-                        preselection_result = evaluateExpression(Signal_replaced_expr, iter->variable, VariableTypes);
+                        preselection_result = evaluateExpression(Signal_replaced_expr, iter->variable, &VariableTypes);
                     }
                 }
                 else if (std::find(Background_label_list.begin(), Background_label_list.end(), iter->label) != Background_label_list.end()) {
                     if (Background_replaced_expr == "") preselection_result = 1;
                     else {
-                        preselection_result = evaluateExpression(Background_replaced_expr, iter->variable, VariableTypes);
+                        preselection_result = evaluateExpression(Background_replaced_expr, iter->variable, &VariableTypes);
                     }
                 }
                 else {
@@ -722,7 +722,7 @@ namespace Module {
                         std::vector<std::string> criteria_replaced_exprs;
 
                         for (std::map<std::string, std::string>::iterator iter_eq = condition_replaced_expr__criteria_replaced_expr_list.begin(); iter_eq != condition_replaced_expr__criteria_replaced_expr_list.end(); ++iter_eq) {
-                            double temp_ = evaluateExpression(iter_eq->first, iter->variable, VariableTypes);
+                            double temp_ = evaluateExpression(iter_eq->first, iter->variable, &VariableTypes);
                             condition_results.push_back(temp_);
                             criteria_replaced_exprs.push_back(iter_eq->second);
                         }
@@ -737,7 +737,7 @@ namespace Module {
                         std::vector<double>::iterator iter_condition_results = std::find(condition_results.begin(), condition_results.end(), condition_result);
                         std::size_t index = std::distance(condition_results.begin(), iter_condition_results);
 
-                        criteria_result = evaluateExpression(criteria_replaced_exprs.at(index), iter->variable, VariableTypes);
+                        criteria_result = evaluateExpression(criteria_replaced_exprs.at(index), iter->variable, &VariableTypes);
 
                         InputVariable[i].push_back(criteria_result);
                     }
