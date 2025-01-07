@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     * argv[2]: variable name 
     * argv[1 + N]: variable name
     * argv[2 + N]: input path
-    * argv[3 + N]: output path
+    * argv[3 + N]: output path used in Gridsearch
     * argv[4 + N]: NTrees
     * argv[5 + N]: Depth
     * argv[6 + N]: Shrinkage
@@ -101,8 +101,8 @@ int main(int argc, char* argv[]) {
 
     Loader loader("tau_lfv");
 
-    for (int i = 0; i < signal_list.size(); i++) loader.Load((argv[2 + variable_num] + std::string("/") + signal_list.at(i) + std::string("/final_output_train/")).c_str(), "root", signal_list.at(i).c_str());
-    for (int i = 0; i < background_list.size(); i++) loader.Load((argv[2 + variable_num] + std::string("/") + background_list.at(i) + std::string("/final_output_train/")).c_str(), "root", background_list.at(i).c_str());
+    for (int i = 0; i < signal_list.size(); i++) loader.Load((argv[2 + variable_num] + std::string("/") + signal_list.at(i) + std::string("/final_output_test/")).c_str(), "root", signal_list.at(i).c_str());
+    for (int i = 0; i < background_list.size(); i++) loader.Load((argv[2 + variable_num] + std::string("/") + background_list.at(i) + std::string("/final_output_test/")).c_str(), "root", background_list.at(i).c_str());
 
     // Create a new vector to hold the combined elements
     std::vector<std::string> all_label;
@@ -115,8 +115,12 @@ int main(int argc, char* argv[]) {
     loader.SetSignal(signal_list);
     loader.SetBackground(background_list);
 
-    Module::Module* temp_module = new Module::ConditionalPairFastBDTTrain(condition_variable_criteria_variable, condition_orders, "", "", hyperparameters, argv[3 + variable_num], *loader.SignalLabel_address(), *loader.BackgroundLabel_address(), loader.Getvariable_names_address(), loader.VariableTypes_address());
+    std::string weightfile_path = (path + "/" + std::to_string(hyperparameters["NTrees"]) + "_" + std::to_string(hyperparameters["Depth"]) + "_" + std::to_string(hyperparameters["Shrinkage"]) + "_" + std::to_string(hyperparameters["Subsample"]) + "_" + std::to_string(hyperparameters["Binning"]) + ".weightfile");
+    Module::Module* temp_module = new Module::ConditionalPairFastBDTApplication(condition_variable_criteria_variable, condition_orders, "", "", weightfile_path.c_str(), "FBDT_output", loader.Getvariable_names_address(), loader.VariableTypes_address());
     loader.InsertCustomizedModule(temp_module);
+
+    std::string AUC_path = (path + "/" + std::to_string(hyperparameters["NTrees"]) + "_" + std::to_string(hyperparameters["Depth"]) + "_" + std::to_string(hyperparameters["Shrinkage"]) + "_" + std::to_string(hyperparameters["Subsample"]) + "_" + std::to_string(hyperparameters["Binning"]) + ".auc");
+    loader.CalculateAUC("FBDT_output", 0.0, 1.0, AUC_path.c_str(), "w");
 
     loader.end();
 
