@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
     loader.InsertCustomizedModule(temp_module);
 
     std::string AUC_path = (std::string(argv[3 + variable_num]) + "/" + std::to_string(hyperparameters["NTrees"]) + "_" + std::to_string(hyperparameters["Depth"]) + "_" + std::to_string(hyperparameters["Shrinkage"]) + "_" + std::to_string(hyperparameters["Subsample"]) + "_" + std::to_string(hyperparameters["Binning"]) + ".auc");
-    loader.CalculateAUC("FBDT_output", 0.0, 1.0, AUC_path.c_str(), "w");
+    loader.CalculateAUC("FBDT_output", 0.0, 1.0, AUC_path.c_str(), "a");
 
     loader.end();
 
