@@ -48,7 +48,7 @@ namespace Module {
                 exit(1);
             }
             if (condition_order < 0) {
-                printf("[ConditionalPairCut] condition order (%d) should be larger or equal to 0.\n");
+                printf("[ConditionalPairCut] condition order (%d) should be larger or equal to 0.\n", condition_order);
                 exit(1);
             }
 
