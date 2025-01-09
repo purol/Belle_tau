@@ -25,63 +25,10 @@ int main(int argc, char* argv[]) {
     */
 
     int variable_num = std::atoi(argv[1]);
-    std::vector<std::map<std::string, std::string>> condition_variable_criteria_variable;
-    std::vector<int> condition_orders;
+    std::vector<std::string> intput_variables;
     for (int i = 0; i < variable_num; i++) {
-        std::map<std::string, std::string> variable_;
-        if (std::string(argv[2 + i]) == "Primary_muon_p") {
-            variable_.insert(std::make_pair(
-                std::string("(daughter__bo0__cm__sppx__bc*daughter__bo0__cm__sppx__bc+daughter__bo0__cm__sppy__bc*daughter__bo0__cm__sppy__bc+daughter__bo0__cm__sppz__bc*daughter__bo0__cm__sppz__bc)^0.5"),
-                std::string("(daughter__bo0__cm__sppx__bc*daughter__bo0__cm__sppx__bc+daughter__bo0__cm__sppy__bc*daughter__bo0__cm__sppy__bc+daughter__bo0__cm__sppz__bc*daughter__bo0__cm__sppz__bc)^0.5")
-            ));
-            variable_.insert(std::make_pair(
-                std::string("(daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5"),
-                std::string("(daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5")
-            ));
-            variable_.insert(std::make_pair(
-                std::string("(daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5"),
-                std::string("(daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5")
-            ));
-            condition_variable_criteria_variable.push_back(variable_);
-            condition_orders.push_back(0);
-        }
-        else if (std::string(argv[2 + i]) == "secondary_muon_p") {
-            variable_.insert(std::make_pair(
-                std::string("(daughter__bo0__cm__sppx__bc*daughter__bo0__cm__sppx__bc+daughter__bo0__cm__sppy__bc*daughter__bo0__cm__sppy__bc+daughter__bo0__cm__sppz__bc*daughter__bo0__cm__sppz__bc)^0.5"),
-                std::string("(daughter__bo0__cm__sppx__bc*daughter__bo0__cm__sppx__bc+daughter__bo0__cm__sppy__bc*daughter__bo0__cm__sppy__bc+daughter__bo0__cm__sppz__bc*daughter__bo0__cm__sppz__bc)^0.5")
-            ));
-            variable_.insert(std::make_pair(
-                std::string("(daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5"),
-                std::string("(daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5")
-            ));
-            variable_.insert(std::make_pair(
-                std::string("(daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5"),
-                std::string("(daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5")
-            ));
-            condition_variable_criteria_variable.push_back(variable_);
-            condition_orders.push_back(1);
-        }
-        else if (std::string(argv[2 + i]) == "third_muon_p") {
-            variable_.insert(std::make_pair(
-                std::string("(daughter__bo0__cm__sppx__bc*daughter__bo0__cm__sppx__bc+daughter__bo0__cm__sppy__bc*daughter__bo0__cm__sppy__bc+daughter__bo0__cm__sppz__bc*daughter__bo0__cm__sppz__bc)^0.5"),
-                std::string("(daughter__bo0__cm__sppx__bc*daughter__bo0__cm__sppx__bc+daughter__bo0__cm__sppy__bc*daughter__bo0__cm__sppy__bc+daughter__bo0__cm__sppz__bc*daughter__bo0__cm__sppz__bc)^0.5")
-            ));
-            variable_.insert(std::make_pair(
-                std::string("(daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5"),
-                std::string("(daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5")
-            ));
-            variable_.insert(std::make_pair(
-                std::string("(daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5"),
-                std::string("(daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5")
-            ));
-            condition_variable_criteria_variable.push_back(variable_);
-            condition_orders.push_back(2);
-        }
-        else {
-            variable_.insert(std::make_pair(std::string(argv[2 + i]), std::string(argv[2 + i])));
-            condition_variable_criteria_variable.push_back(variable_);
-            condition_orders.push_back(0);
-        }
+        std::string variable_(argv[2 + i]);
+        intput_variables.push_back(variable_);
     }
     std::map<std::string, double> hyperparameters;
     hyperparameters.insert(std::pair<std::string, double>("NTrees", std::stod(argv[4 + variable_num])));
@@ -116,8 +63,7 @@ int main(int argc, char* argv[]) {
     loader.SetBackground(background_list);
 
     std::string weightfile_path = (std::string(argv[3 + variable_num]) + "/" + std::to_string(hyperparameters["NTrees"]) + "_" + std::to_string(hyperparameters["Depth"]) + "_" + std::to_string(hyperparameters["Shrinkage"]) + "_" + std::to_string(hyperparameters["Subsample"]) + "_" + std::to_string(hyperparameters["Binning"]) + ".weightfile");
-    Module::Module* temp_module = new Module::ConditionalPairFastBDTApplication(condition_variable_criteria_variable, condition_orders, weightfile_path.c_str(), "FBDT_output", loader.Getvariable_names_address(), loader.VariableTypes_address());
-    loader.InsertCustomizedModule(temp_module);
+    loader.FastBDTApplication(intput_variables, weightfile_path.c_str(), "FBDT_output");
 
     std::string AUC_path = (std::string(argv[3 + variable_num]) + "/" + std::to_string(hyperparameters["NTrees"]) + "_" + std::to_string(hyperparameters["Depth"]) + "_" + std::to_string(hyperparameters["Shrinkage"]) + "_" + std::to_string(hyperparameters["Subsample"]) + "_" + std::to_string(hyperparameters["Binning"]) + ".auc");
     loader.CalculateAUC("FBDT_output", 0.0, 1.0, AUC_path.c_str(), "a");

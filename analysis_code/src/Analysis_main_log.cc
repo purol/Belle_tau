@@ -33,28 +33,33 @@ int main(int argc, char* argv[]) {
 
     loader.Load(argv[1], "root", "label");
 
+    loader.ConditionalPairDefineNewVariable(momentum_muonmomentum, 0, "first_muon_p");
+    loader.ConditionalPairDefineNewVariable(momentum_muonmomentum, 1, "second_muon_p");
+    loader.ConditionalPairDefineNewVariable(momentum_muonmomentum, 2, "third_muon_p");
+    loader.ConditionalPairDefineNewVariable(momentum_muonID, 0, "first_muon_muonID");
+    loader.ConditionalPairDefineNewVariable(momentum_muonID, 1, "second_muon_muonID");
+    loader.ConditionalPairDefineNewVariable(momentum_muonID, 2, "third_muon_muonID");
+    loader.DefineNewVariable("(E*E-px*px-py*py-pz*pz)^0.5", "M_inv_tau");
+
     loader.PrintInformation("========== initial ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_M_deltaE_selection").c_str(), "", "");
     loader.Cut("(-0.9 < deltaE) && (deltaE < 0.4)");
     loader.PrintInformation("========== -0.9 < deltaE < 0.4 ==========");
-    loader.Cut("(1.5 < (E*E-px*px-py*py-pz*pz)^0.5) && ((E*E-px*px-py*py-pz*pz)^0.5 < 1.9)");
+    loader.Cut("(1.5 < M_inv_tau) && (M_inv_tau < 1.9)");
     loader.PrintInformation("========== 1.5 < M < 1.9 ==========");
     //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.3, 1.9, 50, -0.9, 0.4, "M_deltaE_before_cut.png");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_PrimarymuonID_selection").c_str(), "", "");
-    Module::Module* muonID_module_1 = new Module::ConditionalPairCut(momentum_muonID, 0, ">", 0.1, loader.Getvariable_names_address(), loader.VariableTypes_address());
-    loader.InsertCustomizedModule(muonID_module_1);
+    loader.Cut("0.1 < first_muon_muonID");
     loader.PrintInformation("========== 0.1 < muonID for leading muon ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_SecondarymuonID_selection").c_str(), "", "");
-    Module::Module* muonID_module_2 = new Module::ConditionalPairCut(momentum_muonID, 1, ">", 0.1, loader.Getvariable_names_address(), loader.VariableTypes_address());
-    loader.InsertCustomizedModule(muonID_module_2);
+    loader.Cut("0.1 < second_muon_muonID");
     loader.PrintInformation("========== 0.1 < muonID for secondary muon ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_SecondarymuonP_selection").c_str(), "", "");
-    Module::Module* muonP_module_1 = new Module::ConditionalPairCut(momentum_muonmomentum, 1, ">", 0.3, loader.Getvariable_names_address(), loader.VariableTypes_address());
-    loader.InsertCustomizedModule(muonP_module_1);
+    loader.Cut("0.3 < second_muon_p");
     loader.PrintInformation("========== 0.3 < muon momentum for secondary muon ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_theta_miss_cut").c_str(), "", "");
