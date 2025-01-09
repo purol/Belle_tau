@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
     loader.SetSignal(signal_list);
     loader.SetBackground(background_list);
 
-    loader.FastBDTApplication(intput_variables, "", "", hyperparameters, argv[3 + variable_num]);
+    loader.FastBDTTrain(intput_variables, "", "", hyperparameters, argv[3 + variable_num]);
 
     loader.end();
 
