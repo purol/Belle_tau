@@ -8,6 +8,7 @@
 #include "MyObtainWeight.h"
 #include "MyModule.h"
 
+#include "TCanvas.h"
 #include "RooWorkspace.h"
 #include "RooDataSet.h"
 #include "RooRealVar.h"
@@ -27,9 +28,14 @@ int main(int argc, char* argv[]) {
 
     loader.Load(argv[1], "root");
 
+    loader.Cut("(-0.3 < deltaE) && (deltaE < 0.15)");
+    loader.PrintInformation("========== -0.3 < deltaE < 0.15 ==========");
+    loader.Cut("(1.73 < M_inv_tau) && (M_inv_tau < 1.81)");
+    loader.PrintInformation("========== 1.73 < M < 1.81 ==========");
+
     RooWorkspace* w = new RooWorkspace("ws", "ws");
-    RooRealVar M_inv("M_inv", "M_inv", 1.5, 1.9);
-    RooRealVar deltaE("deltaE", "deltaE", -0.9, 0.4);
+    RooRealVar M_inv("M_inv", "M_inv", 1.73, 1.81);
+    RooRealVar deltaE("deltaE", "deltaE", -0.3, 0.15);
     RooRealVar weight("weight", "weight", 0.0, 1.0);
     RooDataSet dataset("dataset", "dataset", RooArgSet(M_inv, deltaE, weight), WeightVar("weight"));
 
@@ -48,7 +54,17 @@ int main(int argc, char* argv[]) {
     RooRealVar nevt_M("nevt_M", "number of events", 4.0, 0.0, 10.0);
     RooExtendPdf e_bifurcated_M("e_bifurcated_M", "extended bifurcated_M", bifurcated_M, nevt_M);
 
-    RooFitResult* result_M = e_bifurcated_M.fitTo(*dataset_M, Save(), SumW2Error(true));
+    RooFitResult* result_M = e_bifurcated_M.fitTo(*dataset_M, RooFit::Save(), RooFit::SumW2Error(true), RooFit::Range(1.770, 1.786));
+
+    // plot M fit
+    RooPlot* M_inv_frame = M_inv.frame(Bins(100), Title(" "));
+    dataset_M->plotOn(M_inv_frame, RooFit::DataError(RooAbsData::SumW2));
+    e_bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kDashed));
+
+    TCanvas* c_M = new TCanvas("canvas_M_fit", "canvas_M_fit", 800, 800);
+    M_inv_frame->Draw();
+    c->SaveAs("M_fit.png");
+    delete c_M;
 
     // deltaE fit
     RooDataSet* dataset_deltaE = (RooDataSet*)dataset.reduce(RooArgSet(deltaE));
@@ -60,7 +76,17 @@ int main(int argc, char* argv[]) {
     RooRealVar nevt_deltaE("nevt_deltaE", "number of events", 4.0, 0.0, 10.0);
     RooExtendPdf e_bifurcated_deltaE("e_bifurcated_deltaE", "extended bifurcated_deltaE", bifurcated_deltaE, nevt_deltaE);
 
-    RooFitResult* result_deltaE = e_bifurcated_deltaE.fitTo(*dataset_deltaE, Save(), SumW2Error(true));
+    RooFitResult* result_deltaE = e_bifurcated_deltaE.fitTo(*dataset_deltaE, RooFit::Save(), RooFit::SumW2Error(true), RooFit::Range(-0.025, 0.025));
+
+    // plot deltaE fit
+    RooPlot* deltaE_frame = deltaE.frame(Bins(100), Title(" "));
+    dataset_deltaE->plotOn(deltaE_frame, RooFit::DataError(RooAbsData::SumW2));
+    e_bifurcated_deltaE.plotOn(deltaE_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kDashed));
+
+    TCanvas* c_deltaE = new TCanvas("canvas_deltaE_fit", "canvas_deltaE_fit", 800, 800);
+    deltaE_frame->Draw();
+    c->SaveAs("deltaE_fit.png");
+    delete c_deltaE;
 
     return 0;
 }
