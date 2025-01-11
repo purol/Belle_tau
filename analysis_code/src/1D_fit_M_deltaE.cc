@@ -34,7 +34,6 @@ int main(int argc, char* argv[]) {
     loader.Cut("(1.73 < M_inv_tau) && (M_inv_tau < 1.81)");
     loader.PrintInformation("========== 1.73 < M < 1.81 ==========");
 
-    RooWorkspace* w = new RooWorkspace("ws", "ws");
     RooRealVar M_inv("M_inv", "M_inv", 1.73, 1.81);
     RooRealVar deltaE("deltaE", "deltaE", -0.3, 0.15);
     RooRealVar weight("weight", "weight", 0.0, 1.0);
