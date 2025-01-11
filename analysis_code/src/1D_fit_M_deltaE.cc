@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
     RooRealVar weight("weight", "weight", 0.0, 1.0);
     RooDataSet dataset("dataset", "dataset", RooArgSet(M_inv, deltaE, weight), WeightVar("weight"));
 
-    Module::Module* temp_module = new Module::FillDataSetWorkspace(w, &dataset, { &M_inv, &deltaE }, &weight, { "M_inv_tau", "deltaE" }, loader.Getvariable_names_address(), loader.VariableTypes_address());
+    Module::Module* temp_module = new Module::FillDataSet(&dataset, { &M_inv, &deltaE }, { "M_inv_tau", "deltaE" }, loader.Getvariable_names_address(), loader.VariableTypes_address());
     loader.InsertCustomizedModule(temp_module);
 
     loader.end();

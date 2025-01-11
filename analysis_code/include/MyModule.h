@@ -14,17 +14,14 @@
 
 namespace Module {
 
-    class FillDataSetWorkspace : public Module {
+    class FillDataSet : public Module {
         /*
-        * This module is used to fill RooDataSet for RooWorkspace
-        * This module does not create/write workspace
+        * This module is used to fill RooDataSet
         */
     private:
-        RooWorkspace* w;
 
         RooDataSet* dataset;
         std::vector<RooRealVar*> realvars;
-        RooRealVar* weight;
 
         std::vector<std::string> equations;
         std::vector<std::string> replaced_exprs;
@@ -33,8 +30,8 @@ namespace Module {
         std::vector<std::string> VariableTypes;
 
     public:
-        FillDataSetWorkspace(RooWorkspace* w_, RooDataSet* dataset_, std::vector<RooRealVar*> realvars_, RooRealVar* weight_, std::vector<std::string> equations_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), w(w_), dataset(dataset_), realvars(realvars_), weight(weight_), equations(equations_), variable_names(*variable_names_), VariableTypes(*VariableTypes_) {}
-        ~FillDataSetWorkspace() {}
+        FillDataSet(RooDataSet* dataset_, std::vector<RooRealVar*> realvars_, std::vector<std::string> equations_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), dataset(dataset_), realvars(realvars_), equations(equations_), variable_names(*variable_names_), VariableTypes(*VariableTypes_) {}
+        ~FillDataSet() {}
         void Start() {
             for (int i = 0; i < equations.size(); i++) {
                 std::string equation = equations.at(i);
@@ -50,20 +47,17 @@ namespace Module {
                     double result = evaluateExpression(replaced_expr, iter->variable, &VariableTypes);
                     *(realvars.at(i)) = result;
                 }
-                *weight = ObtainWeight(iter);
 
                 RooArgSet temp_;
                 for (int i = 0; i < replaced_exprs.size(); i++) temp_.add(*(realvars.at(i)));
 
-                dataset->add(temp_, weight->getVal());
+                dataset->add(temp_, ObtainWeight(iter));
 
                 ++iter;
             }
             return 1;
         }
-        void End() override {
-            w->import(*dataset, RooFit::Rename("data"));
-        }
+        void End() override {}
     };
 
 }
