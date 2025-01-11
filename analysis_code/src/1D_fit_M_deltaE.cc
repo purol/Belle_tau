@@ -20,6 +20,7 @@
 int main(int argc, char* argv[]) {
     /*
     * argv[1]: dirname
+    * argv[2]: output path
     */
 
     ObtainWeight = MyScaleFunction_halfsplit;
@@ -63,7 +64,7 @@ int main(int argc, char* argv[]) {
 
     TCanvas* c_M = new TCanvas("canvas_M_fit", "canvas_M_fit", 800, 800);
     M_inv_frame->Draw();
-    c->SaveAs("M_fit.png");
+    c->SaveAs((std::string(argv[2]) + "/M_fit.png").c_str());
     delete c_M;
 
     // deltaE fit
@@ -85,8 +86,14 @@ int main(int argc, char* argv[]) {
 
     TCanvas* c_deltaE = new TCanvas("canvas_deltaE_fit", "canvas_deltaE_fit", 800, 800);
     deltaE_frame->Draw();
-    c->SaveAs("deltaE_fit.png");
+    c->SaveAs((std::string(argv[2]) + "/deltaE_fit.png").c_str());
     delete c_deltaE;
+
+    // save result
+    FILE* fp = fopen((std::string(argv[2]) + "/1D_M_deltaE_result.txt").c_str(), "w");
+    fprintf("%lf %lf %lf\n", mean_M.getVal(), sigma_left_M.getVal(), sigma_right_M.getVal());
+    fprintf("%lf %lf %lf\n", mean_deltaE.getVal(), sigma_left_deltaE.getVal(), sigma_right_deltaE.getVal());
+    fclose(fp);
 
     return 0;
 }
