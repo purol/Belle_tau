@@ -11,6 +11,7 @@
 #include "RooDataSet.h"
 #include "RooRealVar.h"
 #include "RooArgSet.h"
+#include "TProfile.h"
 
 namespace Module {
 
@@ -52,6 +53,47 @@ namespace Module {
                 for (int i = 0; i < replaced_exprs.size(); i++) temp_.add(*(realvars.at(i)));
 
                 dataset->add(temp_, ObtainWeight(iter));
+
+                ++iter;
+            }
+            return 1;
+        }
+        void End() override {}
+    };
+
+    class FillTProfile : public Module {
+        /*
+        * This module is used to fill RooDataSet
+        */
+    private:
+
+        RooDataSet* dataset;
+        std::vector<RooRealVar*> realvars;
+
+        TProfile* tprofile;
+
+        std::string equation_x;
+        std::string replaced_expr_x;
+
+        std::string equation_y;
+        std::string replaced_expr_y;
+
+        std::vector<std::string> variable_names;
+        std::vector<std::string> VariableTypes;
+
+    public:
+        FillTProfile(TProfile* tprofile_, std::string equation_x_, std::string equation_y_, std::vector<std::string>* variable_names_, std::vector<std::string>* VariableTypes_) : Module(), tprofile(tprofile_), equation_x(equation_x_), equation_y(equation_y_), variable_names(*variable_names_), VariableTypes(*VariableTypes_) {}
+        ~FillTProfile() {}
+        void Start() {
+            replaced_expr_x = replaceVariables(equation_x, &variable_names);
+            replaced_expr_y = replaceVariables(equation_y, &variable_names);
+        }
+        int Process(std::vector<Data>* data) override {
+            for (std::vector<Data>::iterator iter = data->begin(); iter != data->end(); ) {
+                double result_x = evaluateExpression(replaced_expr_x, iter->variable, &VariableTypes);
+                double result_y = evaluateExpression(replaced_expr_y, iter->variable, &VariableTypes);
+
+                tprofile->Fill(result_x, result_y, ObtainWeight(iter));
 
                 ++iter;
             }
