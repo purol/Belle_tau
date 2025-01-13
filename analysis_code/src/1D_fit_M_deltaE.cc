@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
 
     TCanvas* c_M = new TCanvas("canvas_M_fit", "canvas_M_fit", 800, 800);
     M_inv_frame->Draw();
-    c->SaveAs((std::string(argv[2]) + "/M_fit.png").c_str());
+    c_M->SaveAs((std::string(argv[2]) + "/M_fit.png").c_str());
     delete c_M;
 
     // deltaE fit
