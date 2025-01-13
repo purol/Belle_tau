@@ -8,14 +8,15 @@
 #include "MyObtainWeight.h"
 #include "MyModule.h"
 
-#include "TCanvas.h"
-#include "RooWorkspace.h"
-#include "RooDataSet.h"
-#include "RooRealVar.h"
-#include "RooArgSet.h"
-#include "RooBifurGauss.h"
-#include "RooExtendPdf.h"
-#include "RooFitResult.h"
+#include <TCanvas.h>
+#include <RooWorkspace.h>
+#include <RooDataSet.h>
+#include <RooRealVar.h>
+#include <RooArgSet.h>
+#include <RooBifurGauss.h>
+#include <RooExtendPdf.h>
+#include <RooFitResult.h>
+#include <RooPlot.h>
 
 int main(int argc, char* argv[]) {
     /*
@@ -27,7 +28,7 @@ int main(int argc, char* argv[]) {
 
     Loader loader("tau_lfv");
 
-    loader.Load(argv[1], "root");
+    loader.Load(argv[1], "root", "SIGNAL");
 
     loader.Cut("(-0.3 < deltaE) && (deltaE < 0.15)");
     loader.PrintInformation("========== -0.3 < deltaE < 0.15 ==========");
@@ -37,7 +38,7 @@ int main(int argc, char* argv[]) {
     RooRealVar M_inv("M_inv", "M_inv", 1.73, 1.81);
     RooRealVar deltaE("deltaE", "deltaE", -0.3, 0.15);
     RooRealVar weight("weight", "weight", 0.0, 1.0);
-    RooDataSet dataset("dataset", "dataset", RooArgSet(M_inv, deltaE, weight), WeightVar("weight"));
+    RooDataSet dataset("dataset", "dataset", RooArgSet(M_inv, deltaE, weight), RooFit::WeightVar("weight"));
 
     Module::Module* temp_module = new Module::FillDataSet(&dataset, { &M_inv, &deltaE }, { "M_inv_tau", "deltaE" }, loader.Getvariable_names_address(), loader.VariableTypes_address());
     loader.InsertCustomizedModule(temp_module);
@@ -57,7 +58,7 @@ int main(int argc, char* argv[]) {
     RooFitResult* result_M = e_bifurcated_M.fitTo(*dataset_M, RooFit::Save(), RooFit::SumW2Error(true), RooFit::Range(1.770, 1.786));
 
     // plot M fit
-    RooPlot* M_inv_frame = M_inv.frame(Bins(100), Title(" "));
+    RooPlot* M_inv_frame = M_inv.frame(RooFit::Bins(100), RooFit::Title(" "));
     dataset_M->plotOn(M_inv_frame, RooFit::DataError(RooAbsData::SumW2));
     e_bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kDashed));
 
@@ -79,19 +80,19 @@ int main(int argc, char* argv[]) {
     RooFitResult* result_deltaE = e_bifurcated_deltaE.fitTo(*dataset_deltaE, RooFit::Save(), RooFit::SumW2Error(true), RooFit::Range(-0.025, 0.025));
 
     // plot deltaE fit
-    RooPlot* deltaE_frame = deltaE.frame(Bins(100), Title(" "));
+    RooPlot* deltaE_frame = deltaE.frame(RooFit::Bins(100), RooFit::Title(" "));
     dataset_deltaE->plotOn(deltaE_frame, RooFit::DataError(RooAbsData::SumW2));
     e_bifurcated_deltaE.plotOn(deltaE_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kDashed));
 
     TCanvas* c_deltaE = new TCanvas("canvas_deltaE_fit", "canvas_deltaE_fit", 800, 800);
     deltaE_frame->Draw();
-    c->SaveAs((std::string(argv[2]) + "/deltaE_fit.png").c_str());
+    c_deltaE->SaveAs((std::string(argv[2]) + "/deltaE_fit.png").c_str());
     delete c_deltaE;
 
     // save result
     FILE* fp = fopen((std::string(argv[2]) + "/1D_M_deltaE_result.txt").c_str(), "w");
-    fprintf("%lf %lf %lf\n", mean_M.getVal(), sigma_left_M.getVal(), sigma_right_M.getVal());
-    fprintf("%lf %lf %lf\n", mean_deltaE.getVal(), sigma_left_deltaE.getVal(), sigma_right_deltaE.getVal());
+    fprintf(fp, "%lf %lf %lf\n", mean_M.getVal(), sigma_left_M.getVal(), sigma_right_M.getVal());
+    fprintf(fp, "%lf %lf %lf\n", mean_deltaE.getVal(), sigma_left_deltaE.getVal(), sigma_right_deltaE.getVal());
     fclose(fp);
 
     return 0;
