@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
     RooRealVar sigma_left_deltaE("sigma_left_deltaE", "sigma_left_deltaE", 0.014, 0.008, 0.020);
     RooRealVar sigma_right_deltaE("sigma_right_deltaE", "sigma_right_deltaE", 0.014, 0.008, 0.020);
 
-    RooBifurGauss bifurcated_deltaE("bifurcated_deltaE", "bifurcated_deltaE", M_inv, mean_deltaE, sigma_left_deltaE, sigma_right_deltaE);
+    RooBifurGauss bifurcated_deltaE("bifurcated_deltaE", "bifurcated_deltaE", deltaE, mean_deltaE, sigma_left_deltaE, sigma_right_deltaE);
     RooRealVar nevt_deltaE("nevt_deltaE", "number of events", 4.0, 0.0, 10.0);
     RooExtendPdf e_bifurcated_deltaE("e_bifurcated_deltaE", "extended bifurcated_deltaE", bifurcated_deltaE, nevt_deltaE);
 
@@ -91,8 +91,8 @@ int main(int argc, char* argv[]) {
 
     // save result
     FILE* fp = fopen((std::string(argv[2]) + "/1D_M_deltaE_result.txt").c_str(), "w");
-    fprintf(fp, "%lf %lf %lf\n", mean_M.getVal(), sigma_left_M.getVal(), sigma_right_M.getVal());
-    fprintf(fp, "%lf %lf %lf\n", mean_deltaE.getVal(), sigma_left_deltaE.getVal(), sigma_right_deltaE.getVal());
+    fprintf(fp, "%lf %lf %lf %d\n", mean_M.getVal(), sigma_left_M.getVal(), sigma_right_M.getVal(), result_M->Status());
+    fprintf(fp, "%lf %lf %lf %d\n", mean_deltaE.getVal(), sigma_left_deltaE.getVal(), sigma_right_deltaE.getVal(), result_deltaE->Status());
     fclose(fp);
 
     return 0;
