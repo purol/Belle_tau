@@ -13,7 +13,7 @@
 #include "RooDataSet.h"
 #include "RooRealVar.h"
 #include "RooArgSet.h"
-#include "RooBifurGauss.h"'
+#include "RooBifurGauss.h"
 #include "RooExtendPdf.h"
 #include "RooFitResult.h"
 
