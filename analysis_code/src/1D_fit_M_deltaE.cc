@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
     bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kSolid), RooFit::Range("peak"), RooFit::NormRange("peak"));
 
     RooHist* pull_M = M_inv_frame->pullHist();
-    RooPlot* M_inv_pull_frame = M_inv_frame->frame(Title("Pull Distribution"));
+    RooPlot* M_inv_pull_frame = M_inv_frame->frame(RooFit::Title("Pull Distribution"));
     M_inv_pull_frame->addPlotable(pull_M, "P");
 
     TCanvas* c_M = new TCanvas("canvas_M_fit", "canvas_M_fit", 800, 800);
