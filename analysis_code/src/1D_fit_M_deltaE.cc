@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
     bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kSolid), RooFit::Range("peak"), RooFit::NormRange("peak"), RooFit::Name("BifurGauss"));
 
     RooHist* pull_M = M_inv_frame->pullHist("signal MC", "BifurGauss");
-    RooPlot* M_inv_pull_frame = M_inv.frame(RooFit::Title("Pull Distribution"));
+    RooPlot* M_inv_pull_frame = M_inv.frame(RooFit::Title(""));
     M_inv_pull_frame->addPlotable(pull_M, "P");
 
     TCanvas* c_M = new TCanvas("canvas_M_fit", "canvas_M_fit", 800, 800);
@@ -87,8 +87,8 @@ int main(int argc, char* argv[]) {
     c_M->cd();
     TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3);
     pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
-    M_inv_frame->GetXaxis()->SetLabelSize(0.1); M_inv_frame->GetXaxis()->SetTitleSize(0.1);
-    M_inv_frame->GetYaxis()->SetLabelSize(0.1); M_inv_frame->GetYaxis()->SetTitleSize(0.1); M_inv_frame->GetYaxis()->SetTitle("pull");
+    M_inv_pull_frame->GetXaxis()->SetLabelSize(0.05); M_inv_pull_frame->GetXaxis()->SetTitleSize(0.05);
+    M_inv_pull_frame->GetYaxis()->SetLabelSize(0.05); M_inv_pull_frame->GetYaxis()->SetTitleSize(0.05); M_inv_frame->GetYaxis()->SetTitle("pull");
     M_inv_pull_frame->Draw();
 
     c_M->SetBottomMargin(0.0);
