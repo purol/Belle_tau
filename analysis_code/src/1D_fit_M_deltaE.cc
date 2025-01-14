@@ -18,6 +18,8 @@
 #include <RooFitResult.h>
 #include <RooPlot.h>
 
+// https://gitlab.desy.de/belle2/publications/73/tau_eellell/-/blob/main/processing/SignalRegion_fit.py
+
 int main(int argc, char* argv[]) {
     /*
     * argv[1]: dirname
@@ -32,19 +34,19 @@ int main(int argc, char* argv[]) {
 
     loader.Cut("(-0.3 < deltaE) && (deltaE < 0.15)");
     loader.PrintInformation("========== -0.3 < deltaE < 0.15 ==========");
-    loader.Cut("(1.73 < M_inv_tau) && (M_inv_tau < 1.81)");
-    loader.PrintInformation("========== 1.73 < M < 1.81 ==========");
+    loader.Cut("(1.71 < M_inv_tau) && (M_inv_tau < 1.82)");
+    loader.PrintInformation("========== 1.71 < M < 1.82 ==========");
 
-    RooRealVar M_inv("M_inv", "M_inv", 1.73, 1.81);
+    RooRealVar M_inv("M_inv", "M_inv", 1.71, 1.82);
     RooRealVar deltaE("deltaE", "deltaE", -0.3, 0.15);
     RooRealVar weight("weight", "weight", 0.0, 1.0);
     RooDataSet dataset("dataset", "dataset", RooArgSet(M_inv, deltaE, weight), RooFit::WeightVar("weight"));
 
     // set range
-    M_inv.setRange("full", 1.73, 1.81);
+    M_inv.setRange("full", 1.71, 1.82);
     M_inv.setRange("peak", 1.77, 1.785);
     deltaE.setRange("full", -0.3, 0.15);
-    deltaE.setRange("peak", -0.02, 0.15);
+    deltaE.setRange("peak", -0.03, 0.02);
 
     Module::Module* temp_module = new Module::FillDataSet(&dataset, { &M_inv, &deltaE }, { "M_inv_tau", "deltaE" }, loader.Getvariable_names_address(), loader.VariableTypes_address());
     loader.InsertCustomizedModule(temp_module);
