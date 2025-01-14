@@ -66,6 +66,30 @@ int main(int argc, char* argv[]) {
     RooBifurGauss bifurcated_M("bifurcated_M", "bifurcated_M", M_inv, mean_M, sigma_left_M, sigma_right_M);
 
     RooFitResult* result_M = bifurcated_M.fitTo(*dataset_M, RooFit::Save(), RooFit::Strategy(2), RooFit::SumW2Error(true), RooFit::Range("peak"));
+    RooArgSet fitargs_M = result_M->floatParsFinal();
+    TIterator* iter_M(fitargs_M.createIterator());
+    double mean_M_fit;
+    double mean_M_fit_error;
+    double sigma_left_M_fit;
+    double sigma_left_M_fit_error;
+    double sigma_right_M_fit;
+    double sigma_right_M_fit_error;
+    for (TObject* a = iter_M->Next(); a != 0; a = iter_M->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+        std::string name = rrv->GetName();
+        if (name == std::string("mean_M")) {
+            mean_M_fit = rrv->getVal();
+            mean_M_fit_error = rrv->getError();
+        }
+        else if (name == std::string("sigma_left_M")) {
+            sigma_left_M_fit = rrv->getVal();
+            sigma_left_M_fit_error = rrv->getError();
+        }
+        else if (name == std::string("sigma_right_M")) {
+            sigma_right_M_fit = rrv->getVal();
+            sigma_right_M_fit_error = rrv->getError();
+        }
+    }
 
     // plot M fit
     RooPlot* M_inv_frame = M_inv.frame(RooFit::Bins(200), RooFit::Title(" "));
@@ -84,14 +108,15 @@ int main(int argc, char* argv[]) {
     pad1->SetBottomMargin(0.05); pad1->SetLeftMargin(0.15); pad1->SetGridx(); pad1->Draw(); pad1->cd();
     M_inv_frame->GetXaxis()->SetLabelSize(0); M_inv_frame->GetXaxis()->SetTitleSize(0);
     M_inv_frame->Draw();
-    TLegend* legend = new TLegend(0.2, 0.75, 0.45, 0.9);
-    legend->AddEntry("signal MC", "signal MC", "lpe");
-    legend->AddEntry("BifurGauss", "BifurGauss", "l");
-    legend->SetFillStyle(0); legend->SetLineWidth(0);
-    legend->Draw();
-    TLatex latex;
-    latex.SetNDC();
-    latex.DrawLatex(0.2, 0.7, "K_{S}");
+    TLegend* legend_M = new TLegend(0.2, 0.75, 0.45, 0.85);
+    legend_M->AddEntry("signal MC", "signal MC", "lpe");
+    legend_M->AddEntry("BifurGauss", "BifurGauss", "l");
+    legend_M->SetFillStyle(0); legend_M->SetLineWidth(0);
+    legend_M->Draw();
+    TLatex latex_M;
+    latex_M.SetNDC();
+    latex_M.SetTextSize(0.05);
+    latex_M.DrawLatex(0.2, 0.7, ("#mu = " + std::to_string(mean_M_fit) + " #pm " + std::to_string(mean_M_fit_error)).c_str());
 
     c_M->cd();
     TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3);
