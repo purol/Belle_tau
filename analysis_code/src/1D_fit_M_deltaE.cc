@@ -185,8 +185,8 @@ int main(int argc, char* argv[]) {
     bifurcated_deltaE.plotOn(deltaE_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kSolid), RooFit::Range("peak"), RooFit::NormRange("peak"), RooFit::Name("BifurGauss"));
 
     RooHist* pull_deltaE = deltaE_frame->pullHist("signal MC", "BifurGauss");
-    RooPlot* deltaE_frame_pull_frame = deltaE.frame(RooFit::Title(""));
-    deltaE_frame_pull_frame->addPlotable(pull_deltaE, "P");
+    RooPlot* deltaE_pull_frame = deltaE.frame(RooFit::Title(""));
+    deltaE_pull_frame->addPlotable(pull_deltaE, "P");
 
     TCanvas* c_deltaE = new TCanvas("canvas_deltaE_fit", "canvas_deltaE_fit", 800, 800);
 
@@ -210,9 +210,9 @@ int main(int argc, char* argv[]) {
     c_deltaE->cd();
     TPad* pad2_deltaE = new TPad("pad2_deltaE", "pad2_deltaE", 0.0, 0.0, 1, 0.3);
     pad2_deltaE->SetTopMargin(0.05); pad2_deltaE->SetBottomMargin(0.3); pad2_deltaE->SetLeftMargin(0.15); pad2_deltaE->SetGridx(); pad2_deltaE->Draw(); pad2_deltaE->cd();
-    deltaE_frame_pull_frame->GetXaxis()->SetLabelSize(0.1); deltaE_frame_pull_frame->GetXaxis()->SetTitleSize(0.1); deltaE_frame_pull_frame->GetYaxis()->SetTitleOffset(0.4);
-    deltaE_frame_pull_frame->GetYaxis()->SetLabelSize(0.1); deltaE_frame_pull_frame->GetYaxis()->SetTitleSize(0.1); deltaE_frame_pull_frame->GetYaxis()->SetTitle("pull"); deltaE_frame_pull_frame->SetTitle("");
-    deltaE_frame_pull_frame->Draw();
+    deltaE_pull_frame->GetXaxis()->SetLabelSize(0.1); deltaE_pull_frame->GetXaxis()->SetTitleSize(0.1); deltaE_pull_frame->GetYaxis()->SetTitleOffset(0.4);
+    deltaE_pull_frame->GetYaxis()->SetLabelSize(0.1); deltaE_pull_frame->GetYaxis()->SetTitleSize(0.1); deltaE_pull_frame->GetYaxis()->SetTitle("pull"); deltaE_pull_frame->SetTitle("");
+    deltaE_pull_frame->Draw();
 
     c_deltaE->SaveAs((std::string(argv[2]) + "/deltaE_fit.png").c_str());
     delete c_deltaE;
