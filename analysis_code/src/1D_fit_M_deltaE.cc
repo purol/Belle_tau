@@ -83,6 +83,8 @@ int main(int argc, char* argv[]) {
     pad1->SetBottomMargin(0.05); pad1->SetLeftMargin(0.15); pad1->SetGridx(); pad1->Draw(); pad1->cd();
     M_inv_frame->GetXaxis()->SetLabelSize(0); M_inv_frame->GetXaxis()->SetTitleSize(0);
     M_inv_frame->Draw();
+    TLegend* legend = pad1->BuildLegend(0.1, 0.7, 0.3, 0.9);
+    legend->SetFillStyle(0); legend->SetLineWidth(0);
 
     c_M->cd();
     TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3);
