@@ -17,6 +17,7 @@
 #include <RooExtendPdf.h>
 #include <RooFitResult.h>
 #include <RooPlot.h>
+#include <RooDataHist.h>
 
 int main(int argc, char* argv[]) {
     /*
