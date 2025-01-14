@@ -42,9 +42,9 @@ int main(int argc, char* argv[]) {
 
     // set range
     M_inv.setRange("full", 1.73, 1.81);
-    M_inv.setRange("peak", 1.768, 1.786);
+    M_inv.setRange("peak", 1.77, 1.785);
     deltaE.setRange("full", -0.3, 0.15);
-    deltaE.setRange("peak", -0.04, 0.04);
+    deltaE.setRange("peak", -0.02, 0.01);
 
     Module::Module* temp_module = new Module::FillDataSet(&dataset, { &M_inv, &deltaE }, { "M_inv_tau", "deltaE" }, loader.Getvariable_names_address(), loader.VariableTypes_address());
     loader.InsertCustomizedModule(temp_module);
@@ -66,7 +66,8 @@ int main(int argc, char* argv[]) {
     // plot M fit
     RooPlot* M_inv_frame = M_inv.frame(RooFit::Bins(200), RooFit::Title(" "));
     dataset_M->plotOn(M_inv_frame, RooFit::DataError(RooAbsData::SumW2));
-    e_bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kDashed), RooFit::Range("peak"), RooFit::NormRange("peak"));
+    e_bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kRed), RooFit::LineStyle(kDashed), RooFit::Range("full"), RooFit::NormRange("peak"));
+    e_bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kSolid), RooFit::Range("peak"), RooFit::NormRange("peak"));
 
     TCanvas* c_M = new TCanvas("canvas_M_fit", "canvas_M_fit", 800, 800);
     M_inv_frame->Draw();
@@ -88,7 +89,8 @@ int main(int argc, char* argv[]) {
     // plot deltaE fit
     RooPlot* deltaE_frame = deltaE.frame(RooFit::Bins(200), RooFit::Title(" "));
     dataset_deltaE->plotOn(deltaE_frame, RooFit::DataError(RooAbsData::SumW2));
-    e_bifurcated_deltaE.plotOn(deltaE_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kDashed), RooFit::Range("peak"), RooFit::NormRange("peak"));
+    e_bifurcated_deltaE.plotOn(deltaE_frame, RooFit::LineColor(kRed), RooFit::LineStyle(kDashed), RooFit::Range("full"), RooFit::NormRange("peak"));
+    e_bifurcated_deltaE.plotOn(deltaE_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kSolid), RooFit::Range("peak"), RooFit::NormRange("peak"));
 
     TCanvas* c_deltaE = new TCanvas("canvas_deltaE_fit", "canvas_deltaE_fit", 800, 800);
     deltaE_frame->Draw();
