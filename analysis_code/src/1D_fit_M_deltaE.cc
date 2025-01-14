@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
     RooRealVar nevt_M("nevt_M", "number of events", 4.0, 0.0, 10.0);
     RooExtendPdf e_bifurcated_M("e_bifurcated_M", "extended bifurcated_M", bifurcated_M, nevt_M);
 
-    RooFitResult* result_M = e_bifurcated_M.fitTo(*dataset_M, RooFit::Save(), RooFit::SumW2Error(true), RooFit::Range("peak"));
+    RooFitResult* result_M = e_bifurcated_M.fitTo(*dataset_M, RooFit::Save(), RooFit::Strategy(2), RooFit::SumW2Error(true), RooFit::Range("peak"));
 
     // plot M fit
     RooPlot* M_inv_frame = M_inv.frame(RooFit::Bins(200), RooFit::Title(" "));
@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
     RooRealVar nevt_deltaE("nevt_deltaE", "number of events", 4.0, 0.0, 10.0);
     RooExtendPdf e_bifurcated_deltaE("e_bifurcated_deltaE", "extended bifurcated_deltaE", bifurcated_deltaE, nevt_deltaE);
 
-    RooFitResult* result_deltaE = e_bifurcated_deltaE.fitTo(*dataset_deltaE, RooFit::Save(), RooFit::SumW2Error(true), RooFit::Range("peak"));
+    RooFitResult* result_deltaE = e_bifurcated_deltaE.fitTo(*dataset_deltaE, RooFit::Save(), RooFit::Strategy(2), RooFit::SumW2Error(true), RooFit::Range("peak"));
 
     // plot deltaE fit
     RooPlot* deltaE_frame = deltaE.frame(RooFit::Bins(200), RooFit::Title(" "));
