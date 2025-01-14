@@ -18,6 +18,7 @@
 #include <RooFitResult.h>
 #include <RooPlot.h>
 #include <RooHist.h>
+#include <TPad.h>
 
 // https://gitlab.desy.de/belle2/publications/73/tau_eellell/-/blob/main/processing/SignalRegion_fit.py
 
@@ -75,8 +76,15 @@ int main(int argc, char* argv[]) {
     M_inv_pull_frame->addPlotable(pull_M, "P");
 
     TCanvas* c_M = new TCanvas("canvas_M_fit", "canvas_M_fit", 800, 800);
+
+    TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
+    pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15); pad1->SetGridx(); pad1->Draw(); pad1->cd();
     M_inv_frame->Draw();
+
+    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3);
+    pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
     M_inv_pull_frame->Draw();
+
     c_M->SaveAs((std::string(argv[2]) + "/M_fit.png").c_str());
     delete c_M;
 
