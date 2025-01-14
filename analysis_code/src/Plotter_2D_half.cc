@@ -49,8 +49,8 @@ int main(int argc, char* argv[]) {
     loader.SetSignal(signal_list);
     loader.SetBackground(background_list);
 
-    if (argc == 7) loader.DrawTH2D(variable_name_1.c_str(), variable_name_2.c_str(), (";" + variable_name_1 + ";" + variable_name_2 + ";Number of event").c_str(), (argv[5] + std::string("/") + argv[6] + ".png").c_str());
-    else if (argc == 11) loader.DrawTH2D(variable_name_1.c_str(), variable_name_2.c_str(), (";" + variable_name_1 + ";" + variable_name_2 + ";Number of event").c_str(), 50, std::stod(argv[7]), std::stod(argv[8]), 50, std::stod(argv[9]), std::stod(argv[10]), (argv[5] + std::string("/") + argv[6] + ".png").c_str());
+    if (argc == 7) loader.DrawTH2D(variable_name_1.c_str(), variable_name_2.c_str(), (";" + variable_name_1 + ";" + variable_name_2 + ";Number of event").c_str(), (argv[5] + std::string("/") + argv[6] + ".png").c_str(), "BOX");
+    else if (argc == 11) loader.DrawTH2D(variable_name_1.c_str(), variable_name_2.c_str(), (";" + variable_name_1 + ";" + variable_name_2 + ";Number of event").c_str(), 50, std::stod(argv[7]), std::stod(argv[8]), 50, std::stod(argv[9]), std::stod(argv[10]), (argv[5] + std::string("/") + argv[6] + ".png").c_str(), "BOX");
 
     loader.end();
 
