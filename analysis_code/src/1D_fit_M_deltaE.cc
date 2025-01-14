@@ -83,7 +83,9 @@ int main(int argc, char* argv[]) {
     pad1->SetBottomMargin(0.05); pad1->SetLeftMargin(0.15); pad1->SetGridx(); pad1->Draw(); pad1->cd();
     M_inv_frame->GetXaxis()->SetLabelSize(0); M_inv_frame->GetXaxis()->SetTitleSize(0);
     M_inv_frame->Draw();
-    TLegend* legend = pad1->BuildLegend(0.1, 0.7, 0.3, 0.9);
+    TLegend* legend = pad1->BuildLegend(0.2, 0.7, 0.5, 0.9);
+    legend->AddEntry("signal MC", "signal MC", "lpe");
+    legend->AddEntry("BifurGauss", "BifurGauss", "l");
     legend->SetFillStyle(0); legend->SetLineWidth(0);
 
     c_M->cd();
