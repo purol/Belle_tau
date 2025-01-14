@@ -81,14 +81,14 @@ int main(int argc, char* argv[]) {
     c_M->cd();
     TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.3, 1.0, 1.0);
     pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15); pad1->SetGridx(); pad1->Draw(); pad1->cd();
-    M_inv_frame->GetXaxis().SetLabelSize(0); M_inv_frame->GetXaxis().SetTitleSize(0);
+    M_inv_frame->GetXaxis()->SetLabelSize(0); M_inv_frame->GetXaxis()->SetTitleSize(0);
     M_inv_frame->Draw();
 
     c_M->cd();
     TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3);
     pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
-    M_inv_frame->GetXaxis().SetLabelSize(0.1); M_inv_frame->GetXaxis().SetTitleSize(0.1);
-    M_inv_frame->GetYaxis().SetLabelSize(0.1); M_inv_frame->GetYaxis().SetTitleSize(0.1); M_inv_frame->GetYaxis().SetTitle("pull");
+    M_inv_frame->GetXaxis()->SetLabelSize(0.1); M_inv_frame->GetXaxis()->SetTitleSize(0.1);
+    M_inv_frame->GetYaxis()->SetLabelSize(0.1); M_inv_frame->GetYaxis()->SetTitleSize(0.1); M_inv_frame->GetYaxis()->SetTitle("pull");
     M_inv_pull_frame->Draw();
 
     c_M->SetBottomMargin(0.0);
