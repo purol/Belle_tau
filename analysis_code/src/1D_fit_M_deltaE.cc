@@ -17,6 +17,7 @@
 #include <RooExtendPdf.h>
 #include <RooFitResult.h>
 #include <RooPlot.h>
+#include <RooHist.h>
 
 // https://gitlab.desy.de/belle2/publications/73/tau_eellell/-/blob/main/processing/SignalRegion_fit.py
 
@@ -69,9 +70,14 @@ int main(int argc, char* argv[]) {
     bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kRed), RooFit::LineStyle(kDashed), RooFit::Range("full"), RooFit::NormRange("peak"));
     bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kSolid), RooFit::Range("peak"), RooFit::NormRange("peak"));
 
+    RooHist* pull_M = M_inv_frame->pullHist();
+    RooPlot* M_inv_pull_frame = M_inv_frame->frame(Title("Pull Distribution"));
+    M_inv_pull_frame->addPlotable(pull_M, "P");
+
     TCanvas* c_M = new TCanvas("canvas_M_fit", "canvas_M_fit", 800, 800);
-    M_inv_frame->Draw();
     c_M->SaveAs((std::string(argv[2]) + "/M_fit.png").c_str());
+    M_inv_frame->Draw();
+    M_inv_pull_frame->Draw();
     delete c_M;
 
     // deltaE fit
