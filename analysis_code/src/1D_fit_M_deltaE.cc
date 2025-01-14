@@ -2,6 +2,9 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 
 #include "Loader.h"
 #include "constants.h"
@@ -23,6 +26,12 @@
 #include <TLatex.h>
 
 // https://gitlab.desy.de/belle2/publications/73/tau_eellell/-/blob/main/processing/SignalRegion_fit.py
+
+std::string toStringWithPrecision(double value, int precision) {
+    std::ostringstream out;
+    out << std::fixed << std::setprecision(precision) << value;
+    return out.str();
+}
 
 int main(int argc, char* argv[]) {
     /*
@@ -116,9 +125,9 @@ int main(int argc, char* argv[]) {
     TLatex latex_M;
     latex_M.SetNDC();
     latex_M.SetTextSize(0.04);
-    latex_M.DrawLatex(0.2, 0.7, ("#mu = " + std::to_string(mean_M_fit) + " #pm " + std::to_string(mean_M_fit_error) + " [GeV]").c_str());
-    latex_M.DrawLatex(0.2, 0.6, ("#delta^{left}_{Gauss} = " + std::to_string(sigma_left_M_fit) + " #pm " + std::to_string(sigma_left_M_fit_error)).c_str());
-    latex_M.DrawLatex(0.2, 0.5, ("#delta^{right}_{Gauss} = " + std::to_string(sigma_right_M_fit) + " #pm " + std::to_string(sigma_right_M_fit_error)).c_str());
+    latex_M.DrawLatex(0.2, 0.7, ("#mu = " + toStringWithPrecision(mean_M_fit, 4) + " #pm " + toStringWithPrecision(mean_M_fit_error, 4) + " [GeV]").c_str());
+    latex_M.DrawLatex(0.2, 0.6, ("#delta^{left}_{Gauss} = " + toStringWithPrecision(sigma_left_M_fit * 1000.0, 2) + " #pm " + toStringWithPrecision(sigma_left_M_fit_error * 1000.0, 2) + " [MeV]").c_str());
+    latex_M.DrawLatex(0.2, 0.5, ("#delta^{right}_{Gauss} = " + toStringWithPrecision(sigma_right_M_fit * 1000.0, 2) + " #pm " + toStringWithPrecision(sigma_right_M_fit_error * 1000.0, 2) + " [MeV]").c_str());
 
     c_M->cd();
     TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3);
