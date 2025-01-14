@@ -75,9 +75,9 @@ int main(int argc, char* argv[]) {
     M_inv_pull_frame->addPlotable(pull_M, "P");
 
     TCanvas* c_M = new TCanvas("canvas_M_fit", "canvas_M_fit", 800, 800);
-    c_M->SaveAs((std::string(argv[2]) + "/M_fit.png").c_str());
     M_inv_frame->Draw();
     M_inv_pull_frame->Draw();
+    c_M->SaveAs((std::string(argv[2]) + "/M_fit.png").c_str());
     delete c_M;
 
     // deltaE fit
