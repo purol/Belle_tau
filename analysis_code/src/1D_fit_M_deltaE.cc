@@ -84,13 +84,13 @@ int main(int argc, char* argv[]) {
     pad1->SetBottomMargin(0.05); pad1->SetLeftMargin(0.15); pad1->SetGridx(); pad1->Draw(); pad1->cd();
     M_inv_frame->GetXaxis()->SetLabelSize(0); M_inv_frame->GetXaxis()->SetTitleSize(0);
     M_inv_frame->Draw();
-    TLegend* legend = new TLegend(0.2, 0.7, 0.5, 0.9);
+    TLegend* legend = new TLegend(0.2, 0.75, 0.45, 0.9);
     legend->AddEntry("signal MC", "signal MC", "lpe");
     legend->AddEntry("BifurGauss", "BifurGauss", "l");
     legend->SetFillStyle(0); legend->SetLineWidth(0);
     legend->Draw();
     TLatex latex;
-    latex.SetTextSize(0.025);
+    latex.SetTextSize(0.1);
     latex.DrawLatex(0.2, 0.7, "K_{S}");
 
     c_M->cd();
