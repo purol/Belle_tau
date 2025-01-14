@@ -20,7 +20,7 @@ std::string ReadSelect(const char* select_path) {
     double test_AUC;
 
     FILE* fp = fopen((std::string(select_path) + "/selected.txt").c_str(), "r");
-    fscanf(fp, "%u_%u_%lf_%lf_%u %lf %lf\n", &nTrees, &depth, &shrinkage, &subsample, &binning, &train_AUC, &test_AUC);
+    fscanf(fp, "%lf_%lf_%lf_%lf_%lf %lf %lf\n", &nTrees, &depth, &shrinkage, &subsample, &binning, &train_AUC, &test_AUC);
     fclose(fp);
 
     std::string classifier_path = std::string(select_path) + "/out/" + std::to_string(nTrees) + "_" + std::to_string(depth) + "_" + std::to_string(shrinkage) + "_" + std::to_string(subsample) + "_" + std::to_string(binning) + ".weightfile";
