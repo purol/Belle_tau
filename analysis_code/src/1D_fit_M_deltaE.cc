@@ -90,6 +90,7 @@ int main(int argc, char* argv[]) {
     legend->SetFillStyle(0); legend->SetLineWidth(0);
     legend->Draw();
     TLatex latex;
+    latex.SetNDC();
     latex.DrawLatex(0.2, 0.7, "K_{S}");
 
     c_M->cd();
