@@ -11,11 +11,11 @@
 #include "MyModule.h"
 
 std::string ReadSelect(const char* select_path) {
-    unsigned int nTrees;
-    unsigned int depth;
+    double nTrees;
+    double depth;
     double shrinkage;
     double subsample;
-    unsigned int binning;
+    double binning;
     double train_AUC;
     double test_AUC;
 
