@@ -66,18 +66,23 @@ int main(int argc, char* argv[]) {
 
     // plot M fit
     RooPlot* M_inv_frame = M_inv.frame(RooFit::Bins(200), RooFit::Title(" "));
-    dataset_M->plotOn(M_inv_frame, RooFit::DataError(RooAbsData::SumW2));
+    dataset_M->plotOn(M_inv_frame, RooFit::DataError(RooAbsData::SumW2), RooFit::Name("signal MC"));
     bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kRed), RooFit::LineStyle(kDashed), RooFit::Range("full"), RooFit::NormRange("peak"));
-    bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kSolid), RooFit::Range("peak"), RooFit::NormRange("peak"));
+    bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kSolid), RooFit::Range("peak"), RooFit::NormRange("peak"), RooFit::Name("BifurGauss"));
 
-    RooHist* pull_M = M_inv_frame->pullHist();
-    RooPlot* M_inv_pull_frame = M_inv_frame->frame(RooFit::Title("Pull Distribution"));
-    M_inv_pull_frame->addPlotable(pull_M, "P");
+    RooHist* pull_M = M_inv_frame->pullHist("signal MC", "BifurGauss");
 
     TCanvas* c_M = new TCanvas("canvas_M_fit", "canvas_M_fit", 800, 800);
-    c_M->SaveAs((std::string(argv[2]) + "/M_fit.png").c_str());
+
+    TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
+    pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15); pad1->SetGridx(); pad1->Draw(); pad1->cd();
     M_inv_frame->Draw();
-    M_inv_pull_frame->Draw();
+
+    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3);
+    pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+    pull_M->Draw();
+
+    c_M->SaveAs((std::string(argv[2]) + "/M_fit.png").c_str());
     delete c_M;
 
     // deltaE fit
