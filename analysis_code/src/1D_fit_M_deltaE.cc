@@ -113,7 +113,7 @@ int main(int argc, char* argv[]) {
     TCanvas* c_M = new TCanvas("canvas_M_fit", "canvas_M_fit", 800, 800);
 
     c_M->cd();
-    TPad* pad1_M = new TPad("pad1", "pad1", 0.0, 0.3, 1.0, 1.0);
+    TPad* pad1_M = new TPad("pad1_M", "pad1_M", 0.0, 0.3, 1.0, 1.0);
     pad1_M->SetBottomMargin(0.05); pad1_M->SetLeftMargin(0.15); pad1_M->SetGridx(); pad1_M->Draw(); pad1_M->cd();
     M_inv_frame->GetXaxis()->SetLabelSize(0); M_inv_frame->GetXaxis()->SetTitleSize(0);
     M_inv_frame->Draw();
@@ -130,8 +130,8 @@ int main(int argc, char* argv[]) {
     latex_M.DrawLatex(0.2, 0.5, ("#delta^{right}_{Gauss} = " + toStringWithPrecision(sigma_right_M_fit * 1000.0, 3) + " #pm " + toStringWithPrecision(sigma_right_M_fit_error * 1000.0, 3) + " [MeV]").c_str());
 
     c_M->cd();
-    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3);
-    pad2->SetTopMargin(0.05); pad2->SetBottomMargin(0.3); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+    TPad* pad2_M = new TPad("pad2_M", "pad2_M", 0.0, 0.0, 1, 0.3);
+    pad2_M->SetTopMargin(0.05); pad2_M->SetBottomMargin(0.3); pad2_M->SetLeftMargin(0.15); pad2_M->SetGridx(); pad2_M->Draw(); pad2_M->cd();
     M_inv_pull_frame->GetXaxis()->SetLabelSize(0.1); M_inv_pull_frame->GetXaxis()->SetTitleSize(0.1); M_inv_pull_frame->GetYaxis()->SetTitleOffset(0.4);
     M_inv_pull_frame->GetYaxis()->SetLabelSize(0.1); M_inv_pull_frame->GetYaxis()->SetTitleSize(0.1); M_inv_pull_frame->GetYaxis()->SetTitle("pull"); M_inv_pull_frame->SetTitle("");
     M_inv_pull_frame->Draw();
@@ -139,6 +139,10 @@ int main(int argc, char* argv[]) {
     c_M->SetBottomMargin(0.0);
     c_M->SaveAs((std::string(argv[2]) + "/M_fit.png").c_str());
     delete c_M;
+
+
+
+
 
     // deltaE fit
     RooDataSet* dataset_deltaE = (RooDataSet*)dataset.reduce(RooArgSet(deltaE));
@@ -149,6 +153,30 @@ int main(int argc, char* argv[]) {
     RooBifurGauss bifurcated_deltaE("bifurcated_deltaE", "bifurcated_deltaE", deltaE, mean_deltaE, sigma_left_deltaE, sigma_right_deltaE);
 
     RooFitResult* result_deltaE = bifurcated_deltaE.fitTo(*dataset_deltaE, RooFit::Save(), RooFit::Strategy(2), RooFit::SumW2Error(true), RooFit::Range("peak"));
+    RooArgSet fitargs_deltaE = result_deltaE->floatParsFinal();
+    TIterator* iter_deltaE(fitargs_deltaE.createIterator());
+    double mean_deltaE_fit;
+    double mean_deltaE_fit_error;
+    double sigma_left_deltaE_fit;
+    double sigma_left_deltaE_fit_error;
+    double sigma_right_deltaE_fit;
+    double sigma_right_deltaE_fit_error;
+    for (TObject* a = iter_deltaE->Next(); a != 0; a = iter_deltaE->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+        std::string name = rrv->GetName();
+        if (name == std::string("mean_deltaE")) {
+            mean_deltaE_fit = rrv->getVal();
+            mean_deltaE_fit_error = rrv->getError();
+        }
+        else if (name == std::string("sigma_left_deltaE")) {
+            sigma_left_deltaE_fit = rrv->getVal();
+            sigma_left_deltaE_fit_error = rrv->getError();
+        }
+        else if (name == std::string("sigma_right_deltaE")) {
+            sigma_right_deltaE_fit = rrv->getVal();
+            sigma_right_deltaE_fit_error = rrv->getError();
+        }
+    }
 
     // plot deltaE fit
     RooPlot* deltaE_frame = deltaE.frame(RooFit::Bins(200), RooFit::Title(" "));
@@ -163,7 +191,7 @@ int main(int argc, char* argv[]) {
     TCanvas* c_deltaE = new TCanvas("canvas_deltaE_fit", "canvas_deltaE_fit", 800, 800);
 
     c_deltaE->cd();
-    TPad* pad1_deltaE = new TPad("pad1", "pad1", 0.0, 0.3, 1.0, 1.0);
+    TPad* pad1_deltaE = new TPad("pad1_deltaE", "pad1_deltaE", 0.0, 0.3, 1.0, 1.0);
     pad1_deltaE->SetBottomMargin(0.05); pad1_deltaE->SetLeftMargin(0.15); pad1_deltaE->SetGridx(); pad1_deltaE->Draw(); pad1_deltaE->cd();
     deltaE_frame->GetXaxis()->SetLabelSize(0); deltaE_frame->GetXaxis()->SetTitleSize(0);
     deltaE_frame->Draw();
@@ -180,8 +208,8 @@ int main(int argc, char* argv[]) {
     latex_deltaE.DrawLatex(0.2, 0.5, ("#delta^{right}_{Gauss} = " + toStringWithPrecision(sigma_right_deltaE_fit * 1000.0, 3) + " #pm " + toStringWithPrecision(sigma_right_deltaE_fit_error * 1000.0, 3) + " [MeV]").c_str());
 
     c_deltaE->cd();
-    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3);
-    pad2->SetTopMargin(0.05); pad2->SetBottomMargin(0.3); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+    TPad* pad2_deltaE = new TPad("pad2_deltaE", "pad2_deltaE", 0.0, 0.0, 1, 0.3);
+    pad2_deltaE->SetTopMargin(0.05); pad2_deltaE->SetBottomMargin(0.3); pad2_deltaE->SetLeftMargin(0.15); pad2_deltaE->SetGridx(); pad2_deltaE->Draw(); pad2_deltaE->cd();
     deltaE_frame_pull_frame->GetXaxis()->SetLabelSize(0.1); deltaE_frame_pull_frame->GetXaxis()->SetTitleSize(0.1); deltaE_frame_pull_frame->GetYaxis()->SetTitleOffset(0.4);
     deltaE_frame_pull_frame->GetYaxis()->SetLabelSize(0.1); deltaE_frame_pull_frame->GetYaxis()->SetTitleSize(0.1); deltaE_frame_pull_frame->GetYaxis()->SetTitle("pull"); deltaE_frame_pull_frame->SetTitle("");
     deltaE_frame_pull_frame->Draw();
