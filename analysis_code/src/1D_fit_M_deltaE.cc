@@ -180,7 +180,7 @@ int main(int argc, char* argv[]) {
 
     // plot deltaE fit
     RooPlot* deltaE_frame = deltaE.frame(RooFit::Bins(200), RooFit::Title(" "));
-    dataset_deltaE->plotOn(deltaE_frame, RooFit::DataError(RooAbsData::SumW2)), RooFit::Name("signal MC");
+    dataset_deltaE->plotOn(deltaE_frame, RooFit::DataError(RooAbsData::SumW2), RooFit::Name("signal MC"));
     bifurcated_deltaE.plotOn(deltaE_frame, RooFit::LineColor(kRed), RooFit::LineStyle(kDashed), RooFit::Range("full"), RooFit::NormRange("peak"));
     bifurcated_deltaE.plotOn(deltaE_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kSolid), RooFit::Range("peak"), RooFit::NormRange("peak"), RooFit::Name("BifurGauss"));
 
