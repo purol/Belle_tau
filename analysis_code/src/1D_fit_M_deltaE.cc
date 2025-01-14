@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
     M_inv.setRange("full", 1.71, 1.82);
     M_inv.setRange("peak", 1.77, 1.785);
     deltaE.setRange("full", -0.3, 0.15);
-    deltaE.setRange("peak", -0.03, 0.02);
+    deltaE.setRange("peak", -0.02, 0.02);
 
     Module::Module* temp_module = new Module::FillDataSet(&dataset, { &M_inv, &deltaE }, { "M_inv_tau", "deltaE" }, loader.Getvariable_names_address(), loader.VariableTypes_address());
     loader.InsertCustomizedModule(temp_module);
@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
     }
 
     // plot M fit
-    RooPlot* M_inv_frame = M_inv.frame(RooFit::Bins(300), RooFit::Title(" "));
+    RooPlot* M_inv_frame = M_inv.frame(RooFit::Bins(200), RooFit::Title(" "));
     dataset_M->plotOn(M_inv_frame, RooFit::DataError(RooAbsData::SumW2), RooFit::Name("signal MC"));
     bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kRed), RooFit::LineStyle(kDashed), RooFit::Range("full"), RooFit::NormRange("peak"));
     bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kSolid), RooFit::Range("peak"), RooFit::NormRange("peak"), RooFit::Name("BifurGauss"));
@@ -179,7 +179,7 @@ int main(int argc, char* argv[]) {
     }
 
     // plot deltaE fit
-    RooPlot* deltaE_frame = deltaE.frame(RooFit::Bins(300), RooFit::Title(" "));
+    RooPlot* deltaE_frame = deltaE.frame(RooFit::Bins(200), RooFit::Title(" "));
     dataset_deltaE->plotOn(deltaE_frame, RooFit::DataError(RooAbsData::SumW2), RooFit::Name("signal MC"));
     bifurcated_deltaE.plotOn(deltaE_frame, RooFit::LineColor(kRed), RooFit::LineStyle(kDashed), RooFit::Range("full"), RooFit::NormRange("peak"));
     bifurcated_deltaE.plotOn(deltaE_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kSolid), RooFit::Range("peak"), RooFit::NormRange("peak"), RooFit::Name("BifurGauss"));
