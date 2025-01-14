@@ -18,6 +18,7 @@
 #include <RooFitResult.h>
 #include <RooPlot.h>
 #include <RooHist.h>
+#include <TPad.h>
 
 // https://gitlab.desy.de/belle2/publications/73/tau_eellell/-/blob/main/processing/SignalRegion_fit.py
 
