@@ -41,6 +41,7 @@ int main(int argc, char* argv[]) {
     loader.ConditionalPairDefineNewVariable(momentum_muonID, 2, "third_muon_muonID");
     loader.DefineNewVariable("(E*E-px*px-py*py-pz*pz)^0.5", "M_inv_tau");
     loader.DefineNewVariable("charge*roeCharge__bocleanMask__bc", "charge_times_ROEcharge");
+    loader.DefineNewVariable("(flightTime/flightTimeErr)", "flightTime_dividedby_flightTimeErr");
 
     loader.PrintInformation("========== initial ==========");
 
