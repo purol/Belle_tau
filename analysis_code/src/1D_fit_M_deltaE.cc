@@ -231,15 +231,20 @@ int main(int argc, char* argv[]) {
     first_order_poly->SetParameter(0, 0.242);
     first_order_poly->SetParameter(1, 1.777);
     deltaE_M_profile->Fit(first_order_poly, "R");
-    double a1 = first_order_poly->GetParameter(0);
-    double a2 = first_order_poly->GetParameter(1);
-    printf("%lf %lf\n", a1, a2);
+    double p0 = first_order_poly->GetParameter(0);
+    double p1 = first_order_poly->GetParameter(1);
 
     // plot profile
     TCanvas* c_deltaE_M = new TCanvas("canvas_deltaE_M_fit", "canvas_deltaE_M_fit", 800, 800);
     c_deltaE_M->cd(); c_deltaE_M->SetLeftMargin(0.15);
     deltaE_M_profile->SetStats(false);
     deltaE_M_profile->Draw();
+
+    TLatex latex_deltaE_M;
+    latex_deltaE_M.SetNDC();
+    latex_deltaE_M.SetTextSize(0.04);
+    latex_deltaE_M.DrawLatex(0.2, 0.6, ("M_{3#mu} = " + toStringWithPrecision(p0, 3) + " #times #Delta E + " + toStringWithPrecision(p1, 3)).c_str());
+
     c_deltaE_M->SaveAs((std::string(argv[2]) + "/deltaE_M_fit.png").c_str());
     delete c_deltaE_M;
 
