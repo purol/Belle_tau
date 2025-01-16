@@ -228,6 +228,8 @@ int main(int argc, char* argv[]) {
 
     // profile fit
     TF1* first_order_poly = new TF1("first_order_poly", "[0]*x+[1]", -0.01, 0.01);
+    first_order_poly->SetParameter(0, 0.242);
+    first_order_poly->SetParameter(1, 1.777);
     deltaE_M_profile->Fit(first_order_poly);
     double a1 = first_order_poly->GetParameter(0);
     double a2 = first_order_poly->GetParameter(1);
