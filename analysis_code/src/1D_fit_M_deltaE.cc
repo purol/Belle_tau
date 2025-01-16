@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
     Module::Module* temp_module = new Module::FillDataSet(&dataset, { &M_inv, &deltaE }, { "M_inv_tau", "deltaE" }, loader.Getvariable_names_address(), loader.VariableTypes_address());
     loader.InsertCustomizedModule(temp_module);
 
-    TProfile* deltaE_M_profile = new TProfile("hprof", "Profile of deltaE versus M", 100, -0.3, 0.15, 1.71, 1.82);
+    TProfile* deltaE_M_profile = new TProfile("hprof", ";#Delta E [GeV];M [GeV]", 100, -0.3, 0.15, 1.71, 1.82);
     Module::Module* temp_module_2 = new Module::FillTProfile(deltaE_M_profile, "deltaE", "M_inv_tau", loader.Getvariable_names_address(), loader.VariableTypes_address());
     loader.InsertCustomizedModule(temp_module_2);
 
@@ -238,7 +238,7 @@ int main(int argc, char* argv[]) {
     // plot profile
     TCanvas* c_deltaE_M = new TCanvas("canvas_deltaE_M_fit", "canvas_deltaE_M_fit", 800, 800);
     c_deltaE_M->cd();
-    deltaE_M_profile->SetStats(false); deltaE_M_profile->Draw();
+    deltaE_M_profile->SetStats(false);
     deltaE_M_profile->Draw();
     c_deltaE_M->SaveAs((std::string(argv[2]) + "/deltaE_M_fit.png").c_str());
     delete c_deltaE_M;
