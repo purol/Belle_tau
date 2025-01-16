@@ -25,7 +25,7 @@
 #include <TAxis.h>
 #include <TLatex.h>
 #include <TProfile.h>
-#include <RooPolynomial.h>
+#include <TF1.h>
 
 // https://gitlab.desy.de/belle2/publications/73/tau_eellell/-/blob/main/processing/SignalRegion_fit.py
 
