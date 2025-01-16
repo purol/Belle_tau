@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <cmath>
 
 #include "Loader.h"
 #include "constants.h"
@@ -244,6 +245,7 @@ int main(int argc, char* argv[]) {
     latex_deltaE_M.SetNDC();
     latex_deltaE_M.SetTextSize(0.04);
     latex_deltaE_M.DrawLatex(0.2, 0.7, ("M_{3#mu} = " + toStringWithPrecision(p0, 3) + " #times #DeltaE_{3#mu} + " + toStringWithPrecision(p1, 3)).c_str());
+    latex_deltaE_M.DrawLatex(0.2, 0.6, ("#theta = " + toStringWithPrecision(std::atan(-p0), 3) + "rad").c_str());
 
     c_deltaE_M->SaveAs((std::string(argv[2]) + "/deltaE_M_fit.png").c_str());
     delete c_deltaE_M;
