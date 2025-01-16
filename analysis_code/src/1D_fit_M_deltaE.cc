@@ -24,6 +24,7 @@
 #include <TPad.h>
 #include <TAxis.h>
 #include <TLatex.h>
+#include <TProfile.h>
 
 // https://gitlab.desy.de/belle2/publications/73/tau_eellell/-/blob/main/processing/SignalRegion_fit.py
 
@@ -216,6 +217,24 @@ int main(int argc, char* argv[]) {
 
     c_deltaE->SaveAs((std::string(argv[2]) + "/deltaE_fit.png").c_str());
     delete c_deltaE;
+
+
+
+
+    // Profile plot for deltaE and M
+    TProfile* deltaE_M_profile = new TProfile("hprof", "Profile of deltaE versus M", 100, -0.3, 0.15, 1.71, 1.82);
+    Module::Module* temp_module = new Module::FillTProfile(deltaE_M_profile, "deltaE", "M_inv_tau", loader.Getvariable_names_address(), loader.VariableTypes_address());
+    loader.InsertCustomizedModule(temp_module);
+
+    // plot profile
+    TCanvas* c_deltaE_M = new TCanvas("canvas_deltaE_M_fit", "canvas_deltaE_M_fit", 800, 800);
+    c_deltaE_M->cd();
+    deltaE_M_profile->Draw();
+    c_deltaE_M->SaveAs((std::string(argv[2]) + "/deltaE_M_fit.png").c_str());
+    delete c_deltaE_M;
+
+
+
 
     // save result
     FILE* fp = fopen((std::string(argv[2]) + "/1D_M_deltaE_result.txt").c_str(), "w");
