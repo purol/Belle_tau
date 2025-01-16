@@ -237,7 +237,7 @@ int main(int argc, char* argv[]) {
 
     // plot profile
     TCanvas* c_deltaE_M = new TCanvas("canvas_deltaE_M_fit", "canvas_deltaE_M_fit", 800, 800);
-    c_deltaE_M->cd();
+    c_deltaE_M->cd(); c_deltaE_M->SetLeftMargin(0.15);
     deltaE_M_profile->SetStats(false);
     deltaE_M_profile->Draw();
     c_deltaE_M->SaveAs((std::string(argv[2]) + "/deltaE_M_fit.png").c_str());
