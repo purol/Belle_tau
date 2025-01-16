@@ -254,9 +254,10 @@ int main(int argc, char* argv[]) {
 
 
     // save result
-    FILE* fp = fopen((std::string(argv[2]) + "/1D_M_deltaE_result.txt").c_str(), "w");
+    FILE* fp = fopen((std::string(argv[2]) + "/M_deltaE_result.txt").c_str(), "w");
     fprintf(fp, "%lf %lf %lf %d\n", mean_M.getVal(), sigma_left_M.getVal(), sigma_right_M.getVal(), result_M->status());
     fprintf(fp, "%lf %lf %lf %d\n", mean_deltaE.getVal(), sigma_left_deltaE.getVal(), sigma_right_deltaE.getVal(), result_deltaE->status());
+    fprintf(fp, "%lf\n", std::atan(-p0));
     fclose(fp);
 
     return 0;
