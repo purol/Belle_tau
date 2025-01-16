@@ -25,6 +25,7 @@
 #include <TAxis.h>
 #include <TLatex.h>
 #include <TProfile.h>
+#include <RooPolynomial.h>
 
 // https://gitlab.desy.de/belle2/publications/73/tau_eellell/-/blob/main/processing/SignalRegion_fit.py
 
@@ -225,10 +226,18 @@ int main(int argc, char* argv[]) {
 
 
 
+    // profile fit
+    TF1* first_order_poly = new TF1("first_order_poly", "[0]*x+[1]", -0.01, 0.01);
+    deltaE_M_profile->Fit(first_order_poly);
+    double a1 = first_order_poly->GetParameter(0);
+    double a2 = first_order_poly->GetParameter(1);
+    printf("%lf %lf\n", a1, a2);
+
     // plot profile
     TCanvas* c_deltaE_M = new TCanvas("canvas_deltaE_M_fit", "canvas_deltaE_M_fit", 800, 800);
     c_deltaE_M->cd();
     deltaE_M_profile->SetStats(false); deltaE_M_profile->Draw();
+    deltaE_M_profile->Draw();
     c_deltaE_M->SaveAs((std::string(argv[2]) + "/deltaE_M_fit.png").c_str());
     delete c_deltaE_M;
 
