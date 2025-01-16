@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
     loader.Cut("(0.89 < thrust) && (thrust < 0.97)");
     loader.PrintInformation("========== 0.89 < thrust < 0.97 ==========");
 
-    //loader.PrintSeparateRootFile((std::string(argv[3]) + "/final_output").c_str(), "", "");
+    //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_strict_M_deltaE_selection").c_str(), "", "");
 
     loader.end();
 
