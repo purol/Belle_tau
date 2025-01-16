@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
     * argv[2]: output path
     */
 
-    ObtainWeight = MyScaleFunction_halfsplit;
+    ObtainWeight = MyScaleFunction;
 
     Loader loader("tau_lfv");
 
