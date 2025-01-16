@@ -11,7 +11,7 @@
 #include "MyModule.h"
 
 void ReadResolution(const char* filename_, double* deltaE_peak_, double* deltaE_left_sigma_, double* deltaE_right_sigma_, double* M_peak_, double* M_left_sigma_, double* M_right_sigma_) {
-    FILE* fp = fopen(filename, "r");
+    FILE* fp = fopen(filename_, "r");
 
     double mean_M;
     double sigma_left_M;
