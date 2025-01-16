@@ -243,7 +243,7 @@ int main(int argc, char* argv[]) {
     TLatex latex_deltaE_M;
     latex_deltaE_M.SetNDC();
     latex_deltaE_M.SetTextSize(0.04);
-    latex_deltaE_M.DrawLatex(0.2, 0.6, ("M_{3#mu} = " + toStringWithPrecision(p0, 3) + " #times #Delta E + " + toStringWithPrecision(p1, 3)).c_str());
+    latex_deltaE_M.DrawLatex(0.2, 0.7, ("M_{3#mu} = " + toStringWithPrecision(p0, 3) + " #times #DeltaE_{3#mu} + " + toStringWithPrecision(p1, 3)).c_str());
 
     c_deltaE_M->SaveAs((std::string(argv[2]) + "/deltaE_M_fit.png").c_str());
     delete c_deltaE_M;
