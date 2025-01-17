@@ -53,8 +53,8 @@ int main(int argc, char* argv[]) {
     //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.3, 1.9, 50, -0.9, 0.4, "M_deltaE_before_cut.png");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_PrimarymuonID_selection").c_str(), "", "");
-    loader.Cut("0.1 < first_muon_muonID");
-    loader.PrintInformation("========== 0.1 < muonID for leading muon ==========");
+    loader.Cut("0.5 < first_muon_muonID");
+    loader.PrintInformation("========== 0.5 < muonID for leading muon ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_SecondarymuonID_selection").c_str(), "", "");
     loader.Cut("0.1 < second_muon_muonID");
