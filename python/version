@@ -3,3 +3,5 @@ gbasf2_Rumia
 gbasf2_Alice
 - (recon mu mu mu only) ->
 gbasf2_Yoshika
+- (bugfix for index, add cosToThrustOfEvent) ->
+gbasf2_Ran
