@@ -44,6 +44,15 @@ int main(int argc, char* argv[]) {
         "K0K0BARISR", "KKISR", "MIX", "MUMU", "MUMUMUMU", 
         "MUMUTAUTAU", "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
 
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+
+    ReadResolution((std::string(argv[2 + variable_num]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma);
+
     ObtainWeight = MyScaleFunction_halfsplit;
 
     Loader loader("tau_lfv");
@@ -61,6 +70,11 @@ int main(int argc, char* argv[]) {
     loader.SetData({});
     loader.SetSignal(signal_list);
     loader.SetBackground(background_list);
+
+    loader.Cut(("(deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
+    loader.PrintInformation("========== deltaE < 5 delta ==========");
+    loader.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
+    loader.PrintInformation("========== -5 delta < M < 5 delta ==========");
 
     loader.FastBDTTrain(intput_variables, "", "", hyperparameters, argv[3 + variable_num]);
 
