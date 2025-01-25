@@ -66,7 +66,7 @@ std::string get_ellipse_region_one(const char* deltaE_name_, const char* M_name_
 
 std::string get_ellipse_region_two(const char* deltaE_name_, const char* M_name_, double sigma_, double deltaE_peak_, double deltaE_left_sigma_, double deltaE_right_sigma_, double M_peak_, double M_left_sigma_, double M_right_sigma_, double theta_) {
 
-    std::string region_one = get_region_one(deltaE_name_, M_name_, sigma_, deltaE_peak_, deltaE_left_sigma_, deltaE_right_sigma_, M_peak_, M_left_sigma_, M_right_sigma_, theta_);
+    std::string region_one = get_ellipse_region_one(deltaE_name_, M_name_, sigma_, deltaE_peak_, deltaE_left_sigma_, deltaE_right_sigma_, M_peak_, M_left_sigma_, M_right_sigma_, theta_);
 
     // M direction criteria
     std::string condition_M = "((" + std::to_string(M_peak_ + sigma_ * M_left_sigma_ * std::sin(theta_ * M_PI / 180.0)) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "<" + std::to_string(M_peak_ - sigma_ * M_right_sigma_ * std::sin(theta_ * M_PI / 180.0)) + "))";
