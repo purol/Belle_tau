@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
     * argv[2]: variable name 
     * argv[1 + N]: variable name
     * argv[2 + N]: input path
-    * argv[3 + N]: output path
+    * argv[3 + N]: output path used in Gridsearch
     * argv[4 + N]: NTrees
     * argv[5 + N]: Depth
     * argv[6 + N]: Shrinkage
@@ -51,8 +51,10 @@ int main(int argc, char* argv[]) {
     double M_peak;
     double M_left_sigma;
     double M_right_sigma;
+    double theta;
 
-    ReadResolution((std::string(argv[2 + variable_num]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma);
+    ReadResolution((std::string(argv[2 + variable_num]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
 
     ObtainWeight = MyScaleFunction_halfsplit;
 
@@ -72,12 +74,16 @@ int main(int argc, char* argv[]) {
     loader.SetSignal(signal_list);
     loader.SetBackground(background_list);
 
-    loader.Cut(("(deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
-    loader.PrintInformation("========== deltaE < 5 delta ==========");
+    loader.Cut(("(deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
+    loader.PrintInformation("========== deltaE < -5 delta ==========");
     loader.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader.PrintInformation("========== -5 delta < M < 5 delta ==========");
 
-    loader.FastBDTTrain(intput_variables, "", "", hyperparameters, argv[3 + variable_num]);
+    std::string weightfile_path = (std::string(argv[3 + variable_num]) + "/" + std::to_string(hyperparameters["NTrees"]) + "_" + std::to_string(hyperparameters["Depth"]) + "_" + std::to_string(hyperparameters["Shrinkage"]) + "_" + std::to_string(hyperparameters["Subsample"]) + "_" + std::to_string(hyperparameters["Binning"]) + ".weightfile");
+    loader.FastBDTApplication(intput_variables, weightfile_path.c_str(), "FBDT_output");
+
+    std::string AUC_path = (std::string(argv[3 + variable_num]) + "/" + std::to_string(hyperparameters["NTrees"]) + "_" + std::to_string(hyperparameters["Depth"]) + "_" + std::to_string(hyperparameters["Shrinkage"]) + "_" + std::to_string(hyperparameters["Subsample"]) + "_" + std::to_string(hyperparameters["Binning"]) + ".auc");
+    loader.CalculateAUC("FBDT_output", 0.0, 1.0, AUC_path.c_str(), "w");
 
     loader.end();
 

@@ -2,8 +2,10 @@
 #define FUNCTIONS_H
 
 #include <stdio.h>
+#include <string>
+#include <cmath>
 
-void ReadResolution(const char* filename_, double* deltaE_peak_, double* deltaE_left_sigma_, double* deltaE_right_sigma_, double* M_peak_, double* M_left_sigma_, double* M_right_sigma_) {
+void ReadResolution(const char* filename_, double* deltaE_peak_, double* deltaE_left_sigma_, double* deltaE_right_sigma_, double* M_peak_, double* M_left_sigma_, double* M_right_sigma_, double* theta_) {
     FILE* fp = fopen(filename_, "r");
 
     double mean_M;
@@ -31,6 +33,50 @@ void ReadResolution(const char* filename_, double* deltaE_peak_, double* deltaE_
     *M_peak_ = mean_M;
     *M_left_sigma_ = sigma_left_M;
     *M_right_sigma_ = sigma_right_M;
+
+    *theta_ = theta;
+}
+
+std::string get_region_one(const char* deltaE_name_, const char* M_name_, double sigma_, double deltaE_peak_, double deltaE_left_sigma_, double deltaE_right_sigma_, double M_peak_, double M_left_sigma_, double M_right_sigma_, double theta_) {
+
+    // ellipse variable
+    std::string x_var = "((" + std::string(deltaE_name_) + "-" + std::to_string(deltaE_peak_) + ")*(" + std::to_string(std::cos(theta_ * M_PI / 180.0)) + ")-(" + std::string(M_name_) + "-" + std::to_string(M_peak_) + ")*(" std::to_string(std::sin(theta_ * M_PI / 180.0)) + "))";
+    std::string y_var = "((" + std::string(deltaE_name_) + "-" + std::to_string(deltaE_peak_) + ")*(" + std::to_string(std::sin(theta_ * M_PI / 180.0)) + ")+(" + std::string(M_name_) + "-" + std::to_string(M_peak_) + ")*(" std::to_string(std::cos(theta_ * M_PI / 180.0)) + "))";
+
+    // case 1
+    std::string condition_one = "((" + std::string(M_name_) + "<=" + std::to_string(M_peak_) + ") && (" + std::string(deltaE_name_) + "<=" + std::to_string(deltaE_peak_) + "))";
+    std::string ellipse_one = "(((" + x_var + "^2)/((" + std::to_string(sigma_) + "*" + std::to_string(M_left_sigma_) + ")^2) + (" + y_var + "^2)/((" + std::to_string(sigma_) + "*" + std::to_string(deltaE_left_sigma_) + ")^2))<=1)";
+
+    // case 2
+    std::string condition_two = "((" + std::string(M_name_) + ">" + std::to_string(M_peak_) + ") && (" + std::string(deltaE_name_) + ">" + std::to_string(deltaE_peak_) + "))";
+    std::string ellipse_two = "(((" + x_var + "^2)/((" + std::to_string(sigma_) + "*" + std::to_string(M_right_sigma_) + ")^2) + (" + y_var + "^2)/((" + std::to_string(sigma_) + "*" + std::to_string(deltaE_right_sigma_) + ")^2))<=1)";
+
+    // case 3
+    std::string condition_three = "((" + std::string(M_name_) + "<=" + std::to_string(M_peak_) + ") && (" + std::string(deltaE_name_) + ">" + std::to_string(deltaE_peak_) + "))";
+    std::string ellipse_three = "(((" + x_var + "^2)/((" + std::to_string(sigma_) + "*" + std::to_string(M_right_sigma_) + ")^2) + (" + y_var + "^2)/((" + std::to_string(sigma_) + "*" + std::to_string(deltaE_left_sigma_) + ")^2))<=1)";
+
+    // case 4
+    std::string condition_four = "((" + std::string(M_name_) + ">" + std::to_string(M_peak_) + ") && (" + std::string(deltaE_name_) + "<=" + std::to_string(deltaE_peak_) + "))";
+    std::string ellipse_four = "(((" + x_var + "^2)/((" + std::to_string(sigma_) + "*" + std::to_string(M_left_sigma_) + ")^2) + (" + y_var + "^2)/((" + std::to_string(sigma_) + "*" + std::to_string(deltaE_right_sigma_) + ")^2))<=1)";
+
+    std::string total = "(" + condition_one + "&&" + ellipse_one + ")||(" + condition_two + "&&" + ellipse_two + ")||(" + condition_three + "&&" + ellipse_three + ")||(" + condition_four + "&&" + ellipse_four + ")";
+    
+    return total;
+}
+
+std::string get_region_two(const char* deltaE_name_, const char* M_name_, double sigma_, double deltaE_peak_, double deltaE_left_sigma_, double deltaE_right_sigma_, double M_peak_, double M_left_sigma_, double M_right_sigma_, double theta_) {
+
+    std::string region_one = get_region_one(deltaE_name_, M_name_, sigma_, deltaE_peak_, deltaE_left_sigma_, deltaE_right_sigma_, M_peak_, M_left_sigma_, M_right_sigma_, theta_);
+
+    // M direction criteria
+    std::string condition_M = "((" + std::to_string(M_peak_ + sigma_ * M_left_sigma_ * std::sin(theta_ * M_PI / 180.0)) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "<" + std::to_string(M_peak_ - sigma_ * M_right_sigma_ * std::sin(theta_ * M_PI / 180.0)) + "))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "(" + std::string(deltaE_name_) + "<((" + std::to_string(-std::tan(theta_ * M_PI / 180.0)) + ")*(" + std::string(M_name_) + "-" + std::to_string(M_peak_) + ")+" + std::string(deltaE_peak_) + "))";
+
+    std::string total = "(!" + region_one + ") &&" + condition_M + "&&" + condition_deltaE;
+
+    return total;
 }
 
 #endif 

@@ -25,8 +25,9 @@ int main(int argc, char* argv[]) {
     double M_peak;
     double M_left_sigma;
     double M_right_sigma;
+    double theta;
 
-    ReadResolution((std::string(argv[4]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma);
+    ReadResolution((std::string(argv[4]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
     ObtainWeight = MyScaleFunction;
 

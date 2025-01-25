@@ -35,7 +35,8 @@ int main(int argc, char* argv[]) {
     * argv[2 + N]: input path
     * argv[3 + N]: input file name
     * argv[4 + N]: output path
-    * argv[5 + N]: select.txt path
+    * argv[5 + N]: select.txt path 1
+    * argv[6 + N]: select.txt path 2
     */
 
     int variable_num = std::atoi(argv[1]);
@@ -45,7 +46,8 @@ int main(int argc, char* argv[]) {
         intput_variables.push_back(variable_);
     }
 
-    std::string classifier_path = ReadSelect(argv[5 + variable_num]);
+    std::string classifier_one_path = ReadSelect(argv[5 + variable_num]);
+    std::string classifier_two_path = ReadSelect(argv[6 + variable_num]);
 
     ObtainWeight = MyScaleFunction_halfsplit;
 
@@ -53,7 +55,8 @@ int main(int argc, char* argv[]) {
 
     loader.Load(argv[2 + variable_num], argv[3 + variable_num], "label");
 
-    loader.FastBDTApplication(intput_variables, classifier_path.c_str(), "BDT_output");
+    loader.FastBDTApplication(intput_variables, classifier_one_path.c_str(), "BDT_output_1");
+    loader.FastBDTApplication(intput_variables, classifier_two_path.c_str(), "BDT_output_2");
 
     loader.PrintSeparateRootFile(argv[4 + variable_num], "", "");
 

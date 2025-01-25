@@ -9,6 +9,7 @@
 #include "constants.h"
 #include "MyObtainWeight.h"
 #include "MyModule.h"
+#include "functions.h"
 
 int main(int argc, char* argv[]) {
     /*
@@ -44,12 +45,23 @@ int main(int argc, char* argv[]) {
         "K0K0BARISR", "KKISR", "MIX", "MUMU", "MUMUMUMU", 
         "MUMUTAUTAU", "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
 
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution((std::string(argv[2 + variable_num]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+
     ObtainWeight = MyScaleFunction_halfsplit;
 
     Loader loader("tau_lfv");
 
-    for (int i = 0; i < signal_list.size(); i++) loader.Load((argv[2 + variable_num] + std::string("/") + signal_list.at(i) + std::string("/final_output_train/")).c_str(), "root", signal_list.at(i).c_str());
-    for (int i = 0; i < background_list.size(); i++) loader.Load((argv[2 + variable_num] + std::string("/") + background_list.at(i) + std::string("/final_output_train/")).c_str(), "root", background_list.at(i).c_str());
+    for (int i = 0; i < signal_list.size(); i++) loader.Load((argv[2 + variable_num] + std::string("/") + signal_list.at(i) + std::string("/final_output_test/")).c_str(), "root", signal_list.at(i).c_str());
+    for (int i = 0; i < background_list.size(); i++) loader.Load((argv[2 + variable_num] + std::string("/") + background_list.at(i) + std::string("/final_output_test/")).c_str(), "root", background_list.at(i).c_str());
 
     // Create a new vector to hold the combined elements
     std::vector<std::string> all_label;
@@ -62,11 +74,16 @@ int main(int argc, char* argv[]) {
     loader.SetSignal(signal_list);
     loader.SetBackground(background_list);
 
+    loader.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
+    loader.PrintInformation("========== -5 delta < deltaE < 5 delta ==========");
+    loader.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
+    loader.PrintInformation("========== -5 delta < M < 5 delta ==========");
+
     std::string weightfile_path = (std::string(argv[3 + variable_num]) + "/" + std::to_string(hyperparameters["NTrees"]) + "_" + std::to_string(hyperparameters["Depth"]) + "_" + std::to_string(hyperparameters["Shrinkage"]) + "_" + std::to_string(hyperparameters["Subsample"]) + "_" + std::to_string(hyperparameters["Binning"]) + ".weightfile");
     loader.FastBDTApplication(intput_variables, weightfile_path.c_str(), "FBDT_output");
 
     std::string AUC_path = (std::string(argv[3 + variable_num]) + "/" + std::to_string(hyperparameters["NTrees"]) + "_" + std::to_string(hyperparameters["Depth"]) + "_" + std::to_string(hyperparameters["Shrinkage"]) + "_" + std::to_string(hyperparameters["Subsample"]) + "_" + std::to_string(hyperparameters["Binning"]) + ".auc");
-    loader.CalculateAUC("FBDT_output", 0.0, 1.0, AUC_path.c_str(), "w");
+    loader.CalculateAUC("FBDT_output", 0.0, 1.0, AUC_path.c_str(), "a");
 
     loader.end();
 
