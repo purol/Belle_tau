@@ -199,7 +199,7 @@ namespace Module {
                 double x_result = evaluateExpression(x_replaced_expr, iter->variable, &VariableTypes);
                 double y_result = evaluateExpression(y_replaced_expr, iter->variable, &VariableTypes);
 
-                th1d->Fill(x_result, y_result, ObtainWeight(iter));
+                th2d->Fill(x_result, y_result, ObtainWeight(iter));
 
                 ++iter;
             }
@@ -238,7 +238,7 @@ namespace Module {
                 double x_result = evaluateExpression(x_replaced_expr, iter->variable, &VariableTypes);
                 double y_result = evaluateExpression(y_replaced_expr, iter->variable, &VariableTypes);
 
-                th1d->Fill(x_custom_function(x_result, y_result), y_custom_function(x_result, y_result), ObtainWeight(iter));
+                th2d->Fill(x_custom_function(x_result, y_result), y_custom_function(x_result, y_result), ObtainWeight(iter));
 
                 ++iter;
             }
