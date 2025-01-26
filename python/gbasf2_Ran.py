@@ -199,7 +199,7 @@ def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, path):
                         ["daughter(0,electronID)", "daughter(1,electronID)", "daughter(2,electronID)"] + \
                         ["daughter(0,pionID)", "daughter(1,pionID)", "daughter(2,pionID)"] + \
                         ["daughter(0,pionIDNN)", "daughter(1,pionIDNN)", "daughter(2,pionIDNN)"] + \
-                        ["daughter(0,minET2ETIsoScoreAsWeightedAvg(Const::clusterSet, 0, ECL, KLM))", "daughter(1,minET2ETIsoScoreAsWeightedAvg(Const::clusterSet, 0, ECL, KLM))", "daughter(2,minET2ETIsoScoreAsWeightedAvg(Const::clusterSet, 0, ECL, KLM))"] + \
+                        ["daughter(0,minET2ETIsoScoreAsWeightedAvg(mu+:taulfv, 0, ECL, KLM))", "daughter(1,minET2ETIsoScoreAsWeightedAvg(mu+:taulfv, 0, ECL, KLM))", "daughter(2,minET2ETIsoScoreAsWeightedAvg(mu+:taulfv, 0, ECL, KLM))"] + \
                         ["daughter(0, E)", "daughter(0, px)", "daughter(0, py)", "daughter(0, pz)", "daughter(0, pt)", "daughter(0, theta)", "daughter(0, phi)"] + \
                         ["daughter(1, E)", "daughter(1, px)", "daughter(1, py)", "daughter(1, pz)", "daughter(1, pt)", "daughter(1, theta)", "daughter(1, phi)"] + \
                         ["daughter(2, E)", "daughter(2, px)", "daughter(2, py)", "daughter(2, pz)", "daughter(2, pt)", "daughter(2, theta)", "daughter(2, phi)"] + \
@@ -214,7 +214,7 @@ def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, path):
                         ["daughter(0, daughter(0, electronID))", "daughter(0, daughter(1, electronID))", "daughter(1,electronID)"] + \
                         ["daughter(0, daughter(0, pionID))", "daughter(0, daughter(1, pionID))", "daughter(1,pionID)"] + \
                         ["daughter(0, daughter(0, pionIDNN))", "daughter(0, daughter(1, pionIDNN))", "daughter(1,pionIDNN)"] + \
-                        ["daughter(0, daughter(0,minET2ETIsoScoreAsWeightedAvg(Const::clusterSet, 0, ECL, KLM)))", "daughter(0, daughter(1,minET2ETIsoScoreAsWeightedAvg(Const::clusterSet, 0, ECL, KLM)))", "daughter(1,minET2ETIsoScoreAsWeightedAvg(Const::clusterSet, 0, ECL, KLM))"] + \
+                        ["daughter(0, daughter(0,minET2ETIsoScoreAsWeightedAvg(mu+:taulfv, 0, ECL, KLM)))", "daughter(0, daughter(1,minET2ETIsoScoreAsWeightedAvg(mu+:taulfv, 0, ECL, KLM)))", "daughter(1,minET2ETIsoScoreAsWeightedAvg(mu+:taulfv, 0, ECL, KLM))"] + \
                         ["daughter(0, daughter(0, E))", "daughter(0, daughter(0, px))", "daughter(0, daughter(0, py))", "daughter(0, daughter(0, pz))", "daughter(0, daughter(0, pt))", "daughter(0, daughter(0, theta))", "daughter(0, daughter(0, phi))"] + \
                         ["daughter(0, daughter(1, E))", "daughter(0, daughter(1, px))", "daughter(0, daughter(1, py))", "daughter(0, daughter(1, pz))", "daughter(0, daughter(1, pt))", "daughter(0, daughter(1, theta))", "daughter(0, daughter(1, phi))"] + \
                         ["daughter(1, E)", "daughter(1, px)", "daughter(1, py)", "daughter(1, pz)", "daughter(1, pt)", "daughter(1, theta)", "daughter(1, phi)"] + \
@@ -293,7 +293,7 @@ ma.fillParticleList(decayString="pi+:taulfv", cut=trackCuts, path=my_path)
 photon_names = FillSeveralPhotons(my_path)
 
 # calculate isolation
-my_path.add_module("TrackIsoCalculator", decayString="mu+:taulfv", particleListReference="Const::clusterSet", detectorNames=["ECL", "KLM"], useHighestProbMassForExt=False)
+my_path.add_module("TrackIsoCalculator", decayString="mu+:taulfv", particleListReference="mu+:taulfv", detectorNames=["ECL", "KLM"], useHighestProbMassForExt=False)
 
 # --- build Event Kinematics ---
 ma.buildEventKinematics(inputListNames = ["pi+:evtshape_kinematics", "gamma:evtshape_kinematics"], path=my_path)
