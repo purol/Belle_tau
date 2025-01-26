@@ -91,7 +91,7 @@ def AssignIndex(sample_name, event_name):
         print("enter the proper event type")
         exit(1)
 
-    return sample_type, type_index
+    return sample_index, type_index
 
 def GetROEVariables(maskname):
     var_names = ["roeE", "roeM", "roeP", "roeMbc", "roeDeltae"] + \
