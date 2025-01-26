@@ -7,10 +7,10 @@
 #include "TH1D.h"
 #include "TH2D.h"
 
-#include "Measurement.h"
-#include "Channel.h"
-#include "RooWorkspace.h"
-#include "Sample.h"
+#include "RooStats/HistFactory/Measurement.h"
+#include "RooStats/HistFactory/Channel.h"
+#include "RooStats/HistFactory/RooWorkspace.h"
+#include "RooStats/HistFactory/Sample.h"
 
 #include "Loader.h"
 #include "constants.h"
