@@ -6,10 +6,10 @@
 #include "TFile.h"
 #include "TH1D.h"
 #include "TH2D.h"
+#include "RooWorkspace.h"
 
 #include "RooStats/HistFactory/Measurement.h"
 #include "RooStats/HistFactory/Channel.h"
-#include "RooStats/HistFactory/RooWorkspace.h"
 #include "RooStats/HistFactory/Sample.h"
 
 #include "Loader.h"
