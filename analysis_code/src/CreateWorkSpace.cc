@@ -11,7 +11,7 @@
 #include "RooStats/HistFactory/Measurement.h"
 #include "RooStats/HistFactory/Channel.h"
 #include "RooStats/HistFactory/Sample.h"
-#include "RooStats/HistFactory/HistoToWorkspaceFactoryFast.h"
+#include "RooStats/HistFactory/MakeModelAndMeasurementsFast.h"
 
 #include "Loader.h"
 #include "constants.h"
@@ -212,7 +212,6 @@ int main(int argc, char* argv[]) {
     w = RooStats::HistFactory::MakeModelAndMeasurementFast(meas);
 
     w->Print();
-    RooStats::HistFactory::CheckInterpolation(w);
     w->writeToFile((std::string(argv[3]) + "/workspace.root").c_str());
 
     meas.PrintXML("my_measurement");
