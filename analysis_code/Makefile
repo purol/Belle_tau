@@ -10,7 +10,7 @@ LIBDIR = ./lib
 
 CFLAGS = `root-config --cflags` -I$(ROOTSYS)/include
 LDFLAGS = `root-config --ldflags --glibs`
-LIBS = -lRooFit -lRooStats -lRooFitCore -lMinuit -lFastBDT_static
+LIBS = -lRooFit -lRooStats -lHistFactory -lRooFitCore -lMinuit -lFastBDT_static
 INCLUDES = -I$(INCDIR) -I$(ROOTSYS)/include -I../Belle2_analysis/include -I../Belle2_analysis/include_FBDT
 
 MAINS = $(wildcard $(SRCDIR)/*.cc)
