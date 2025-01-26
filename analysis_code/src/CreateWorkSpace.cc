@@ -4,8 +4,8 @@
 #include <cmath>
 
 #include "TFile.h"
-#include "TH1D"
-#include "TH2D"
+#include "TH1D.h"
+#include "TH2D.h"
 
 #include "Measurement.h"
 #include "Channel.h"
