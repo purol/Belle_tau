@@ -62,6 +62,10 @@ int main(int argc, char* argv[]) {
     loader.Cut("0.5 < second_muon_muonID");
     loader.PrintInformation("========== 0.5 < muonID for secondary muon ==========");
 
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_ThirdmuonID_selection").c_str(), "", "");
+    loader.Cut("0.1 < third_muon_muonID");
+    loader.PrintInformation("========== 0.5 < muonID for third muon ==========");
+
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_SecondarymuonP_selection").c_str(), "", "");
     loader.Cut("0.3 < second_muon_p");
     loader.PrintInformation("========== 0.3 < muon momentum for secondary muon ==========");
