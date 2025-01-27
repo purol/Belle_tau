@@ -16,7 +16,6 @@
 #include <RooRealVar.h>
 #include <TStopwatch.h>
 #include <TMath.h>
-#include <MinimizerOptions.h>
 
 std::random_device rd;
 std::default_random_engine generator(rd());
@@ -128,11 +127,11 @@ int main(int argc, char* argv[]) {
 
 	RooRandom::randomGenerator()->SetSeed(rd());
 
-	ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit2", "Minimize"); // default: Minuit Migrad
-	ROOT::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
+	::Math::MinimizerOptions::SetDefaultMinimizer("Minuit2", "Minimize"); // default: Minuit Migrad
+	::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
 	RooStats::UseNLLOffset(true); // default off
 	double eps = 0.001;
-	ROOT::Math::MinimizerOptions::SetDefaultTolerance(eps); // default 0.01. but it is better to use 0.001
+	::Math::MinimizerOptions::SetDefaultTolerance(eps); // default 0.01. but it is better to use 0.001
 
 	std::string fname = std::string(argv[1]) + "/workspace.root";
 
