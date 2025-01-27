@@ -64,10 +64,10 @@ void ReadFOM(const char* filename, double* cut_value_) {
     logFile.close();
 
     if (cutValue != 0.0) {
-        std::cout << "Cut value extracted: " << cutValue << std::endl;
+        std::cout << "[ReadFOM] Cut value extracted: " << cutValue << std::endl;
     }
     else {
-        std::cerr << "Error: Cut value not found in the log file!" << std::endl;
+        std::cerr << "[ReadFOM] Error: Cut value not found in the log file!" << std::endl;
     }
 
     *cut_value_ = cutValue;
