@@ -13,6 +13,8 @@
 #include <TMath.h>
 #include <TCanvas.h>
 
+#include "functions.h"
+
 void GetExpectedCL(RooStats::HypoTestInverterResult* fResults, const char* mu, const char* path) {
 	// get CLs CLb CLs+b
 	const int nEntries = fResults->ArraySize();
