@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include <string>
 #include <cmath>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 void ReadResolution(const char* filename_, double* deltaE_peak_, double* deltaE_left_sigma_, double* deltaE_right_sigma_, double* M_peak_, double* M_left_sigma_, double* M_right_sigma_, double* theta_) {
     FILE* fp = fopen(filename_, "r");
@@ -35,6 +38,40 @@ void ReadResolution(const char* filename_, double* deltaE_peak_, double* deltaE_
     *M_right_sigma_ = sigma_right_M;
 
     *theta_ = theta;
+}
+
+void ReadFOM(const char* filename, double* cut_value_) {
+    std::ifstream logFile(filename);
+    if (!logFile.is_open()) {
+        std::cerr << "Error: Could not open FOM.log file!" << std::endl;
+        return 1;
+    }
+
+    std::string line;
+    double cutValue = 0.0;
+
+    while (std::getline(logFile, line)) {
+        // Check if the line contains "Cut value:"
+        if (line.find("Cut value:") != std::string::npos) {
+            std::istringstream iss(line);
+            std::string temp;
+            iss >> temp >> temp; // Skip "Cut" and "value:"
+            iss >> cutValue;     // Read the actual cut value
+            break;               // Stop searching after finding the cut value
+        }
+    }
+
+    logFile.close();
+
+    if (cutValue != 0.0) {
+        std::cout << "Cut value extracted: " << cutValue << std::endl;
+    }
+    else {
+        std::cerr << "Error: Cut value not found in the log file!" << std::endl;
+    }
+
+    *cut_value_ = cutValue;
+
 }
 
 std::string get_ellipse_region_one(const char* deltaE_name_, const char* M_name_, double sigma_, double deltaE_peak_, double deltaE_left_sigma_, double deltaE_right_sigma_, double M_peak_, double M_left_sigma_, double M_right_sigma_, double theta_) {
