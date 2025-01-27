@@ -2,6 +2,7 @@
 #include <random>
 #include <string>
 #include <vector>
+#include <iomanip>
 
 #include <RooStats/HypoTestInverterResult.h>
 #include <RooStats/SamplingDistribution.h>
@@ -110,8 +111,8 @@ void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, const char* mu, 
 void PrintTestStat(RooStats::HypoTestInverterResult* result, std::string mu_string, const char* path) {
 	TCanvas* c = new TCanvas("c", "c", 696, 472);
 
-	HypoTestInverterPlot* plot = new HypoTestInverterPlot("plot", "plot", result);
-	SamplingDistPlot* pl = plot->MakeTestStatPlot(0);
+	RooStats::HypoTestInverterPlot* plot = new RooStats::HypoTestInverterPlot("plot", "plot", result);
+	RooStats::SamplingDistPlot* pl = plot->MakeTestStatPlot(0);
 	pl->SetLogYaxis(true);
 	pl->Draw();
 
@@ -125,6 +126,7 @@ void PrintTestStat(RooStats::HypoTestInverterResult* result, std::string mu_stri
 int main(int argc, char* argv[]) {
 	/*
 	* argv[1]: Hypotestinverter root path
+	* argv[2]: output path
 	*/
 
 	const double mu_max = 5.0;
@@ -154,11 +156,11 @@ int main(int argc, char* argv[]) {
 
 		// print result
 		if (result != nullptr) {
-			GetExpectedCL(result, mu_string.c_str());
-			GetObservedCLs(result, mu_string.c_str(), 0);
-			GetObservedCLs(result, mu_string.c_str(), 1);
-			GetObservedCLs(result, mu_string.c_str(), 2);
-			PrintTestStat(result, mu_string);
+			GetExpectedCL(result, mu_string.c_str(), argv[2]);
+			GetObservedCLs(result, mu_string.c_str(), argv[2], 0);
+			GetObservedCLs(result, mu_string.c_str(), argv[2], 1);
+			GetObservedCLs(result, mu_string.c_str(), argv[2], 2);
+			PrintTestStat(result, mu_string, argv[2]);
 		}
 
 		mu = mu + 0.1;
