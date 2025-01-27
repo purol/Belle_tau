@@ -34,8 +34,8 @@ int main(int argc, char* argv[]) {
     double BDT_cut_1 = -1;
     double BDT_cut_2 = -1;
 
-    ReadFOM(argv[5], BDT_cut_1);
-    ReadFOM(argv[6], BDT_cut_2);
+    ReadFOM(argv[5], &BDT_cut_1);
+    ReadFOM(argv[6], &BDT_cut_2);
 
     ObtainWeight = MyScaleFunction_halfsplit;
 
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
     std::string cut_total = cut_BDT_1 + "||" + cut_BDT_2;
 
     loader.Cut(cut_total.c_str());
-    loader.PrintInformation("========== BDT1 > " + std::to_string(BDT_cut_1) + ", BDT2 > " + std::to_string(BDT_cut_2) + " ==========");
+    loader.PrintInformation(("========== BDT1 > " + std::to_string(BDT_cut_1) + ", BDT2 > " + std::to_string(BDT_cut_2) + " ==========").c_str());
 
     //loader.PrintSeparateRootFile(argv[3], "", "");
 

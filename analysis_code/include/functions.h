@@ -44,7 +44,7 @@ void ReadFOM(const char* filename, double* cut_value_) {
     std::ifstream logFile(filename);
     if (!logFile.is_open()) {
         std::cerr << "Error: Could not open FOM.log file!" << std::endl;
-        return 1;
+        return;
     }
 
     std::string line;
