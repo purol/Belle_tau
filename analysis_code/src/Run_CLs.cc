@@ -3,6 +3,16 @@
 #include <string>
 #include <vector>
 
+#include <HypoTestInverter.h>
+#include <HypoTestInverterResult.h>
+#include <RooRandom.h>
+#include <TFile.h>
+#include <RooWorkspace.h>
+#include <RooDataSet.h>
+#include <RooRealVar.h>
+#include <ToyMCSampler.h>
+#include <TStopwatch.h>
+
 std::random_device rd;
 std::default_random_engine generator(rd());
 
