@@ -17,8 +17,8 @@ int main(int argc, char* argv[]) {
     * argv[2]: including string
     * argv[3]: output path
     * argv[4]: resolution file path
-    * argv[5]: FOM_1 file path
-    * argv[6]: FOM_2 file path
+    * argv[5]: FOM_1 filename
+    * argv[6]: FOM_2 filename
     */
 
     double deltaE_peak;
