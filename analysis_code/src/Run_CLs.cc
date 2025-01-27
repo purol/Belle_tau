@@ -3,8 +3,10 @@
 #include <string>
 #include <vector>
 
-#include <HypoTestInverter.h>
-#include <HypoTestInverterResult.h>
+#include <RooStats/HypoTestInverter.h>
+#include <RooStats/HypoTestInverterResult.h>
+#include <RooStats/FrequentistCalculator.h>
+
 #include <RooRandom.h>
 #include <TFile.h>
 #include <RooWorkspace.h>
