@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
 
     std::string cut_BDT_1 = "((deltaE >= " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ") && ( BDT_output_1 > " + std::to_string(BDT_cut_1) + "))";
     std::string cut_BDT_2 = "((deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ") && ( BDT_output_2 > " + std::to_string(BDT_cut_2) + "))";
-    std::string cut_total = cut_BDT_1 + "&&" + cut_BDT_2;
+    std::string cut_total = cut_BDT_1 + "||" + cut_BDT_2;
 
     loader.Cut(cut_total.c_str());
     loader.PrintInformation("========== BDT1 > " + std::to_string(BDT_cut_1) + ", BDT2 > " + std::to_string(BDT_cut_2) + " ==========");
