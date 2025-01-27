@@ -151,7 +151,7 @@ std::string get_square_region_two(const char* deltaE_name_, const char* M_name_,
 
 }
 
-void load_files(const char* dirname, std::vector<std::string>* names) {
+void My_load_files(const char* dirname, std::vector<std::string>* names) {
     TSystemDirectory dir(dirname, dirname);
     TList* files = dir.GetListOfFiles();
     if (files) {
@@ -167,7 +167,7 @@ void load_files(const char* dirname, std::vector<std::string>* names) {
     }
 }
 
-void load_files(const char* dirname, std::vector<std::string>* names, const char* included_string) {
+void My_load_files(const char* dirname, std::vector<std::string>* names, const char* included_string) {
     TSystemDirectory dir(dirname, dirname);
     TList* files = dir.GetListOfFiles();
     if (files) {

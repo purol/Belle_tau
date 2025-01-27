@@ -140,7 +140,7 @@ int main(int argc, char* argv[]) {
 		std::string mu_string = stream.str();
 
 		std::vector<std::string> names;
-		load_files(argv[1], &names, ("Hypotestinverter_freq_" + mu_string + "_").c_str());
+		My_load_files(argv[1], &names, ("Hypotestinverter_freq_" + mu_string + "_").c_str());
 
 		RooStats::HypoTestInverterResult* result = nullptr;
 
