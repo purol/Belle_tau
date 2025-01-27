@@ -7,6 +7,7 @@
 #include <RooStats/HypoTestInverterResult.h>
 #include <RooStats/FrequentistCalculator.h>
 #include <RooStats/ToyMCSampler.h>
+#include <RooStats/ProfileLikelihoodTestStat.h>
 
 #include <RooRandom.h>
 #include <TFile.h>
@@ -14,6 +15,8 @@
 #include <RooDataSet.h>
 #include <RooRealVar.h>
 #include <TStopwatch.h>
+#include <TMath.h>
+#include <MinimizerOptions.h>
 
 std::random_device rd;
 std::default_random_engine generator(rd());
@@ -35,7 +38,7 @@ void GetExpectedCL(RooStats::HypoTestInverterResult* fResults, const char* mu) {
 	int np = 0;
 	for (int j = 0; j < nEntries; ++j) {
 		int i = j; // i is the order index
-		SamplingDistribution* s = fResults->GetExpectedPValueDist(i);
+		RooStats::SamplingDistribution* s = fResults->GetExpectedPValueDist(i);
 		if (!s)  continue;
 		const std::vector<double>& values = s->GetSamplingDistribution();
 
