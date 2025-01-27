@@ -8,6 +8,13 @@
 #include <fstream>
 #include <sstream>
 
+#include "TSystemDirectory.h"
+#include "TList.h"
+#include "TSystemFile.h"
+#include "TString.h"
+#include "TCollection.h"
+
+
 void ReadResolution(const char* filename_, double* deltaE_peak_, double* deltaE_left_sigma_, double* deltaE_right_sigma_, double* M_peak_, double* M_left_sigma_, double* M_right_sigma_, double* theta_) {
     FILE* fp = fopen(filename_, "r");
 
@@ -142,6 +149,38 @@ std::string get_square_region_two(const char* deltaE_name_, const char* M_name_,
 
     return total;
 
+}
+
+void load_files(const char* dirname, std::vector<std::string>* names) {
+    TSystemDirectory dir(dirname, dirname);
+    TList* files = dir.GetListOfFiles();
+    if (files) {
+        TSystemFile* file;
+        TString fname;
+        TIter next(files);
+        while ((file = (TSystemFile*)next())) {
+            fname = file->GetName();
+            if (!file->IsDirectory() && fname.EndsWith(".root")) {
+                names->push_back(fname.Data());
+            }
+        }
+    }
+}
+
+void load_files(const char* dirname, std::vector<std::string>* names, const char* included_string) {
+    TSystemDirectory dir(dirname, dirname);
+    TList* files = dir.GetListOfFiles();
+    if (files) {
+        TSystemFile* file;
+        TString fname;
+        TIter next(files);
+        while ((file = (TSystemFile*)next())) {
+            fname = file->GetName();
+            if (!file->IsDirectory() && fname.EndsWith(".root") && fname.Contains(included_string)) {
+                names->push_back(fname.Data());
+            }
+        }
+    }
 }
 
 #endif 
