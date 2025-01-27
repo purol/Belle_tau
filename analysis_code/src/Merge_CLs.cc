@@ -147,7 +147,7 @@ int main(int argc, char* argv[]) {
 		RooStats::HypoTestInverterResult* result = nullptr;
 
 		for (unsigned int i = 0; i < names.size(); i++) {
-			TFile* file = TFile::Open(names.at(i).c_str());
+			TFile* file = TFile::Open((argv[1] + std::string("/") + names.at(i)).c_str());
 			if (result == nullptr) result = (RooStats::HypoTestInverterResult*)file->Get("result_mu");
 			else {
 				RooStats::HypoTestInverterResult* result_temp = (RooStats::HypoTestInverterResult*)file->Get("result_mu");
