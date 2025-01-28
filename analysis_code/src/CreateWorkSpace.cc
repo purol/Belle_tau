@@ -162,6 +162,25 @@ int main(int argc, char* argv[]) {
     bkg_MC_th1d_stat_err->SetBinContent(2, bkg_MC_th1d->GetBinError(2) / bkg_MC_th1d->GetBinContent(2));
 
 
+    // print information
+    printf("data:\n");
+    printf("%lf+-%lf %lf+-%lf %lf+-%lf\n", data_th2d->GetBinContent(1, 2), data_th2d->GetBinError(1, 2), data_th2d->GetBinContent(2, 2), data_th2d->GetBinError(2, 2), data_th2d->GetBinContent(3, 2), data_th2d->GetBinError(3, 2));
+    printf("%lf+-%lf %lf+-%lf %lf+-%lf\n", data_th2d->GetBinContent(1, 1), data_th2d->GetBinError(1, 1), data_th2d->GetBinContent(2, 1), data_th2d->GetBinError(2, 1), data_th2d->GetBinContent(3, 1), data_th2d->GetBinError(3, 1));
+
+    printf("\n");
+
+    printf("signal:\n");
+    printf("%lf+-%lf %lf+-%lf %lf+-%lf\n", signal_MC_th2d->GetBinContent(1, 2), signal_MC_th2d->GetBinError(1, 2), signal_MC_th2d->GetBinContent(2, 2), signal_MC_th2d->GetBinError(2, 2), signal_MC_th2d->GetBinContent(3, 2), signal_MC_th2d->GetBinError(3, 2));
+    printf("%lf+-%lf %lf+-%lf %lf+-%lf\n", signal_MC_th2d->GetBinContent(1, 1), signal_MC_th2d->GetBinError(1, 1), signal_MC_th2d->GetBinContent(2, 1), signal_MC_th2d->GetBinError(2, 1), signal_MC_th2d->GetBinContent(3, 1), signal_MC_th2d->GetBinError(3, 1));
+
+    printf("\n");
+
+    printf("bkg:\n");
+    printf("%lf+-%lf %lf+-%lf %lf+-%lf\n", bkg_MC_th2d->GetBinContent(1, 2), bkg_MC_th2d->GetBinError(1, 2), bkg_MC_th2d->GetBinContent(2, 2), bkg_MC_th2d->GetBinError(2, 2), bkg_MC_th2d->GetBinContent(3, 2), bkg_MC_th2d->GetBinError(3, 2));
+    printf("%lf+-%lf %lf+-%lf %lf+-%lf\n", bkg_MC_th2d->GetBinContent(1, 1), bkg_MC_th2d->GetBinError(1, 1), bkg_MC_th2d->GetBinContent(2, 1), bkg_MC_th2d->GetBinError(2, 1), bkg_MC_th2d->GetBinContent(3, 1), bkg_MC_th2d->GetBinError(3, 1));
+
+    printf("\n");
+
     // Save in root file
     TFile* file = new TFile((std::string(argv[3]) + "/histogram_output.root").c_str(), "RECREATE");
 
