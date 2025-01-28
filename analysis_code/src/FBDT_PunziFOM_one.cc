@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
     loader.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader.PrintInformation("========== -5 delta < M < 5 delta ==========");
 
-    loader.DrawPunziFOM(argv[2], 0.0, 1.0, Nevt_SIGNAL, 1.28, (std::string(argv[1])  + "/" + std::string(argv[3]) + "/PunziFOM.png").c_str());
+    loader.DrawPunziFOM(argv[2], 0.0, 1.0, 500, Nevt_SIGNAL, 1.28, (std::string(argv[1])  + "/" + std::string(argv[3]) + "/PunziFOM.png").c_str());
 
     loader.end();
 
