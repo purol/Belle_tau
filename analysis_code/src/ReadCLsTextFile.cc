@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <vector>
 #include <sstream>
+#include <iomanip>
 
 #include "TGraph.h"
 #include "TGraphErrors.h"
@@ -13,6 +14,9 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TObject.h"
+#include "TH1.h"
+#include "TAxis.h"
+#include "TLine.h"
 
 TGraphErrors* ObservedGraph(const char* type, std::vector<double> xArray, std::vector<double> yArray, std::vector<double> yErrArray)
 {
