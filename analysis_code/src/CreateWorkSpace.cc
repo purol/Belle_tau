@@ -140,9 +140,27 @@ int main(int argc, char* argv[]) {
 
 
 
+    // We do not open the box, So data_th2d is MC. We use the proper uncertainty
+    data_th2d->SetBinError(1, 3, std::sqrt(data_th2d->GetBinContent(1, 3)));
+    data_th2d->SetBinError(2, 3, std::sqrt(data_th2d->GetBinContent(2, 3)));
+    data_th2d->SetBinError(3, 3, std::sqrt(data_th2d->GetBinContent(3, 3)));
+    data_th2d->SetBinError(4, 3, std::sqrt(data_th2d->GetBinContent(4, 3)));
+    data_th2d->SetBinError(1, 2, std::sqrt(data_th2d->GetBinContent(1, 2)));
+    data_th2d->SetBinError(2, 2, std::sqrt(data_th2d->GetBinContent(2, 2)));
+    data_th2d->SetBinError(3, 2, std::sqrt(data_th2d->GetBinContent(3, 2)));
+    data_th2d->SetBinError(4, 2, std::sqrt(data_th2d->GetBinContent(4, 2)));
+    data_th2d->SetBinError(1, 1, std::sqrt(data_th2d->GetBinContent(1, 1)));
+    data_th2d->SetBinError(2, 1, std::sqrt(data_th2d->GetBinContent(2, 1)));
+    data_th2d->SetBinError(3, 1, std::sqrt(data_th2d->GetBinContent(3, 1)));
+    data_th2d->SetBinError(4, 1, std::sqrt(data_th2d->GetBinContent(4, 1)));
+
+
+
     // TH2D to TH1D
     data_th1d->SetBinContent(1, data_th2d->GetBinContent(2, 2));
     data_th1d->SetBinContent(2, data_th2d->GetBinContent(2, 1));
+    data_th1d->SetBinError(1, data_th2d->GetBinError(2, 2));
+    data_th1d->SetBinError(2, data_th2d->GetBinError(2, 1));
 
     signal_MC_th1d->SetBinContent(1, signal_MC_th2d->GetBinContent(2, 2));
     signal_MC_th1d->SetBinContent(2, signal_MC_th2d->GetBinContent(2, 1));
@@ -150,10 +168,10 @@ int main(int argc, char* argv[]) {
     signal_MC_th1d->SetBinError(2, signal_MC_th2d->GetBinError(2, 1));
 
     // here, we interpolate expected backgrounds from sideband
-    bkg_MC_th1d->SetBinContent(1, (bkg_MC_th2d->GetBinContent(1, 2) + bkg_MC_th2d->GetBinContent(3, 2)) / 3.0);
-    bkg_MC_th1d->SetBinContent(2, (bkg_MC_th2d->GetBinContent(1, 1) + bkg_MC_th2d->GetBinContent(3, 1)) / 3.0);
-    bkg_MC_th1d->SetBinError(1, std::sqrt(bkg_MC_th2d->GetBinError(1, 2) * bkg_MC_th2d->GetBinError(1, 2) + bkg_MC_th2d->GetBinError(3, 2) * bkg_MC_th2d->GetBinError(3, 2)) / 3.0);
-    bkg_MC_th1d->SetBinError(2, std::sqrt(bkg_MC_th2d->GetBinError(1, 1) * bkg_MC_th2d->GetBinError(1, 1) + bkg_MC_th2d->GetBinError(3, 1) * bkg_MC_th2d->GetBinError(3, 1)) / 3.0);
+    bkg_MC_th1d->SetBinContent(1, (data_th2d->GetBinContent(1, 2) + data_th2d->GetBinContent(3, 2)) / 3.0);
+    bkg_MC_th1d->SetBinContent(2, (data_th2d->GetBinContent(1, 1) + data_th2d->GetBinContent(3, 1)) / 3.0);
+    bkg_MC_th1d->SetBinError(1, std::sqrt(data_th2d->GetBinError(1, 2) * data_th2d->GetBinError(1, 2) + data_th2d->GetBinError(3, 2) * data_th2d->GetBinError(3, 2)) / 3.0);
+    bkg_MC_th1d->SetBinError(2, std::sqrt(data_th2d->GetBinError(1, 1) * data_th2d->GetBinError(1, 1) + data_th2d->GetBinError(3, 1) * data_th2d->GetBinError(3, 1)) / 3.0);
 
     // calculate stat err
     signal_MC_th1d_stat_err->SetBinContent(1, signal_MC_th1d->GetBinError(1) / signal_MC_th1d->GetBinContent(1));
