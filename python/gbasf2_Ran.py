@@ -208,7 +208,8 @@ def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, path):
                         ["daughter(1, useCMSFrame(E))", "daughter(1, useCMSFrame(px))", "daughter(1, useCMSFrame(py))", "daughter(1, useCMSFrame(pz))", \
                          "daughter(1, useCMSFrame(pt))", "daughter(1, useCMSFrame(theta))", "daughter(1, useCMSFrame(phi))"] + \
                         ["daughter(2, useCMSFrame(E))", "daughter(2, useCMSFrame(px))", "daughter(2, useCMSFrame(py))", "daughter(2, useCMSFrame(pz))", \
-                         "daughter(2, useCMSFrame(pt))", "daughter(2, useCMSFrame(theta))", "daughter(2, useCMSFrame(phi))"]
+                         "daughter(2, useCMSFrame(pt))", "daughter(2, useCMSFrame(theta))", "daughter(2, useCMSFrame(phi))"] + \
+                        ["daughter(0,cosToThrustOfEvent)", "daughter(1,cosToThrustOfEvent)", "daughter(2,cosToThrustOfEvent)"]
     else:
         daughter_vars = ["daughter(0, daughter(0, muonID))", "daughter(0, daughter(1, muonID))", "daughter(1,muonID)"] + \
                         ["daughter(0, daughter(0, electronID))", "daughter(0, daughter(1, electronID))", "daughter(1,electronID)"] + \
@@ -223,7 +224,8 @@ def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, path):
                         ["daughter(0, daughter(1, useCMSFrame(E)))", "daughter(0, daughter(1, useCMSFrame(px)))", "daughter(0, daughter(1, useCMSFrame(py)))", "daughter(0, daughter(1, useCMSFrame(pz)))", \
                          "daughter(0, daughter(1, useCMSFrame(pt)))", "daughter(0, daughter(1, useCMSFrame(theta)))", "daughter(0, daughter(1, useCMSFrame(phi)))"] + \
                         ["daughter(1, useCMSFrame(E))", "daughter(1, useCMSFrame(px))", "daughter(1, useCMSFrame(py))", "daughter(1, useCMSFrame(pz))", \
-                         "daughter(1, useCMSFrame(pt))", "daughter(1, useCMSFrame(theta))", "daughter(1, useCMSFrame(phi))"]
+                         "daughter(1, useCMSFrame(pt))", "daughter(1, useCMSFrame(theta))", "daughter(1, useCMSFrame(phi))"] + \
+                        ["daughter(0, daughter(0, cosToThrustOfEvent))", "daughter(0, daughter(1, cosToThrustOfEvent))", "daughter(1,cosToThrustOfEvent)"]
         daughter_vars = daughter_vars + ["daughter(0, E)", "daughter(0, px)", "daughter(0, py)", "daughter(0, pz)", "daughter(0, pt)", "daughter(0, theta)", "daughter(0, phi)"] + ["daughter(0, M)"] + \
                         ["daughter(0, x)", "daughter(0, y)", "daughter(0, z)", "daughter(0, dx)", "daughter(0, dy)", "daughter(0, dz)"] + \
                         ["daughter(0, flightTime)", "daughter(0, flightTimeErr)", "daughter(0, chiProb)"]
