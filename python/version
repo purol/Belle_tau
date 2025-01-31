@@ -3,5 +3,5 @@ gbasf2_Rumia
 gbasf2_Alice
 - (recon mu mu mu only) ->
 gbasf2_Yoshika
-- (bugfix for index, add cosToThrustOfEvent, calculate isolation) ->
+- (bugfix for index, add cosToThrustOfEvent, calculate isolation, add M for tau, add p for muons) ->
 gbasf2_Ran

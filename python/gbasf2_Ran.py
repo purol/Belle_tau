@@ -173,8 +173,8 @@ def BasicAnalysisForTau(tau_list, sample_index, type_index, path):
     ma.matchMCTruth(tau_list, path=path)
 
     # add event type / sample type
-    ma.variablesToExtraInfo(particleList=tau_list, variables = {"constant(" + str(sample_index) + ")" : "MySampleType"}, path=path)
-    ma.variablesToExtraInfo(particleList=tau_list, variables = {"constant(" + str(type_index) + ")" : "MyEventType"}, path=path)
+    ma.VariablesToEventExtraInfo(particleList=tau_list, variables = {"constant(" + str(sample_index) + ")" : "MySampleType"}, path=path)
+    ma.VariablesToEventExtraInfo(particleList=tau_list, variables = {"constant(" + str(type_index) + ")" : "MyEventType"}, path=path)
 
 def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, path):
     # names
@@ -187,7 +187,7 @@ def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, path):
 
     # define vars
     sig_vars = ["Mbc", "deltaE"] + \
-               ["E", "px", "py", "pz", "pt", "theta", "phi"] + \
+               ["M", "E", "px", "py", "pz", "pt", "theta", "phi"] + \
                ["useCMSFrame(E)", "useCMSFrame(px)", "useCMSFrame(py)", "useCMSFrame(pz)", "useCMSFrame(pt)", "useCMSFrame(theta)", "useCMSFrame(phi)"] + \
                ["extraInfo(decayModeID)"] + \
                GetContinuumSuppressionVariables("cleanMask") + \
@@ -200,9 +200,9 @@ def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, path):
                         ["daughter(0,pionID)", "daughter(1,pionID)", "daughter(2,pionID)"] + \
                         ["daughter(0,pionIDNN)", "daughter(1,pionIDNN)", "daughter(2,pionIDNN)"] + \
                         ["daughter(0,minET2ETIsoScoreAsWeightedAvg(mu+:taulfv, 0, ECL, KLM))", "daughter(1,minET2ETIsoScoreAsWeightedAvg(mu+:taulfv, 0, ECL, KLM))", "daughter(2,minET2ETIsoScoreAsWeightedAvg(mu+:taulfv, 0, ECL, KLM))"] + \
-                        ["daughter(0, E)", "daughter(0, px)", "daughter(0, py)", "daughter(0, pz)", "daughter(0, pt)", "daughter(0, theta)", "daughter(0, phi)"] + \
-                        ["daughter(1, E)", "daughter(1, px)", "daughter(1, py)", "daughter(1, pz)", "daughter(1, pt)", "daughter(1, theta)", "daughter(1, phi)"] + \
-                        ["daughter(2, E)", "daughter(2, px)", "daughter(2, py)", "daughter(2, pz)", "daughter(2, pt)", "daughter(2, theta)", "daughter(2, phi)"] + \
+                        ["daughter(0, E)", "daughter(0, p)", "daughter(0, px)", "daughter(0, py)", "daughter(0, pz)", "daughter(0, pt)", "daughter(0, theta)", "daughter(0, phi)"] + \
+                        ["daughter(1, E)", "daughter(1, p)", "daughter(1, px)", "daughter(1, py)", "daughter(1, pz)", "daughter(1, pt)", "daughter(1, theta)", "daughter(1, phi)"] + \
+                        ["daughter(2, E)", "daughter(2, p)", "daughter(2, px)", "daughter(2, py)", "daughter(2, pz)", "daughter(2, pt)", "daughter(2, theta)", "daughter(2, phi)"] + \
                         ["daughter(0, useCMSFrame(E))", "daughter(0, useCMSFrame(px))", "daughter(0, useCMSFrame(py))", "daughter(0, useCMSFrame(pz))", \
                          "daughter(0, useCMSFrame(pt))", "daughter(0, useCMSFrame(theta))", "daughter(0, useCMSFrame(phi))"] + \
                         ["daughter(1, useCMSFrame(E))", "daughter(1, useCMSFrame(px))", "daughter(1, useCMSFrame(py))", "daughter(1, useCMSFrame(pz))", \
@@ -216,9 +216,9 @@ def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, path):
                         ["daughter(0, daughter(0, pionID))", "daughter(0, daughter(1, pionID))", "daughter(1,pionID)"] + \
                         ["daughter(0, daughter(0, pionIDNN))", "daughter(0, daughter(1, pionIDNN))", "daughter(1,pionIDNN)"] + \
                         ["daughter(0, daughter(0,minET2ETIsoScoreAsWeightedAvg(mu+:taulfv, 0, ECL, KLM)))", "daughter(0, daughter(1,minET2ETIsoScoreAsWeightedAvg(mu+:taulfv, 0, ECL, KLM)))", "daughter(1,minET2ETIsoScoreAsWeightedAvg(mu+:taulfv, 0, ECL, KLM))"] + \
-                        ["daughter(0, daughter(0, E))", "daughter(0, daughter(0, px))", "daughter(0, daughter(0, py))", "daughter(0, daughter(0, pz))", "daughter(0, daughter(0, pt))", "daughter(0, daughter(0, theta))", "daughter(0, daughter(0, phi))"] + \
-                        ["daughter(0, daughter(1, E))", "daughter(0, daughter(1, px))", "daughter(0, daughter(1, py))", "daughter(0, daughter(1, pz))", "daughter(0, daughter(1, pt))", "daughter(0, daughter(1, theta))", "daughter(0, daughter(1, phi))"] + \
-                        ["daughter(1, E)", "daughter(1, px)", "daughter(1, py)", "daughter(1, pz)", "daughter(1, pt)", "daughter(1, theta)", "daughter(1, phi)"] + \
+                        ["daughter(0, daughter(0, E))", "daughter(0, daughter(0, p))", "daughter(0, daughter(0, px))", "daughter(0, daughter(0, py))", "daughter(0, daughter(0, pz))", "daughter(0, daughter(0, pt))", "daughter(0, daughter(0, theta))", "daughter(0, daughter(0, phi))"] + \
+                        ["daughter(0, daughter(1, E))", "daughter(0, daughter(1, p))", "daughter(0, daughter(1, px))", "daughter(0, daughter(1, py))", "daughter(0, daughter(1, pz))", "daughter(0, daughter(1, pt))", "daughter(0, daughter(1, theta))", "daughter(0, daughter(1, phi))"] + \
+                        ["daughter(1, E)", "daughter(1, p)", "daughter(1, px)", "daughter(1, py)", "daughter(1, pz)", "daughter(1, pt)", "daughter(1, theta)", "daughter(1, phi)"] + \
                         ["daughter(0, daughter(0, useCMSFrame(E)))", "daughter(0, daughter(0, useCMSFrame(px)))", "daughter(0, daughter(0, useCMSFrame(py)))", "daughter(0, daughter(0, useCMSFrame(pz)))", \
                          "daughter(0, daughter(0, useCMSFrame(pt)))", "daughter(0, daughter(0, useCMSFrame(theta)))", "daughter(0, daughter(0, useCMSFrame(phi)))"] + \
                         ["daughter(0, daughter(1, useCMSFrame(E)))", "daughter(0, daughter(1, useCMSFrame(px)))", "daughter(0, daughter(1, useCMSFrame(py)))", "daughter(0, daughter(1, useCMSFrame(pz)))", \
