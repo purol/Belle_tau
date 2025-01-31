@@ -176,14 +176,14 @@ def BasicAnalysisForTau(tau_list, sample_index, type_index, path):
     ma.VariablesToEventExtraInfo(particleList=tau_list, variables = {"constant(" + str(sample_index) + ")" : "MySampleType"}, path=path)
     ma.VariablesToEventExtraInfo(particleList=tau_list, variables = {"constant(" + str(type_index) + ")" : "MyEventType"}, path=path)
 
-def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, path):
+def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, Ntuple_name, hashmap_name, path):
     # names
     if(IsItNominal):
-        hashmapName = "hashmap_tau.root"
-        output_file = "Ntuple.root"
+        output_file = Ntuple_name + ".root"
+        hashmapName = hashmap_name + ".root"
     else:
-        hashmapName = "hashmap_tau_vertex.root"
-        output_file = "Ntuple.root"
+        output_file = Ntuple_name + ".root"
+        hashmapName = hashmap_name + "_vertex.root"
 
     # define vars
     sig_vars = ["Mbc", "deltaE"] + \
@@ -257,6 +257,11 @@ parser.add_argument('--sample', required=True, type=str, help='type of sample. l
 parser.add_argument('--type', required=True, type=str, help='type of event. list) data, signal, charged, mixed, uubar, ddbar, ssbar, ccbar, mumu, ee, eeee, eemumu, eepipi, eeKK, eepp, pipiISR, KKISR, gg, eetautau, K0K0barISR, mumumumu, mumutautau, tautautautau, taupair')
 parser.add_argument('--vertex', action='store_true', help='If you want to reconstruct the tau->(phi -> mu mu) mu, assing this flage')
 
+# input file/output path when it is running on KEKCC
+parser.add_argument('--KEKCC', action='store_true', help='run on KEKCC, not GRID')
+parser.add_argument('--inputfile', required=False, type=str, help='destination of output files for local run. `--KEKCC` should be on. ex) /home/belle2/junewoo/storage_b1/input_Jpsi/B02XJpsi_SKIM_00012_job227326565_00.udst.root')
+parser.add_argument('--destination', required=False, type=str, help='destination of output files for local run. `--KEKCC` should be on. ex) /home/belle2/junewoo/storage_b1/output')
+
 args = parser.parse_args()
 
 # assign sample index and type index
@@ -269,9 +274,31 @@ basf2.set_random_seed(42)
     
 # Read uDST
 my_path = basf2.create_path()
-    
-inputfile="/group/belle2/dataprod/MC/SkimTraining/mixed_BGx1.mdst_000001_prod00009434_task10020000001.root"
+
+inputfile = ""
+basename = ""
+name = ""
+if(args.KEKCC):
+    inputfile = args.inputfile
+    if not inputfile.endswith(".root"): sys.exit(2)
+    else:
+        basename = os.path.basename(inputfile)
+        name = os.path.splitext(basename)[0]
+else:
+    # just any file
+    inputfile="/group/belle2/dataprod/MC/SkimTraining/mixed_BGx1.mdst_000001_prod00009434_task10020000001.root"
 ma.inputMdst(environmentType='default',filename=inputfile,path=my_path)
+
+# set output file and path
+outputpath = args.destination
+output_file = "Ntuple"
+hashmapName = "hashmap_tau"
+if(args.KEKCC):
+    output_file = outputpath + "/" + name + "_" + output_file
+    hashmapName = outputpath + "/" + name + "_" + hashmapName
+else:
+    output_file = output_file
+    hashmapName = hashmapName
 
 # fill photon for Event shape and kinematics
 ma.fillParticleList("pi+:evtshape_kinematics", cut='[dr < 1] and [abs(dz) < 3]', path=my_path)
@@ -311,7 +338,7 @@ ma.reconstructDecay("tau+:LFV_lll -> mu+:taulfv mu+:taulfv mu-:taulfv", tauLFVCu
 BasicAnalysisForTau("tau+:LFV_lll", sample_index=sample_index, type_index=type_index, path=my_path)
 
 # make Ntuple and hashmap
-MakeNtupleandHashmap("tau+:LFV_lll", photon_names=photon_names, IsItNominal=True, path=my_path)
+MakeNtupleandHashmap("tau+:LFV_lll", photon_names=photon_names, IsItNominal=True, Ntuple_name=output_file, hashmap_name=hashmapName, path=my_path)
 
 # do the same thing for the vertex displacement
 if(args.vertex):
@@ -319,7 +346,7 @@ if(args.vertex):
     ma.reconstructDecay("phi_test:LFV_vertex -> mu+:taulfv mu-:taulfv", cut="", path=my_path)
     ma.reconstructDecay("tau+:LFV_vertex -> phi_test:LFV_vertex mu+:taulfv", tauLFVCuts3, 10, path=my_path)
     BasicAnalysisForTau("tau+:LFV_vertex", sample_index=sample_index, type_index=type_index, path=my_path)
-    MakeNtupleandHashmap("tau+:LFV_vertex", photon_names=photon_names, IsItNominal=False, path=my_path)
+    MakeNtupleandHashmap("tau+:LFV_vertex", photon_names=photon_names, IsItNominal=False, Ntuple_name=output_file, hashmap_name=hashmapName, path=my_path)
              
 # progress
 basf2.process(my_path)
