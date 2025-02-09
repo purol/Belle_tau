@@ -4,6 +4,7 @@
 #include <map>
 
 #include "TFile.h"
+#include "RooRandom.h"
 
 #include "Loader.h"
 #include "constants.h"
@@ -24,6 +25,8 @@ int main(int argc, char* argv[]) {
     * argv[7 + N]: Subsample
     * argv[8 + N]: Binning
     */
+
+    RooRandom::randomGenerator()->SetSeed(42);
 
     int variable_num = std::atoi(argv[1]);
     std::vector<std::string> intput_variables;
