@@ -111,6 +111,9 @@ int main(int argc, char* argv[]) {
     if (background_train_th_max > signal_train_th_max) background_train_th->SetMaximum(1.05 * background_train_th_max);
     else background_train_th->SetMaximum(1.05 * signal_train_th_max);
 
+    background_train_th->SetTitle(""); signal_train_th->SetTitle("");
+    background_test_th->SetTitle(""); signal_test_th->SetTitle("");
+
     background_train_th->Draw("Hist"); signal_train_th->Draw("HistSAME");
     background_test_th->Draw("AP SAME"); signal_test_th->Draw("AP SAME");
 
@@ -119,8 +122,8 @@ int main(int argc, char* argv[]) {
     TLatex latex_pvalue;
     latex_pvalue.SetNDC();
     latex_pvalue.SetTextSize(0.04);
-    latex_pvalue.DrawLatex(0.2, 0.9, ("p-value = " + toStringWithPrecision(signal_train_th_max, 4) + " (signal)").c_str());
-    latex_pvalue.DrawLatex(0.2, 0.8, ("p-value = " + toStringWithPrecision(signal_train_th_max, 4) + " (background)").c_str());
+    latex_pvalue.DrawLatex(0.2, 0.85, ("p-value = " + toStringWithPrecision(p_value_signal, 3) + " (signal)").c_str());
+    latex_pvalue.DrawLatex(0.2, 0.8, ("p-value = " + toStringWithPrecision(background_train_th_max, 3) + " (background)").c_str());
 
     c_temp->SaveAs((std::string(argv[6]) + "/" + std::string(argv[7])).c_str());
 
