@@ -117,13 +117,19 @@ int main(int argc, char* argv[]) {
     background_train_th->Draw("Hist"); signal_train_th->Draw("HistSAME");
     background_test_th->Draw("AP SAME"); signal_test_th->Draw("AP SAME");
 
-    TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.6, 0.6); legend->SetFillStyle(0); legend->SetLineWidth(0);
+    TLegend* legend = new TLegend(0.9, 0.9, 0.6, 0.6);
+    legend->AddEntry(signal_train_th, "signal train", "f");
+    legend->AddEntry(signal_test_th, "signal test", "lpe");
+    legend->AddEntry(background_train_th, "background train", "f");
+    legend->AddEntry(background_test_th, "background test", "lpe");
+    legend->SetFillStyle(0); legend->SetLineWidth(0);
+    legend->Draw();
 
     TLatex latex_pvalue;
     latex_pvalue.SetNDC();
     latex_pvalue.SetTextSize(0.04);
     latex_pvalue.DrawLatex(0.2, 0.85, ("p-value = " + toStringWithPrecision(p_value_signal, 3) + " (signal)").c_str());
-    latex_pvalue.DrawLatex(0.2, 0.8, ("p-value = " + toStringWithPrecision(background_train_th_max, 3) + " (background)").c_str());
+    latex_pvalue.DrawLatex(0.2, 0.8, ("p-value = " + toStringWithPrecision(p_value_background, 3) + " (background)").c_str());
 
     c_temp->SaveAs((std::string(argv[6]) + "/" + std::string(argv[7])).c_str());
 
