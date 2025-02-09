@@ -45,28 +45,38 @@ int main(int argc, char* argv[]) {
     TH1D* background_train_th = new TH1D("background_train_th", ("bkg train;" + variable_name + ";arbitrary unit").c_str(), atoi(argv[2]), atof(argv[3]), atof(argv[4]));
     TH1D* background_test_th = new TH1D("background_test_th", ("bkg test;" + variable_name + ";arbitrary unit").c_str(), atoi(argv[2]), atof(argv[3]), atof(argv[4]));
 
+    // define another TH1D, which is used for KS test. In principle, KS test cannot be used for binned data. To be close to the exact result, we use fine bin width here
+    TH1D* signal_train_th_KS = new TH1D("signal_train_th_KS", ("signal train;" + variable_name + ";arbitrary unit").c_str(), 100 * atoi(argv[2]), atof(argv[3]), atof(argv[4]));
+    TH1D* signal_test_th_KS = new TH1D("signal_test_th_KS", ("signal test;" + variable_name + ";arbitrary unit").c_str(), 100 * atoi(argv[2]), atof(argv[3]), atof(argv[4]));
+    TH1D* background_train_th_KS = new TH1D("background_train_th_KS", ("bkg train;" + variable_name + ";arbitrary unit").c_str(), 100 * atoi(argv[2]), atof(argv[3]), atof(argv[4]));
+    TH1D* background_test_th_KS = new TH1D("background_test_th_KS", ("bkg test;" + variable_name + ";arbitrary unit").c_str(), 100 * atoi(argv[2]), atof(argv[3]), atof(argv[4]));
+
     // signal train
     Loader loader_signal_train("tau_lfv");
     for (int i = 0; i < signal_list.size(); i++) loader_signal_train.Load((argv[5] + std::string("/") + signal_list.at(i) + std::string("/final_output_train_after_application/")).c_str(), "root", signal_list.at(i).c_str());
     loader_signal_train.FillTH1D(signal_train_th, variable_name);
+    loader_signal_train.FillTH1D(signal_train_th_KS, variable_name);
     loader_signal_train.end();
 
     // signal test
     Loader loader_signal_test("tau_lfv");
     for (int i = 0; i < signal_list.size(); i++) loader_signal_test.Load((argv[5] + std::string("/") + signal_list.at(i) + std::string("/final_output_test_after_application/")).c_str(), "root", signal_list.at(i).c_str());
     loader_signal_test.FillTH1D(signal_test_th, variable_name);
+    loader_signal_test.FillTH1D(signal_test_th_KS, variable_name);
     loader_signal_test.end();
 
     // background train
     Loader loader_background_train("tau_lfv");
     for (int i = 0; i < background_list.size(); i++) loader_background_train.Load((argv[5] + std::string("/") + background_list.at(i) + std::string("/final_output_train_after_application/")).c_str(), "root", background_list.at(i).c_str());
     loader_background_train.FillTH1D(background_train_th, variable_name);
+    loader_background_train.FillTH1D(background_train_th_KS, variable_name);
     loader_background_train.end();
 
     // background test
     Loader loader_background_test("tau_lfv");
     for (int i = 0; i < background_list.size(); i++) loader_background_test.Load((argv[5] + std::string("/") + background_list.at(i) + std::string("/final_output_test_after_application/")).c_str(), "root", background_list.at(i).c_str());
     loader_background_test.FillTH1D(background_test_th, variable_name);
+    loader_background_test.FillTH1D(background_test_th_KS, variable_name);
     loader_background_test.end();
 
 
@@ -98,8 +108,8 @@ int main(int argc, char* argv[]) {
     background_test_th->SetMarkerColor(kRed);
     background_test_th->SetLineWidth(1);
 
-    double p_value_signal = signal_test_th->KolmogorovTest(signal_train_th);
-    double p_value_background = background_test_th->KolmogorovTest(background_train_th);
+    double p_value_signal = signal_test_th_KS->KolmogorovTest(signal_train_th_KS);
+    double p_value_background = background_test_th_KS->KolmogorovTest(background_train_th_KS);
 
     gStyle->SetOptStat(0);
 
