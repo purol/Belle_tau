@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
 
     gStyle->SetOptStat(0);
 
-    TCanvas* c_temp = new TCanvas("c", "", 600, 600); c_temp->cd();
+    TCanvas* c_temp = new TCanvas("c", "", 600, 600); c_temp->cd(); gPad->SetLogy();
 
     double background_train_th_max = background_train_th->GetMaximum();
     double signal_train_th_max = signal_train_th->GetMaximum();
