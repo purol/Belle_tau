@@ -108,8 +108,8 @@ int main(int argc, char* argv[]) {
     double background_train_th_max = background_train_th->GetMaximum();
     double signal_train_th_max = signal_train_th->GetMaximum();
 
-    if (background_train_th_max > signal_train_th_max) background_train_th->SetMaximum(1.05 * background_train_th_max);
-    else background_train_th->SetMaximum(1.05 * signal_train_th_max);
+    if (background_train_th_max > signal_train_th_max) background_train_th->SetMaximum(1.40 * background_train_th_max);
+    else background_train_th->SetMaximum(1.40 * signal_train_th_max);
 
     background_train_th->SetTitle(""); signal_train_th->SetTitle("");
     background_test_th->SetTitle(""); signal_test_th->SetTitle("");
