@@ -1,0 +1,119 @@
+#include <stdio.h>
+#include <string>
+#include <vector>
+#include <stdlib.h>
+
+#include <TH1.h>
+
+#include "Loader.h"
+#include "constants.h"
+#include "MyObtainWeight.h"
+
+int main(int argc, char* argv[]) {
+    /*
+    * argv[1]: variable name
+    * argv[2]: bin number
+    * argv[3]: min value
+    * argv[4]: max value
+    * argv[5]: input path
+    * argv[6]: output path
+    * argv[7]: output name
+    */
+
+    std::string variable_name(argv[1]);
+
+    std::vector<std::string> signal_list = { "SIGNAL" };
+    std::vector<std::string> background_list = { "CHARM", "CHG", "DDBAR", "EE", "EEEE", 
+        "EEKK", "EEMUMU", "EEPIPI", "EEPP", "EETAUTAU", "GG", 
+        "K0K0BARISR", "KKISR", "MIX", "MUMU", "MUMUMUMU", 
+        "MUMUTAUTAU", "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
+
+    ObtainWeight = MyScaleFunction_halfsplit;
+
+    // define TH1D
+    TH1D* signal_train_th = new TH1D("signal_train_th", "signal train;" + variable_name + ";arbitrary unit", atoi(argv[2]), atof(argv[3]), atof(argv[4]));
+    TH1D* signal_test_th = new TH1D("signal_test_th", "signal test;" + variable_name + ";arbitrary unit", atoi(argv[2]), atof(argv[3]), atof(argv[4]));
+    TH1D* background_train_th = new TH1D("background_train_th", "bkg train;" + variable_name + ";arbitrary unit", atoi(argv[2]), atof(argv[3]), atof(argv[4]));
+    TH1D* background_test_th = new TH1D("background_test_th", "bkg test;" + variable_name + ";arbitrary unit", atoi(argv[2]), atof(argv[3]), atof(argv[4]));
+
+    // signal train
+    Loader loader_signal_train("tau_lfv");
+    for (int i = 0; i < signal_list.size(); i++) loader_signal_train.Load((argv[5] + std::string("/") + signal_list.at(i) + std::string("/final_output_train_after_application/")).c_str(), "root", signal_list.at(i).c_str());
+    loader_signal_train.FillTH1D(signal_train_th, variable_name);
+    loader_signal_train.end();
+
+    // signal test
+    Loader loader_signal_test("tau_lfv");
+    for (int i = 0; i < signal_list.size(); i++) loader_signal_test.Load((argv[5] + std::string("/") + signal_list.at(i) + std::string("/final_output_test_after_application/")).c_str(), "root", signal_list.at(i).c_str());
+    loader_signal_test.FillTH1D(signal_test_th, variable_name);
+    loader_signal_test.end();
+
+    // background train
+    Loader loader_background_train("tau_lfv");
+    for (int i = 0; i < background_list.size(); i++) loader_background_train.Load((argv[5] + std::string("/") + background_list.at(i) + std::string("/final_output_train_after_application/")).c_str(), "root", background_list.at(i).c_str());
+    loader_background_train.FillTH1D(background_train_th, variable_name);
+    loader_background_train.end();
+
+    // background test
+    Loader loader_background_test("tau_lfv");
+    for (int i = 0; i < background_list.size(); i++) loader_background_test.Load((argv[5] + std::string("/") + background_list.at(i) + std::string("/final_output_test_after_application/")).c_str(), "root", background_list.at(i).c_str());
+    loader_background_test.FillTH1D(background_test_th, variable_name);
+    loader_background_test.end();
+
+
+    // draw and KS test
+    double factor = 1.0;
+
+    signal_train_th->Scale(factor / signal_train_th->Integral(), "width");
+    signal_test_th->Scale(factor / signal_test_th->Integral(), "width");
+    background_train_th->Scale(factor / background_train_th->Integral(), "width");
+    background_test_th->Scale(factor / background_test_th->Integral(), "width");
+
+    // set color (BKG: kRed, SIGNAL: kBlue)
+    // solid line: test, histogram: traing
+    signal_train_th->SetFillStyle(3004);
+    signal_train_th->SetLineColor(kBlue);
+    signal_train_th->SetFillColor(kBlue);
+
+    signal_test_th->SetMarkerStyle(kFullCircle);
+    signal_test_th->SetLineColor(kBlue);
+    signal_test_th->SetMarkerColor(kBlue);
+    signal_test_th->SetLineWidth(1);
+
+    background_train_th->SetFillStyle(3005);
+    background_train_th->SetLineColor(kRed);
+    background_train_th->SetFillColor(kRed);
+
+    background_test_th->SetMarkerStyle(kFullCircle);
+    background_test_th->SetLineColor(kRed);
+    background_test_th->SetMarkerColor(kRed);
+    background_test_th->SetLineWidth(1);
+
+    double p_value_signal = signal_test_th->KolmogorovTest(signal_train_th);
+    double p_value_background = background_test_th->KolmogorovTest(background_train_th);
+
+    gStyle->SetOptStat(0);
+
+    TCanvas* c_temp = new TCanvas("c", "", 600, 600); c_temp->cd();
+
+    double background_train_th_max = background_train_th->GetMaximum();
+    double signal_train_th_max = signal_train_th->GetMaximum();
+
+    if (background_train_th_max > signal_train_th_max) background_train_th->SetMaximum(1.05 * background_train_th_max);
+    else background_train_th->SetMaximum(1.05 * signal_train_th_max);
+
+    background_train_th->Draw("Hist"); signal_train_th->Draw("HistSAME");
+    background_test_th->Draw("AP SAME"); signal_test_th->Draw("AP SAME");
+
+    TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.6, 0.6); legend->SetFillStyle(0); legend->SetLineWidth(0);
+
+    TLatex latex_pvalue;
+    latex_pvalue.SetNDC();
+    latex_pvalue.SetTextSize(0.04);
+    latex_pvalue.DrawLatex(0.2, 0.9, ("p-value = " + toStringWithPrecision(signal_train_th_max, 4) + " (signal)").c_str());
+    latex_pvalue.DrawLatex(0.2, 0.8, ("p-value = " + toStringWithPrecision(signal_train_th_max, 4) + " (background)").c_str());
+
+    c_temp->SaveAs((std::string(argv[6]) + "/" + std::string(argv[7])).c_str());
+
+    return 0;
+}

@@ -64,12 +64,10 @@ int main(int argc, char* argv[]) {
     deltaE.setRange("full", -0.3, 0.15);
     deltaE.setRange("peak", -0.02, 0.02);
 
-    Module::Module* temp_module = new Module::FillDataSet(&dataset, { &M_inv, &deltaE }, { "M_inv_tau", "deltaE" }, loader.Getvariable_names_address(), loader.VariableTypes_address());
-    loader.InsertCustomizedModule(temp_module);
+    loader.FillDataSet(&dataset, { &M_inv, &deltaE }, { "M_inv_tau", "deltaE" });
 
     TProfile* deltaE_M_profile = new TProfile("hprof", ";#Delta E_{3#mu} [GeV];M_{3#mu} [GeV]", 100, -0.3, 0.15, 1.71, 1.82);
-    Module::Module* temp_module_2 = new Module::FillTProfile(deltaE_M_profile, "deltaE", "M_inv_tau", loader.Getvariable_names_address(), loader.VariableTypes_address());
-    loader.InsertCustomizedModule(temp_module_2);
+    loader.FillTProfile(deltaE_M_profile, "deltaE", "M_inv_tau");
 
     loader.end();
 
