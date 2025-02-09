@@ -2,12 +2,20 @@
 #include <string>
 #include <vector>
 #include <stdlib.h>
+#include <sstream>
 
 #include <TH1.h>
+#include <TLatex.h>
 
 #include "Loader.h"
 #include "constants.h"
 #include "MyObtainWeight.h"
+
+std::string toStringWithPrecision(double value, int precision) {
+    std::ostringstream out;
+    out << std::fixed << std::setprecision(precision) << value;
+    return out.str();
+}
 
 int main(int argc, char* argv[]) {
     /*
@@ -31,10 +39,10 @@ int main(int argc, char* argv[]) {
     ObtainWeight = MyScaleFunction_halfsplit;
 
     // define TH1D
-    TH1D* signal_train_th = new TH1D("signal_train_th", "signal train;" + variable_name + ";arbitrary unit", atoi(argv[2]), atof(argv[3]), atof(argv[4]));
-    TH1D* signal_test_th = new TH1D("signal_test_th", "signal test;" + variable_name + ";arbitrary unit", atoi(argv[2]), atof(argv[3]), atof(argv[4]));
-    TH1D* background_train_th = new TH1D("background_train_th", "bkg train;" + variable_name + ";arbitrary unit", atoi(argv[2]), atof(argv[3]), atof(argv[4]));
-    TH1D* background_test_th = new TH1D("background_test_th", "bkg test;" + variable_name + ";arbitrary unit", atoi(argv[2]), atof(argv[3]), atof(argv[4]));
+    TH1D* signal_train_th = new TH1D("signal_train_th", ("signal train;" + variable_name + ";arbitrary unit").c_str(), atoi(argv[2]), atof(argv[3]), atof(argv[4]));
+    TH1D* signal_test_th = new TH1D("signal_test_th", ("signal test;" + variable_name + ";arbitrary unit").c_str(), atoi(argv[2]), atof(argv[3]), atof(argv[4]));
+    TH1D* background_train_th = new TH1D("background_train_th", ("bkg train;" + variable_name + ";arbitrary unit").c_str(), atoi(argv[2]), atof(argv[3]), atof(argv[4]));
+    TH1D* background_test_th = new TH1D("background_test_th", ("bkg test;" + variable_name + ";arbitrary unit").c_str(), atoi(argv[2]), atof(argv[3]), atof(argv[4]));
 
     // signal train
     Loader loader_signal_train("tau_lfv");
