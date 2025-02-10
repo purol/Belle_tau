@@ -11,15 +11,21 @@
 #include "MyModule.h"
 
 std::map<std::string, std::string> momentum_muonID = {
-    {"(daughter__bo0__cm__sppx__bc*daughter__bo0__cm__sppx__bc+daughter__bo0__cm__sppy__bc*daughter__bo0__cm__sppy__bc+daughter__bo0__cm__sppz__bc*daughter__bo0__cm__sppz__bc)^0.5", "daughter__bo0__cmmuonID__bc"},
-    {"(daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5", "daughter__bo1__cmmuonID__bc"},
-    {"(daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5", "daughter__bo2__cmmuonID__bc"}
+    {"daughter__bo0__cm__spp__bc", "daughter__bo0__cmmuonID__bc"},
+    {"daughter__bo1__cm__spp__bc", "daughter__bo1__cmmuonID__bc"},
+    {"daughter__bo2__cm__spp__bc", "daughter__bo2__cmmuonID__bc"}
 };
 
 std::map<std::string, std::string> momentum_muonmomentum = {
-    {"(daughter__bo0__cm__sppx__bc*daughter__bo0__cm__sppx__bc+daughter__bo0__cm__sppy__bc*daughter__bo0__cm__sppy__bc+daughter__bo0__cm__sppz__bc*daughter__bo0__cm__sppz__bc)^0.5", "(daughter__bo0__cm__sppx__bc*daughter__bo0__cm__sppx__bc+daughter__bo0__cm__sppy__bc*daughter__bo0__cm__sppy__bc+daughter__bo0__cm__sppz__bc*daughter__bo0__cm__sppz__bc)^0.5"},
-    {"(daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5", "(daughter__bo1__cm__sppx__bc*daughter__bo1__cm__sppx__bc+daughter__bo1__cm__sppy__bc*daughter__bo1__cm__sppy__bc+daughter__bo1__cm__sppz__bc*daughter__bo1__cm__sppz__bc)^0.5"},
-    {"(daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5", "(daughter__bo2__cm__sppx__bc*daughter__bo2__cm__sppx__bc+daughter__bo2__cm__sppy__bc*daughter__bo2__cm__sppy__bc+daughter__bo2__cm__sppz__bc*daughter__bo2__cm__sppz__bc)^0.5"}
+    {"daughter__bo0__cm__spp__bc", "daughter__bo0__cm__spp__bc"},
+    {"daughter__bo1__cm__spp__bc", "daughter__bo1__cm__spp__bc"},
+    {"daughter__bo2__cm__spp__bc", "daughter__bo2__cm__spp__bc"}
+};
+
+std::map<std::string, std::string> momentum_isolation = {
+    {"daughter__bo0__cm__spp__bc", "daughter__bo0__cmminET2ETIsoScoreAsWeightedAvg__bomu__pl__cltaulfv__cm__sp0__cm__spECL__cm__spKLM__bc__bc"},
+    {"daughter__bo1__cm__spp__bc", "daughter__bo1__cmminET2ETIsoScoreAsWeightedAvg__bomu__pl__cltaulfv__cm__sp1__cm__spECL__cm__spKLM__bc__bc"},
+    {"daughter__bo2__cm__spp__bc", "daughter__bo2__cmminET2ETIsoScoreAsWeightedAvg__bomu__pl__cltaulfv__cm__sp2__cm__spECL__cm__spKLM__bc__bc"}
 };
 
 int main(int argc, char* argv[]) {
@@ -39,6 +45,9 @@ int main(int argc, char* argv[]) {
     loader.ConditionalPairDefineNewVariable(momentum_muonID, 0, "first_muon_muonID");
     loader.ConditionalPairDefineNewVariable(momentum_muonID, 1, "second_muon_muonID");
     loader.ConditionalPairDefineNewVariable(momentum_muonID, 2, "third_muon_muonID");
+    loader.ConditionalPairDefineNewVariable(momentum_isolation, 0, "first_muon_isolation");
+    loader.ConditionalPairDefineNewVariable(momentum_isolation, 1, "second_muon_isolation");
+    loader.ConditionalPairDefineNewVariable(momentum_isolation, 2, "third_muon_isolation");
     loader.DefineNewVariable("(E*E-px*px-py*py-pz*pz)^0.5", "M_inv_tau");
     loader.DefineNewVariable("charge*roeCharge__bocleanMask__bc", "charge_times_ROEcharge");
     loader.DefineNewVariable("(flightTime/flightTimeErr)", "flightTime_dividedby_flightTimeErr");
