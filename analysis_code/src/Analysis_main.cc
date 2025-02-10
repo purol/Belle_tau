@@ -24,8 +24,8 @@ std::map<std::string, std::string> momentum_muonmomentum = {
 
 std::map<std::string, std::string> momentum_isolation = {
     {"daughter__bo0__cm__spp__bc", "daughter__bo0__cmminET2ETIsoScoreAsWeightedAvg__bomu__pl__cltaulfv__cm__sp0__cm__spECL__cm__spKLM__bc__bc"},
-    {"daughter__bo1__cm__spp__bc", "daughter__bo1__cmminET2ETIsoScoreAsWeightedAvg__bomu__pl__cltaulfv__cm__sp1__cm__spECL__cm__spKLM__bc__bc"},
-    {"daughter__bo2__cm__spp__bc", "daughter__bo2__cmminET2ETIsoScoreAsWeightedAvg__bomu__pl__cltaulfv__cm__sp2__cm__spECL__cm__spKLM__bc__bc"}
+    {"daughter__bo1__cm__spp__bc", "daughter__bo0__cmminET2ETIsoScoreAsWeightedAvg__bomu__pl__cltaulfv__cm__sp1__cm__spECL__cm__spKLM__bc__bc"},
+    {"daughter__bo2__cm__spp__bc", "daughter__bo0__cmminET2ETIsoScoreAsWeightedAvg__bomu__pl__cltaulfv__cm__sp2__cm__spECL__cm__spKLM__bc__bc"}
 };
 
 int main(int argc, char* argv[]) {
