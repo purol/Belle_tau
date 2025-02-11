@@ -54,9 +54,6 @@ int main(int argc, char* argv[]) {
 
     loader.PrintInformation("========== initial ==========");
 
-    loader.Cut("((daughter__bo0__cmcosToThrustOfEvent__bc > 0) && (daughter__bo1__cmcosToThrustOfEvent__bc > 0) && (daughter__bo2__cmcosToThrustOfEvent__bc > 0)) || ((daughter__bo0__cmcosToThrustOfEvent__bc < 0) && (daughter__bo1__cmcosToThrustOfEvent__bc < 0) && (daughter__bo2__cmcosToThrustOfEvent__bc < 0))");
-    loader.PrintInformation("========== hemisphere criteria ==========");
-
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_M_deltaE_selection").c_str(), "", "");
     loader.Cut("(-0.9 < deltaE) && (deltaE < 0.4)");
     loader.PrintInformation("========== -0.9 < deltaE < 0.4 ==========");
