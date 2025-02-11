@@ -9,6 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
+#include <random>
 
 #include "TH1.h"
 #include "TH2.h"
@@ -22,9 +23,17 @@ private:
         double data_MC_ratio;
         double data_MC_uncertainty_statsys_dn;
         double data_MC_uncertainty_statsys_up;
+
+        // it is fluctuated data_MC_ratio. If FluctuateCorrectionFactor() is not called, it is nothing but `data_MC_ratio`
+        double data_MC_ratio_fluctuated;
     };
 
     std::vector<Entry> table;
+
+    // for the random fluctuation
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::normal_distribution<double> Normal_distribution(0.0, 1.0);
 
 public:
     Corrector_PID(const std::string& filename) {
@@ -78,6 +87,7 @@ public:
             entry.data_MC_ratio = std::stod(tokens[column_map["data_MC_ratio"]]);
             entry.data_MC_uncertainty_statsys_dn = std::stod(tokens[column_map["data_MC_uncertainty_statsys_dn"]]);
             entry.data_MC_uncertainty_statsys_up = std::stod(tokens[column_map["data_MC_uncertainty_statsys_up"]]);
+            entry.data_MC_ratio_fluctuated = entry.data_MC_ratio;
 
             table.push_back(entry);
         }
@@ -115,6 +125,26 @@ public:
         }
         return 1.0; // Indicate not found. Just return 1.0
     }
+
+    void FluctuateCorrectionFactor() {
+        for (size_t i = 0; i < table.size(); ++i) {
+            double random_number = Normal_distribution(gen);
+            if (random_number > 0) table.at(i).data_MC_ratio_fluctuated = table.at(i).data_MC_ratio + random_number * table.at(i).data_MC_uncertainty_statsys_up;
+            else table.at(i).data_MC_ratio_fluctuated = table.at(i).data_MC_ratio + random_number * table.at(i).data_MC_uncertainty_statsys_dn;
+        }
+    }
+
+    double GetFluctuatedCorrectionFactor(double p, double theta, const std::string& charge) const {
+        for (size_t i = 0; i < table.size(); ++i) {
+            if (table[i].charge == charge &&
+                table[i].p_min <= p && p < table[i].p_max &&
+                table[i].theta_min <= theta && theta < table[i].theta_max) {
+                return table[i].data_MC_ratio_fluctuated;
+            }
+        }
+        return 1.0; // Indicate not found. Just return 1.0
+    }
+
 };
 
 
