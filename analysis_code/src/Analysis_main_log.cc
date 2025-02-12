@@ -66,8 +66,8 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== 0.5 < muonID for leading muon ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_SecondarymuonID_selection").c_str(), "", "");
-    loader.Cut("0.3 < second_muon_muonID");
-    loader.PrintInformation("========== 0.3 < muonID for secondary muon ==========");
+    loader.Cut("0.5 < second_muon_muonID");
+    loader.PrintInformation("========== 0.5 < muonID for secondary muon ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_ThirdmuonID_selection").c_str(), "", "");
     loader.Cut("0.1 < third_muon_muonID");
