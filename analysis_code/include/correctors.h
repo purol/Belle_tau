@@ -112,7 +112,7 @@ public:
                 return table[i].data_MC_uncertainty_statsys_up;
             }
         }
-        return 1.0; // Indicate not found. Just return 1.0
+        return 0.0; // Indicate not found. Just return 0.0
     }
 
     double GetUncertaintyDown(double p, double theta, const std::string& charge) const {
@@ -123,7 +123,7 @@ public:
                 return table[i].data_MC_uncertainty_statsys_dn;
             }
         }
-        return 1.0; // Indicate not found. Just return 1.0
+        return 0.0; // Indicate not found. Just return 0.0
     }
 
     void FluctuateCorrectionFactor() {
