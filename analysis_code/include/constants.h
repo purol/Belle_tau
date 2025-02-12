@@ -34,4 +34,7 @@
 # define Nevt_SIGNAL (Nevt_taupair * BR_SIGNAL * 2.0)
 # define Scale_SIGNAL_MC15ri (Nevt_SIGNAL/Nevt_SIGNAL_MC15ri)
 
+// systematics
+# define track_rel_uncertainty 0.24 // %
+
 #endif 
