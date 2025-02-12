@@ -28,11 +28,11 @@ double M_right_sigma_g;
 double theta_g;
 
 double x_mapping_function(double M_, double deltaE_) {
-    if (((M_peak_g - 10.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g - 5.0 * M_left_sigma_g))) return 1.0;
+    if (((M_peak_g - 20.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g - 5.0 * M_left_sigma_g))) return 1.0;
     else if (((M_peak_g - 5.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g - 3.0 * M_left_sigma_g))) return 2.0;
     else if (((M_peak_g - 3.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g + 3.0 * M_right_sigma_g))) return 3.0;
     else if (((M_peak_g + 3.0 * M_right_sigma_g) < M_) && (M_ <= (M_peak_g + 5.0 * M_right_sigma_g))) return 4.0;
-    else if (((M_peak_g + 5.0 * M_right_sigma_g) < M_) && (M_ <= (M_peak_g + 10.0 * M_right_sigma_g))) return 5.0;
+    else if (((M_peak_g + 5.0 * M_right_sigma_g) < M_) && (M_ <= (M_peak_g + 20.0 * M_right_sigma_g))) return 5.0;
     else return 6.0;
 }
 
@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
     *   |     | |   | |     |
     *   |     | | 2 | |     |
     *   +-----+-+---+-+-----+---> M
-    *  -10  -5 -3  +3 +5   +10   
+    *  -20  -5 -3  +3 +5   +20   
     */
     TH1D* data_th1d = new TH1D("data_th1d", ";bin index;", 2, 0.5, 2.5);
     TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", 2, 0.5, 2.5);
@@ -174,10 +174,16 @@ int main(int argc, char* argv[]) {
     signal_MC_th1d->SetBinError(2, signal_MC_th2d->GetBinError(3, 1));
 
     // here, we interpolate expected backgrounds from sideband
-    bkg_MC_th1d->SetBinContent(1, data_th2d->GetBinContent(1, 2) + data_th2d->GetBinContent(5, 2));
-    bkg_MC_th1d->SetBinContent(2, (data_th2d->GetBinContent(2, 1) + data_th2d->GetBinContent(4, 1)) * (6.0 / 4.0));
-    bkg_MC_th1d->SetBinError(1, std::sqrt(data_th2d->GetBinError(1, 2) * data_th2d->GetBinError(1, 2) + data_th2d->GetBinError(5, 2) * data_th2d->GetBinError(5, 2)));
-    bkg_MC_th1d->SetBinError(2, std::sqrt(data_th2d->GetBinError(2, 1) * data_th2d->GetBinError(2, 1) + data_th2d->GetBinError(4, 1) * data_th2d->GetBinError(4, 1)) * (6.0 / 4.0));
+    bkg_MC_th1d->SetBinContent(1, (data_th2d->GetBinContent(1, 2) + data_th2d->GetBinContent(5, 2)) * (bkg_MC_th2d->GetBinContent(2, 2) + bkg_MC_th2d->GetBinContent(3, 2) + bkg_MC_th2d->GetBinContent(4, 2)) / (bkg_MC_th2d->GetBinContent(1, 2) + bkg_MC_th2d->GetBinContent(5, 2)));
+    bkg_MC_th1d->SetBinContent(2, (data_th2d->GetBinContent(1, 1) + data_th2d->GetBinContent(5, 1)) * bkg_MC_th2d->GetBinContent(3, 1) / (bkg_MC_th2d->GetBinContent(1, 1) + bkg_MC_th2d->GetBinContent(5, 1)) );
+    double bkg_MC_th1d_reluncer_1_1 = std::sqrt((data_th2d->GetBinError(1, 2) * data_th2d->GetBinError(1, 2) + data_th2d->GetBinError(5, 2) * data_th2d->GetBinError(5, 2)) / std::pow(data_th2d->GetBinContent(1, 2) + data_th2d->GetBinContent(5, 2), 2));
+    double bkg_MC_th1d_reluncer_1_2 = std::sqrt((bkg_MC_th2d->GetBinError(2, 2) * bkg_MC_th2d->GetBinError(2, 2) + bkg_MC_th2d->GetBinError(3, 2) * bkg_MC_th2d->GetBinError(3, 2) + bkg_MC_th2d->GetBinError(4, 2) * bkg_MC_th2d->GetBinError(4, 2)) / std::pow(bkg_MC_th2d->GetBinContent(2, 2) + bkg_MC_th2d->GetBinContent(3, 2) + bkg_MC_th2d->GetBinContent(4, 2), 2));
+    double bkg_MC_th1d_reluncer_1_3 = std::sqrt((bkg_MC_th2d->GetBinError(1, 2) * bkg_MC_th2d->GetBinError(1, 2) + bkg_MC_th2d->GetBinError(5, 2) * bkg_MC_th2d->GetBinError(5, 2)) / std::pow(bkg_MC_th2d->GetBinContent(1, 2) + bkg_MC_th2d->GetBinContent(5, 2), 2));
+    bkg_MC_th1d->SetBinError(1, bkg_MC_th1d->GetBinContent(1) * std::sqrt(bkg_MC_th1d_reluncer_1_1 * bkg_MC_th1d_reluncer_1_1 + bkg_MC_th1d_reluncer_1_2 * bkg_MC_th1d_reluncer_1_2 + bkg_MC_th1d_reluncer_1_3 * bkg_MC_th1d_reluncer_1_3));
+    double bkg_MC_th1d_reluncer_2_1 = std::sqrt((data_th2d->GetBinError(1, 1) * data_th2d->GetBinError(1, 1) + data_th2d->GetBinError(5, 1) * data_th2d->GetBinError(5, 1)) / std::pow(data_th2d->GetBinContent(1, 1) + data_th2d->GetBinContent(5, 1), 2));
+    double bkg_MC_th1d_reluncer_2_2 = bkg_MC_th2d->GetBinError(3, 1) / bkg_MC_th2d->GetBinContent(3, 1);
+    double bkg_MC_th1d_reluncer_2_3 = std::sqrt((bkg_MC_th2d->GetBinError(1, 1) * bkg_MC_th2d->GetBinError(1, 1) + bkg_MC_th2d->GetBinError(5, 1) * bkg_MC_th2d->GetBinError(5, 1)) / std::pow(bkg_MC_th2d->GetBinContent(1, 1) + bkg_MC_th2d->GetBinContent(5, 1), 2));
+    bkg_MC_th1d->SetBinError(2, bkg_MC_th1d->GetBinContent(2) * std::sqrt(bkg_MC_th1d_reluncer_2_1 * bkg_MC_th1d_reluncer_2_1 + bkg_MC_th1d_reluncer_2_2 * bkg_MC_th1d_reluncer_2_2 + bkg_MC_th1d_reluncer_2_3 * bkg_MC_th1d_reluncer_2_3));
 
     // calculate stat err
     signal_MC_th1d_stat_err->SetBinContent(1, signal_MC_th1d->GetBinError(1) / signal_MC_th1d->GetBinContent(1));
@@ -194,14 +200,14 @@ int main(int argc, char* argv[]) {
     printf("\n");
 
     printf("signal:\n");
-    printf("%lf+-%lf %lf+-%lf %lf+-%lf\n", signal_MC_th2d->GetBinContent(1, 2), signal_MC_th2d->GetBinError(1, 2), signal_MC_th2d->GetBinContent(2, 2), signal_MC_th2d->GetBinError(2, 2), signal_MC_th2d->GetBinContent(3, 2), signal_MC_th2d->GetBinError(3, 2), signal_MC_th2d->GetBinContent(4, 2), signal_MC_th2d->GetBinError(4, 2), signal_MC_th2d->GetBinContent(5, 2), signal_MC_th2d->GetBinError(5, 2));
-    printf("%lf+-%lf %lf+-%lf %lf+-%lf\n", signal_MC_th2d->GetBinContent(1, 1), signal_MC_th2d->GetBinError(1, 1), signal_MC_th2d->GetBinContent(2, 1), signal_MC_th2d->GetBinError(2, 1), signal_MC_th2d->GetBinContent(3, 1), signal_MC_th2d->GetBinError(3, 1), signal_MC_th2d->GetBinContent(4, 1), signal_MC_th2d->GetBinError(4, 1), signal_MC_th2d->GetBinContent(5, 1), signal_MC_th2d->GetBinError(5, 1));
+    printf("%lf+-%lf %lf+-%lf %lf+-%lf %lf+-%lf %lf+-%lf\n", signal_MC_th2d->GetBinContent(1, 2), signal_MC_th2d->GetBinError(1, 2), signal_MC_th2d->GetBinContent(2, 2), signal_MC_th2d->GetBinError(2, 2), signal_MC_th2d->GetBinContent(3, 2), signal_MC_th2d->GetBinError(3, 2), signal_MC_th2d->GetBinContent(4, 2), signal_MC_th2d->GetBinError(4, 2), signal_MC_th2d->GetBinContent(5, 2), signal_MC_th2d->GetBinError(5, 2));
+    printf("%lf+-%lf %lf+-%lf %lf+-%lf %lf+-%lf %lf+-%lf\n", signal_MC_th2d->GetBinContent(1, 1), signal_MC_th2d->GetBinError(1, 1), signal_MC_th2d->GetBinContent(2, 1), signal_MC_th2d->GetBinError(2, 1), signal_MC_th2d->GetBinContent(3, 1), signal_MC_th2d->GetBinError(3, 1), signal_MC_th2d->GetBinContent(4, 1), signal_MC_th2d->GetBinError(4, 1), signal_MC_th2d->GetBinContent(5, 1), signal_MC_th2d->GetBinError(5, 1));
 
     printf("\n");
 
     printf("bkg:\n");
-    printf("%lf+-%lf %lf+-%lf %lf+-%lf\n", bkg_MC_th2d->GetBinContent(1, 2), bkg_MC_th2d->GetBinError(1, 2), bkg_MC_th2d->GetBinContent(2, 2), bkg_MC_th2d->GetBinError(2, 2), bkg_MC_th2d->GetBinContent(3, 2), bkg_MC_th2d->GetBinError(3, 2), bkg_MC_th2d->GetBinContent(4, 2), bkg_MC_th2d->GetBinError(4, 2), bkg_MC_th2d->GetBinContent(5, 2), bkg_MC_th2d->GetBinError(5, 2));
-    printf("%lf+-%lf %lf+-%lf %lf+-%lf\n", bkg_MC_th2d->GetBinContent(1, 1), bkg_MC_th2d->GetBinError(1, 1), bkg_MC_th2d->GetBinContent(2, 1), bkg_MC_th2d->GetBinError(2, 1), bkg_MC_th2d->GetBinContent(3, 1), bkg_MC_th2d->GetBinError(3, 1), bkg_MC_th2d->GetBinContent(4, 1), bkg_MC_th2d->GetBinError(4, 1), bkg_MC_th2d->GetBinContent(5, 1), bkg_MC_th2d->GetBinError(5, 1));
+    printf("%lf+-%lf %lf+-%lf %lf+-%lf %lf+-%lf %lf+-%lf\n", bkg_MC_th2d->GetBinContent(1, 2), bkg_MC_th2d->GetBinError(1, 2), bkg_MC_th2d->GetBinContent(2, 2), bkg_MC_th2d->GetBinError(2, 2), bkg_MC_th2d->GetBinContent(3, 2), bkg_MC_th2d->GetBinError(3, 2), bkg_MC_th2d->GetBinContent(4, 2), bkg_MC_th2d->GetBinError(4, 2), bkg_MC_th2d->GetBinContent(5, 2), bkg_MC_th2d->GetBinError(5, 2));
+    printf("%lf+-%lf %lf+-%lf %lf+-%lf %lf+-%lf %lf+-%lf\n", bkg_MC_th2d->GetBinContent(1, 1), bkg_MC_th2d->GetBinError(1, 1), bkg_MC_th2d->GetBinContent(2, 1), bkg_MC_th2d->GetBinError(2, 1), bkg_MC_th2d->GetBinContent(3, 1), bkg_MC_th2d->GetBinError(3, 1), bkg_MC_th2d->GetBinContent(4, 1), bkg_MC_th2d->GetBinError(4, 1), bkg_MC_th2d->GetBinContent(5, 1), bkg_MC_th2d->GetBinError(5, 1));
 
     printf("\n");
 
