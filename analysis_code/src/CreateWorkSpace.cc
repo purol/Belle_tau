@@ -126,13 +126,13 @@ int main(int argc, char* argv[]) {
     // signal MC
     Loader loader_signal("tau_lfv");
     for (int i = 0; i < signal_list.size(); i++) loader_signal.Load((argv[1] + std::string("/") + signal_list.at(i) + std::string("/") + std::string(argv[2])).c_str(), "root", signal_list.at(i).c_str());
-    loader_data.FillCustomizedTH2D(signal_MC_th2d, "M_inv_tau", "deltaE", x_mapping_function, y_mapping_function);
+    loader_signal.FillCustomizedTH2D(signal_MC_th2d, "M_inv_tau", "deltaE", x_mapping_function, y_mapping_function);
     loader_signal.end();
 
     // background MC
     Loader loader_bkg("tau_lfv");
     for (int i = 0; i < background_list.size(); i++) loader_bkg.Load((argv[1] + std::string("/") + background_list.at(i) + std::string("/") + std::string(argv[2])).c_str(), "root", background_list.at(i).c_str());
-    loader_data.FillCustomizedTH2D(bkg_MC_th2d, "M_inv_tau", "deltaE", x_mapping_function, y_mapping_function);
+    loader_bkg.FillCustomizedTH2D(bkg_MC_th2d, "M_inv_tau", "deltaE", x_mapping_function, y_mapping_function);
     loader_bkg.end();
 
 
