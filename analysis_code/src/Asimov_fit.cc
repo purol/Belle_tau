@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 	RooStats::UseNLLOffset(true); // default off
 
 	// read workspace
-	const char* fname = "./PDFandDATA_workspace.root";
+	const char* fname = "./workspace.root";
 	TFile* f = TFile::Open(fname);
 	RooWorkspace* w = (RooWorkspace*)f->Get("combined");
 
