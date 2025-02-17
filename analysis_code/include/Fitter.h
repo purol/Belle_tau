@@ -9,7 +9,9 @@
 #include <TMath.h>
 
 #include <RooStats/ModelConfig.h>
-#include <RooStats/RooSimultaneous.h>
+#include <RooStats/RooStatsUtils.h>
+
+#include <RooSimultaneous.h>
 
 RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0, bool Minos = true) {
     // what we have done
