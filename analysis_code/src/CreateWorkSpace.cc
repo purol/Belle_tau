@@ -186,10 +186,17 @@ int main(int argc, char* argv[]) {
     bkg_MC_th1d->SetBinError(2, bkg_MC_th1d->GetBinContent(2) * std::sqrt(bkg_MC_th1d_reluncer_2_1 * bkg_MC_th1d_reluncer_2_1 + bkg_MC_th1d_reluncer_2_2 * bkg_MC_th1d_reluncer_2_2 + bkg_MC_th1d_reluncer_2_3 * bkg_MC_th1d_reluncer_2_3));
 
     // calculate stat err
-    signal_MC_th1d_stat_err->SetBinContent(1, signal_MC_th1d->GetBinError(1) / signal_MC_th1d->GetBinContent(1));
-    signal_MC_th1d_stat_err->SetBinContent(2, signal_MC_th1d->GetBinError(2) / signal_MC_th1d->GetBinContent(2));
-    bkg_MC_th1d_stat_err->SetBinContent(1, bkg_MC_th1d->GetBinError(1) / bkg_MC_th1d->GetBinContent(1));
-    bkg_MC_th1d_stat_err->SetBinContent(2, bkg_MC_th1d->GetBinError(2) / bkg_MC_th1d->GetBinContent(2));
+    if(signal_MC_th1d->GetBinContent(1) != 0.0) signal_MC_th1d_stat_err->SetBinContent(1, signal_MC_th1d->GetBinError(1) / signal_MC_th1d->GetBinContent(1));
+    else signal_MC_th1d_stat_err->SetBinContent(1, 0.0);
+
+    if (signal_MC_th1d->GetBinContent(2) != 0.0) signal_MC_th1d_stat_err->SetBinContent(2, signal_MC_th1d->GetBinError(2) / signal_MC_th1d->GetBinContent(2));
+    else signal_MC_th1d_stat_err->SetBinContent(2, 0.0);
+
+    if (bkg_MC_th1d->GetBinContent(1) != 0.0) bkg_MC_th1d_stat_err->SetBinContent(1, bkg_MC_th1d->GetBinError(1) / bkg_MC_th1d->GetBinContent(1));
+    else bkg_MC_th1d_stat_err->SetBinContent(1, 0.0);
+
+    if (bkg_MC_th1d->GetBinContent(2) != 0.0) bkg_MC_th1d_stat_err->SetBinContent(2, bkg_MC_th1d->GetBinError(2) / bkg_MC_th1d->GetBinContent(2));
+    else bkg_MC_th1d_stat_err->SetBinContent(2, 0.0);
 
 
     // print information
