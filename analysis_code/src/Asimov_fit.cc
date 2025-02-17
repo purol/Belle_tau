@@ -10,6 +10,7 @@
 #include <TIterator.h>
 #include <TObject.h>
 #include <RooRealVar.h>
+#include <TFile.h>
 
 int main(int argc, char* argv[]) {
 
