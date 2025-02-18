@@ -21,6 +21,7 @@
 #include <TLegend.h>
 #include <TLine.h>
 #include <RooCategory.h>
+#include <TPaveText.h>
 
 #include <RooStats/ModelConfig.h>
 #include <RooStats/RooStatsUtils.h>
@@ -223,7 +224,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char* pl
 
 RooDataSet* MyGenerate(RooWorkspace* w, std::vector<double> Nevts, bool extended) {
 
-    RooStats::ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
     // get variables and weight

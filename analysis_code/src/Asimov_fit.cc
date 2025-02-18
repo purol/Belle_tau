@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	// draw plot
-	GetPlotTemplate(w, data, "./hist_data_plot.png")
+	GetPlotTemplate(w, data, "./hist_data_plot.png");
 
 	return 0;
 }
