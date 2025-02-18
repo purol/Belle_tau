@@ -185,7 +185,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char* pl
         data_hist->SetMarkerStyle(8);
         data_hist->Draw("SAME eP EX0");
     }
-    TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
+    TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.7);
     legend->SetFillStyle(0); legend->SetLineWidth(0);
 
     // write Belle text
