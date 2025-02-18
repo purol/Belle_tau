@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <random>
 
 #include <RooWorkspace.h>
 #include <RooDataSet.h>
@@ -10,11 +11,22 @@
 #include <RooArgSet.h>
 #include <RooMinimizer.h>
 #include <TMath.h>
+#include <RooSimultaneous.h>
+#include <THStack.h>
+#include <TH1.h>
+#include <TCanvas.h>
+#include <TPad.h>
+#include <TStyle.h>
+#include <TColor.h>
+#include <TLegend.h>
+#include <TLine.h>
+#include <RooCategory.h>
 
 #include <RooStats/ModelConfig.h>
 #include <RooStats/RooStatsUtils.h>
 
-#include <RooSimultaneous.h>
+std::random_device rd;
+std::default_random_engine generator(rd());
 
 std::vector<std::string> scaleFactors_pdf_names = {
     "signal_Belle_II_Belle_II_scaleFactors",
@@ -211,7 +223,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char* pl
 
 RooDataSet* MyGenerate(RooWorkspace* w, std::vector<double> Nevts, bool extended) {
 
-    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooStats::ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
     // get variables and weight
@@ -230,14 +242,14 @@ RooDataSet* MyGenerate(RooWorkspace* w, std::vector<double> Nevts, bool extended
         channelCat->setLabel("Belle_II");
 
         // generate
-        if (Nevts.at(j) > 0.00001) {
+        if (Nevts.at(i) > 0.00001) {
             if (extended) {
-                std::poisson_distribution<int> distribution((int)floor(Nevts.at(j) + 0.5));
+                std::poisson_distribution<int> distribution((int)floor(Nevts.at(i) + 0.5));
                 int Nentry_with_fluctuation = distribution(generator);
                 genData->add(RooArgSet(*x_val, *channelCat), Nentry_with_fluctuation);
             }
             else {
-                genData->add(RooArgSet(*x_val, *channelCat), (int)floor(Nevts.at(j) + 0.5));
+                genData->add(RooArgSet(*x_val, *channelCat), (int)floor(Nevts.at(i) + 0.5));
             }
         }
         else { // no event. Maybe because of partial unblind. Just set 0
