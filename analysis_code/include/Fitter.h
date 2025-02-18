@@ -136,8 +136,8 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char* pl
             double Nevt = (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
 
             temp_hist->SetBinContent(iBin + 1, temp_hist->GetBinContent(iBin + 1) + Nevt);
-            all_hist->Fill(iBin, Nevt);
-            all_hist->SetBinError(iBin, 0);
+            all_hist->Fill(iBin + 1, Nevt);
+            all_hist->SetBinError(iBin + 1, 0);
         }
 
         *x_val = oldVal;
