@@ -209,4 +209,46 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char* pl
 
 }
 
+RooDataSet* MyGenerate(RooWorkspace* w, std::vector<double> Nevts, bool extended) {
+
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+    // get variables and weight
+    RooRealVar* x_val = w->var("obs_x_Belle_II");
+    RooAbsBinning const& binning = x_val->getBinning();
+    const double oldVal = x_val->getVal();
+
+    RooCategory* channelCat = (RooCategory*)(&model->indexCat());
+    RooRealVar* weight_ = new RooRealVar("weight_", "", 0.0, 1000.0);
+
+    // define data
+    RooDataSet* genData = new RooDataSet("hmaster", "hmaster", RooArgSet(*x_val, *channelCat, *weight_), weight_->GetName());
+
+    for (int i = 0; i < binning.numBins(); i++) {
+        x_val->setVal(0.5 + i);
+        channelCat->setLabel("Belle_II");
+
+        // generate
+        if (Nevts.at(j) > 0.00001) {
+            if (extended) {
+                std::poisson_distribution<int> distribution((int)floor(Nevts.at(j) + 0.5));
+                int Nentry_with_fluctuation = distribution(generator);
+                genData->add(RooArgSet(*x_val, *channelCat), Nentry_with_fluctuation);
+            }
+            else {
+                genData->add(RooArgSet(*x_val, *channelCat), (int)floor(Nevts.at(j) + 0.5));
+            }
+        }
+        else { // no event. Maybe because of partial unblind. Just set 0
+            genData->add(RooArgSet(*x_val, *channelCat), 0);
+        }
+    }
+
+    delete weight_;
+
+    return genData;
+}
+
+
 #endif 
