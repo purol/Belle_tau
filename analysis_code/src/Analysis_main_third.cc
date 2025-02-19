@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
 
     // I do not want to do fine tuning...
     BDT_cut_1 = BDT_cut_1 - 0.02;
-    BDT_cut_2 = BDT_cut_2 - 0.02;
+    BDT_cut_2 = BDT_cut_2 - 0.002;
 
     ObtainWeight = MyScaleFunction_halfsplit;
 
