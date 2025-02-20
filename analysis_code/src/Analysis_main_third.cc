@@ -56,6 +56,10 @@ int main(int argc, char* argv[]) {
     loader.Cut(cut_total.c_str());
     loader.PrintInformation(("========== BDT1 > " + std::to_string(BDT_cut_1) + ", BDT2 > " + std::to_string(BDT_cut_2) + " ==========").c_str());
 
+    loader.RandomBCS();
+    loader.IsBCSValid();
+    loader.PrintInformation("========== Random BCS ==========");
+
     loader.PrintSeparateRootFile(argv[3], "", "");
 
     loader.end();
