@@ -1,12 +1,12 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-# define Scale_CHG_MC15ri (0.36537/1.0)
-# define Scale_MIX_MC15ri (0.36537/1.0)
-# define Scale_UUBAR_MC15ri (0.36537/1.0)
-# define Scale_DDBAR_MC15ri (0.36537/1.0)
-# define Scale_SSBAR_MC15ri (0.36537/1.0)
-# define Scale_CHARM_MC15ri (0.36537/1.0)
+# define Scale_CHG_MC15ri (0.36537/3.0)
+# define Scale_MIX_MC15ri (0.36537/3.0)
+# define Scale_UUBAR_MC15ri (0.36537/2.0)
+# define Scale_DDBAR_MC15ri (0.36537/2.0)
+# define Scale_SSBAR_MC15ri (0.36537/2.0)
+# define Scale_CHARM_MC15ri (0.36537/2.0)
 # define Scale_MUMU_MC15ri (0.36537/1.0)
 # define Scale_EE_MC15ri (0.36537/0.1)
 # define Scale_EEEE_MC15ri (0.36537/0.2)
