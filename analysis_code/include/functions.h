@@ -126,10 +126,10 @@ std::string get_ellipse_region_two(const char* deltaE_name_, const char* M_name_
 std::string get_square_region_one(const char* deltaE_name_, const char* M_name_, double sigma_, double deltaE_peak_, double deltaE_left_sigma_, double deltaE_right_sigma_, double M_peak_, double M_left_sigma_, double M_right_sigma_, double theta_) {
 
     // M direction criteria
-    std::string condition_M = "((" + std::to_string(M_peak_ - 5 * M_left_sigma_) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak_ + 5 * M_right_sigma_) + "))";
+    std::string condition_M = "((" + std::to_string(M_peak_ - sigma_ * M_left_sigma_) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak_ + sigma_ * M_right_sigma_) + "))";
 
     // deltaE direction criteria
-    std::string condition_deltaE = "((" + std::to_string(deltaE_peak_ - 5 * deltaE_left_sigma_) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak_ + 5 * deltaE_right_sigma_) + "))";
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak_ - sigma_ * deltaE_left_sigma_) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak_ + sigma_ * deltaE_right_sigma_) + "))";
 
     std::string total = condition_M + "&&" + condition_deltaE;
 
@@ -140,10 +140,10 @@ std::string get_square_region_one(const char* deltaE_name_, const char* M_name_,
 std::string get_square_region_two(const char* deltaE_name_, const char* M_name_, double sigma_, double deltaE_peak_, double deltaE_left_sigma_, double deltaE_right_sigma_, double M_peak_, double M_left_sigma_, double M_right_sigma_, double theta_) {
 
     // M direction criteria
-    std::string condition_M = "((" + std::to_string(M_peak_ - 5 * M_left_sigma_) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak_ + 5 * M_right_sigma_) + "))";
+    std::string condition_M = "((" + std::to_string(M_peak_ - sigma_ * M_left_sigma_) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak_ + sigma_ * M_right_sigma_) + "))";
 
     // deltaE direction criteria
-    std::string condition_deltaE = "(" + std::string(deltaE_name_) + "< " + std::to_string(deltaE_peak_ - 5 * deltaE_left_sigma_) + ")";
+    std::string condition_deltaE = "(" + std::string(deltaE_name_) + "< " + std::to_string(deltaE_peak_ - sigma_ * deltaE_left_sigma_) + ")";
 
     std::string total = condition_M + "&&" + condition_deltaE;
 
