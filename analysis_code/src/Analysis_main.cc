@@ -28,6 +28,13 @@ std::map<std::string, std::string> momentum_isolation = {
     {"daughter__bo2__cm__spp__bc", "daughter__bo2__cmminET2ETIsoScoreAsWeightedAvg__bomu__pl__cltaulfv__cm__sp0__cm__spECL__cm__spKLM__bc__bc"}
 };
 
+std::map<std::string, std::string> momentum_theta = {
+    {"daughter__bo0__cm__spp__bc", "daughter__bo0__cm__sptheta__bc"},
+    {"daughter__bo1__cm__spp__bc", "daughter__bo1__cm__sptheta__bc"},
+    {"daughter__bo2__cm__spp__bc", "daughter__bo2__cm__sptheta__bc"}
+};
+
+
 int main(int argc, char* argv[]) {
     /*
     * argv[1]: dirname
@@ -50,6 +57,9 @@ int main(int argc, char* argv[]) {
     loader.ConditionalPairDefineNewVariable(momentum_isolation, 0, "first_muon_isolation");
     loader.ConditionalPairDefineNewVariable(momentum_isolation, 1, "second_muon_isolation");
     loader.ConditionalPairDefineNewVariable(momentum_isolation, 2, "third_muon_isolation");
+    loader.ConditionalPairDefineNewVariable(momentum_theta, 0, "first_muon_theta");
+    loader.ConditionalPairDefineNewVariable(momentum_theta, 1, "second_muon_theta");
+    loader.ConditionalPairDefineNewVariable(momentum_theta, 2, "third_muon_theta");
     loader.DefineNewVariable("(E*E-px*px-py*py-pz*pz)^0.5", "M_inv_tau");
     loader.DefineNewVariable("charge*roeCharge__bocleanMask__bc", "charge_times_ROEcharge");
     loader.DefineNewVariable("(flightTime/flightTimeErr)", "flightTime_dividedby_flightTimeErr");

@@ -18,6 +18,81 @@
 #include "MyObtainWeight.h"
 #include "functions.h"
 #include "MyModule.h"
+#include "correctors.h"
+#include "data.h"
+
+Corrector_PID muonID_corrector_05("/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC15ri");
+
+double MyScaleFunction_correction_halfsplit(std::vector<Data>::iterator data_, std::vector<std::string> variable_names_) {
+
+    std::vector<std::string>::iterator it;
+    
+    // first muonID correction
+    double first_muon_p;
+    double first_muon_theta;
+    double first_muon_correction;
+    it = std::find(variable_names_.begin(), variable_names_.end(), "first_muon_p");
+    if (it != variable_names_.end()) {
+        int index = std::distance(variable_names_.begin(), it);
+        first_muon_p = std::get<double>((*data_).variable.at(index));
+    }
+    it = std::find(variable_names_.begin(), variable_names_.end(), "first_muon_theta");
+    if (it != variable_names_.end()) {
+        int index = std::distance(variable_names_.begin(), it);
+        first_muon_theta = std::get<double>((*data_).variable.at(index));
+    }
+    first_muon_correction = muonID_corrector_05.GetCorrectionFactor(first_muon_p, first_muon_theta, "+");
+
+    // second muonID correction
+    double second_muon_p;
+    double second_muon_theta;
+    double second_muon_correction;
+    it = std::find(variable_names_.begin(), variable_names_.end(), "second_muon_p");
+    if (it != variable_names_.end()) {
+        int index = std::distance(variable_names_.begin(), it);
+        second_muon_p = std::get<double>((*data_).variable.at(index));
+    }
+    it = std::find(variable_names_.begin(), variable_names_.end(), "second_muon_theta");
+    if (it != variable_names_.end()) {
+        int index = std::distance(variable_names_.begin(), it);
+        second_muon_theta = std::get<double>((*data_).variable.at(index));
+    }
+    second_muon_correction = muonID_corrector_05.GetCorrectionFactor(second_muon_p, second_muon_theta, "+");
+
+    double total_correction = first_muon_correction * second_muon_correction;
+
+    if ((*data_).filename.find("CHG_") != std::string::npos) return 2.0 * Scale_CHG_MC15ri * total_correction;
+    else if ((*data_).filename.find("MIX_") != std::string::npos) return 2.0 * Scale_MIX_MC15ri * total_correction;
+    else if ((*data_).filename.find("UUBAR_") != std::string::npos) return 2.0 * Scale_UUBAR_MC15ri * total_correction;
+    else if ((*data_).filename.find("DDBAR_") != std::string::npos) return 2.0 * Scale_DDBAR_MC15ri * total_correction;
+    else if ((*data_).filename.find("SSBAR_") != std::string::npos) return 2.0 * Scale_SSBAR_MC15ri * total_correction;
+    else if ((*data_).filename.find("CHARM_") != std::string::npos) return 2.0 * Scale_CHARM_MC15ri * total_correction;
+    else if ((*data_).filename.find("MUMU_") != std::string::npos) return 2.0 * Scale_MUMU_MC15ri * total_correction;
+    else if ((*data_).filename.find("EE_") != std::string::npos) return 2.0 * Scale_EE_MC15ri * total_correction;
+    else if ((*data_).filename.find("EEEE_") != std::string::npos) return 2.0 * Scale_EEEE_MC15ri * total_correction;
+    else if ((*data_).filename.find("EEMUMU_") != std::string::npos) return 2.0 * Scale_EEMUMU_MC15ri * total_correction;
+    else if ((*data_).filename.find("EEPIPI_") != std::string::npos) return 2.0 * Scale_EEPIPI_MC15ri * total_correction;
+    else if ((*data_).filename.find("EEKK_") != std::string::npos) return 2.0 * Scale_EEKK_MC15ri * total_correction;
+    else if ((*data_).filename.find("EEPP_") != std::string::npos) return 2.0 * Scale_EEPP_MC15ri * total_correction;
+    else if ((*data_).filename.find("PIPIISR_") != std::string::npos) return 2.0 * Scale_PIPIISR_MC15ri * total_correction;
+    else if ((*data_).filename.find("KKISR_") != std::string::npos) return 2.0 * Scale_KKISR_MC15ri * total_correction;
+    else if ((*data_).filename.find("GG_") != std::string::npos) return 2.0 * Scale_GG_MC15ri * total_correction;
+    else if ((*data_).filename.find("EETAUTAU_") != std::string::npos) return 2.0 * Scale_EETAUTAU_MC15ri * total_correction;
+    else if ((*data_).filename.find("K0K0BARISR_") != std::string::npos) return 2.0 * Scale_K0K0BARISR_MC15ri * total_correction;
+    else if ((*data_).filename.find("MUMUMUMU_") != std::string::npos) return 2.0 * Scale_MUMUMUMU_MC15ri * total_correction;
+    else if ((*data_).filename.find("MUMUTAUTAU_") != std::string::npos) return 2.0 * Scale_MUMUTAUTAU_MC15ri * total_correction;
+    else if ((*data_).filename.find("TAUTAUTAUTAU_") != std::string::npos) return 2.0 * Scale_TAUTAUTAUTAU_MC15ri * total_correction;
+    else if ((*data_).filename.find("TAUPAIR_") != std::string::npos) return 2.0 * Scale_TAUPAIR_MC15ri * total_correction;
+    else if ((*data_).filename.find("SIGNAL_") != std::string::npos) return 2.0 * Scale_SIGNAL_MC15ri * total_correction;
+    else {
+        printf("unexpected sample type\n");
+        exit(1);
+        return 0.0;
+    }
+    printf("unexpected sample type\n");
+    exit(1);
+    return 0.0;
+}
 
 double deltaE_peak_g;
 double deltaE_left_sigma_g;
@@ -43,7 +118,7 @@ double y_mapping_function(double M_, double deltaE_) {
 }
 
 void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH2D* data_th2d_, TH2D* signal_MC_th2d_, TH2D* bkg_MC_th2d_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_) {
-    // data (we do not open the box, so I just use background MC)
+    // data
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
     loader_data.FillCustomizedTH2D(data_th2d_, "M_inv_tau", "deltaE", x_mapping_function, y_mapping_function);
@@ -198,9 +273,11 @@ int main(int argc, char* argv[]) {
     M_right_sigma_g = M_right_sigma;
     theta_g = theta;
 
-    ObtainWeight = MyScaleFunction_halfsplit;
+    ObtainWeight = MyScaleFunction_correction_halfsplit;
 
+    // we do not open the box, so I just use background MC
     FillHistogram(argv[1], argv[2], data_th2d, signal_MC_th2d, bkg_MC_th2d, background_list, signal_list, background_list);
+
     ConvertHistogram(data_th2d, signal_MC_th2d, bkg_MC_th2d, data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err);
 
 
