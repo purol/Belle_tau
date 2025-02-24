@@ -42,6 +42,86 @@ double y_mapping_function(double M_, double deltaE_) {
     else return 3.0;
 }
 
+void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH2D* data_th2d_, TH2D* signal_MC_th2d_, TH2D* bkg_MC_th2d_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_) {
+    // data (we do not open the box, so I just use background MC)
+    Loader loader_data("tau_lfv");
+    for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
+    loader_data.FillCustomizedTH2D(data_th2d_, "M_inv_tau", "deltaE", x_mapping_function, y_mapping_function);
+    loader_data.end();
+
+    // signal MC
+    Loader loader_signal("tau_lfv");
+    for (int i = 0; i < signal_list_.size(); i++) loader_signal.Load((input_path_1_ + std::string("/") + signal_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", signal_list_.at(i).c_str());
+    loader_signal.FillCustomizedTH2D(signal_MC_th2d_, "M_inv_tau", "deltaE", x_mapping_function, y_mapping_function);
+    loader_signal.end();
+
+    // background MC
+    Loader loader_bkg("tau_lfv");
+    for (int i = 0; i < background_list_.size(); i++) loader_bkg.Load((input_path_1_ + std::string("/") + background_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", background_list_.at(i).c_str());
+    loader_bkg.FillCustomizedTH2D(bkg_MC_th2d_, "M_inv_tau", "deltaE", x_mapping_function, y_mapping_function);
+    loader_bkg.end();
+
+
+
+    // We do not open the box, So data_th2d is MC. We use the proper uncertainty
+    data_th2d_->SetBinError(1, 1, std::sqrt(data_th2d_->GetBinContent(1, 1)));
+    data_th2d_->SetBinError(1, 2, std::sqrt(data_th2d_->GetBinContent(1, 2)));
+    data_th2d_->SetBinError(1, 3, std::sqrt(data_th2d_->GetBinContent(1, 3)));
+    data_th2d_->SetBinError(2, 1, std::sqrt(data_th2d_->GetBinContent(2, 1)));
+    data_th2d_->SetBinError(2, 2, std::sqrt(data_th2d_->GetBinContent(2, 2)));
+    data_th2d_->SetBinError(2, 3, std::sqrt(data_th2d_->GetBinContent(2, 3)));
+    data_th2d_->SetBinError(3, 1, std::sqrt(data_th2d_->GetBinContent(3, 1)));
+    data_th2d_->SetBinError(3, 2, std::sqrt(data_th2d_->GetBinContent(3, 2)));
+    data_th2d_->SetBinError(3, 3, std::sqrt(data_th2d_->GetBinContent(3, 3)));
+    data_th2d_->SetBinError(4, 1, std::sqrt(data_th2d_->GetBinContent(4, 1)));
+    data_th2d_->SetBinError(4, 2, std::sqrt(data_th2d_->GetBinContent(4, 2)));
+    data_th2d_->SetBinError(4, 3, std::sqrt(data_th2d_->GetBinContent(4, 3)));
+    data_th2d_->SetBinError(5, 1, std::sqrt(data_th2d_->GetBinContent(5, 1)));
+    data_th2d_->SetBinError(5, 2, std::sqrt(data_th2d_->GetBinContent(5, 2)));
+    data_th2d_->SetBinError(5, 3, std::sqrt(data_th2d_->GetBinContent(5, 3)));
+    data_th2d_->SetBinError(6, 1, std::sqrt(data_th2d_->GetBinContent(6, 1)));
+    data_th2d_->SetBinError(6, 2, std::sqrt(data_th2d_->GetBinContent(6, 2)));
+    data_th2d_->SetBinError(6, 3, std::sqrt(data_th2d_->GetBinContent(6, 3)));
+}
+
+void ConvertHistogram(TH2D* data_th2d_, TH2D* signal_MC_th2d_, TH2D* bkg_MC_th2d_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, TH1D* data_th1d_stat_err_, TH1D* signal_MC_th1d_stat_err_, TH1D* bkg_MC_th1d_stat_err_) {
+    // TH2D to TH1D
+    data_th1d_->SetBinContent(1, data_th2d_->GetBinContent(2, 2) + data_th2d_->GetBinContent(3, 2) + data_th2d_->GetBinContent(4, 2));
+    data_th1d_->SetBinContent(2, data_th2d_->GetBinContent(3, 1));
+    data_th1d_->SetBinError(1, std::sqrt(data_th2d_->GetBinError(2, 2) * data_th2d_->GetBinError(2, 2) + data_th2d_->GetBinError(3, 2) * data_th2d_->GetBinError(3, 2) + data_th2d_->GetBinError(4, 2) * data_th2d_->GetBinError(4, 2)));
+    data_th1d_->SetBinError(2, data_th2d_->GetBinError(3, 1));
+
+    signal_MC_th1d_->SetBinContent(1, signal_MC_th2d_->GetBinContent(2, 2) + signal_MC_th2d_->GetBinContent(3, 2) + signal_MC_th2d_->GetBinContent(4, 2));
+    signal_MC_th1d_->SetBinContent(2, signal_MC_th2d_->GetBinContent(3, 1));
+    signal_MC_th1d_->SetBinError(1, std::sqrt(signal_MC_th2d_->GetBinError(2, 2) * signal_MC_th2d_->GetBinError(2, 2) + signal_MC_th2d_->GetBinError(3, 2) * signal_MC_th2d_->GetBinError(3, 2) + signal_MC_th2d_->GetBinError(4, 2) * signal_MC_th2d_->GetBinError(4, 2)));
+    signal_MC_th1d_->SetBinError(2, signal_MC_th2d_->GetBinError(3, 1));
+
+    // here, we interpolate expected backgrounds from sideband
+    bkg_MC_th1d_->SetBinContent(1, (data_th2d_->GetBinContent(1, 2) + data_th2d_->GetBinContent(5, 2)) * (bkg_MC_th2d_->GetBinContent(2, 2) + bkg_MC_th2d_->GetBinContent(3, 2) + bkg_MC_th2d_->GetBinContent(4, 2)) / (bkg_MC_th2d_->GetBinContent(1, 2) + bkg_MC_th2d_->GetBinContent(5, 2)));
+    bkg_MC_th1d_->SetBinContent(2, (data_th2d_->GetBinContent(1, 1) + data_th2d_->GetBinContent(5, 1)) * bkg_MC_th2d_->GetBinContent(3, 1) / (bkg_MC_th2d_->GetBinContent(1, 1) + bkg_MC_th2d_->GetBinContent(5, 1)) );
+    double bkg_MC_th1d_reluncer_1_1 = std::sqrt((data_th2d_->GetBinError(1, 2) * data_th2d_->GetBinError(1, 2) + data_th2d_->GetBinError(5, 2) * data_th2d_->GetBinError(5, 2)) / std::pow(data_th2d_->GetBinContent(1, 2) + data_th2d_->GetBinContent(5, 2), 2));
+    double bkg_MC_th1d_reluncer_1_2 = std::sqrt((bkg_MC_th2d_->GetBinError(2, 2) * bkg_MC_th2d_->GetBinError(2, 2) + bkg_MC_th2d_->GetBinError(3, 2) * bkg_MC_th2d_->GetBinError(3, 2) + bkg_MC_th2d_->GetBinError(4, 2) * bkg_MC_th2d_->GetBinError(4, 2)) / std::pow(bkg_MC_th2d_->GetBinContent(2, 2) + bkg_MC_th2d_->GetBinContent(3, 2) + bkg_MC_th2d_->GetBinContent(4, 2), 2));
+    double bkg_MC_th1d_reluncer_1_3 = std::sqrt((bkg_MC_th2d_->GetBinError(1, 2) * bkg_MC_th2d_->GetBinError(1, 2) + bkg_MC_th2d_->GetBinError(5, 2) * bkg_MC_th2d_->GetBinError(5, 2)) / std::pow(bkg_MC_th2d_->GetBinContent(1, 2) + bkg_MC_th2d_->GetBinContent(5, 2), 2));
+    bkg_MC_th1d_->SetBinError(1, bkg_MC_th1d_->GetBinContent(1) * std::sqrt(bkg_MC_th1d_reluncer_1_1 * bkg_MC_th1d_reluncer_1_1 + bkg_MC_th1d_reluncer_1_2 * bkg_MC_th1d_reluncer_1_2 + bkg_MC_th1d_reluncer_1_3 * bkg_MC_th1d_reluncer_1_3));
+    double bkg_MC_th1d_reluncer_2_1 = std::sqrt((data_th2d_->GetBinError(1, 1) * data_th2d_->GetBinError(1, 1) + data_th2d_->GetBinError(5, 1) * data_th2d_->GetBinError(5, 1)) / std::pow(data_th2d_->GetBinContent(1, 1) + data_th2d_->GetBinContent(5, 1), 2));
+    double bkg_MC_th1d_reluncer_2_2 = bkg_MC_th2d_->GetBinError(3, 1) / bkg_MC_th2d_->GetBinContent(3, 1);
+    double bkg_MC_th1d_reluncer_2_3 = std::sqrt((bkg_MC_th2d_->GetBinError(1, 1) * bkg_MC_th2d_->GetBinError(1, 1) + bkg_MC_th2d_->GetBinError(5, 1) * bkg_MC_th2d_->GetBinError(5, 1)) / std::pow(bkg_MC_th2d_->GetBinContent(1, 1) + bkg_MC_th2d_->GetBinContent(5, 1), 2));
+    bkg_MC_th1d_->SetBinError(2, bkg_MC_th1d_->GetBinContent(2) * std::sqrt(bkg_MC_th1d_reluncer_2_1 * bkg_MC_th1d_reluncer_2_1 + bkg_MC_th1d_reluncer_2_2 * bkg_MC_th1d_reluncer_2_2 + bkg_MC_th1d_reluncer_2_3 * bkg_MC_th1d_reluncer_2_3));
+
+    // calculate stat err
+    if(signal_MC_th1d_->GetBinContent(1) != 0.0) signal_MC_th1d_stat_err_->SetBinContent(1, signal_MC_th1d_->GetBinError(1) / signal_MC_th1d_->GetBinContent(1));
+    else signal_MC_th1d_stat_err_->SetBinContent(1, 0.0);
+
+    if (signal_MC_th1d_->GetBinContent(2) != 0.0) signal_MC_th1d_stat_err_->SetBinContent(2, signal_MC_th1d_->GetBinError(2) / signal_MC_th1d_->GetBinContent(2));
+    else signal_MC_th1d_stat_err_->SetBinContent(2, 0.0);
+
+    if (bkg_MC_th1d_->GetBinContent(1) != 0.0) bkg_MC_th1d_stat_err_->SetBinContent(1, bkg_MC_th1d_->GetBinError(1) / bkg_MC_th1d_->GetBinContent(1));
+    else bkg_MC_th1d_stat_err_->SetBinContent(1, 0.0);
+
+    if (bkg_MC_th1d_->GetBinContent(2) != 0.0) bkg_MC_th1d_stat_err_->SetBinContent(2, bkg_MC_th1d_->GetBinError(2) / bkg_MC_th1d_->GetBinContent(2));
+    else bkg_MC_th1d_stat_err_->SetBinContent(2, 0.0);
+}
+
 int main(int argc, char* argv[]) {
     /*
     * argv[1]: input path 1
@@ -120,83 +200,8 @@ int main(int argc, char* argv[]) {
 
     ObtainWeight = MyScaleFunction_halfsplit;
 
-    // data (we do not open the box, so I just use background MC)
-    Loader loader_data("tau_lfv");
-    for (int i = 0; i < background_list.size(); i++) loader_data.Load((argv[1] + std::string("/") + background_list.at(i) + std::string("/") + std::string(argv[2])).c_str(), "root", background_list.at(i).c_str());
-    loader_data.FillCustomizedTH2D(data_th2d, "M_inv_tau", "deltaE", x_mapping_function, y_mapping_function);
-    loader_data.end();
-
-    // signal MC
-    Loader loader_signal("tau_lfv");
-    for (int i = 0; i < signal_list.size(); i++) loader_signal.Load((argv[1] + std::string("/") + signal_list.at(i) + std::string("/") + std::string(argv[2])).c_str(), "root", signal_list.at(i).c_str());
-    loader_signal.FillCustomizedTH2D(signal_MC_th2d, "M_inv_tau", "deltaE", x_mapping_function, y_mapping_function);
-    loader_signal.end();
-
-    // background MC
-    Loader loader_bkg("tau_lfv");
-    for (int i = 0; i < background_list.size(); i++) loader_bkg.Load((argv[1] + std::string("/") + background_list.at(i) + std::string("/") + std::string(argv[2])).c_str(), "root", background_list.at(i).c_str());
-    loader_bkg.FillCustomizedTH2D(bkg_MC_th2d, "M_inv_tau", "deltaE", x_mapping_function, y_mapping_function);
-    loader_bkg.end();
-
-
-
-    // We do not open the box, So data_th2d is MC. We use the proper uncertainty
-    data_th2d->SetBinError(1, 1, std::sqrt(data_th2d->GetBinContent(1, 1)));
-    data_th2d->SetBinError(1, 2, std::sqrt(data_th2d->GetBinContent(1, 2)));
-    data_th2d->SetBinError(1, 3, std::sqrt(data_th2d->GetBinContent(1, 3)));
-    data_th2d->SetBinError(2, 1, std::sqrt(data_th2d->GetBinContent(2, 1)));
-    data_th2d->SetBinError(2, 2, std::sqrt(data_th2d->GetBinContent(2, 2)));
-    data_th2d->SetBinError(2, 3, std::sqrt(data_th2d->GetBinContent(2, 3)));
-    data_th2d->SetBinError(3, 1, std::sqrt(data_th2d->GetBinContent(3, 1)));
-    data_th2d->SetBinError(3, 2, std::sqrt(data_th2d->GetBinContent(3, 2)));
-    data_th2d->SetBinError(3, 3, std::sqrt(data_th2d->GetBinContent(3, 3)));
-    data_th2d->SetBinError(4, 1, std::sqrt(data_th2d->GetBinContent(4, 1)));
-    data_th2d->SetBinError(4, 2, std::sqrt(data_th2d->GetBinContent(4, 2)));
-    data_th2d->SetBinError(4, 3, std::sqrt(data_th2d->GetBinContent(4, 3)));
-    data_th2d->SetBinError(5, 1, std::sqrt(data_th2d->GetBinContent(5, 1)));
-    data_th2d->SetBinError(5, 2, std::sqrt(data_th2d->GetBinContent(5, 2)));
-    data_th2d->SetBinError(5, 3, std::sqrt(data_th2d->GetBinContent(5, 3)));
-    data_th2d->SetBinError(6, 1, std::sqrt(data_th2d->GetBinContent(6, 1)));
-    data_th2d->SetBinError(6, 2, std::sqrt(data_th2d->GetBinContent(6, 2)));
-    data_th2d->SetBinError(6, 3, std::sqrt(data_th2d->GetBinContent(6, 3)));
-
-
-
-    // TH2D to TH1D
-    data_th1d->SetBinContent(1, data_th2d->GetBinContent(2, 2) + data_th2d->GetBinContent(3, 2) + data_th2d->GetBinContent(4, 2));
-    data_th1d->SetBinContent(2, data_th2d->GetBinContent(3, 1));
-    data_th1d->SetBinError(1, std::sqrt(data_th2d->GetBinError(2, 2) * data_th2d->GetBinError(2, 2) + data_th2d->GetBinError(3, 2) * data_th2d->GetBinError(3, 2) + data_th2d->GetBinError(4, 2) * data_th2d->GetBinError(4, 2)));
-    data_th1d->SetBinError(2, data_th2d->GetBinError(3, 1));
-
-    signal_MC_th1d->SetBinContent(1, signal_MC_th2d->GetBinContent(2, 2) + signal_MC_th2d->GetBinContent(3, 2) + signal_MC_th2d->GetBinContent(4, 2));
-    signal_MC_th1d->SetBinContent(2, signal_MC_th2d->GetBinContent(3, 1));
-    signal_MC_th1d->SetBinError(1, std::sqrt(signal_MC_th2d->GetBinError(2, 2) * signal_MC_th2d->GetBinError(2, 2) + signal_MC_th2d->GetBinError(3, 2) * signal_MC_th2d->GetBinError(3, 2) + signal_MC_th2d->GetBinError(4, 2) * signal_MC_th2d->GetBinError(4, 2)));
-    signal_MC_th1d->SetBinError(2, signal_MC_th2d->GetBinError(3, 1));
-
-    // here, we interpolate expected backgrounds from sideband
-    bkg_MC_th1d->SetBinContent(1, (data_th2d->GetBinContent(1, 2) + data_th2d->GetBinContent(5, 2)) * (bkg_MC_th2d->GetBinContent(2, 2) + bkg_MC_th2d->GetBinContent(3, 2) + bkg_MC_th2d->GetBinContent(4, 2)) / (bkg_MC_th2d->GetBinContent(1, 2) + bkg_MC_th2d->GetBinContent(5, 2)));
-    bkg_MC_th1d->SetBinContent(2, (data_th2d->GetBinContent(1, 1) + data_th2d->GetBinContent(5, 1)) * bkg_MC_th2d->GetBinContent(3, 1) / (bkg_MC_th2d->GetBinContent(1, 1) + bkg_MC_th2d->GetBinContent(5, 1)) );
-    double bkg_MC_th1d_reluncer_1_1 = std::sqrt((data_th2d->GetBinError(1, 2) * data_th2d->GetBinError(1, 2) + data_th2d->GetBinError(5, 2) * data_th2d->GetBinError(5, 2)) / std::pow(data_th2d->GetBinContent(1, 2) + data_th2d->GetBinContent(5, 2), 2));
-    double bkg_MC_th1d_reluncer_1_2 = std::sqrt((bkg_MC_th2d->GetBinError(2, 2) * bkg_MC_th2d->GetBinError(2, 2) + bkg_MC_th2d->GetBinError(3, 2) * bkg_MC_th2d->GetBinError(3, 2) + bkg_MC_th2d->GetBinError(4, 2) * bkg_MC_th2d->GetBinError(4, 2)) / std::pow(bkg_MC_th2d->GetBinContent(2, 2) + bkg_MC_th2d->GetBinContent(3, 2) + bkg_MC_th2d->GetBinContent(4, 2), 2));
-    double bkg_MC_th1d_reluncer_1_3 = std::sqrt((bkg_MC_th2d->GetBinError(1, 2) * bkg_MC_th2d->GetBinError(1, 2) + bkg_MC_th2d->GetBinError(5, 2) * bkg_MC_th2d->GetBinError(5, 2)) / std::pow(bkg_MC_th2d->GetBinContent(1, 2) + bkg_MC_th2d->GetBinContent(5, 2), 2));
-    bkg_MC_th1d->SetBinError(1, bkg_MC_th1d->GetBinContent(1) * std::sqrt(bkg_MC_th1d_reluncer_1_1 * bkg_MC_th1d_reluncer_1_1 + bkg_MC_th1d_reluncer_1_2 * bkg_MC_th1d_reluncer_1_2 + bkg_MC_th1d_reluncer_1_3 * bkg_MC_th1d_reluncer_1_3));
-    double bkg_MC_th1d_reluncer_2_1 = std::sqrt((data_th2d->GetBinError(1, 1) * data_th2d->GetBinError(1, 1) + data_th2d->GetBinError(5, 1) * data_th2d->GetBinError(5, 1)) / std::pow(data_th2d->GetBinContent(1, 1) + data_th2d->GetBinContent(5, 1), 2));
-    double bkg_MC_th1d_reluncer_2_2 = bkg_MC_th2d->GetBinError(3, 1) / bkg_MC_th2d->GetBinContent(3, 1);
-    double bkg_MC_th1d_reluncer_2_3 = std::sqrt((bkg_MC_th2d->GetBinError(1, 1) * bkg_MC_th2d->GetBinError(1, 1) + bkg_MC_th2d->GetBinError(5, 1) * bkg_MC_th2d->GetBinError(5, 1)) / std::pow(bkg_MC_th2d->GetBinContent(1, 1) + bkg_MC_th2d->GetBinContent(5, 1), 2));
-    bkg_MC_th1d->SetBinError(2, bkg_MC_th1d->GetBinContent(2) * std::sqrt(bkg_MC_th1d_reluncer_2_1 * bkg_MC_th1d_reluncer_2_1 + bkg_MC_th1d_reluncer_2_2 * bkg_MC_th1d_reluncer_2_2 + bkg_MC_th1d_reluncer_2_3 * bkg_MC_th1d_reluncer_2_3));
-
-    // calculate stat err
-    if(signal_MC_th1d->GetBinContent(1) != 0.0) signal_MC_th1d_stat_err->SetBinContent(1, signal_MC_th1d->GetBinError(1) / signal_MC_th1d->GetBinContent(1));
-    else signal_MC_th1d_stat_err->SetBinContent(1, 0.0);
-
-    if (signal_MC_th1d->GetBinContent(2) != 0.0) signal_MC_th1d_stat_err->SetBinContent(2, signal_MC_th1d->GetBinError(2) / signal_MC_th1d->GetBinContent(2));
-    else signal_MC_th1d_stat_err->SetBinContent(2, 0.0);
-
-    if (bkg_MC_th1d->GetBinContent(1) != 0.0) bkg_MC_th1d_stat_err->SetBinContent(1, bkg_MC_th1d->GetBinError(1) / bkg_MC_th1d->GetBinContent(1));
-    else bkg_MC_th1d_stat_err->SetBinContent(1, 0.0);
-
-    if (bkg_MC_th1d->GetBinContent(2) != 0.0) bkg_MC_th1d_stat_err->SetBinContent(2, bkg_MC_th1d->GetBinError(2) / bkg_MC_th1d->GetBinContent(2));
-    else bkg_MC_th1d_stat_err->SetBinContent(2, 0.0);
+    FillHistogram(argv[1], argv[2], data_th2d, signal_MC_th2d, bkg_MC_th2d, background_list, signal_list, background_list);
+    ConvertHistogram(data_th2d, signal_MC_th2d, bkg_MC_th2d, data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err);
 
 
     // print information
