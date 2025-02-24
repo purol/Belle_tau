@@ -7,7 +7,7 @@
 #include "data.h"
 #include "constants.h"
 
-double MyScaleFunction(std::vector<Data>::iterator data_) {
+double MyScaleFunction(std::vector<Data>::iterator data_, std::vector<std::string> variable_names_) {
     if ((*data_).filename.find("CHG_") != std::string::npos) return Scale_CHG_MC15ri;
     else if ((*data_).filename.find("MIX_") != std::string::npos) return Scale_MIX_MC15ri;
     else if ((*data_).filename.find("UUBAR_") != std::string::npos) return Scale_UUBAR_MC15ri;
@@ -41,7 +41,7 @@ double MyScaleFunction(std::vector<Data>::iterator data_) {
     return 0.0;
 }
 
-double MyScaleFunction_halfsplit(std::vector<Data>::iterator data_) {
+double MyScaleFunction_halfsplit(std::vector<Data>::iterator data_, std::vector<std::string> variable_names_) {
     if ((*data_).filename.find("CHG_") != std::string::npos) return 2.0 * Scale_CHG_MC15ri;
     else if ((*data_).filename.find("MIX_") != std::string::npos) return 2.0 * Scale_MIX_MC15ri;
     else if ((*data_).filename.find("UUBAR_") != std::string::npos) return 2.0 * Scale_UUBAR_MC15ri;
