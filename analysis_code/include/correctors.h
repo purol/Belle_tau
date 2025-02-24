@@ -32,11 +32,11 @@ private:
 
     // for the random fluctuation
     std::random_device rd;
-    std::mt19937 gen(rd());
+    std::mt19937 gen;
     std::normal_distribution<double> Normal_distribution(0.0, 1.0);
 
 public:
-    Corrector_PID(const std::string& filename) {
+    Corrector_PID(const std::string& filename) : gen(rd()) {
         std::ifstream file(filename);
         if (!file.is_open()) {
             throw std::runtime_error("Failed to open file");
