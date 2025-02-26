@@ -20,6 +20,77 @@ Corrector_PID muonID_corrector_05("/home/belle2/junewoo/storage_b2/tau_workspace
 double MyScaleFunction_correction_halfsplit(std::vector<Data>::iterator data_, std::vector<std::string> variable_names_) {
 
     std::vector<std::string>::iterator it;
+
+    // first muonID correction
+    double first_muon_p;
+    double first_muon_theta;
+    double first_muon_correction;
+    it = std::find(variable_names_.begin(), variable_names_.end(), "first_muon_p");
+    if (it != variable_names_.end()) {
+        int index = std::distance(variable_names_.begin(), it);
+        first_muon_p = std::get<double>((*data_).variable.at(index));
+    }
+    it = std::find(variable_names_.begin(), variable_names_.end(), "first_muon_theta");
+    if (it != variable_names_.end()) {
+        int index = std::distance(variable_names_.begin(), it);
+        first_muon_theta = std::get<double>((*data_).variable.at(index));
+    }
+    first_muon_correction = muonID_corrector_05.GetCorrectionFactor(first_muon_p, first_muon_theta, "+");
+
+    // second muonID correction
+    double second_muon_p;
+    double second_muon_theta;
+    double second_muon_correction;
+    it = std::find(variable_names_.begin(), variable_names_.end(), "second_muon_p");
+    if (it != variable_names_.end()) {
+        int index = std::distance(variable_names_.begin(), it);
+        second_muon_p = std::get<double>((*data_).variable.at(index));
+    }
+    it = std::find(variable_names_.begin(), variable_names_.end(), "second_muon_theta");
+    if (it != variable_names_.end()) {
+        int index = std::distance(variable_names_.begin(), it);
+        second_muon_theta = std::get<double>((*data_).variable.at(index));
+    }
+    second_muon_correction = muonID_corrector_05.GetCorrectionFactor(second_muon_p, second_muon_theta, "+");
+
+    double total_correction = first_muon_correction * second_muon_correction;
+
+    if ((*data_).filename.find("CHG_") != std::string::npos) return 2.0 * Scale_CHG_MC15ri * total_correction;
+    else if ((*data_).filename.find("MIX_") != std::string::npos) return 2.0 * Scale_MIX_MC15ri * total_correction;
+    else if ((*data_).filename.find("UUBAR_") != std::string::npos) return 2.0 * Scale_UUBAR_MC15ri * total_correction;
+    else if ((*data_).filename.find("DDBAR_") != std::string::npos) return 2.0 * Scale_DDBAR_MC15ri * total_correction;
+    else if ((*data_).filename.find("SSBAR_") != std::string::npos) return 2.0 * Scale_SSBAR_MC15ri * total_correction;
+    else if ((*data_).filename.find("CHARM_") != std::string::npos) return 2.0 * Scale_CHARM_MC15ri * total_correction;
+    else if ((*data_).filename.find("MUMU_") != std::string::npos) return 2.0 * Scale_MUMU_MC15ri * total_correction;
+    else if ((*data_).filename.find("EE_") != std::string::npos) return 2.0 * Scale_EE_MC15ri * total_correction;
+    else if ((*data_).filename.find("EEEE_") != std::string::npos) return 2.0 * Scale_EEEE_MC15ri * total_correction;
+    else if ((*data_).filename.find("EEMUMU_") != std::string::npos) return 2.0 * Scale_EEMUMU_MC15ri * total_correction;
+    else if ((*data_).filename.find("EEPIPI_") != std::string::npos) return 2.0 * Scale_EEPIPI_MC15ri * total_correction;
+    else if ((*data_).filename.find("EEKK_") != std::string::npos) return 2.0 * Scale_EEKK_MC15ri * total_correction;
+    else if ((*data_).filename.find("EEPP_") != std::string::npos) return 2.0 * Scale_EEPP_MC15ri * total_correction;
+    else if ((*data_).filename.find("PIPIISR_") != std::string::npos) return 2.0 * Scale_PIPIISR_MC15ri * total_correction;
+    else if ((*data_).filename.find("KKISR_") != std::string::npos) return 2.0 * Scale_KKISR_MC15ri * total_correction;
+    else if ((*data_).filename.find("GG_") != std::string::npos) return 2.0 * Scale_GG_MC15ri * total_correction;
+    else if ((*data_).filename.find("EETAUTAU_") != std::string::npos) return 2.0 * Scale_EETAUTAU_MC15ri * total_correction;
+    else if ((*data_).filename.find("K0K0BARISR_") != std::string::npos) return 2.0 * Scale_K0K0BARISR_MC15ri * total_correction;
+    else if ((*data_).filename.find("MUMUMUMU_") != std::string::npos) return 2.0 * Scale_MUMUMUMU_MC15ri * total_correction;
+    else if ((*data_).filename.find("MUMUTAUTAU_") != std::string::npos) return 2.0 * Scale_MUMUTAUTAU_MC15ri * total_correction;
+    else if ((*data_).filename.find("TAUTAUTAUTAU_") != std::string::npos) return 2.0 * Scale_TAUTAUTAUTAU_MC15ri * total_correction;
+    else if ((*data_).filename.find("TAUPAIR_") != std::string::npos) return 2.0 * Scale_TAUPAIR_MC15ri * total_correction;
+    else if ((*data_).filename.find("SIGNAL_") != std::string::npos) return 2.0 * Scale_SIGNAL_MC15ri * total_correction;
+    else {
+        printf("unexpected sample type\n");
+        exit(1);
+        return 0.0;
+    }
+    printf("unexpected sample type\n");
+    exit(1);
+    return 0.0;
+}
+
+double MyScaleFunction_correction_fluctuation_halfsplit(std::vector<Data>::iterator data_, std::vector<std::string> variable_names_) {
+
+    std::vector<std::string>::iterator it;
     
     // first muonID correction
     double first_muon_p;
@@ -269,7 +340,35 @@ int main(int argc, char* argv[]) {
     M_right_sigma_g = M_right_sigma;
     theta_g = theta;
 
+    // get nominal value
+    std::vector<double> MC_th1d_nominal;
     ObtainWeight = MyScaleFunction_correction_halfsplit;
+   
+    // reset histograms
+    data_th2d->Reset();
+    signal_MC_th2d->Reset();
+    bkg_MC_th2d->Reset();
+
+    data_th1d->Reset();
+    signal_MC_th1d->Reset();
+    bkg_MC_th1d->Reset();
+
+    data_th1d_stat_err->Reset();
+    signal_MC_th1d_stat_err->Reset();
+    bkg_MC_th1d_stat_err->Reset();
+
+    // we do not open the box, so I just use background MC
+    FillHistogram(argv[1], argv[2], data_th2d, signal_MC_th2d, bkg_MC_th2d, background_list, signal_list, background_list);
+
+    ConvertHistogram(data_th2d, signal_MC_th2d, bkg_MC_th2d, data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err);
+
+    MC_th1d_nominal.push_back(signal_MC_th1d->GetBinContent(1));
+    MC_th1d_nominal.push_back(signal_MC_th1d->GetBinContent(2));
+    MC_th1d_nominal.push_back(bkg_MC_th1d->GetBinContent(1));
+    MC_th1d_nominal.push_back(bkg_MC_th1d->GetBinContent(2));
+
+    // get fluctuated value
+    ObtainWeight = MyScaleFunction_correction_fluctuation_halfsplit;
 
     // print output
     FILE* fp;
@@ -298,7 +397,18 @@ int main(int argc, char* argv[]) {
 
         ConvertHistogram(data_th2d, signal_MC_th2d, bkg_MC_th2d, data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err);
 
-        fprintf(fp, "%lf,%lf,%lf,%lf\n", signal_MC_th1d->GetBinContent(1), signal_MC_th1d->GetBinContent(2), bkg_MC_th1d->GetBinContent(1), bkg_MC_th1d->GetBinContent(2));
+        if (MC_th1d_nominal.at(0) != 0) fprintf("%lf,", signal_MC_th1d->GetBinContent(1) / MC_th1d_nominal.at(0));
+        else fprintf("1.0,");
+
+        if (MC_th1d_nominal.at(1) != 0) fprintf("%lf,", signal_MC_th1d->GetBinContent(2) / MC_th1d_nominal.at(1));
+        else fprintf("1.0,");
+
+        if (MC_th1d_nominal.at(2) != 0) fprintf("%lf,", bkg_MC_th1d->GetBinContent(1) / MC_th1d_nominal.at(2));
+        else fprintf("1.0,");
+
+        if (MC_th1d_nominal.at(3) != 0) fprintf("%lf\n", bkg_MC_th1d->GetBinContent(2) / MC_th1d_nominal.at(3));
+        else fprintf("1.0\n");
+
     }
 
     fclose(fp);
