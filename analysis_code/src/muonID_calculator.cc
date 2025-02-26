@@ -397,17 +397,17 @@ int main(int argc, char* argv[]) {
 
         ConvertHistogram(data_th2d, signal_MC_th2d, bkg_MC_th2d, data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err);
 
-        if (MC_th1d_nominal.at(0) != 0) fprintf("%lf,", signal_MC_th1d->GetBinContent(1) / MC_th1d_nominal.at(0));
-        else fprintf("1.0,");
+        if (MC_th1d_nominal.at(0) != 0) fprintf(fp, "%lf,", signal_MC_th1d->GetBinContent(1) / MC_th1d_nominal.at(0));
+        else fprintf(fp, "1.0,");
 
-        if (MC_th1d_nominal.at(1) != 0) fprintf("%lf,", signal_MC_th1d->GetBinContent(2) / MC_th1d_nominal.at(1));
-        else fprintf("1.0,");
+        if (MC_th1d_nominal.at(1) != 0) fprintf(fp, "%lf,", signal_MC_th1d->GetBinContent(2) / MC_th1d_nominal.at(1));
+        else fprintf(fp, "1.0,");
 
-        if (MC_th1d_nominal.at(2) != 0) fprintf("%lf,", bkg_MC_th1d->GetBinContent(1) / MC_th1d_nominal.at(2));
-        else fprintf("1.0,");
+        if (MC_th1d_nominal.at(2) != 0) fprintf(fp, "%lf,", bkg_MC_th1d->GetBinContent(1) / MC_th1d_nominal.at(2));
+        else fprintf(fp, "1.0,");
 
-        if (MC_th1d_nominal.at(3) != 0) fprintf("%lf\n", bkg_MC_th1d->GetBinContent(2) / MC_th1d_nominal.at(3));
-        else fprintf("1.0\n");
+        if (MC_th1d_nominal.at(3) != 0) fprintf(fp, "%lf\n", bkg_MC_th1d->GetBinContent(2) / MC_th1d_nominal.at(3));
+        else fprintf(fp, "1.0\n");
 
     }
 
