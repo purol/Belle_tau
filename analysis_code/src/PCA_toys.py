@@ -21,13 +21,20 @@ def covariance_to_correlation(cov_matrix):
 
 # Load CSV file
 df = pd.read_csv("muonID_toys.csv", header=None)  # No header in your data
+num_samples, num_features = df.shape
 
 # Compute correlation matrix before PCA
 corr_before = df.corr()
+cov_before = df.cov()
 
 # Apply PCA without standardization
-pca = PCA(n_components=4)  # Keep all components to analyze correlation
+pca = PCA()
 X_pca = pca.fit_transform(df)
+
+# select the num of dim
+cumsum = np.cumsum(pca.explained_variance_ratio_)
+dim = np.argmax(cumsum >= 0.95) + 1
+print(dim, "components are selected")
 
 # Eigenvalues (variance explained by each principal component)
 eigenvalues = pca.explained_variance_
@@ -35,10 +42,15 @@ eigenvalues = pca.explained_variance_
 # Eigenvectors (principal component directions)
 eigenvectors = pca.components_
 
-Lambda = np.diag(eigenvalues)  # Shape: (4,4)
+# Select only the first `dim` components
+eigenvalues_selected = eigenvalues[:dim]
+eigenvectors_selected = eigenvectors[:dim, :]
+
+# Construct diagonal matrix of selected eigenvalues
+Lambda_selected = np.diag(eigenvalues_selected)
 
 # Reconstruct matrix
-cov_after = eigenvectors.T @ Lambda @ eigenvectors
+cov_after = eigenvectors_selected.T @ Lambda_selected @ eigenvectors_selected
 corr_after = covariance_to_correlation(cov_after)
 
 # Save correlation matrices as PNG
@@ -49,3 +61,19 @@ save_correlation_matrix(corr_after, "Correlation Matrix After PCA", "corr_after_
 print("Explained Variance Ratio:", pca.explained_variance_ratio_)
 
 print("Saved 'corr_before_pca.png' and 'corr_after_pca.png'")
+
+print(eigenvalues_selected)
+print(eigenvectors_selected)
+
+# save in file
+with open('PID_calculator_result.txt', "w") as file:
+    file.write("%d,%d\n" % (num_features, dim))
+    for i in range(dim):
+        file.write("%f\n" % eigenvalues_selected[i])
+        for j in range(num_features):
+            file.write("%f\n" % eigenvectors_selected[i][j])
+
+
+
+
+        
