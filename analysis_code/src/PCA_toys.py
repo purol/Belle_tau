@@ -72,15 +72,23 @@ print("Saved 'corr_before_pca.png' and 'corr_after_pca.png'")
 print(eigenvalues_selected)
 print(eigenvectors_selected)
 
+# get remaining component
+cov_diff = cov_before - cov_after
+print("cov diff:", cov_diff)
+
 # save in file
 with open(args.output_file, "w") as file:
     file.write("%d,%d\n" % (num_features, dim))
     for i in range(dim):
-        file.write("%f\n" % eigenvalues_selected[i])
+        file.write("%f\n" % np.sqrt(eigenvalues_selected[i]))
         for j in range(num_features):
             file.write("%f\n" % eigenvectors_selected[i][j])
 
-
-
-
+with open(args.output_file + "_remain", "w") as file:
+    file.write("%d\n" % (num_features))
+    for i in range(num_features):
+        if (cov_diff[i][i] > 0):
+            file.write("%f\n" % np.sqrt(cov_diff[i][i]))
+        else:
+            file.write("0.0\n")
         
