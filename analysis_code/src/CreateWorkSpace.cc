@@ -235,24 +235,28 @@ void ReadPCA(const char* filename, TH1D* signal_MC_th1d_nominal, TH1D* bkg_MC_th
             temp_signal_p->SetBinContent(j + 1, (1.0 + eigen_values.at(i)) * eigen_vectors.at(i).at(j) * signal_MC_th1d_nominal->GetBinContent(j + 1));
             temp_signal_p->SetBinError(j + 1, (1.0 + eigen_values.at(i)) * eigen_vectors.at(i).at(j) * signal_MC_th1d_nominal->GetBinError(j + 1));
         }
+        signal_MC_th1d_syst->push_back(temp_signal_p);
 
         TH1D* temp_signal_n = new TH1D((hist_name_signal + "_n_" + std::to_string(i)).c_str(), ";;", signal_MC_th1d_nominal->GetNbinsX(), signal_MC_th1d_nominal->GetXaxis()->GetXmin(), signal_MC_th1d_nominal->GetXaxis()->GetXmax());
         for (int j = 0; j < signal_MC_th1d_nominal->GetNbinsX(); j++) {
             temp_signal_n->SetBinContent(j + 1, (1.0 - eigen_values.at(i)) * eigen_vectors.at(i).at(j) * signal_MC_th1d_nominal->GetBinContent(j + 1));
             temp_signal_n->SetBinError(j + 1, (1.0 - eigen_values.at(i)) * eigen_vectors.at(i).at(j) * signal_MC_th1d_nominal->GetBinError(j + 1));
         }
+        signal_MC_th1d_syst->push_back(temp_signal_n);
 
         TH1D* temp_bkg_p = new TH1D((hist_name_bkg + "_p_" + std::to_string(i)).c_str(), ";;", bkg_MC_th1d_nominal->GetNbinsX(), bkg_MC_th1d_nominal->GetXaxis()->GetXmin(), bkg_MC_th1d_nominal->GetXaxis()->GetXmax());
         for (int j = 0; j < bkg_MC_th1d_nominal->GetNbinsX(); j++) {
             temp_bkg_p->SetBinContent(j + 1, (1.0 + eigen_values.at(i)) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX()) * bkg_MC_th1d_nominal->GetBinContent(j + 1));
             temp_bkg_p->SetBinError(j + 1, (1.0 + eigen_values.at(i)) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX()) * bkg_MC_th1d_nominal->GetBinError(j + 1));
         }
+        bkg_MC_th1d_syst->push_back(temp_bkg_p);
 
         TH1D* temp_bkg_n = new TH1D((hist_name_bkg + "_n_" + std::to_string(i)).c_str(), ";;", bkg_MC_th1d_nominal->GetNbinsX(), bkg_MC_th1d_nominal->GetXaxis()->GetXmin(), bkg_MC_th1d_nominal->GetXaxis()->GetXmax());
         for (int j = 0; j < bkg_MC_th1d_nominal->GetNbinsX(); j++) {
             temp_bkg_n->SetBinContent(j + 1, (1.0 - eigen_values.at(i)) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX()) * bkg_MC_th1d_nominal->GetBinContent(j + 1));
             temp_bkg_n->SetBinError(j + 1, (1.0 - eigen_values.at(i)) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX()) * bkg_MC_th1d_nominal->GetBinError(j + 1));
         }
+        bkg_MC_th1d_syst->push_back(temp_bkg_n);
 
     }
 
