@@ -232,29 +232,29 @@ void ReadPCA(const char* filename, TH1D* signal_MC_th1d_nominal, TH1D* bkg_MC_th
 
         TH1D* temp_signal_p = new TH1D((hist_name_signal + "_p_" + std::to_string(i)).c_str(), ";;", signal_MC_th1d_nominal->GetNbinsX(), signal_MC_th1d_nominal->GetXaxis()->GetXmin(), signal_MC_th1d_nominal->GetXaxis()->GetXmax());
         for (int j = 0; j < signal_MC_th1d_nominal->GetNbinsX(); j++) {
-            temp_signal_p->SetBinContent(j + 1, (1.0 + eigen_values.at(i)) * eigen_vectors.at(i).at(j) * signal_MC_th1d_nominal->GetBinContent(j + 1));
-            temp_signal_p->SetBinError(j + 1, (1.0 + eigen_values.at(i)) * eigen_vectors.at(i).at(j) * signal_MC_th1d_nominal->GetBinError(j + 1));
+            temp_signal_p->SetBinContent(j + 1, (1.0 + eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinContent(j + 1));
+            temp_signal_p->SetBinError(j + 1, (1.0 + eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinError(j + 1));
         }
         signal_MC_th1d_syst->push_back(temp_signal_p);
 
         TH1D* temp_signal_n = new TH1D((hist_name_signal + "_n_" + std::to_string(i)).c_str(), ";;", signal_MC_th1d_nominal->GetNbinsX(), signal_MC_th1d_nominal->GetXaxis()->GetXmin(), signal_MC_th1d_nominal->GetXaxis()->GetXmax());
         for (int j = 0; j < signal_MC_th1d_nominal->GetNbinsX(); j++) {
-            temp_signal_n->SetBinContent(j + 1, (1.0 - eigen_values.at(i)) * eigen_vectors.at(i).at(j) * signal_MC_th1d_nominal->GetBinContent(j + 1));
-            temp_signal_n->SetBinError(j + 1, (1.0 - eigen_values.at(i)) * eigen_vectors.at(i).at(j) * signal_MC_th1d_nominal->GetBinError(j + 1));
+            temp_signal_n->SetBinContent(j + 1, (1.0 - eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinContent(j + 1));
+            temp_signal_n->SetBinError(j + 1, (1.0 - eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinError(j + 1));
         }
         signal_MC_th1d_syst->push_back(temp_signal_n);
 
         TH1D* temp_bkg_p = new TH1D((hist_name_bkg + "_p_" + std::to_string(i)).c_str(), ";;", bkg_MC_th1d_nominal->GetNbinsX(), bkg_MC_th1d_nominal->GetXaxis()->GetXmin(), bkg_MC_th1d_nominal->GetXaxis()->GetXmax());
         for (int j = 0; j < bkg_MC_th1d_nominal->GetNbinsX(); j++) {
-            temp_bkg_p->SetBinContent(j + 1, (1.0 + eigen_values.at(i)) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX()) * bkg_MC_th1d_nominal->GetBinContent(j + 1));
-            temp_bkg_p->SetBinError(j + 1, (1.0 + eigen_values.at(i)) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX()) * bkg_MC_th1d_nominal->GetBinError(j + 1));
+            temp_bkg_p->SetBinContent(j + 1, (1.0 + eigen_values.at(i) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX())) * bkg_MC_th1d_nominal->GetBinContent(j + 1));
+            temp_bkg_p->SetBinError(j + 1, (1.0 + eigen_values.at(i) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX())) * bkg_MC_th1d_nominal->GetBinError(j + 1));
         }
         bkg_MC_th1d_syst->push_back(temp_bkg_p);
 
         TH1D* temp_bkg_n = new TH1D((hist_name_bkg + "_n_" + std::to_string(i)).c_str(), ";;", bkg_MC_th1d_nominal->GetNbinsX(), bkg_MC_th1d_nominal->GetXaxis()->GetXmin(), bkg_MC_th1d_nominal->GetXaxis()->GetXmax());
         for (int j = 0; j < bkg_MC_th1d_nominal->GetNbinsX(); j++) {
-            temp_bkg_n->SetBinContent(j + 1, (1.0 - eigen_values.at(i)) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX()) * bkg_MC_th1d_nominal->GetBinContent(j + 1));
-            temp_bkg_n->SetBinError(j + 1, (1.0 - eigen_values.at(i)) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX()) * bkg_MC_th1d_nominal->GetBinError(j + 1));
+            temp_bkg_n->SetBinContent(j + 1, (1.0 - eigen_values.at(i) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX())) * bkg_MC_th1d_nominal->GetBinContent(j + 1));
+            temp_bkg_n->SetBinError(j + 1, (1.0 - eigen_values.at(i) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX())) * bkg_MC_th1d_nominal->GetBinError(j + 1));
         }
         bkg_MC_th1d_syst->push_back(temp_bkg_n);
 
@@ -408,11 +408,11 @@ int main(int argc, char* argv[]) {
     signal_Belle_II.SetNormalizeByTheory(false);
     signal_Belle_II.AddNormFactor("mu", 1.0, -100.0, 100.0);
     signal_Belle_II.AddOverallSys("tracking_efficiency", 1.0 - (track_rel_uncertainty / 100.0) * 3, 1.0 + (track_rel_uncertainty / 100.0) * 3);
-    for (int i = 0; i < signal_MC_th1d_muonID.size() / 2; i++) signal_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("signal_hist_muonID_m_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("signal_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
+    for (int i = 0; i < signal_MC_th1d_muonID.size() / 2; i++) signal_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("signal_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("signal_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
 
     RooStats::HistFactory::Sample bkg_Belle_II("bkg_Belle_II", "bkg_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str());
     bkg_Belle_II.ActivateStatError("bkg_MC_th1d_stat_err", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
-    for (int i = 0; i < bkg_MC_th1d_muonID.size() / 2; i++) bkg_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("bkg_hist_muonID_m_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("bkg_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
+    for (int i = 0; i < bkg_MC_th1d_muonID.size() / 2; i++) bkg_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("bkg_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("bkg_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
     bkg_Belle_II.SetNormalizeByTheory(false);
 
     channel_Belle_II.AddSample(signal_Belle_II);
