@@ -197,7 +197,7 @@ void ConvertHistogram(TH2D* data_th2d_, TH2D* signal_MC_th2d_, TH2D* bkg_MC_th2d
     else bkg_MC_th1d_stat_err_->SetBinContent(2, 0.0);
 }
 
-void ReadToys(const char* filename, TH1D* signal_MC_th1d_nominal, TH1D* bkg_MC_th1d_nominal, const char* syst_name, std::vector<TH1D*>* signal_MC_th1d_syst, std::vector<TH1D*>* bkg_MC_th1d_syst) {
+void ReadPCA(const char* filename, TH1D* signal_MC_th1d_nominal, TH1D* bkg_MC_th1d_nominal, const char* syst_name, std::vector<TH1D*>* signal_MC_th1d_syst, std::vector<TH1D*>* bkg_MC_th1d_syst) {
     FILE* fp = fopen(filename, "r");
 
     int Nbin = -1;
@@ -310,6 +310,9 @@ int main(int argc, char* argv[]) {
     TH1D* signal_MC_th1d_stat_err = new TH1D("signal_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
     TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
 
+    std::vector<TH1D*> signal_MC_th1d_muonID;
+    std::vector<TH1D*> bkg_MC_th1d_muonID;
+
     std::vector<std::string> signal_list = { "SIGNAL" };
     std::vector<std::string> background_list = { "CHARM", "CHG", "DDBAR", "EE", "EEEE", 
         "EEKK", "EEMUMU", "EEPIPI", "EEPP", "EETAUTAU", "GG", 
@@ -341,6 +344,8 @@ int main(int argc, char* argv[]) {
 
     ConvertHistogram(data_th2d, signal_MC_th2d, bkg_MC_th2d, data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err);
 
+    // muonID histogram
+    ReadPCA((std::string(argv[1]) + "/muonID_PCA").c_str(), signal_MC_th1d, bkg_MC_th1d, "muonID", &signal_MC_th1d_muonID, &bkg_MC_th1d_muonID);
 
     // print information
     printf("data:\n");
@@ -371,6 +376,9 @@ int main(int argc, char* argv[]) {
     signal_MC_th1d_stat_err->Write();
     bkg_MC_th1d_stat_err->Write();
 
+    for (int i = 0; i < signal_MC_th1d_muonID.size(); i++) signal_MC_th1d_muonID.at(i)->Write();
+    for (int i = 0; i < bkg_MC_th1d_muonID.size(); i++) bkg_MC_th1d_muonID.at(i)->Write();
+
     file->Close();
 
 
@@ -396,9 +404,11 @@ int main(int argc, char* argv[]) {
     signal_Belle_II.SetNormalizeByTheory(false);
     signal_Belle_II.AddNormFactor("mu", 1.0, -100.0, 100.0);
     signal_Belle_II.AddOverallSys("tracking_efficiency", 1.0 - (track_rel_uncertainty / 100.0) * 3, 1.0 + (track_rel_uncertainty / 100.0) * 3);
+    for (int i = 0; i < signal_MC_th1d_muonID.size() / 2; i++) signal_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("signal_hist_muonID_m_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("signal_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
 
     RooStats::HistFactory::Sample bkg_Belle_II("bkg_Belle_II", "bkg_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str());
     bkg_Belle_II.ActivateStatError("bkg_MC_th1d_stat_err", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
+    for (int i = 0; i < bkg_MC_th1d_muonID.size() / 2; i++) bkg_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("bkg_hist_muonID_m_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("bkg_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
     bkg_Belle_II.SetNormalizeByTheory(false);
 
     channel_Belle_II.AddSample(signal_Belle_II);
