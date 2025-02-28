@@ -212,7 +212,7 @@ void ReadPCA(const char* filename, TH1D* signal_MC_th1d_nominal, TH1D* bkg_MC_th
         eigen_values.push_back(eigen_value);
 
         std::vector<double> eigen_vector;
-        for (int j = 0; i < Nbin; j++) {
+        for (int j = 0; j < Nbin; j++) {
             double element = -1;
             fscanf(fp, "%lf\n", &element);
             eigen_vector.push_back(element);
