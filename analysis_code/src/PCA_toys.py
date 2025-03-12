@@ -40,7 +40,7 @@ X_pca = pca.fit_transform(df)
 
 # select the num of dim
 cumsum = np.cumsum(pca.explained_variance_ratio_)
-dim = np.argmax(cumsum >= 0.95) + 1
+dim = np.argmax(cumsum >= 0.98) + 1
 print(dim, "components are selected")
 
 # Eigenvalues (variance explained by each principal component)
