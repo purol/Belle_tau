@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
 
     loader.PrintInformation("========== initial ==========");
 
-    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_M_deltaE_selection").c_str(), "", "");
+    //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_M_deltaE_selection").c_str(), "", "");
     loader.Cut("(-0.9 < deltaE) && (deltaE < 0.4)");
     loader.PrintInformation("========== -0.9 < deltaE < 0.4 ==========");
     loader.Cut("(1.5 < M_inv_tau) && (M_inv_tau < 1.9)");
