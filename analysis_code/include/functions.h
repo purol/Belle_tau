@@ -118,7 +118,7 @@ std::string get_ellipse_region_two(const char* deltaE_name_, const char* M_name_
     // deltaE direction criteria
     std::string condition_deltaE = "(" + std::string(deltaE_name_) + "<((" + std::to_string(-1 / std::tan(theta_)) + ")*(" + std::string(M_name_) + "-" + std::to_string(M_peak_) + ")+" + std::to_string(deltaE_peak_) + "))";
 
-    std::string total = "(!" + region_one + ") &&" + condition_M + "&&" + condition_deltaE;
+    std::string total = "(" + region_one + "<0.5) &&" + condition_M + "&&" + condition_deltaE;
 
     return total;
 }
