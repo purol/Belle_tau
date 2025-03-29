@@ -168,17 +168,30 @@ double M_right_sigma_g;
 double theta_g;
 
 double x_mapping_function(double M_, double deltaE_) {
-    if (((M_peak_g - 20.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g - 5.0 * M_left_sigma_g))) return 1.0;
-    else if (((M_peak_g - 5.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g - 3.0 * M_left_sigma_g))) return 2.0;
-    else if (((M_peak_g - 3.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g + 3.0 * M_right_sigma_g))) return 3.0;
-    else if (((M_peak_g + 3.0 * M_right_sigma_g) < M_) && (M_ <= (M_peak_g + 5.0 * M_right_sigma_g))) return 4.0;
-    else if (((M_peak_g + 5.0 * M_right_sigma_g) < M_) && (M_ <= (M_peak_g + 20.0 * M_right_sigma_g))) return 5.0;
-    else return 6.0;
+
+    // cut for triangle region
+    double sloop_1 = 10 * deltaE_left_sigma / M_right_sigma;
+    double const_term_1 = -M_peak * (10 * deltaE_left_sigma / M_right_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
+    double sloop_2 = -10 * deltaE_left_sigma / M_left_sigma;
+    double const_term_2 = M_peak * (10 * deltaE_left_sigma / M_left_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
+
+    if (((M_peak_g - 20.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g - 5.0 * M_left_sigma_g)) && ((deltaE_peak_g - 35 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 1;
+    else if (((M_peak_g - 5.0 * M_left_sigma_g) < M_) && (deltaE_ <= (sloop_2 * M_ + const_term_2)) && ((deltaE_peak_g - 35 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2;
+    else if ((deltaE_ > (sloop_2 * M_ + const_term_2)) && (deltaE_ >= (sloop_1 * M_ + const_term_1)) && ((deltaE_peak_g - 35 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 3;
+    else if ((deltaE_ < (sloop_1 * M_ + const_term_1)) && (M_ <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 35 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 4;
+    else if (((M_peak_g + 5.0 * M_right_sigma_g) < M_) && (M_ <= (M_peak_g + 20.0 * M_right_sigma_g)) && ((deltaE_peak_g - 35 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 5;
+    else if (((M_peak_g - 20.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g - 5.0 * M_left_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1;
+    else if (((M_peak_g - 5.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g - 3.0 * M_left_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 2;
+    else if (((M_peak_g - 3.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g + 3.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 3;
+    else if (((M_peak_g + 3.0 * M_right_sigma_g) < M_) && (M_ <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 4;
+    else if (((M_peak_g + 5.0 * M_right_sigma_g) < M_) && (M_ <= (M_peak_g + 20.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 5;
+    else return 6;
+
 }
 
 double y_mapping_function(double M_, double deltaE_) {
-    if (deltaE_ < (deltaE_peak_g - 5 * deltaE_left_sigma_g)) return 1.0;
-    else if (deltaE_ < (deltaE_peak_g + 5 * deltaE_right_sigma_g)) return 2.0;
+    if (((deltaE_peak_g - 35 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 1.0;
+    else if (((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 2.0;
     else return 3.0;
 }
 
@@ -273,7 +286,7 @@ int main(int argc, char* argv[]) {
 
     // TH2 list
     /*
-    * 
+    *
     *  deltaE
     *   ^
     * 3 |
@@ -283,8 +296,8 @@ int main(int argc, char* argv[]) {
     * 2 |     | |   | |     |
     *   +-----+-+---+-+-----+
     *   |     | |   | |     |
-    * 1 |     | |   | |     |
-    *   |     | |   | |     |
+    * 1 |     |  \ /  |     |
+    *   |     |   |   |     |
     *   +-----+-+---+-+-----+-------> M
     *      1   2  3  4   5      6
     *
@@ -295,18 +308,18 @@ int main(int argc, char* argv[]) {
 
     // TH1 list
     /*
-    * 
+    *
     *  deltaE
-    *   ^
-    *   +-----+-------+-----+
-    *   |     |       |     |
-    *   |     |   1   |     |
-    *   +-----+-+---+-+-----+
-    *   |     | |   | |     |
-    *   |     | |   | |     |
-    *   |     | | 2 | |     |
-    *   +-----+-+---+-+-----+---> M
-    *  -20  -5 -3  +3 +5   +20   
+    *     ^
+    *  +5 +-----+-------+-----+
+    *     |     |       |     |
+    *     |     |   1   |     |
+    *  -5 +-----+-+---+-+-----+
+    *     |     | | 2 | |     |
+    *     |     |  \ /  |     |
+    *     |     |   |   |     |
+    * -35 +-----+-+---+-+-----+---> M
+    *    -20  -5 -3  +3 +5   +20
     */
     TH1D* data_th1d = new TH1D("data_th1d", ";bin index;", 2, 0.5, 2.5);
     TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", 2, 0.5, 2.5);
