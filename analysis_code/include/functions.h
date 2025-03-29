@@ -113,10 +113,12 @@ std::string get_ellipse_region_two(const char* deltaE_name_, const char* M_name_
     std::string region_one = get_ellipse_region_one(deltaE_name_, M_name_, sigma_, deltaE_peak_, deltaE_left_sigma_, deltaE_right_sigma_, M_peak_, M_left_sigma_, M_right_sigma_, theta_);
 
     // M direction criteria
-    std::string condition_M = "((" + std::to_string(M_peak_ - sigma_ * M_left_sigma_ * std::cos(theta_)) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "<" + std::to_string(M_peak_ + sigma_ * M_right_sigma_ * std::cos(theta_)) + "))";
+    double right_M = M_peak_ + 1 / std::sqrt(std::pow((2 * std::cos(theta_)) / (sigma_ * M_right_sigma_), 2) + std::pow((std::sin(theta_) * std::sin(theta_) - std::cos(theta_) * std::cos(theta_)) / (std::sin(theta_) * sigma_ * deltaE_right_sigma_), 2));
+    double left_M = M_peak_ - 1 / std::sqrt(std::pow((2 * std::cos(theta_)) / (sigma_ * M_left_sigma_), 2) + std::pow((std::sin(theta_) * std::sin(theta_) - std::cos(theta_) * std::cos(theta_)) / (std::sin(theta_) * sigma_ * deltaE_left_sigma_), 2));
+    std::string condition_M = "((" + std::to_string(left_M) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "<" + std::to_string(right_M) + "))";
 
     // deltaE direction criteria
-    std::string condition_deltaE = "(" + std::string(deltaE_name_) + "<((" + std::to_string(-1 / std::tan(theta_)) + ")*(" + std::string(M_name_) + "-" + std::to_string(M_peak_) + ")+" + std::to_string(deltaE_peak_) + "))";
+    std::string condition_deltaE = "(" + std::string(deltaE_name_) + "<((" + std::to_string(1 / std::tan(theta_)) + ")*(" + std::string(M_name_) + "-" + std::to_string(M_peak_) + ")+" + std::to_string(deltaE_peak_) + "))";
 
     std::string total = "(" + region_one + "<0.5) &&" + condition_M + "&&" + condition_deltaE;
 
