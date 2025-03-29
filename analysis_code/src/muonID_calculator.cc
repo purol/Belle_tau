@@ -170,10 +170,10 @@ double theta_g;
 double x_mapping_function(double M_, double deltaE_) {
 
     // cut for triangle region
-    double sloop_1 = 10 * deltaE_left_sigma / M_right_sigma;
-    double const_term_1 = -M_peak * (10 * deltaE_left_sigma / M_right_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
-    double sloop_2 = -10 * deltaE_left_sigma / M_left_sigma;
-    double const_term_2 = M_peak * (10 * deltaE_left_sigma / M_left_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
+    double sloop_1 = 10 * deltaE_left_sigma_g / M_right_sigma_g;
+    double const_term_1 = -M_peak_g * (10 * deltaE_left_sigma_g / M_right_sigma_g) + deltaE_peak_g - 35 * deltaE_left_sigma_g;
+    double sloop_2 = -10 * deltaE_left_sigma_g / M_left_sigma_g;
+    double const_term_2 = M_peak_g * (10 * deltaE_left_sigma_g / M_left_sigma_g) + deltaE_peak_g - 35 * deltaE_left_sigma_g;
 
     if (((M_peak_g - 20.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g - 5.0 * M_left_sigma_g)) && ((deltaE_peak_g - 35 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 1;
     else if (((M_peak_g - 5.0 * M_left_sigma_g) < M_) && (deltaE_ <= (sloop_2 * M_ + const_term_2)) && ((deltaE_peak_g - 35 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2;
