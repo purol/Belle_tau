@@ -65,8 +65,8 @@ int main(int argc, char* argv[]) {
     double const_term_1 = -M_peak * (10 * deltaE_left_sigma / M_right_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
     double sloop_2 = -10 * deltaE_left_sigma / M_left_sigma;
     double const_term_2 = M_peak * (10 * deltaE_left_sigma / M_left_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
-    loader.Cut("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))");
-    loader.Cut("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))");
+    loader.Cut(("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))").c_str());
+    loader.Cut(("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))").c_str());
     loader.PrintInformation("========== triangle region ==========");
 
     if(argc == 6) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), true, false);

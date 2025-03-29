@@ -61,8 +61,8 @@ int main(int argc, char* argv[]) {
     double const_term_1 = -M_peak * (10 * deltaE_left_sigma / M_right_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
     double sloop_2 = -10 * deltaE_left_sigma / M_left_sigma;
     double const_term_2 = M_peak * (10 * deltaE_left_sigma / M_left_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
-    loader.Cut("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))");
-    loader.Cut("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))");
+    loader.Cut(("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))").c_str());
+    loader.Cut(("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))").c_str());
     loader.PrintInformation("========== triangle region ==========");
 
     loader.DrawPunziFOM(argv[2], 0.0, 1.0, 500, Nevt_SIGNAL, 1.28, (std::string(argv[1])  + "/" + std::string(argv[3]) + "/PunziFOM.png").c_str());

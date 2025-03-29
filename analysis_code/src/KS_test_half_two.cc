@@ -70,8 +70,8 @@ int main(int argc, char* argv[]) {
     double const_term_1 = -M_peak * (10 * deltaE_left_sigma / M_right_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
     double sloop_2 = -10 * deltaE_left_sigma / M_left_sigma;
     double const_term_2 = M_peak * (10 * deltaE_left_sigma / M_left_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
-    loader_signal_train.Cut("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))");
-    loader_signal_train.Cut("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))");
+    loader_signal_train.Cut(("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))").c_str());
+    loader_signal_train.Cut(("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))").c_str());
     loader_signal_train.FillTH1D(signal_train_th, variable_name);
     loader_signal_train.FillTH1D(signal_train_th_KS, variable_name);
     loader_signal_train.end();
@@ -84,8 +84,8 @@ int main(int argc, char* argv[]) {
     double const_term_1 = -M_peak * (10 * deltaE_left_sigma / M_right_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
     double sloop_2 = -10 * deltaE_left_sigma / M_left_sigma;
     double const_term_2 = M_peak * (10 * deltaE_left_sigma / M_left_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
-    loader_signal_test.Cut("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))");
-    loader_signal_test.Cut("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))");
+    loader_signal_test.Cut(("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))").c_str());
+    loader_signal_test.Cut(("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))").c_str());
     loader_signal_test.FillTH1D(signal_test_th, variable_name);
     loader_signal_test.FillTH1D(signal_test_th_KS, variable_name);
     loader_signal_test.end();
@@ -98,8 +98,8 @@ int main(int argc, char* argv[]) {
     double const_term_1 = -M_peak * (10 * deltaE_left_sigma / M_right_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
     double sloop_2 = -10 * deltaE_left_sigma / M_left_sigma;
     double const_term_2 = M_peak * (10 * deltaE_left_sigma / M_left_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
-    loader_background_train.Cut("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))");
-    loader_background_train.Cut("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))");
+    loader_background_train.Cut(("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))").c_str());
+    loader_background_train.Cut(("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))").c_str());
     loader_background_train.FillTH1D(background_train_th, variable_name);
     loader_background_train.FillTH1D(background_train_th_KS, variable_name);
     loader_background_train.end();
@@ -112,8 +112,8 @@ int main(int argc, char* argv[]) {
     double const_term_1 = -M_peak * (10 * deltaE_left_sigma / M_right_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
     double sloop_2 = -10 * deltaE_left_sigma / M_left_sigma;
     double const_term_2 = M_peak * (10 * deltaE_left_sigma / M_left_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
-    loader_background_test.Cut("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))");
-    loader_background_test.Cut("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))");
+    loader_background_test.Cut(("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))").c_str());
+    loader_background_test.Cut(("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))").c_str());
     loader_background_test.FillTH1D(background_test_th, variable_name);
     loader_background_test.FillTH1D(background_test_th_KS, variable_name);
     loader_background_test.end();
