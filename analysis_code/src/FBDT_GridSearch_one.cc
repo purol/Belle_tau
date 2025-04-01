@@ -27,6 +27,7 @@ int main(int argc, char* argv[]) {
     */
 
     RooRandom::randomGenerator()->SetSeed(42);
+    srand(42);
 
     int variable_num = std::atoi(argv[1]);
     std::vector<std::string> intput_variables;
