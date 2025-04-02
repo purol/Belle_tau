@@ -3,7 +3,7 @@
 
 # define Scale_CHG_MC15ri (0.36537/1.0)
 # define Scale_MIX_MC15ri (0.36537/1.0)
-# define Scale_UUBAR_MC15ri (0.36537/5.3317062839)
+# define Scale_UUBAR_MC15ri (0.36537/7.01672240803)
 # define Scale_DDBAR_MC15ri (0.36537/8.0)
 # define Scale_SSBAR_MC15ri (0.36537/8.0)
 # define Scale_CHARM_MC15ri (0.36537/8.0)
