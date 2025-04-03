@@ -26,8 +26,8 @@ int main(int argc, char* argv[]) {
     * argv[8 + N]: Binning
     */
 
-    RooRandom::randomGenerator()->SetSeed(42);
-    srand(42);
+    RooRandom::randomGenerator()->SetSeed(771581);
+    srand(771581);
 
     int variable_num = std::atoi(argv[1]);
     std::vector<std::string> intput_variables;
