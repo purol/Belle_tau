@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import root_pandas
+import uproot
 import decayHash
 import basf2 as b2
 from decayHash import DecayHashMap
@@ -22,7 +22,7 @@ f = open(output_path + "/" + output_file_name, 'w')
 for i in range(0, len(root_list)):
 
     try:
-        data = root_pandas.read_root(os.path.join(root_path, root_list[i]),"tau_lfv")
+        data = uproot.open(os.path.join(root_path, root_list[i]))["tau_lfv"].arrays(library="pd")
     except Exception as e:
         continue
 
