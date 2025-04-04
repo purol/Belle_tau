@@ -30,7 +30,7 @@ for i in range(0, len(root_list)):
         continue
 
     # extract job id
-    match = re.search(r'job(\d+)', file_list[i])
+    match = re.search(r'job(\d+)', root_list[i])
     if match:
         job_number = match.group(1)
     else:
