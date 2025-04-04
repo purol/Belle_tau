@@ -5,3 +5,5 @@ gbasf2_Alice
 gbasf2_Yoshika
 - (bugfix for index, add cosToThrustOfEvent, calculate isolation, add M for tau, add p for muons, add KEKCC mode) ->
 gbasf2_Ran
+- (bugfix on hashmap) -> 
+gbasf2_Okina
