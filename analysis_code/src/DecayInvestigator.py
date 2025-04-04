@@ -56,9 +56,9 @@ for i in range(0, len(root_list)):
         f.write(str(data.iloc[j]["__ncandidates__"]) + "\n")
 
         # print the reconstruced decay
-        #f.write("Reconstructed Decay: " + "\n")
-        #rec = hashmap.get_reconstructed_decay(*candidate)
-        #f.write(rec.to_string() + "\n")
+        f.write("Reconstructed Decay: " + "\n")
+        rec = hashmap.get_reconstructed_decay(*candidate)
+        f.write(rec.to_string() + "\n")
 
         # print the original decay as simulated in MC
         f.write("Monte Carlo Decay: " + "\n")
