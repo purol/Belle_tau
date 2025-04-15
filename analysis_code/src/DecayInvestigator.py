@@ -47,8 +47,8 @@ for i in range(0, len(root_list)):
     
     hashmap = DecayHashMap(hashfile, removeRadiativeGammaFlag=True)
 
-    print(root_list[i])
-    print(hashfile)
+    #print(root_list[i])
+    #print(hashfile)
 
     for j in range(0, len(data)):
 
