@@ -39,7 +39,10 @@ for i in range(0, len(root_list)):
 
     hashfile = glob.glob(hashmap_path+"*"+str(job_number)+ "*.root")
     hashfile = [f for f in hashfile if "vertex" not in f]
-    hashfile = hashfile[0]
+    if hashfile is None:
+        print("Hashfile is not found")
+    else:
+        hashfile = hashfile[0]
     
     hashmap = DecayHashMap(hashfile, removeRadiativeGammaFlag=True)
 
@@ -54,6 +57,10 @@ for i in range(0, len(root_list)):
         f.write(str(data.iloc[j]["__event__"]) + "\n")
         f.write(str(data.iloc[j]["__candidate__"]) + "\n")
         f.write(str(data.iloc[j]["__ncandidates__"]) + "\n")
+
+        # get variables
+        Mtau = data.iloc[j]["M_inv_tau"]
+        deltaE = data.iloc[j]["deltaE"]
 
         # print the reconstruced decay
         f.write("Reconstructed Decay: " + "\n")
