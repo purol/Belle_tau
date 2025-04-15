@@ -10,6 +10,26 @@ import glob
 import gc
 import re
 
+def IsItRegionOne(deltaE, Mtau, deltaE_peak, deltaE_left_sigma, deltaE_right_sigma, M_peak, M_left_sigma, M_right_sigma):
+    if ((deltaE_peak - 5*deltaE_left_sigma)< deltaE) and (deltaE < (deltaE_peak + 5*deltaE_right_sigma)) and ((M_peak - 5*M_left_sigma)< Mtau) and (Mtau < (M_peak + 5*M_right_sigma)):
+        return True
+    else:
+        return False
+
+def IsItRegionTwo(deltaE, Mtau, deltaE_peak, deltaE_left_sigma, deltaE_right_sigma, M_peak, M_left_sigma, M_right_sigma):
+    sloop_1 = 10 * deltaE_left_sigma / M_right_sigma;
+    const_term_1 = -M_peak * (10 * deltaE_left_sigma / M_right_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
+    sloop_2 = -10 * deltaE_left_sigma / M_left_sigma;
+    const_term_2 = M_peak * (10 * deltaE_left_sigma / M_left_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
+    
+    if (deltaE < (deltaE_peak - 5*deltaE_left_sigma)):
+        if(deltaE > (sloop_1 * Mtau + const_term_1)) and (deltaE > (sloop_2 * Mtau + const_term_2)):
+            return True
+        else:
+            return False
+    else:
+        return False
+
 # put manually
 deltaE_peak = -0.000354
 deltaE_left_sigma = 0.013997
@@ -66,7 +86,7 @@ for i in range(0, len(root_list)):
         deltaE = data.iloc[j]["deltaE"]
 
         # cut
-        if ((deltaE_peak - 5*deltaE_left_sigma)< deltaE) and (deltaE < (deltaE_peak + 5*deltaE_right_sigma)) and ((M_peak - 5*M_left_sigma)< Mtau) and (Mtau < (M_peak + 5*M_right_sigma)):
+        if IsItRegionOne(deltaE, Mtau, deltaE_peak, deltaE_left_sigma, deltaE_right_sigma, M_peak, M_left_sigma, M_right_sigma):
             pass
         else:
             continue
