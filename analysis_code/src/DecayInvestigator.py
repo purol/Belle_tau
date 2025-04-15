@@ -66,7 +66,7 @@ for i in range(0, len(root_list)):
         deltaE = data.iloc[j]["deltaE"]
 
         # cut
-        if ((deltaE_peak - 5*deltaE_left_sigma)< deltaE) and (deltaE < (deltaE_peak - 5*deltaE_right_sigma)) and ((M_peak - 5*M_left_sigma)< Mtau) and (Mtau < (M_peak - 5*M_right_sigma)):
+        if ((deltaE_peak - 5*deltaE_left_sigma)< deltaE) and (deltaE < (deltaE_peak + 5*deltaE_right_sigma)) and ((M_peak - 5*M_left_sigma)< Mtau) and (Mtau < (M_peak + 5*M_right_sigma)):
             pass
         else:
             continue
