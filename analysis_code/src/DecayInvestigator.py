@@ -39,7 +39,7 @@ for i in range(0, len(root_list)):
 
     hashfile = glob.glob(hashmap_path+"*"+str(job_number)+ "*.root")
     hashfile = [f for f in hashfile if "vertex" not in f]
-    if hashfile is None:
+    if not hashfile:
         print("Hashfile is not found")
     else:
         hashfile = hashfile[0]
