@@ -41,6 +41,7 @@ for i in range(0, len(root_list)):
     hashfile = [f for f in hashfile if "vertex" not in f]
     if not hashfile:
         print("Hashfile is not found")
+        continue
     else:
         hashfile = hashfile[0]
     
