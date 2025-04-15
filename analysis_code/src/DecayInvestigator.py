@@ -61,23 +61,22 @@ for i in range(0, len(root_list)):
 
     for j in range(0, len(data)):
 
-        candidate = data.iloc[j][["extraInfo__boDecayHash__bc", "extraInfo__boDecayHashExtended__bc"]].values
-        f.write(str(data.iloc[j]["__experiment__"]) + "\n")
-        f.write(str(data.iloc[j]["__run__"]) + "\n")
-        f.write(str(data.iloc[j]["__event__"]) + "\n")
-        f.write(str(data.iloc[j]["__candidate__"]) + "\n")
-        f.write(str(data.iloc[j]["__ncandidates__"]) + "\n")
-
         # get variables
         Mtau = data.iloc[j]["M_inv_tau"]
         deltaE = data.iloc[j]["deltaE"]
-
 
         # cut
         if ((deltaE_peak - 5*deltaE_left_sigma)< deltaE) and (deltaE < (deltaE_peak - 5*deltaE_right_sigma)) and ((M_peak - 5*M_left_sigma)< Mtau) and (Mtau < (M_peak - 5*M_right_sigma)):
             pass
         else:
             continue
+
+        candidate = data.iloc[j][["extraInfo__boDecayHash__bc", "extraInfo__boDecayHashExtended__bc"]].values
+        f.write(str(data.iloc[j]["__experiment__"]) + "\n")
+        f.write(str(data.iloc[j]["__run__"]) + "\n")
+        f.write(str(data.iloc[j]["__event__"]) + "\n")
+        f.write(str(data.iloc[j]["__candidate__"]) + "\n")
+        f.write(str(data.iloc[j]["__ncandidates__"]) + "\n")
 
         # print the reconstruced decay
         f.write("Reconstructed Decay: " + "\n")
