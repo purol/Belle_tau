@@ -44,13 +44,8 @@ int main(int argc, char* argv[]) {
     loader_two.PrintInformation("========== initial ==========");
     loader_two.Cut(("(deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
     loader_two.PrintInformation("========== deltaE < -5 delta ==========");
-    double sloop_1 = 10 * deltaE_left_sigma / M_right_sigma;
-    double const_term_1 = -M_peak * (10 * deltaE_left_sigma / M_right_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
-    double sloop_2 = -10 * deltaE_left_sigma / M_left_sigma;
-    double const_term_2 = M_peak * (10 * deltaE_left_sigma / M_left_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
-    loader_two.Cut(("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))").c_str());
-    loader_two.Cut(("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))").c_str());
-    loader_two.PrintInformation("========== triangle region ==========");
+    loader_two.Cut(("(" + std::to_string(M_peak - 3 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 3 * M_right_sigma) + ")").c_str());
+    loader_two.PrintInformation("========== -3 delta < M < 3 delta ==========");
     loader_two.end();
 
     return 0;

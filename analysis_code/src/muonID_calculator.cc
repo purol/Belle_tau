@@ -168,30 +168,17 @@ double M_right_sigma_g;
 double theta_g;
 
 double x_mapping_function(double M_, double deltaE_) {
-
-    // cut for triangle region
-    double sloop_1 = 10 * deltaE_left_sigma_g / M_right_sigma_g;
-    double const_term_1 = -M_peak_g * (10 * deltaE_left_sigma_g / M_right_sigma_g) + deltaE_peak_g - 35 * deltaE_left_sigma_g;
-    double sloop_2 = -10 * deltaE_left_sigma_g / M_left_sigma_g;
-    double const_term_2 = M_peak_g * (10 * deltaE_left_sigma_g / M_left_sigma_g) + deltaE_peak_g - 35 * deltaE_left_sigma_g;
-
-    if (((M_peak_g - 20.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g - 5.0 * M_left_sigma_g)) && ((deltaE_peak_g - 35 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 1;
-    else if (((M_peak_g - 5.0 * M_left_sigma_g) < M_) && (deltaE_ <= (sloop_2 * M_ + const_term_2)) && ((deltaE_peak_g - 35 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2;
-    else if ((deltaE_ > (sloop_2 * M_ + const_term_2)) && (deltaE_ >= (sloop_1 * M_ + const_term_1)) && ((deltaE_peak_g - 35 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 3;
-    else if ((deltaE_ < (sloop_1 * M_ + const_term_1)) && (M_ <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 35 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 4;
-    else if (((M_peak_g + 5.0 * M_right_sigma_g) < M_) && (M_ <= (M_peak_g + 20.0 * M_right_sigma_g)) && ((deltaE_peak_g - 35 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 5;
-    else if (((M_peak_g - 20.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g - 5.0 * M_left_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1;
-    else if (((M_peak_g - 5.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g - 3.0 * M_left_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 2;
-    else if (((M_peak_g - 3.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g + 3.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 3;
-    else if (((M_peak_g + 3.0 * M_right_sigma_g) < M_) && (M_ <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 4;
-    else if (((M_peak_g + 5.0 * M_right_sigma_g) < M_) && (M_ <= (M_peak_g + 20.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 5;
-    else return 6;
-
+    if (((M_peak_g - 20.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g - 5.0 * M_left_sigma_g))) return 1.0;
+    else if (((M_peak_g - 5.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g - 3.0 * M_left_sigma_g))) return 2.0;
+    else if (((M_peak_g - 3.0 * M_left_sigma_g) < M_) && (M_ <= (M_peak_g + 3.0 * M_right_sigma_g))) return 3.0;
+    else if (((M_peak_g + 3.0 * M_right_sigma_g) < M_) && (M_ <= (M_peak_g + 5.0 * M_right_sigma_g))) return 4.0;
+    else if (((M_peak_g + 5.0 * M_right_sigma_g) < M_) && (M_ <= (M_peak_g + 20.0 * M_right_sigma_g))) return 5.0;
+    else return 6.0;
 }
 
 double y_mapping_function(double M_, double deltaE_) {
-    if (((deltaE_peak_g - 35 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 1.0;
-    else if (((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE_) && (deltaE_ <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 2.0;
+    if (deltaE_ < (deltaE_peak_g - 5 * deltaE_left_sigma_g)) return 1.0;
+    else if (deltaE_ < (deltaE_peak_g + 5 * deltaE_right_sigma_g)) return 2.0;
     else return 3.0;
 }
 
@@ -251,7 +238,7 @@ void ConvertHistogram(TH2D* data_th2d_, TH2D* signal_MC_th2d_, TH2D* bkg_MC_th2d
 
     // here, we interpolate expected backgrounds from sideband
     bkg_MC_th1d_->SetBinContent(1, (data_th2d_->GetBinContent(1, 2) + data_th2d_->GetBinContent(5, 2)) * (bkg_MC_th2d_->GetBinContent(2, 2) + bkg_MC_th2d_->GetBinContent(3, 2) + bkg_MC_th2d_->GetBinContent(4, 2)) / (bkg_MC_th2d_->GetBinContent(1, 2) + bkg_MC_th2d_->GetBinContent(5, 2)));
-    bkg_MC_th1d_->SetBinContent(2, (data_th2d_->GetBinContent(1, 1) + data_th2d_->GetBinContent(5, 1)) * bkg_MC_th2d_->GetBinContent(3, 1) / (bkg_MC_th2d_->GetBinContent(1, 1) + bkg_MC_th2d_->GetBinContent(5, 1)) );
+    bkg_MC_th1d_->SetBinContent(2, (data_th2d_->GetBinContent(1, 1) + data_th2d_->GetBinContent(5, 1)) * bkg_MC_th2d_->GetBinContent(3, 1) / (bkg_MC_th2d_->GetBinContent(1, 1) + bkg_MC_th2d_->GetBinContent(5, 1)));
     double bkg_MC_th1d_reluncer_1_1 = std::sqrt((data_th2d_->GetBinError(1, 2) * data_th2d_->GetBinError(1, 2) + data_th2d_->GetBinError(5, 2) * data_th2d_->GetBinError(5, 2)) / std::pow(data_th2d_->GetBinContent(1, 2) + data_th2d_->GetBinContent(5, 2), 2));
     double bkg_MC_th1d_reluncer_1_2 = std::sqrt((bkg_MC_th2d_->GetBinError(2, 2) * bkg_MC_th2d_->GetBinError(2, 2) + bkg_MC_th2d_->GetBinError(3, 2) * bkg_MC_th2d_->GetBinError(3, 2) + bkg_MC_th2d_->GetBinError(4, 2) * bkg_MC_th2d_->GetBinError(4, 2)) / std::pow(bkg_MC_th2d_->GetBinContent(2, 2) + bkg_MC_th2d_->GetBinContent(3, 2) + bkg_MC_th2d_->GetBinContent(4, 2), 2));
     double bkg_MC_th1d_reluncer_1_3 = std::sqrt((bkg_MC_th2d_->GetBinError(1, 2) * bkg_MC_th2d_->GetBinError(1, 2) + bkg_MC_th2d_->GetBinError(5, 2) * bkg_MC_th2d_->GetBinError(5, 2)) / std::pow(bkg_MC_th2d_->GetBinContent(1, 2) + bkg_MC_th2d_->GetBinContent(5, 2), 2));
@@ -262,7 +249,7 @@ void ConvertHistogram(TH2D* data_th2d_, TH2D* signal_MC_th2d_, TH2D* bkg_MC_th2d
     bkg_MC_th1d_->SetBinError(2, bkg_MC_th1d_->GetBinContent(2) * std::sqrt(bkg_MC_th1d_reluncer_2_1 * bkg_MC_th1d_reluncer_2_1 + bkg_MC_th1d_reluncer_2_2 * bkg_MC_th1d_reluncer_2_2 + bkg_MC_th1d_reluncer_2_3 * bkg_MC_th1d_reluncer_2_3));
 
     // calculate stat err
-    if(signal_MC_th1d_->GetBinContent(1) != 0.0) signal_MC_th1d_stat_err_->SetBinContent(1, signal_MC_th1d_->GetBinError(1) / signal_MC_th1d_->GetBinContent(1));
+    if (signal_MC_th1d_->GetBinContent(1) != 0.0) signal_MC_th1d_stat_err_->SetBinContent(1, signal_MC_th1d_->GetBinError(1) / signal_MC_th1d_->GetBinContent(1));
     else signal_MC_th1d_stat_err_->SetBinContent(1, 0.0);
 
     if (signal_MC_th1d_->GetBinContent(2) != 0.0) signal_MC_th1d_stat_err_->SetBinContent(2, signal_MC_th1d_->GetBinError(2) / signal_MC_th1d_->GetBinContent(2));
@@ -296,8 +283,8 @@ int main(int argc, char* argv[]) {
     * 2 |     | |   | |     |
     *   +-----+-+---+-+-----+
     *   |     | |   | |     |
-    * 1 |     |  \ /  |     |
-    *   |     |   |   |     |
+    * 1 |     | |   | |     |
+    *   |     | |   | |     |
     *   +-----+-+---+-+-----+-------> M
     *      1   2  3  4   5      6
     *
@@ -310,16 +297,16 @@ int main(int argc, char* argv[]) {
     /*
     *
     *  deltaE
-    *     ^
-    *  +5 +-----+-------+-----+
-    *     |     |       |     |
-    *     |     |   1   |     |
-    *  -5 +-----+-+---+-+-----+
-    *     |     | | 2 | |     |
-    *     |     |  \ /  |     |
-    *     |     |   |   |     |
-    * -35 +-----+-+---+-+-----+---> M
-    *    -20  -5 -3  +3 +5   +20
+    *   ^
+    *   +-----+-------+-----+
+    *   |     |       |     |
+    *   |     |   1   |     |
+    *   +-----+-+---+-+-----+
+    *   |     | |   | |     |
+    *   |     | |   | |     |
+    *   |     | | 2 | |     |
+    *   +-----+-+---+-+-----+---> M
+    *  -20  -5 -3  +3 +5   +20
     */
     TH1D* data_th1d = new TH1D("data_th1d", ";bin index;", 2, 0.5, 2.5);
     TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", 2, 0.5, 2.5);
