@@ -10,6 +10,15 @@ import glob
 import gc
 import re
 
+# put manually
+deltaE_peak = -0.000354
+deltaE_left_sigma = 0.013997
+deltaE_right_sigma = 0.012297
+M_peak = 1.777107
+M_left_sigma = 0.004605
+M_right_sigma = 0.004834
+theta = -0.247233
+
 root_path = sys.argv[1] # path which includes named root file
 hashmap_path = sys.argv[2] # path which includes hashmap
 
@@ -62,6 +71,13 @@ for i in range(0, len(root_list)):
         # get variables
         Mtau = data.iloc[j]["M_inv_tau"]
         deltaE = data.iloc[j]["deltaE"]
+
+
+        # cut
+        if ((deltaE_peak - 5*deltaE_left_sigma)< deltaE) && (deltaE < (deltaE_peak - 5*deltaE_right_sigma)) && ((M_peak - 5*M_left_sigma)< Mtau) && (Mtau < (M_peak - 5*M_right_sigma)):
+            pass
+        else:
+            continue
 
         # print the reconstruced decay
         f.write("Reconstructed Decay: " + "\n")
