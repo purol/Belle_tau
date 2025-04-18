@@ -43,6 +43,9 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== -20 delta < M < 20 delta ==========");
     //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.3, 1.9, 50, -0.9, 0.4, "M_deltaE_before_cut.png");
 
+    loader.Cut("(deltaE >= " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ") || ((deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ") && (nParticlesInList__bopi__pl__clevtshape_kinematics__bc < 4.5))");
+    loader.PrintInformation("========== ntrack < 4.5 in region 2 ==========");
+
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/final_output").c_str(), "", "");
 
     loader.end();
