@@ -222,6 +222,95 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char* pl
 
 }
 
+void PrintNevtFile(RooWorkspace* w, const char* filename = nullptr) {
+
+    // Nevts for each samples
+    std::vector<double> Signal_Nevts; // Nevt for signal
+    std::vector<double> BKG_Nevts; // Nevt for background
+
+    // get observable
+    RooRealVar* x_val = w->var("obs_x_Belle_II");
+
+    // count Nevt
+    {
+        RooAbsBinning const& binning = x_val->getBinning();
+        const double oldVal = x_val->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+
+                double Nevt = temp_func_scaleFactors->getValV() * temp_func_shapes->getValV();
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "signal") != nullptr) Signal_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "bkg") != nullptr) BKG_Nevts.push_back(Nevt);
+                else {
+                    printf("[ERROR] unexpected sample\n");
+                    exit(1);
+                }
+
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
+                    printf("[ERROR] negative count!\n");
+                    // exit(1);
+                }
+            }
+
+        }
+
+        *x_val_MXs1 = oldVal;
+    }
+
+    if (filename != nullptr) {
+        FILE* fp;
+        fp = fopen(filename, "w");
+
+        fprintf(fp, "Signal:\n");
+        for (int i = 0; i < Signal_Nevts.size(); i++) fprintf(fp, "%lf ", Signal_Nevts.at(i));
+        fprintf(fp, "\n");
+
+        fprintf(fp, "BKG:\n");
+        for (int i = 0; i < BKG_Nevts.size(); i++) fprintf(fp, "%lf ", BKG_Nevts.at(i));
+        fprintf(fp, "\n");
+
+        fclose(fp);
+    }
+
+}
+
+void PrintNevtFile(RooWorkspace* w, RooDataSet* data, const char* filename = nullptr) {
+
+    // Nevts for each samples
+    std::vector<double> data_Nevts; // Nevt for data
+
+    // get observable
+    RooRealVar* x_val = w->var("obs_x_Belle_II");
+    RooAbsBinning const& binning = x_val->getBinning();
+
+    // count Nevt
+    for (int i = 0; i < binning.numBins(); i++) {
+        const RooArgSet* argSet = data->get(i);
+        if (!argSet) data_Nevts->push_back(0.0);
+        else data_Nevts->push_back(data->weight());
+    }
+
+    if (filename != nullptr) {
+        FILE* fp;
+        fp = fopen(filename, "w");
+
+        fprintf(fp, "data:\n");
+        for (int i = 0; i < data_Nevts.size(); i++) fprintf(fp, "%lf ", data_Nevts.at(i));
+        fprintf(fp, "\n");
+
+        fclose(fp);
+    }
+
+}
+
 RooDataSet* MyGenerate(RooWorkspace* w, std::vector<double> Nevts, bool extended) {
 
     RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
