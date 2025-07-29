@@ -279,6 +279,17 @@ void PrintNevtFile(RooWorkspace* w, const char* filename = nullptr) {
 
         fclose(fp);
     }
+    else {
+        FILE* fp = stdout;
+
+        fprintf(fp, "Signal:\n");
+        for (int i = 0; i < Signal_Nevts.size(); i++) fprintf(fp, "%lf ", Signal_Nevts.at(i));
+        fprintf(fp, "\n");
+
+        fprintf(fp, "BKG:\n");
+        for (int i = 0; i < BKG_Nevts.size(); i++) fprintf(fp, "%lf ", BKG_Nevts.at(i));
+        fprintf(fp, "\n");
+    }
 
 }
 
@@ -307,6 +318,13 @@ void PrintNevtFile(RooWorkspace* w, RooDataSet* data, const char* filename = nul
         fprintf(fp, "\n");
 
         fclose(fp);
+    }
+    else {
+        FILE* fp = stdout;
+
+        fprintf(fp, "data:\n");
+        for (int i = 0; i < data_Nevts.size(); i++) fprintf(fp, "%lf ", data_Nevts.at(i));
+        fprintf(fp, "\n");
     }
 
 }
