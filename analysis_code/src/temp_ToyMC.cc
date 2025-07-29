@@ -48,6 +48,12 @@ int main(int argc, char* argv[]) {
 
 	}
 
+	int fit_status = fitres->status();
+	int covQual = fitres->covQual();
+	double edm = fitres->edm();
+
+	printf("%d %d %lf\n", fit_status, covQual, edm);
+
 	// draw plot
 	GetPlotTemplate(w, data, "./hist_data_plot.png");
 
