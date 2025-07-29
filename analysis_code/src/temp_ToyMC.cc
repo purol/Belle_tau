@@ -52,8 +52,8 @@ int main(int argc, char* argv[]) {
 	GetPlotTemplate(w, data, "./hist_data_plot.png");
 
 	// print Nevt
-	PrintNevtFile(w, data, nullptr);
-	PrintNevtFile(w, nullptr);
+	PrintNevtFile(w, data);
+	PrintNevtFile(w);
 
 	return 0;
 }
