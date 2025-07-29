@@ -262,7 +262,7 @@ void PrintNevtFile(RooWorkspace* w, const char* filename = nullptr) {
 
         }
 
-        *x_val_MXs1 = oldVal;
+        *x_val = oldVal;
     }
 
     if (filename != nullptr) {
@@ -294,8 +294,8 @@ void PrintNevtFile(RooWorkspace* w, RooDataSet* data, const char* filename = nul
     // count Nevt
     for (int i = 0; i < binning.numBins(); i++) {
         const RooArgSet* argSet = data->get(i);
-        if (!argSet) data_Nevts->push_back(0.0);
-        else data_Nevts->push_back(data->weight());
+        if (!argSet) data_Nevts.push_back(0.0);
+        else data_Nevts.push_back(data->weight());
     }
 
     if (filename != nullptr) {
