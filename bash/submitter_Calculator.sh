@@ -1,0 +1,22 @@
+#!/bin/bash
+
+submit_code() {
+  local Code=$1 # ex. ./bin/Analysis_main
+  local VerName=$2 # ex. Alice
+  local NToys=$3
+  local indicator=$4
+
+  mkdir -p "./${VerName}/${Analysis_VerName}/cal_out"
+  mkdir -p "./${VerName}/${Analysis_VerName}/cal_log"
+
+  bsub -q s -J PIDCAL -o "./${VerName}/${Analysis_VerName}/cal_log/PID_calculator_${indicator}.log" ${Code} "./${VerName}/${Analysis_VerName}" "final_output_test_after_application_after_cut" "./${VerName}/${Analysis_VerName}/cal_out" ${NToys} ${indicator}
+}
+
+
+code="${Belle_tau_DIR}/analysis_code/bin/muonID_calculator"
+NToys=10
+
+for i in {0..99}; do
+    submit_code ${code} ${Analysis_Name} ${NToys} ${i}
+done
+
