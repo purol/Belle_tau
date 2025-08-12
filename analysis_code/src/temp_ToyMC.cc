@@ -22,6 +22,9 @@ int main(int argc, char* argv[]) {
 	TFile* f = TFile::Open(fname);
 	RooWorkspace* w = (RooWorkspace*)f->Get("combined");
 
+	// print Nevt
+	PrintNevtFile(w);
+
 	// Generate data
 	std::vector<double> Nevts = { 0.83, 28.86 };
 	RooDataSet* data = MyGenerate(w, Nevts, true);
