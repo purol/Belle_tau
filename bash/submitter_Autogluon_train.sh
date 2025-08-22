@@ -10,9 +10,13 @@ submit_GridSearch() {
 
 }
 
+# activate autogluon env
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate autogluon
+
 code="${Belle_tau_DIR}/analysis_code/src/train_autogluon.py"
 submit_GridSearch ${code} ${Analysis_Name}
 
-
+conda deactivate
 
 

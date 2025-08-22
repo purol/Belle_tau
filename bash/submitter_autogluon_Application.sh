@@ -24,6 +24,10 @@ submit_Application() {
 
 }
 
+# activate autogluon env
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate autogluon
+
 Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CHARM" "MUMU" "EE" "EEEE" "EEMUMU" "EEPIPI" "EEKK" "EEPP" "PIPIISR" "KKISR" "GG" "EETAUTAU" "K0K0BARISR" "MUMUMUMU" "MUMUTAUTAU" "TAUTAUTAUTAU" "TAUPAIR" "SIGNAL")
 
 code="${Belle_tau_DIR}/analysis_code/src/apply_autogluon.py"
@@ -31,3 +35,5 @@ for Type in "${Types[@]}"; do
     submit_Application ${code} ${Analysis_Name} ${Type}
     sleep 0.5s
 done
+
+conda deactivate
