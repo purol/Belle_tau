@@ -72,26 +72,25 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-bash ./submitter_FBDTGridSearch.sh
-wait_job "FBDTTRN"
-bash ./checker_FBDTGridSearch.sh
+bash ./submitter_Autogluon_train.sh
+wait_job "MVATRN"
+bash ./checker_Autogluon_train.sh
 if [[ $? -ne 0 ]]; then
   echo "Unsuccessful logs found. Stopping the one touch analysis."
   exit 1
 fi
 
-bash ./submitter_FBDT_AUC_train.sh
-wait_job "AUCTRN"
+bash ./submitter_autogluon_Application.sh
+wait_job "MVAAPP"
+bash ./checker_autogluon_Application.sh
+if [[ $? -ne 0 ]]; then
+  echo "Unsuccessful logs found. Stopping the one touch analysis."
+  exit 1
+fi
 
-bash ./submitter_FBDT_AUC_test.sh
-wait_job "AUCTST"
-
-bash ./submitter_ReadGridSearchFiles.sh
-wait_job "GRIDFILE"
-
-bash ./submitter_FBDT_Application.sh
-wait_job "FBDTAPP"
-bash ./checker_FBDT_Application.sh
+bash ./submitter_CSV_Application.sh
+wait_job "CSVAPP"
+bash ./checker_CSV_Application.sh
 if [[ $? -ne 0 ]]; then
   echo "Unsuccessful logs found. Stopping the one touch analysis."
   exit 1
