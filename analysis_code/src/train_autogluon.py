@@ -277,8 +277,7 @@ predictor = TabularPredictor(label="label", problem_type='binary', sample_weight
     presets="good_quality",
     save_bag_folds=True,
     refit_full=True,
-    set_best_to_refit_full=False,
-    log_to_file=True
+    set_best_to_refit_full=False
 )
 
 # leaderboard
@@ -309,8 +308,7 @@ predictor = TabularPredictor(label="label", problem_type='binary', sample_weight
     presets="good_quality",
     save_bag_folds=True,
     refit_full=True,
-    set_best_to_refit_full=False,
-    log_to_file=True
+    set_best_to_refit_full=False
 )
 
 # leaderboard
