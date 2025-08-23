@@ -281,7 +281,16 @@ predictor = TabularPredictor(label="label", problem_type='binary', sample_weight
 )
 
 # leaderboard
-leaderboard = predictor.leaderboard(df_test_one, extra_metrics=[], silent=True)
+leaderboard_test = predictor.leaderboard(df_test_one, extra_metrics=[], silent=True)
+leaderboard_train = predictor.leaderboard(df_train_one, extra_metrics=[], silent=True)
+leaderboard_test_simplified = leaderboard_test[['model', 'score_test', 'score_val']]
+leaderboard_train_simplified = leaderboard_train[['model', 'score_test']].rename(columns={'model': 'model', 'score_test': 'score_train'})
+leaderboard = pd.merge(
+    leaderboard_test_simplified,
+    leaderboard_train_simplified,
+    on='model',
+    how='inner'  # or 'outer'/'left'/'right' depending on what you want
+)
 
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
@@ -312,7 +321,16 @@ predictor = TabularPredictor(label="label", problem_type='binary', sample_weight
 )
 
 # leaderboard
-leaderboard = predictor.leaderboard(df_test_two, extra_metrics=[], silent=True)
+leaderboard_test = predictor.leaderboard(df_test_two, extra_metrics=[], silent=True)
+leaderboard_train = predictor.leaderboard(df_train_two, extra_metrics=[], silent=True)
+leaderboard_test_simplified = leaderboard_test[['model', 'score_test', 'score_val']]
+leaderboard_train_simplified = leaderboard_train[['model', 'score_test']].rename(columns={'model': 'model', 'score_test': 'score_train'})
+leaderboard = pd.merge(
+    leaderboard_test_simplified,
+    leaderboard_train_simplified,
+    on='model',
+    how='inner'  # or 'outer'/'left'/'right' depending on what you want
+)
 
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
