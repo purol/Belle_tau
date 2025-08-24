@@ -61,7 +61,12 @@ namespace Module {
             std::getline(file, line);
 
             // Variables to hold data per line
-            int experiment, run, event, production, candidate, ncandidates;
+            int experiment;
+            int run;
+            unsigned int event;
+            int production;
+            int candidate;
+            int ncandidates;
             double BDT_output_1, BDT_output_2;
 
             for (std::vector<Data>::iterator iter = data->begin(); iter != data->end(); ) {
@@ -75,7 +80,7 @@ namespace Module {
 
                 std::getline(ss, value, ','); experiment = std::stoi(value);
                 std::getline(ss, value, ','); run = std::stoi(value);
-                std::getline(ss, value, ','); event = std::stoi(value);
+                std::getline(ss, value, ','); event = static_cast<unsigned int>(std::stoul(value));
                 std::getline(ss, value, ','); production = std::stoi(value);
                 std::getline(ss, value, ','); candidate = std::stoi(value);
                 std::getline(ss, value, ','); ncandidates = std::stoi(value);
