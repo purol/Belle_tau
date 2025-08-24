@@ -344,10 +344,10 @@ df_test = pd.concat([df_SIGNAL_test, df_BKG_test], ignore_index=True)
 # filter
 df_train_one = df_train[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]) < df_train["deltaE"]) & (df_train["deltaE"] < (resolution["deltaE"]["peak"] + 5*resolution["deltaE"]["right_sigma"]))]
 df_train_one = df_train_one[((resolution["M_inv_tau"]["peak"] - 5*resolution["M_inv_tau"]["left_sigma"]) < df_train_one["M_inv_tau"]) & (df_train_one["M_inv_tau"] < (resolution["M_inv_tau"]["peak"] + 5*resolution["M_inv_tau"]["right_sigma"]))]
-df_train_one = df_train_one[input_variables + ["label"]]
+df_train_one = df_train_one[input_variables + ["label", "weight"]]
 df_test_one = df_test[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]) < df_test["deltaE"]) & (df_test["deltaE"] < (resolution["deltaE"]["peak"] + 5*resolution["deltaE"]["right_sigma"]))]
 df_test_one = df_test_one[((resolution["M_inv_tau"]["peak"] - 5*resolution["M_inv_tau"]["left_sigma"]) < df_test_one["M_inv_tau"]) & (df_test_one["M_inv_tau"] < (resolution["M_inv_tau"]["peak"] + 5*resolution["M_inv_tau"]["right_sigma"]))]
-df_test_one = df_test_one[input_variables + ["label"]]
+df_test_one = df_test_one[input_variables + ["label", "weight"]]
 
 # train
 predictor = TabularPredictor(label="label", problem_type='binary', sample_weight = "weight", weight_evaluation = True, eval_metric='roc_auc', path=f"{input_path}/AutogluonModels/model_one").fit(
@@ -387,10 +387,10 @@ predictor.save()
 # filter
 df_train_two = df_train[(df_train["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
 df_train_two = df_train_two[((resolution["M_inv_tau"]["peak"] - 3*resolution["M_inv_tau"]["left_sigma"]) < df_train_two["M_inv_tau"]) & (df_train_two["M_inv_tau"] < (resolution["M_inv_tau"]["peak"] + 3*resolution["M_inv_tau"]["right_sigma"]))]
-df_train_two = df_train_two[input_variables + ["label"]]
+df_train_two = df_train_two[input_variables + ["label", "weight"]]
 df_test_two = df_test[(df_test["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
 df_test_two = df_test_two[((resolution["M_inv_tau"]["peak"] - 3*resolution["M_inv_tau"]["left_sigma"]) < df_test_two["M_inv_tau"]) & (df_test_two["M_inv_tau"] < (resolution["M_inv_tau"]["peak"] + 3*resolution["M_inv_tau"]["right_sigma"]))]
-df_test_two = df_test_two[input_variables + ["label"]]
+df_test_two = df_test_two[input_variables + ["label", "weight"]]
 
 # train
 predictor = TabularPredictor(label="label", problem_type='binary', sample_weight = "weight", weight_evaluation = True, eval_metric='roc_auc', path=f"{input_path}/AutogluonModels/model_two").fit(
