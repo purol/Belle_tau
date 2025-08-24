@@ -13,11 +13,11 @@ submit_PunziFOM() {
 
 code="${Belle_tau_DIR}/analysis_code/bin/FBDT_PunziFOM_one"
 bdtname="BDT_output_1"
-output="GridSearch_one"
+output="model_one"
 submit_PunziFOM ${code} ${Analysis_Name} ${bdtname} ${output}
 
 code="${Belle_tau_DIR}/analysis_code/bin/FBDT_PunziFOM_two"
 bdtname="BDT_output_2"
-output="GridSearch_two"
+output="model_two"
 submit_PunziFOM ${code} ${Analysis_Name} ${bdtname} ${output}
 

@@ -36,7 +36,7 @@ Scale_TAUPAIR_MC15ri = (0.36537/1.455052)
 tau_crosssection = 0.919 # nb
 Nevt_taupair = ((0.36537/0.000000001) * tau_crosssection)
 Nevt_SIGNAL_MC15ri = 5000000
-BR_SIGNAL = 0.0001 # just set 10^(-4)
+BR_SIGNAL = 0.0001 # just set 10^(-4) 
 Nevt_SIGNAL = (Nevt_taupair * BR_SIGNAL * 2.0)
 Scale_SIGNAL_MC15ri = (Nevt_SIGNAL/Nevt_SIGNAL_MC15ri)
 
@@ -116,21 +116,21 @@ parser.add_argument(
         "angleToClosestInList__bopi__pl__clevtshape_kinematics__bc",
         "KSFWVariables__boet__cm__spcleanMask__bc",
         "KSFWVariables__bomm2__cm__spcleanMask__bc",
-        #"KSFWVariables__bohso00__cm__spcleanMask__bc",
+        "KSFWVariables__bohso00__cm__spcleanMask__bc",
         "KSFWVariables__bohso01__cm__spcleanMask__bc",
         "KSFWVariables__bohso02__cm__spcleanMask__bc",
         "KSFWVariables__bohso03__cm__spcleanMask__bc",
-        #"KSFWVariables__bohso04__cm__spcleanMask__bc",
+        "KSFWVariables__bohso04__cm__spcleanMask__bc",
         "KSFWVariables__bohso10__cm__spcleanMask__bc",
         "KSFWVariables__bohso12__cm__spcleanMask__bc",
-        #"KSFWVariables__bohso14__cm__spcleanMask__bc",
+        "KSFWVariables__bohso14__cm__spcleanMask__bc",
         "KSFWVariables__bohso20__cm__spcleanMask__bc",
         "KSFWVariables__bohso22__cm__spcleanMask__bc",
         "KSFWVariables__bohso24__cm__spcleanMask__bc",
         "harmonicMomentThrust0",
-        #"harmonicMomentThrust1",
-        #"harmonicMomentThrust2",
-        #"harmonicMomentThrust3",
+        "harmonicMomentThrust1",
+        "harmonicMomentThrust2",
+        "harmonicMomentThrust3",
         "harmonicMomentThrust4"
     ],
     help='List of input variables'
@@ -276,8 +276,6 @@ def read_with_weight(paths, label, tree_name, input_variables):
     df = read_all_root_files_self_function(dirs=paths, tree_name=tree_name, branches=input_variables)
     if not df.empty:
         df["weight"] = ObtainWeight(label)
-    else:
-        df["weight"] = pd.Series(dtype=float)
     return df
 
 signal_list = ["SIGNAL"]
@@ -351,39 +349,10 @@ df_test_one = df_test[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["l
 df_test_one = df_test_one[((resolution["M_inv_tau"]["peak"] - 5*resolution["M_inv_tau"]["left_sigma"]) < df_test_one["M_inv_tau"]) & (df_test_one["M_inv_tau"] < (resolution["M_inv_tau"]["peak"] + 5*resolution["M_inv_tau"]["right_sigma"]))]
 df_test_one = df_test_one[input_variables + ["label"]]
 
-# train
-predictor = TabularPredictor(label="label", problem_type='binary', sample_weight = "balance_weight", eval_metric='roc_auc', path=f"{input_path}/AutogluonModels/model_one").fit(
-    df_train_one,
-    time_limit=36000,
-    presets="good_quality",
-    save_bag_folds=True,
-    refit_full=True,
-    set_best_to_refit_full=False
-)
-
-# leaderboard
-leaderboard_test = predictor.leaderboard(df_test_one, extra_metrics=[], silent=True)
-leaderboard_train = predictor.leaderboard(df_train_one, extra_metrics=[], silent=True)
-leaderboard_test_simplified = leaderboard_test[['model', 'score_test', 'score_val']]
-leaderboard_train_simplified = leaderboard_train[['model', 'score_test']].rename(columns={'model': 'model', 'score_test': 'score_train'})
-leaderboard = pd.merge(
-    leaderboard_test_simplified,
-    leaderboard_train_simplified,
-    on='model',
-    how='inner'  # or 'outer'/'left'/'right' depending on what you want
-)
-
-pd.set_option('display.max_rows', None)
-pd.set_option('display.max_columns', None)
-print(leaderboard)
-pd.reset_option('display.max_rows')
-pd.reset_option('display.max_columns')
+predictor = TabularPredictor.load(f"{input_path}/AutogluonModels/model_one")
 
 feature = predictor.feature_importance(df_test_one, subsample_size = 50000)
 print(feature)
-
-# save model
-predictor.save()
 
 # ====================================================== region two ====================================================== #
 # filter
@@ -394,36 +363,7 @@ df_test_two = df_test[(df_test["deltaE"] < (resolution["deltaE"]["peak"] - 5*res
 df_test_two = df_test_two[((resolution["M_inv_tau"]["peak"] - 3*resolution["M_inv_tau"]["left_sigma"]) < df_test_two["M_inv_tau"]) & (df_test_two["M_inv_tau"] < (resolution["M_inv_tau"]["peak"] + 3*resolution["M_inv_tau"]["right_sigma"]))]
 df_test_two = df_test_two[input_variables + ["label"]]
 
-# train
-predictor = TabularPredictor(label="label", problem_type='binary', sample_weight = "balance_weight", eval_metric='roc_auc', path=f"{input_path}/AutogluonModels/model_two").fit(
-    df_train_two,
-    time_limit=36000,
-    presets="good_quality",
-    save_bag_folds=True,
-    refit_full=True,
-    set_best_to_refit_full=False
-)
-
-# leaderboard
-leaderboard_test = predictor.leaderboard(df_test_two, extra_metrics=[], silent=True)
-leaderboard_train = predictor.leaderboard(df_train_two, extra_metrics=[], silent=True)
-leaderboard_test_simplified = leaderboard_test[['model', 'score_test', 'score_val']]
-leaderboard_train_simplified = leaderboard_train[['model', 'score_test']].rename(columns={'model': 'model', 'score_test': 'score_train'})
-leaderboard = pd.merge(
-    leaderboard_test_simplified,
-    leaderboard_train_simplified,
-    on='model',
-    how='inner'  # or 'outer'/'left'/'right' depending on what you want
-)
-
-pd.set_option('display.max_rows', None)
-pd.set_option('display.max_columns', None)
-print(leaderboard)
-pd.reset_option('display.max_rows')
-pd.reset_option('display.max_columns')
+predictor = TabularPredictor.load(f"{input_path}/AutogluonModels/model_two")
 
 feature = predictor.feature_importance(df_test_two, subsample_size = 50000)
 print(feature)
-
-# save model
-predictor.save()  
