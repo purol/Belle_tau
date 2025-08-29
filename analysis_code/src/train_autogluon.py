@@ -36,7 +36,7 @@ Scale_TAUPAIR_MC15ri = (0.36537/1.455052)
 tau_crosssection = 0.919 # nb
 Nevt_taupair = ((0.36537/0.000000001) * tau_crosssection)
 Nevt_SIGNAL_MC15ri = 5000000
-BR_SIGNAL = 0.0001 # just set 10^(-4)
+BR_SIGNAL = 0.00000001 # just set 10^(-8)
 Nevt_SIGNAL = (Nevt_taupair * BR_SIGNAL * 2.0)
 Scale_SIGNAL_MC15ri = (Nevt_SIGNAL/Nevt_SIGNAL_MC15ri)
 
@@ -116,21 +116,21 @@ parser.add_argument(
         "angleToClosestInList__bopi__pl__clevtshape_kinematics__bc",
         "KSFWVariables__boet__cm__spcleanMask__bc",
         "KSFWVariables__bomm2__cm__spcleanMask__bc",
-        #"KSFWVariables__bohso00__cm__spcleanMask__bc",
+        "KSFWVariables__bohso00__cm__spcleanMask__bc",
         "KSFWVariables__bohso01__cm__spcleanMask__bc",
         "KSFWVariables__bohso02__cm__spcleanMask__bc",
         "KSFWVariables__bohso03__cm__spcleanMask__bc",
-        #"KSFWVariables__bohso04__cm__spcleanMask__bc",
+        "KSFWVariables__bohso04__cm__spcleanMask__bc",
         "KSFWVariables__bohso10__cm__spcleanMask__bc",
         "KSFWVariables__bohso12__cm__spcleanMask__bc",
-        #"KSFWVariables__bohso14__cm__spcleanMask__bc",
+        "KSFWVariables__bohso14__cm__spcleanMask__bc",
         "KSFWVariables__bohso20__cm__spcleanMask__bc",
         "KSFWVariables__bohso22__cm__spcleanMask__bc",
         "KSFWVariables__bohso24__cm__spcleanMask__bc",
         "harmonicMomentThrust0",
-        #"harmonicMomentThrust1",
-        #"harmonicMomentThrust2",
-        #"harmonicMomentThrust3",
+        "harmonicMomentThrust1",
+        "harmonicMomentThrust2",
+        "harmonicMomentThrust3",
         "harmonicMomentThrust4"
     ],
     help='List of input variables'
@@ -346,26 +346,62 @@ df_test = pd.concat([df_SIGNAL_test, df_BKG_test], ignore_index=True)
 # filter
 df_train_one = df_train[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]) < df_train["deltaE"]) & (df_train["deltaE"] < (resolution["deltaE"]["peak"] + 5*resolution["deltaE"]["right_sigma"]))]
 df_train_one = df_train_one[((resolution["M_inv_tau"]["peak"] - 5*resolution["M_inv_tau"]["left_sigma"]) < df_train_one["M_inv_tau"]) & (df_train_one["M_inv_tau"] < (resolution["M_inv_tau"]["peak"] + 5*resolution["M_inv_tau"]["right_sigma"]))]
-df_train_one = df_train_one[input_variables + ["label"]]
+df_train_one = df_train_one[input_variables + ["label", "weight"]]
 df_test_one = df_test[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]) < df_test["deltaE"]) & (df_test["deltaE"] < (resolution["deltaE"]["peak"] + 5*resolution["deltaE"]["right_sigma"]))]
 df_test_one = df_test_one[((resolution["M_inv_tau"]["peak"] - 5*resolution["M_inv_tau"]["left_sigma"]) < df_test_one["M_inv_tau"]) & (df_test_one["M_inv_tau"] < (resolution["M_inv_tau"]["peak"] + 5*resolution["M_inv_tau"]["right_sigma"]))]
-df_test_one = df_test_one[input_variables + ["label"]]
+df_test_one = df_test_one[input_variables + ["label", "weight"]]
+
+# reweight
+if 1 in df_train_one['label'].unique() and 0 in df_train_one['label'].unique():
+    sum_w_signal = df_train_one.loc[df_train_one['label'] == 1, 'weight'].sum()
+    sum_w_bkg = df_train_one.loc[df_train_one['label'] == 0, 'weight'].sum()
+
+    print(f"Original sum of weights | Signal: {sum_w_signal:.4f}, Background: {sum_w_bkg:.4f}")
+    
+    if sum_w_signal > 0:
+        df_train_one.loc[df_train_one['label'] == 1, 'weight'] *= (sum_w_bkg / sum_w_signal)
+    if sum_w_bkg > 0:
+        df_train_one.loc[df_train_one['label'] == 0, 'weight'] *= (sum_w_bkg / sum_w_bkg)
+
+    print("--- Post-Normalization Weight Stats ---")
+    print(df_train_one.groupby('label')['weight'].describe())
+else:
+    print("Skipping normalization: one class is missing.")
+
+if 1 in df_test_one['label'].unique() and 0 in df_test_one['label'].unique():
+    sum_w_signal = df_test_one.loc[df_test_one['label'] == 1, 'weight'].sum()
+    sum_w_bkg = df_test_one.loc[df_test_one['label'] == 0, 'weight'].sum()
+
+    print(f"Original sum of weights | Signal: {sum_w_signal:.4f}, Background: {sum_w_bkg:.4f}")
+    
+    if sum_w_signal > 0:
+        df_test_one.loc[df_test_one['label'] == 1, 'weight'] *= (sum_w_bkg / sum_w_signal)
+    if sum_w_bkg > 0:
+        df_test_one.loc[df_test_one['label'] == 0, 'weight'] *= (sum_w_bkg / sum_w_bkg)
+
+    print("--- Post-Normalization Weight Stats ---")
+    print(df_test_one.groupby('label')['weight'].describe())
+else:
+    print("Skipping normalization: one class is missing.")
 
 # train
-predictor = TabularPredictor(label="label", problem_type='binary', sample_weight = "balance_weight", eval_metric='roc_auc', path=f"{input_path}/AutogluonModels/model_one").fit(
+predictor = TabularPredictor(label="label", problem_type='binary', sample_weight = "weight", weight_evaluation = False, eval_metric='log_loss', path=f"{input_path}/AutogluonModels/model_one").fit(
     df_train_one,
     time_limit=36000,
     presets="good_quality",
+    ag_args_fit={
+        'num_cpus': 1
+    },
     save_bag_folds=True,
     refit_full=True,
     set_best_to_refit_full=False
 )
 
 # leaderboard
-leaderboard_test = predictor.leaderboard(df_test_one, extra_metrics=[], silent=True)
-leaderboard_train = predictor.leaderboard(df_train_one, extra_metrics=[], silent=True)
-leaderboard_test_simplified = leaderboard_test[['model', 'score_test', 'score_val']]
-leaderboard_train_simplified = leaderboard_train[['model', 'score_test']].rename(columns={'model': 'model', 'score_test': 'score_train'})
+leaderboard_test = predictor.leaderboard(df_test_one, extra_metrics=['roc_auc'], silent=True)
+leaderboard_train = predictor.leaderboard(df_train_one, extra_metrics=['roc_auc'], silent=True)
+leaderboard_test_simplified = leaderboard_test[['model', 'score_test', 'score_val', 'roc_auc', 'eval_metric']].rename(columns={'model': 'model', 'score_test': 'score_test', 'score_val': 'score_val', 'roc_auc': 'auc_test', 'eval_metric': 'eval_metric'})
+leaderboard_train_simplified = leaderboard_train[['model', 'score_test', 'roc_auc']].rename(columns={'model': 'model', 'score_test': 'score_train', 'roc_auc': 'auc_train'})
 leaderboard = pd.merge(
     leaderboard_test_simplified,
     leaderboard_train_simplified,
@@ -389,26 +425,62 @@ predictor.save()
 # filter
 df_train_two = df_train[(df_train["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
 df_train_two = df_train_two[((resolution["M_inv_tau"]["peak"] - 3*resolution["M_inv_tau"]["left_sigma"]) < df_train_two["M_inv_tau"]) & (df_train_two["M_inv_tau"] < (resolution["M_inv_tau"]["peak"] + 3*resolution["M_inv_tau"]["right_sigma"]))]
-df_train_two = df_train_two[input_variables + ["label"]]
+df_train_two = df_train_two[input_variables + ["label", "weight"]]
 df_test_two = df_test[(df_test["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
 df_test_two = df_test_two[((resolution["M_inv_tau"]["peak"] - 3*resolution["M_inv_tau"]["left_sigma"]) < df_test_two["M_inv_tau"]) & (df_test_two["M_inv_tau"] < (resolution["M_inv_tau"]["peak"] + 3*resolution["M_inv_tau"]["right_sigma"]))]
-df_test_two = df_test_two[input_variables + ["label"]]
+df_test_two = df_test_two[input_variables + ["label", "weight"]]
+
+# reweight
+if 1 in df_train_two['label'].unique() and 0 in df_train_two['label'].unique():
+    sum_w_signal = df_train_two.loc[df_train_two['label'] == 1, 'weight'].sum()
+    sum_w_bkg = df_train_two.loc[df_train_two['label'] == 0, 'weight'].sum()
+
+    print(f"Original sum of weights | Signal: {sum_w_signal:.4f}, Background: {sum_w_bkg:.4f}")
+    
+    if sum_w_signal > 0:
+        df_train_two.loc[df_train_two['label'] == 1, 'weight'] *= (sum_w_bkg / sum_w_signal)
+    if sum_w_bkg > 0:
+        df_train_two.loc[df_train_two['label'] == 0, 'weight'] *= (sum_w_bkg / sum_w_bkg)
+
+    print("--- Post-Normalization Weight Stats ---")
+    print(df_train_two.groupby('label')['weight'].describe())
+else:
+    print("Skipping normalization: one class is missing.")
+
+if 1 in df_test_two['label'].unique() and 0 in df_test_two['label'].unique():
+    sum_w_signal = df_test_two.loc[df_test_two['label'] == 1, 'weight'].sum()
+    sum_w_bkg = df_test_two.loc[df_test_two['label'] == 0, 'weight'].sum()
+
+    print(f"Original sum of weights | Signal: {sum_w_signal:.4f}, Background: {sum_w_bkg:.4f}")
+    
+    if sum_w_signal > 0:
+        df_test_two.loc[df_test_two['label'] == 1, 'weight'] *= (sum_w_bkg / sum_w_signal)
+    if sum_w_bkg > 0:
+        df_test_two.loc[df_test_two['label'] == 0, 'weight'] *= (sum_w_bkg / sum_w_bkg)
+
+    print("--- Post-Normalization Weight Stats ---")
+    print(df_test_two.groupby('label')['weight'].describe())
+else:
+    print("Skipping normalization: one class is missing.")
 
 # train
-predictor = TabularPredictor(label="label", problem_type='binary', sample_weight = "balance_weight", eval_metric='roc_auc', path=f"{input_path}/AutogluonModels/model_two").fit(
+predictor = TabularPredictor(label="label", problem_type='binary', sample_weight = "weight", weight_evaluation = False, eval_metric='log_loss', path=f"{input_path}/AutogluonModels/model_two").fit(
     df_train_two,
     time_limit=36000,
     presets="good_quality",
+    ag_args_fit={
+        'num_cpus': 1
+    },
     save_bag_folds=True,
     refit_full=True,
     set_best_to_refit_full=False
 )
 
 # leaderboard
-leaderboard_test = predictor.leaderboard(df_test_two, extra_metrics=[], silent=True)
-leaderboard_train = predictor.leaderboard(df_train_two, extra_metrics=[], silent=True)
-leaderboard_test_simplified = leaderboard_test[['model', 'score_test', 'score_val']]
-leaderboard_train_simplified = leaderboard_train[['model', 'score_test']].rename(columns={'model': 'model', 'score_test': 'score_train'})
+leaderboard_test = predictor.leaderboard(df_test_two, extra_metrics=['roc_auc'], silent=True)
+leaderboard_train = predictor.leaderboard(df_train_two, extra_metrics=['roc_auc'], silent=True)
+leaderboard_test_simplified = leaderboard_test[['model', 'score_test', 'score_val', 'roc_auc', 'eval_metric']].rename(columns={'model': 'model', 'score_test': 'score_test', 'score_val': 'score_val', 'roc_auc': 'auc_test', 'eval_metric': 'eval_metric'})
+leaderboard_train_simplified = leaderboard_train[['model', 'score_test', 'roc_auc']].rename(columns={'model': 'model', 'score_test': 'score_train', 'roc_auc': 'auc_train'})
 leaderboard = pd.merge(
     leaderboard_test_simplified,
     leaderboard_train_simplified,

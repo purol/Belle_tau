@@ -145,7 +145,7 @@ double mapping_function(std::vector<double> variables_) {
 
 }
 
-void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_) {
+void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, TH1D* data_th1d_stat_err_, TH1D* signal_MC_th1d_stat_err_, TH1D* bkg_MC_th1d_stat_err_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_) {
     // data
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
@@ -164,6 +164,14 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function });
     loader_bkg.end();
 
+
+    // get statistical uncertainty
+    data_th1d_stat_err_->SetBinContent(1, data_th1d_->GetBinError(1));
+    data_th1d_stat_err_->SetBinContent(2, data_th1d_->GetBinError(2));
+    signal_MC_th1d_stat_err_->SetBinContent(1, signal_MC_th1d_->GetBinError(1));
+    signal_MC_th1d_stat_err_->SetBinContent(2, signal_MC_th1d_->GetBinError(2));
+    bkg_MC_th1d_stat_err_->SetBinContent(1, bkg_MC_th1d_->GetBinError(1));
+    bkg_MC_th1d_stat_err_->SetBinContent(2, bkg_MC_th1d_->GetBinError(2));
 
 
     // We do not open the box, So data_th1d is MC. We use the proper uncertainty
@@ -237,7 +245,7 @@ int main(int argc, char* argv[]) {
     bkg_MC_th1d->Reset();
 
     // we do not open the box, so I just use background MC
-    FillHistogram(argv[1], argv[2], data_th1d, signal_MC_th1d, bkg_MC_th1d, background_list, signal_list, background_list);
+    FillHistogram(argv[1], argv[2], data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err, background_list, signal_list, background_list);
 
     MC_th1d_nominal.push_back(signal_MC_th1d->GetBinContent(1));
     MC_th1d_nominal.push_back(signal_MC_th1d->GetBinContent(2));
@@ -262,7 +270,7 @@ int main(int argc, char* argv[]) {
         muonID_corrector_05.FluctuateCorrectionFactor();
 
         // we do not open the box, so I just use background MC
-        FillHistogram(argv[1], argv[2], data_th1d, signal_MC_th1d, bkg_MC_th1d, background_list, signal_list, background_list);
+        FillHistogram(argv[1], argv[2], data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err, background_list, signal_list, background_list);
 
         if (MC_th1d_nominal.at(0) != 0) fprintf(fp, "%lf,", signal_MC_th1d->GetBinContent(1) / MC_th1d_nominal.at(0));
         else fprintf(fp, "1.0,");
