@@ -36,8 +36,15 @@ Condition_two = '[[daughter(1, p) > daughter(0, p)] and [daughter(1, p) > daught
 Condition_three = '[[daughter(2, p) > daughter(0, p)] and [daughter(2, p) > daughter(1, p)] and [daughter(2, muonID) > 0.1]]'
 ma.applyCuts('tau+:LFV_lll', Condition_one + ' or ' + Condition_two + ' or ' + Condition_three, my_path)
 
+# tau reconstruction for control sample
+ma.cutAndCopyList("pi+:control", "pi+:all", 'pionID > 0.9', path=my_path)
+ma.reconstructDecay(decayString="tau+:control -> pi+:control pi+:control pi-:control", cut="[nParticlesInList(pi+:taulfv) < 7] and [0.5 < M < 1.7] and [-1.0 < deltaE < 0.0]", path=my_path)
+
+# combine tau list
+ma.copyLists(outputListName="tau+:comb", inputListNames=["tau+:LFV_lll", "tau+:control"], path=my_path)
+
 # event cut
-ma.applyEventCuts("nParticlesInList(tau+:LFV_lll) > 0", path=my_path)
+ma.applyEventCuts("nParticlesInList(tau+:comb) > 0", path=my_path)
              
 # print mdst (not udst!)
 mdst.add_mdst_output(my_path, mc=True, filename=output_file, additionalBranches=[], dataDescription=None)
