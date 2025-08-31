@@ -22,7 +22,7 @@ ma.inputMdst(environmentType='default', filename=inputfile, path=my_path)
 output_file = "SKIM"
 
 # fill FSP
-trackCuts = "-3.0 < dz < 3.0 and dr < 1.0"
+trackCuts = "[-3.0 < dz < 3.0] and [dr < 1.0]"
 stdCharged.stdMu("all", path=my_path)
 stdCharged.stdPi("all", path=my_path)
 ma.cutAndCopyList("pi+:taulfv", "pi+:all", trackCuts, path=my_path)
