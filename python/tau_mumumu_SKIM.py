@@ -31,10 +31,10 @@ ma.cutAndCopyList("pi+:taulfv", "pi+:all", trackCuts, path=my_path)
 ma.reconstructDecay(decayString="tau+:LFV_lll -> mu+:all mu+:all mu-:all", cut="[nParticlesInList(pi+:taulfv) < 7] and [1.4 < M < 2.0] and [-1.0 < deltaE < 0.5]", path=my_path)
 
 # muonID > 0.1 for primary muon
-Condition_one = '[[daughter(0, p) > daughter(1, p)] && [daughter(0, p) > daughter(2, p)] && [daughter(0, muonID) > 0.1]]'
-Condition_two = '[[daughter(1, p) > daughter(0, p)] && [daughter(1, p) > daughter(2, p)] && [daughter(1, muonID) > 0.1]]'
-Condition_three = '[[daughter(2, p) > daughter(0, p)] && [daughter(2, p) > daughter(1, p)] && [daughter(2, muonID) > 0.1]]'
-ma.applyCuts('tau+:LFV_lll', Condition_one + '&&' + Condition_two + '&&' + Condition_three, my_path)
+Condition_one = '[[daughter(0, p) > daughter(1, p)] and [daughter(0, p) > daughter(2, p)] and [daughter(0, muonID) > 0.1]]'
+Condition_two = '[[daughter(1, p) > daughter(0, p)] and [daughter(1, p) > daughter(2, p)] and [daughter(1, muonID) > 0.1]]'
+Condition_three = '[[daughter(2, p) > daughter(0, p)] and [daughter(2, p) > daughter(1, p)] and [daughter(2, muonID) > 0.1]]'
+ma.applyCuts('tau+:LFV_lll', Condition_one + ' or ' + Condition_two + ' or ' + Condition_three, my_path)
 
 # event cut
 ma.applyEventCuts("nParticlesInList(tau+:LFV_lll) > 0", path=my_path)
