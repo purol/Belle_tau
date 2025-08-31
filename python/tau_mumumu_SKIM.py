@@ -40,7 +40,7 @@ ma.rankByHighest(particleList="mu+:sig", variable="p", outputVariable="p_rank",p
 ma.cutAndCopyList("mu+:sig_primary", "mu+:sig", cut="extraInfo(p_rank)==1", path=roe_path)
 ma.variableToSignalSideExtraInfo('mu+:sig_primary', {'muonID': 'muonID_primary_daughter'}, path=roe_path)
 my_path.for_each('RestOfEvent', 'RestOfEvents', roe_path)
-modularAnalysis.applyCuts('tau+:LFV_lll', 'extraInfo(muonID_primary_daughter) > 0.1', my_path)
+ma.applyCuts('tau+:LFV_lll', 'extraInfo(muonID_primary_daughter) > 0.1', my_path)
 
 # event cut
 ma.applyEventCuts("nParticlesInList(tau+:LFV_lll) > 0", path=my_path)
