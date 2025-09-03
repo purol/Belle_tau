@@ -45,10 +45,10 @@ int main(int argc, char* argv[]) {
     std::string classifier_two_path = ReadSelect(argv[3 + variable_num]);
 
     std::fstream in_stream_one(classifier_one_path.c_str(), std::ios_base::in);
-    classifier_one = FastBDT::Classifier(in_stream_one);
+    FastBDT::Classifier classifier_one = FastBDT::Classifier(in_stream_one);
 
     std::fstream in_stream_two(classifier_two_path.c_str(), std::ios_base::in);
-    classifier_two = FastBDT::Classifier(in_stream_two);
+    FastBDT::Classifier classifier_two = FastBDT::Classifier(in_stream_two);
 
     // define variables
     std::map<unsigned int, double> rank;
