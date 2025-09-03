@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <ostream>
+#include <cstdint>
 
 #include "constants.h"
 #include "Classifier.h"
