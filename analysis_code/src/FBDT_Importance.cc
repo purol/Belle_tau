@@ -2,6 +2,9 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <fstream>
+#include <iostream>
+#include <ostream>
 
 #include "constants.h"
 
@@ -64,7 +67,7 @@ int main(int argc, char* argv[]) {
     {
         int index = std::distance(rank.begin(), iter);
         std::cout << "(\'" << intput_variables.at(index) << "\'," << iter->second << ")";
-        if (index == Nvar - 1) {}
+        if (index == variable_num - 1) {}
         else {
             std::cout << "," << std::endl;
         }
@@ -86,7 +89,7 @@ int main(int argc, char* argv[]) {
     {
         int index = std::distance(rank.begin(), iter);
         std::cout << "(\'" << intput_variables.at(index) << "\'," << iter->second << ")";
-        if (index == Nvar - 1) {}
+        if (index == variable_num - 1) {}
         else {
             std::cout << "," << std::endl;
         }
