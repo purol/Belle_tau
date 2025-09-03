@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "constants.h"
+#include "Classifier.h"
 
 std::string ReadSelect(const char* select_path) {
     double nTrees;
