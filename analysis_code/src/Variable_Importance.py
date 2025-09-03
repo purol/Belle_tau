@@ -478,7 +478,8 @@ df_test_one = df_test_one[((resolution["M_inv_tau"]["peak"] - 5*resolution["M_in
 summary_result = summarize_variable_metrics(df_train_one)
 print(summary_result)
 summary_result.to_csv("Importance_one.csv")
-create_and_plot_correlation_matrices(df_train_one, summary_result, "one")
+create_and_plot_correlation_matrices(df_train_one[df_train_one["label"] == 1], summary_result, "one_signal")
+create_and_plot_correlation_matrices(df_train_one[df_train_one["label"] == 0], summary_result, "one_bkg")
 
 # ====================================================== region two ====================================================== #
 # filter
@@ -490,4 +491,5 @@ df_test_two = df_test_two[((resolution["M_inv_tau"]["peak"] - 3*resolution["M_in
 summary_result = summarize_variable_metrics(df_train_two)
 print(summary_result)
 summary_result.to_csv("Importance_two.csv")
-create_and_plot_correlation_matrices(df_train_two, summary_result, "two")
+create_and_plot_correlation_matrices(df_train_two[df_train_two["label"] == 1], summary_result, "two_signal")
+create_and_plot_correlation_matrices(df_test_two[df_test_two["label"] == 0], summary_result, "two_bkg")
