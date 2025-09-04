@@ -47,10 +47,6 @@ int main(int argc, char* argv[]) {
     double theta;
 
     ReadResolution((std::string(argv[5]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
-    double sloop_1 = 10 * deltaE_left_sigma / M_right_sigma;
-    double const_term_1 = -M_peak * (10 * deltaE_left_sigma / M_right_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
-    double sloop_2 = -10 * deltaE_left_sigma / M_left_sigma;
-    double const_term_2 = M_peak * (10 * deltaE_left_sigma / M_left_sigma) + deltaE_peak - 35 * deltaE_left_sigma;
 
     ObtainWeight = MyScaleFunction_halfsplit;
 
@@ -69,9 +65,8 @@ int main(int argc, char* argv[]) {
     // signal train
     Loader loader_signal_train("tau_lfv");
     for (int i = 0; i < signal_list.size(); i++) loader_signal_train.Load((argv[5] + std::string("/") + signal_list.at(i) + std::string("/final_output_train_after_application/")).c_str(), "root", signal_list.at(i).c_str());
-    loader_signal_train.Cut(("(deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
-    loader_signal_train.Cut(("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))").c_str());
-    loader_signal_train.Cut(("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))").c_str());
+    loader_signal_train.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
+    loader_signal_train.Cut(("(" + std::to_string(M_peak - 3 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 3 * M_right_sigma) + ")").c_str());
     loader_signal_train.FillTH1D(signal_train_th, variable_name);
     loader_signal_train.FillTH1D(signal_train_th_KS, variable_name);
     loader_signal_train.end();
@@ -79,9 +74,8 @@ int main(int argc, char* argv[]) {
     // signal test
     Loader loader_signal_test("tau_lfv");
     for (int i = 0; i < signal_list.size(); i++) loader_signal_test.Load((argv[5] + std::string("/") + signal_list.at(i) + std::string("/final_output_test_after_application/")).c_str(), "root", signal_list.at(i).c_str());
-    loader_signal_test.Cut(("(deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
-    loader_signal_test.Cut(("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))").c_str());
-    loader_signal_test.Cut(("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))").c_str());
+    loader_signal_test.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
+    loader_signal_test.Cut(("(" + std::to_string(M_peak - 3 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 3 * M_right_sigma) + ")").c_str());
     loader_signal_test.FillTH1D(signal_test_th, variable_name);
     loader_signal_test.FillTH1D(signal_test_th_KS, variable_name);
     loader_signal_test.end();
@@ -89,9 +83,8 @@ int main(int argc, char* argv[]) {
     // background train
     Loader loader_background_train("tau_lfv");
     for (int i = 0; i < background_list.size(); i++) loader_background_train.Load((argv[5] + std::string("/") + background_list.at(i) + std::string("/final_output_train_after_application/")).c_str(), "root", background_list.at(i).c_str());
-    loader_background_train.Cut(("(deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
-    loader_background_train.Cut(("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))").c_str());
-    loader_background_train.Cut(("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))").c_str());
+    loader_background_train.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
+    loader_background_train.Cut(("(" + std::to_string(M_peak - 3 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 3 * M_right_sigma) + ")").c_str());
     loader_background_train.FillTH1D(background_train_th, variable_name);
     loader_background_train.FillTH1D(background_train_th_KS, variable_name);
     loader_background_train.end();
@@ -99,9 +92,8 @@ int main(int argc, char* argv[]) {
     // background test
     Loader loader_background_test("tau_lfv");
     for (int i = 0; i < background_list.size(); i++) loader_background_test.Load((argv[5] + std::string("/") + background_list.at(i) + std::string("/final_output_test_after_application/")).c_str(), "root", background_list.at(i).c_str());
-    loader_background_test.Cut(("(deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
-    loader_background_test.Cut(("deltaE > ((" + std::to_string(sloop_1) + ")*M_inv_tau+(" + std::to_string(const_term_1) + "))").c_str());
-    loader_background_test.Cut(("deltaE > ((" + std::to_string(sloop_2) + ")*M_inv_tau+(" + std::to_string(const_term_2) + "))").c_str());
+    loader_background_test.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
+    loader_background_test.Cut(("(" + std::to_string(M_peak - 3 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 3 * M_right_sigma) + ")").c_str());
     loader_background_test.FillTH1D(background_test_th, variable_name);
     loader_background_test.FillTH1D(background_test_th_KS, variable_name);
     loader_background_test.end();

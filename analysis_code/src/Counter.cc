@@ -42,8 +42,8 @@ int main(int argc, char* argv[]) {
     Loader loader_two("tau_lfv");
     loader_two.Load(argv[1], argv[2], "label");
     loader_two.PrintInformation("========== initial ==========");
-    loader_two.Cut(("(deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
-    loader_two.PrintInformation("========== deltaE < -5 delta ==========");
+    loader_two.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
+    loader_two.PrintInformation("========== -15 delta < deltaE < -5 delta ==========");
     loader_two.Cut(("(" + std::to_string(M_peak - 3 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 3 * M_right_sigma) + ")").c_str());
     loader_two.PrintInformation("========== -3 delta < M < 3 delta ==========");
     loader_two.end();
