@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
     loader.Cut(("(" + std::to_string(M_peak - 3 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 3 * M_right_sigma) + ")").c_str());
     loader.PrintInformation("========== -3 delta < M < 3 delta ==========");
 
-    loader.FastBDTTrain(intput_variables, "", "", hyperparameters, argv[3 + variable_num]);
+    loader.FastBDTTrain(intput_variables, "", "", hyperparameters, true, argv[3 + variable_num]);
 
     loader.end();
 
