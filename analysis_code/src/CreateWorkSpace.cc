@@ -91,7 +91,6 @@ double mapping_function(std::vector<double> variables_) {
     double deltaE = variables_.at(1);
 
     if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - 3.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 3.0 * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
     else return NAN;
 
 }
@@ -118,16 +117,12 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
 
     // get statistical uncertainty
     data_th1d_stat_err_->SetBinContent(1, data_th1d_->GetBinError(1));
-    data_th1d_stat_err_->SetBinContent(2, data_th1d_->GetBinError(2));
     signal_MC_th1d_stat_err_->SetBinContent(1, signal_MC_th1d_->GetBinError(1));
-    signal_MC_th1d_stat_err_->SetBinContent(2, signal_MC_th1d_->GetBinError(2));
     bkg_MC_th1d_stat_err_->SetBinContent(1, bkg_MC_th1d_->GetBinError(1));
-    bkg_MC_th1d_stat_err_->SetBinContent(2, bkg_MC_th1d_->GetBinError(2));
 
 
     // We do not open the box, So data_th1d is MC. We use the proper uncertainty
     data_th1d_->SetBinError(1, std::sqrt(data_th1d_->GetBinContent(1)));
-    data_th1d_->SetBinError(2, std::sqrt(data_th1d_->GetBinContent(2)));
 }
 
 void ReadPCA(const char* filename, TH1D* signal_MC_th1d_nominal, TH1D* bkg_MC_th1d_nominal, const char* syst_name, std::vector<TH1D*>* signal_MC_th1d_syst, std::vector<TH1D*>* bkg_MC_th1d_syst) {
@@ -213,17 +208,17 @@ int main(int argc, char* argv[]) {
     *   -5 +-----+-+---+-+-----+
     *      |     | |   | |     |
     *      |     | |   | |     |
-    *      |     | | 2 | |     |
+    *      |     | |   | |     |
     *  -15 +-----+-+---+-+-----+---> M
     *     -20  -5 -3  +3 +5   +20
     */
-    TH1D* data_th1d = new TH1D("data_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_MC_th1d = new TH1D("bkg_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d = new TH1D("data_th1d", ";bin index;", 1, 0.5, 1.5);
+    TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", 1, 0.5, 1.5);
+    TH1D* bkg_MC_th1d = new TH1D("bkg_MC_th1d", ";bin index;", 1, 0.5, 1.5);
 
-    TH1D* data_th1d_stat_err = new TH1D("data_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
-    TH1D* signal_MC_th1d_stat_err = new TH1D("signal_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d_stat_err = new TH1D("data_th1d_stat_err", ";bin index;", 1, 0.5, 1.5);
+    TH1D* signal_MC_th1d_stat_err = new TH1D("signal_MC_th1d_stat_err", ";bin index;", 1, 0.5, 1.5);
+    TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", 1, 0.5, 1.5);
 
     std::vector<TH1D*> signal_MC_th1d_muonID;
     std::vector<TH1D*> bkg_MC_th1d_muonID;
@@ -262,17 +257,17 @@ int main(int argc, char* argv[]) {
 
     // print information
     printf("data:\n");
-    printf("%lf+-%lf %lf+-%lf\n", data_th1d->GetBinContent(1), data_th1d->GetBinError(1), data_th1d->GetBinContent(2), data_th1d->GetBinError(2));
+    printf("%lf+-%lf\n", data_th1d->GetBinContent(1), data_th1d->GetBinError(1));
 
     printf("\n");
 
     printf("signal:\n");
-    printf("%lf+-%lf %lf+-%lf\n", signal_MC_th1d->GetBinContent(1), signal_MC_th1d->GetBinError(1), signal_MC_th1d->GetBinContent(2), signal_MC_th1d->GetBinError(2));
+    printf("%lf+-%lf\n", signal_MC_th1d->GetBinContent(1), signal_MC_th1d->GetBinError(1));
 
     printf("\n");
 
     printf("bkg:\n");
-    printf("%lf+-%lf %lf+-%lf\n", bkg_MC_th1d->GetBinContent(1), bkg_MC_th1d->GetBinError(1), bkg_MC_th1d->GetBinContent(2), bkg_MC_th1d->GetBinError(2));
+    printf("%lf+-%lf\n", bkg_MC_th1d->GetBinContent(1), bkg_MC_th1d->GetBinError(1));
 
     printf("\n");
 

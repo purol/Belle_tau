@@ -140,7 +140,6 @@ double mapping_function(std::vector<double> variables_) {
     double deltaE = variables_.at(1);
 
     if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - 3.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 3.0 * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
     else return NAN;
 
 }
@@ -167,16 +166,12 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
 
     // get statistical uncertainty
     data_th1d_stat_err_->SetBinContent(1, data_th1d_->GetBinError(1));
-    data_th1d_stat_err_->SetBinContent(2, data_th1d_->GetBinError(2));
     signal_MC_th1d_stat_err_->SetBinContent(1, signal_MC_th1d_->GetBinError(1));
-    signal_MC_th1d_stat_err_->SetBinContent(2, signal_MC_th1d_->GetBinError(2));
     bkg_MC_th1d_stat_err_->SetBinContent(1, bkg_MC_th1d_->GetBinError(1));
-    bkg_MC_th1d_stat_err_->SetBinContent(2, bkg_MC_th1d_->GetBinError(2));
 
 
     // We do not open the box, So data_th1d is MC. We use the proper uncertainty
     data_th1d_->SetBinError(1, std::sqrt(data_th1d_->GetBinContent(1)));
-    data_th1d_->SetBinError(2, std::sqrt(data_th1d_->GetBinContent(2)));
 }
 
 int main(int argc, char* argv[]) {
@@ -199,17 +194,17 @@ int main(int argc, char* argv[]) {
     *   -5 +-----+-+---+-+-----+
     *      |     | |   | |     |
     *      |     | |   | |     |
-    *      |     | | 2 | |     |
+    *      |     | |   | |     |
     *  -15 +-----+-+---+-+-----+---> M
     *     -20  -5 -3  +3 +5   +20
     */
-    TH1D* data_th1d = new TH1D("data_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_MC_th1d = new TH1D("bkg_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d = new TH1D("data_th1d", ";bin index;", 1, 0.5, 1.5);
+    TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", 1, 0.5, 1.5);
+    TH1D* bkg_MC_th1d = new TH1D("bkg_MC_th1d", ";bin index;", 1, 0.5, 1.5);
 
-    TH1D* data_th1d_stat_err = new TH1D("data_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
-    TH1D* signal_MC_th1d_stat_err = new TH1D("signal_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d_stat_err = new TH1D("data_th1d_stat_err", ";bin index;", 1, 0.5, 1.5);
+    TH1D* signal_MC_th1d_stat_err = new TH1D("signal_MC_th1d_stat_err", ";bin index;", 1, 0.5, 1.5);
+    TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", 1, 0.5, 1.5);
 
     std::vector<std::string> signal_list = { "SIGNAL" };
     std::vector<std::string> background_list = { "CHARM", "CHG", "DDBAR", "EE", "EEEE", 
@@ -248,9 +243,7 @@ int main(int argc, char* argv[]) {
     FillHistogram(argv[1], argv[2], data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err, background_list, signal_list, background_list);
 
     MC_th1d_nominal.push_back(signal_MC_th1d->GetBinContent(1));
-    MC_th1d_nominal.push_back(signal_MC_th1d->GetBinContent(2));
     MC_th1d_nominal.push_back(bkg_MC_th1d->GetBinContent(1));
-    MC_th1d_nominal.push_back(bkg_MC_th1d->GetBinContent(2));
 
     // get fluctuated value
     ObtainWeight = MyScaleFunction_correction_fluctuation_halfsplit;
