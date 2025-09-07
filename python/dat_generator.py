@@ -1,15 +1,16 @@
 import os
 
-# Define parameter sets
+# Parameter sets
 masses = [round(0.2 * i, 1) for i in range(1, 9)]  # 0.2 to 1.6 GeV
 lifetimes = [0.1, 0.5, 1, 5, 10, 50, 100, 500, 1000]  # mm
 coefficients = [(1, 1), (1, -1)]  # (A_COEF, B_COEF)
 
-# Make output directory
-os.makedirs("generated_configs", exist_ok=True)
+# Directories
+dat_dir = "dat_files"
+os.makedirs(dat_dir, exist_ok=True)
 
 # Template
-template = """0.08711                         * c*tau(tau life time) (mm) 
+dat_template = """0.08711                         * c*tau(tau life time) (mm) 
 1                               * switch for long lived (1:no decay, 0:decay)
 1                               * switch for KKMC-JETSET (1:on, 0:off)
 ********** Above is for basf *********
@@ -62,14 +63,13 @@ BeginX
 EndX
 """
 
-# Generate files
+dat_files = []
 for mass in masses:
     for lifetime in lifetimes:
         for a_coef, b_coef in coefficients:
-            filename = f"generated_configs/alpha_mass{mass:.1f}_life{lifetime}_A{a_coef}_B{b_coef}.dat"
-            content = template.format(mass=mass, lifetime=lifetime, a_coef=a_coef, b_coef=b_coef)
+            filename = f"{dat_dir}/alpha_mass{mass:.1f}_life{lifetime}_A{a_coef}_B{b_coef}.dat"
             with open(filename, "w") as f:
-                f.write(content)
+                f.write(dat_template.format(mass=mass, lifetime=lifetime, a_coef=a_coef, b_coef=b_coef))
+            dat_files.append(filename)
 
-print("✅ All config files generated in 'generated_configs/' directory.")
-
+print(f"Generated {len(dat_files)} .dat files in {dat_dir}/")
