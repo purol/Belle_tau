@@ -19,6 +19,18 @@ parser.add_argument(
     action='store_true',
     help='Enable b2bii'
 )
+parser.add_argument(
+    '--input_file',
+    type=str,
+    default="",
+    help='Path to input ROOT file'
+)
+parser.add_argument(
+    '--output_file',
+    type=str,
+    default="SKIM.root",
+    help='Path to output ROOT file'
+)
 args = parser.parse_args()
 
 # set random seed
@@ -27,13 +39,13 @@ basf2.set_random_seed(42)
 # Read mdst
 my_path = basf2.create_path()
 
-inputfile = ""
+inputfile = args.input_file
 if args.b2bii:
     convertBelleMdstToBelleIIMdst(inputfile, path=my_path)
 else:
     ma.inputMdst(environmentType='default', filename=inputfile, path=my_path)
 
-output_file = "SKIM"
+output_file = args.output_file
 
 # fill FSP
 trackCuts = "[-3.0 < dz < 3.0] and [dr < 1.0]"
