@@ -6,9 +6,20 @@
 
 import basf2
 import modularAnalysis as ma
+from b2biiConversion import convertBelleMdstToBelleIIMdst
 
 import stdCharged
 import mdst
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '--b2bii',
+    action='store_true',
+    help='Enable b2bii'
+)
+args = parser.parse_args()
 
 # set random seed
 basf2.set_random_seed(42)
@@ -17,7 +28,10 @@ basf2.set_random_seed(42)
 my_path = basf2.create_path()
 
 inputfile = ""
-ma.inputMdst(environmentType='default', filename=inputfile, path=my_path)
+if args.b2bii:
+    convertBelleMdstToBelleIIMdst(inputfile, path=my_path)
+else:
+    ma.inputMdst(environmentType='default', filename=inputfile, path=my_path)
 
 output_file = "SKIM"
 
@@ -31,13 +45,21 @@ ma.cutAndCopyList("pi+:taulfv", "pi+:all", trackCuts, path=my_path)
 ma.reconstructDecay(decayString="tau+:LFV_lll -> mu+:all mu+:all mu-:all", cut="[nParticlesInList(pi+:taulfv) < 7] and [1.4 < M < 2.0] and [-1.0 < deltaE < 0.5]", path=my_path)
 
 # muonID > 0.1 for primary muon
-Condition_one = '[[daughter(0, p) > daughter(1, p)] and [daughter(0, p) > daughter(2, p)] and [daughter(0, muonID) > 0.1]]'
-Condition_two = '[[daughter(1, p) > daughter(0, p)] and [daughter(1, p) > daughter(2, p)] and [daughter(1, muonID) > 0.1]]'
-Condition_three = '[[daughter(2, p) > daughter(0, p)] and [daughter(2, p) > daughter(1, p)] and [daughter(2, muonID) > 0.1]]'
+if args.b2bii:
+    Condition_one = '[[daughter(0, p) > daughter(1, p)] and [daughter(0, p) > daughter(2, p)] and [daughter(0, muIDBelle) > 0.1]]'
+    Condition_two = '[[daughter(1, p) > daughter(0, p)] and [daughter(1, p) > daughter(2, p)] and [daughter(1, muIDBelle) > 0.1]]'
+    Condition_three = '[[daughter(2, p) > daughter(0, p)] and [daughter(2, p) > daughter(1, p)] and [daughter(2, muIDBelle) > 0.1]]'
+else:
+    Condition_one = '[[daughter(0, p) > daughter(1, p)] and [daughter(0, p) > daughter(2, p)] and [daughter(0, muonID) > 0.1]]'
+    Condition_two = '[[daughter(1, p) > daughter(0, p)] and [daughter(1, p) > daughter(2, p)] and [daughter(1, muonID) > 0.1]]'
+    Condition_three = '[[daughter(2, p) > daughter(0, p)] and [daughter(2, p) > daughter(1, p)] and [daughter(2, muonID) > 0.1]]'
 ma.applyCuts('tau+:LFV_lll', Condition_one + ' or ' + Condition_two + ' or ' + Condition_three, my_path)
 
 # tau reconstruction for control sample
-ma.cutAndCopyList("pi+:control", "pi+:all", 'pionID > 0.9', path=my_path)
+if args.b2bii:
+    ma.cutAndCopyList("pi+:control", "pi+:all", 'atcPIDBelle(2,3) > 0.9', path=my_path)
+else:
+    ma.cutAndCopyList("pi+:control", "pi+:all", 'pionID > 0.9', path=my_path)
 ma.reconstructDecay(decayString="tau+:control -> pi+:control pi+:control pi-:control", cut="[nParticlesInList(pi+:taulfv) < 7] and [0.5 < M < 1.7] and [-1.0 < deltaE < 0.0]", path=my_path)
 
 # combine tau list
