@@ -7,3 +7,5 @@ gbasf2_Yoshika
 gbasf2_Ran
 - (bugfix on hashmap) -> 
 gbasf2_Okina
+- (add DNN PID global tag, add Belle_MC, Belle_data type) ->
+gbasf2_Nitori.py
