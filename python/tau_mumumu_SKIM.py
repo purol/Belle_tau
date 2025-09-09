@@ -80,8 +80,13 @@ ma.copyLists(outputListName="tau+:comb", inputListNames=["tau+:LFV_lll", "tau+:c
 # event cut
 ma.applyEventCuts("nParticlesInList(tau+:comb) > 0", path=my_path)
              
-# print mdst (not udst!)
-mdst.add_mdst_output(my_path, mc=True, filename=output_file, additionalBranches=[], dataDescription=None)
+# print udst
+if args.b2bii:
+    b2bii_list = ["gamma:mdst", "anti-n0:mdst", "pi0:mdst", "K_S0:mdst", "K_L0:mdst", "Lambda0:mdst", "anti-Lambda0:mdst", "gamma:v0mdst"]
+    ma.removeParticlesNotInLists(lists_to_keep=b2bii_list, path=my_path)
+    ma.outputUdst(filename=output_file, particleLists=b2bii_list, path=my_path)
+else:
+    mdst.add_mdst_output(my_path, mc=True, filename=output_file, additionalBranches=[], dataDescription=None)
 
 # progress
 basf2.process(my_path)

@@ -247,7 +247,7 @@ def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, Ntuple_name, hashm
             v.replace("muonID", "muIDBelle")
              .replace("electronID", "eIDBelle")
              .replace("pionID", "atcPIDBelle(2,3)")
-            for v in daughter_vars if "pionIDNN" not in v
+            for v in daughter_vars if ("pionIDNN" not in v) and ("minET2ETIsoScoreAsWeightedAvg" not in v)
         ]
     else:
         pass
@@ -292,10 +292,11 @@ else:
 # assign sample index and type index
 sample_index, type_index = AssignIndex(sample_name=args.sample, event_name=args.type)
 
-basf2.conditions.prepend_globaltag(ma.getAnalysisGlobaltag())
 if BELLEONE:
-    pass
+    # check https://questions.belle2.org/question/14927/global-tag-use-for-flavor-tagging-for-light-2305-korat/
+    basf2.conditions.prepend_globaltag("analysis_tools_light-2012-minos")
 else:
+    basf2.conditions.prepend_globaltag(ma.getAnalysisGlobaltag())
     basf2.conditions.prepend_globaltag("pid_nn_release08_v1")
 
 # set random seed
@@ -355,7 +356,10 @@ ma.fillParticleList(decayString="pi+:taulfv", cut=trackCuts, path=my_path)
 photon_names = FillSeveralPhotons(my_path)
 
 # calculate isolation
-my_path.add_module("TrackIsoCalculator", decayString="mu+:taulfv", particleListReference="mu+:taulfv", detectorNames=["ECL", "KLM"], useHighestProbMassForExt=False)
+if BELLEONE:
+    pass
+else:
+    my_path.add_module("TrackIsoCalculator", decayString="mu+:taulfv", particleListReference="mu+:taulfv", detectorNames=["ECL", "KLM"], useHighestProbMassForExt=False)
 
 # --- build Event Kinematics ---
 ma.buildEventKinematics(inputListNames = ["pi+:evtshape_kinematics", "gamma:evtshape_kinematics"], path=my_path)
