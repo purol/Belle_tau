@@ -316,7 +316,11 @@ if(args.KEKCC):
 else:
     # just any file
     inputfile="/group/belle2/dataprod/MC/SkimTraining/mixed_BGx1.mdst_000001_prod00009434_task10020000001.root"
-ma.inputMdst(environmentType='default',filename=inputfile,path=my_path)
+
+if BELLEONE:
+    ma.inputMdst(environmentType='Belle',filename=inputfile,path=my_path)
+else:
+    ma.inputMdst(environmentType='default',filename=inputfile,path=my_path)
 
 # set output file and path
 outputpath = args.destination
