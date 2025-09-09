@@ -25,6 +25,8 @@ from glob import glob
 
 import argparse
 
+BELLEONE = False
+
 def AssignIndex(sample_name, event_name):
     sample_index = -100
     type_index = -100
@@ -240,6 +242,15 @@ def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, Ntuple_name, hashm
         daughter_vars = daughter_vars + ["daughter(0, E)", "daughter(0, px)", "daughter(0, py)", "daughter(0, pz)", "daughter(0, pt)", "daughter(0, theta)", "daughter(0, phi)"] + ["daughter(0, M)"] + \
                         ["daughter(0, x)", "daughter(0, y)", "daughter(0, z)", "daughter(0, dx)", "daughter(0, dy)", "daughter(0, dz)"] + \
                         ["daughter(0, flightTime)", "daughter(0, flightTimeErr)", "daughter(0, chiProb)"]
+    if BELLEONE:
+        daughter_vars = [
+            v.replace("muonID", "muIDBelle")
+             .replace("electronID", "eIDBelle")
+             .replace("pionID", "atcPIDBelle(2,3)")
+            for v in daughter_vars if "pionIDNN" not in v
+        ]
+    else:
+        pass
     tag_vars = vc.recoil_kinematics + GetROEVariables("cleanMask")
     event_vars = ["beamE"] + vc.event_shape + vc.event_kinematics + ["cosToThrustOfEvent"] + ["eventExtraInfo(EventCode)"] + ["nParticlesInList(pi+:evtshape_kinematics)", "nParticlesInList(gamma:evtshape_kinematics)"] + \
                  ["totalEnergyOfParticlesInList(gamma:evtshape_kinematics)"] + \
@@ -272,11 +283,20 @@ parser.add_argument('--destination', required=False, type=str, help='destination
 
 args = parser.parse_args()
 
+# set BELLEONE flag if it is Belle_data or Belle_MC
+if "Belle_" in args.sample:
+    BELLEONE = True
+else:
+    BELLEONE = False
+
 # assign sample index and type index
 sample_index, type_index = AssignIndex(sample_name=args.sample, event_name=args.type)
 
 basf2.conditions.prepend_globaltag(ma.getAnalysisGlobaltag())
-basf2.conditions.prepend_globaltag("pid_nn_release08_v1")
+if BELLEONE:
+    pass
+else:
+    basf2.conditions.prepend_globaltag("pid_nn_release08_v1")
 
 # set random seed
 basf2.set_random_seed(42)
