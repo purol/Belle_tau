@@ -34,7 +34,7 @@ ENERGIES=("on_resonance" "continuum" "energy_scan" "5S_scan" "5S_onresonance")
 MY_EXECUTABLE="/path/to/your/job_script.sh"
 
 # Directory to store job log files
-OUTPUT_DIR="/home/belle2/junewoo/storage_ghi/tau_SKIM/Belle"
+OUTPUT_TOP_DIR="/home/belle2/junewoo/storage_ghi/tau_SKIM/Belle"
 
 
 for EXP in "${EXP_LIST[@]}"; do
@@ -71,7 +71,7 @@ for EXP in "${EXP_LIST[@]}"; do
                     
                         file_name=$(basename "${mdst_file%.*}")
 
-                        JOB_DIR="${OUTPUT_DIR}/${ENERGY}/${MC_TYPE}"
+                        JOB_DIR="${OUTPUT_TOP_DIR}/${ENERGY}/${MC_TYPE}"
                         LOG_DIR="${JOB_DIR}/log"
                         OUTPUT_DIR="${JOB_DIR}/output"
 
