@@ -29,6 +29,14 @@ BELLE_LEVEL_0127="0127"
 # Valid energy directories
 ENERGIES=("on_resonance" "continuum" "energy_scan" "5S_scan" "5S_onresonance")
 
+# --- Define your job script and bsub options here ---
+# The executable script that will process one mdst file
+MY_EXECUTABLE="/path/to/your/job_script.sh"
+
+# Directory to store job log files
+OUTPUT_DIR="/home/belle2/junewoo/storage_ghi/tau_SKIM/Belle"
+
+
 for EXP in "${EXP_LIST[@]}"; do
     EXP_DIR="$BASE_DIR/$EXP"
 
@@ -57,9 +65,28 @@ for EXP in "${EXP_LIST[@]}"; do
             for ENERGY in "${ENERGIES[@]}"; do
                 ENERGY_PATH="$ALL_PATH/$ENERGY"
                 if [ -d "$ENERGY_PATH" ]; then
-                    find -L "${ENERGY_PATH}" -mindepth 2 -type f -name "*.mdst"
+                    # --- MODIFICATION START ---
+                    # Find all .mdst files and pipe the list to a while loop
+                    find -L "${ENERGY_PATH}" -mindepth 2 -type f -name "*.mdst" | while IFS= read -r mdst_file; do
+                    
+                        file_name=$(basename "${mdst_file%.*}")
+
+                        JOB_DIR="${OUTPUT_DIR}/${ENERGY}/${MC_TYPE}"
+                        LOG_DIR="${JOB_DIR}/log"
+                        OUTPUT_DIR="${JOB_DIR}/output"
+
+                        mkdir -p ${JOB_DIR}
+                        mkdir -p ${LOG_DIR}
+                        mkdir -p ${OUTPUT_DIR}
+
+                        bsub -q l -o "${LOG_DIR}/${file_name}.log" ./python/tau_mumumu_SKIM.py -- --input_file ${mdst_file} --output_file "${OUTPUT_DIR}/SKIM_${file_name}.root" --b2bii
+
+                        sleep 0.3s
+                    done
                 fi
             done
         done
     done
 done
+
+echo "All submission loops complete."
