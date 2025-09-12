@@ -97,6 +97,24 @@ def AssignIndex(sample_name, event_name):
         type_index = 21
     elif(event_name=="taupair"):
         type_index = 22
+    elif(event_name=="pipipi0ISR"):
+        type_index = 23
+    elif(event_name=="BBs"):
+        type_index = 24
+    elif(event_name=="BsBs"):
+        type_index = 25
+    elif(event_name=="uds"):
+        type_index = 25
+    elif(event_name=="bsbs"):
+        type_index = 25
+    elif(event_name=="nonbsbs"):
+        type_index = 25
+    elif(event_name=="eecc"):
+        type_index = 25
+    elif(event_name=="eess"):
+        type_index = 25
+    elif(event_name=="eeuu"):
+        type_index = 25
     else:
         print("enter the proper event type")
         exit(1)
@@ -273,7 +291,7 @@ parser = argparse.ArgumentParser(description='Sample type')
 
 # data or MC
 parser.add_argument('--sample', required=True, type=str, help='type of sample. list) data, MC15ri, MC15rd, MC16ri, MC16rd, Belle_data, Belle_MC')
-parser.add_argument('--type', required=True, type=str, help='type of event. list) data, signal, charged, mixed, uubar, ddbar, ssbar, ccbar, mumu, ee, eeee, eemumu, eepipi, eeKK, eepp, pipiISR, KKISR, gg, eetautau, K0K0barISR, mumumumu, mumutautau, tautautautau, taupair')
+parser.add_argument('--type', required=True, type=str, help='type of event. list) data, signal, charged, mixed, uubar, ddbar, ssbar, ccbar, mumu, ee, eeee, eemumu, eepipi, eeKK, eepp, pipiISR, KKISR, gg, eetautau, K0K0barISR, mumumumu, mumutautau, tautautautau, taupair, pipipi0ISR, BBs, BsBs, uds, bsbs, nonbsbs, eecc, eess, eeuu')
 parser.add_argument('--vertex', action='store_true', help='If you want to reconstruct the tau->(phi -> mu mu) mu, assing this flage')
 
 # input file/output path when it is running on KEKCC
