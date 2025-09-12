@@ -9,3 +9,6 @@ gbasf2_Ran
 gbasf2_Okina
 - (add DNN PID global tag, add Belle_MC, Belle_data type, add Belle one flag) ->
 gbasf2_Nitori.py
+
+
+todo: add energy index, add trigger
