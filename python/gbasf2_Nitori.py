@@ -27,9 +27,10 @@ import argparse
 
 BELLEONE = False
 
-def AssignIndex(sample_name, event_name):
+def AssignIndex(sample_name, event_name, energy_name):
     sample_index = -100
     type_index = -100
+    energy_index = -100
 
     if(sample_name=="data"):
         sample_index = -1
@@ -119,7 +120,20 @@ def AssignIndex(sample_name, event_name):
         print("enter the proper event type")
         exit(1)
 
-    return sample_index, type_index
+    if(energy_name=="4S"):
+        energy_index = 1
+    elif(energy_name=="off"):
+        energy_index = 2
+    elif(energy_name=="10657"):
+        energy_index = 3
+    elif(energy_name=="10706"):
+        energy_index = 4
+    elif(energy_name=="10751"):
+        energy_index = 5
+    elif(energy_name=="10810"):
+        energy_index = 6
+
+    return sample_index, type_index, energy_index
 
 def GetROEVariables(maskname):
     var_names = ["roeE", "roeM", "roeP", "roeMbc", "roeDeltae"] + \
@@ -181,7 +195,7 @@ def FillSeveralPhotons(path):
 
     return list_names
 
-def BasicAnalysisForTau(tau_list, sample_index, type_index, path):
+def BasicAnalysisForTau(tau_list, sample_index, type_index, energy_index, path):
     # treefit
     vertex.treeFit(list_name=tau_list, conf_level=-1, updateAllDaughters=False, path=path)
 
@@ -203,6 +217,7 @@ def BasicAnalysisForTau(tau_list, sample_index, type_index, path):
     # add event type / sample type
     ma.variablesToEventExtraInfo(particleList=tau_list, variables = {"constant(" + str(sample_index) + ")" : "MySampleType"}, path=path)
     ma.variablesToEventExtraInfo(particleList=tau_list, variables = {"constant(" + str(type_index) + ")" : "MyEventType"}, path=path)
+    ma.variablesToEventExtraInfo(particleList=tau_list, variables = {"constant(" + str(energy_index) + ")" : "MyEnergyType"}, path=path)
 
 def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, Ntuple_name, hashmap_name, path):
     # names
@@ -273,6 +288,7 @@ def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, Ntuple_name, hashm
     event_vars = ["beamE"] + vc.event_shape + vc.event_kinematics + ["cosToThrustOfEvent"] + ["eventExtraInfo(EventCode)"] + ["nParticlesInList(pi+:evtshape_kinematics)", "nParticlesInList(gamma:evtshape_kinematics)"] + \
                  ["totalEnergyOfParticlesInList(gamma:evtshape_kinematics)"] + \
                  ["eventExtraInfo(MySampleType)", "eventExtraInfo(MyEventType)"]
+    ECL_triggers = [ "psnm_hie", "psnm_lml2", "psnm_lml6", "psnm_lml7", "psnm_lml8", "psnm_lml10", "psnm_lml12"]
     MC_vars = ["isSignal", "isSignalAcceptMissingNeutrino"] + ['extraInfo(DecayHash)', 'extraInfo(DecayHashExtended)']
 
     # add variables about other photon candidates
@@ -282,9 +298,9 @@ def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, Ntuple_name, hashm
 
     # Ntuple output
     if(IsItNominal):
-        ma.variablesToNtuple(decayString=tau_list ,variables=sig_vars + daughter_vars + tag_vars + event_vars + MC_vars, filename=output_file, treename="tau_lfv", path=path)
+        ma.variablesToNtuple(decayString=tau_list ,variables=sig_vars + daughter_vars + tag_vars + event_vars + ECL_triggers + MC_vars, filename=output_file, treename="tau_lfv", path=path)
     else:
-        ma.variablesToNtuple(decayString=tau_list ,variables=sig_vars + daughter_vars + tag_vars + event_vars + MC_vars, filename=output_file, treename="tau_vertex", path=path)
+        ma.variablesToNtuple(decayString=tau_list ,variables=sig_vars + daughter_vars + tag_vars + event_vars + ECL_triggers + MC_vars, filename=output_file, treename="tau_vertex", path=path)
 
 # get data type
 parser = argparse.ArgumentParser(description='Sample type')
@@ -292,6 +308,7 @@ parser = argparse.ArgumentParser(description='Sample type')
 # data or MC
 parser.add_argument('--sample', required=True, type=str, help='type of sample. list) data, MC15ri, MC15rd, MC16ri, MC16rd, Belle_data, Belle_MC')
 parser.add_argument('--type', required=True, type=str, help='type of event. list) data, signal, charged, mixed, uubar, ddbar, ssbar, ccbar, mumu, ee, eeee, eemumu, eepipi, eeKK, eepp, pipiISR, KKISR, gg, eetautau, K0K0barISR, mumumumu, mumutautau, tautautautau, taupair, pipipi0ISR, BBs, BsBs, uds, bsbs, nonbsbs, eecc, eess, eeuu')
+parser.add_argument('--energy', required=True, type=str, help='energy of sample. list) 4S, off, 10657, 10706, 10751, 10810')
 parser.add_argument('--vertex', action='store_true', help='If you want to reconstruct the tau->(phi -> mu mu) mu, assing this flage')
 
 # input file/output path when it is running on KEKCC
@@ -308,7 +325,7 @@ else:
     BELLEONE = False
 
 # assign sample index and type index
-sample_index, type_index = AssignIndex(sample_name=args.sample, event_name=args.type)
+sample_index, type_index, energy_index = AssignIndex(sample_name=args.sample, event_name=args.type, energy_name=args.energy)
 
 if BELLEONE:
     # check https://questions.belle2.org/question/14927/global-tag-use-for-flavor-tagging-for-light-2305-korat/
@@ -390,7 +407,7 @@ tauLFVCuts3 = "nParticlesInList(pi+:taulfv) < 7 and 1.4 < M < 2.0 and -1.0 < del
 ma.reconstructDecay("tau+:LFV_lll -> mu+:taulfv mu+:taulfv mu-:taulfv", tauLFVCuts3, 1, path=my_path)
 
 # basic analysis for tau: treefit, buildROE, continuum suppression, truth match, assign event type / sample type
-BasicAnalysisForTau("tau+:LFV_lll", sample_index=sample_index, type_index=type_index, path=my_path)
+BasicAnalysisForTau("tau+:LFV_lll", sample_index=sample_index, type_index=type_index, energy_index=energy_index, path=my_path)
 
 # make Ntuple and hashmap
 MakeNtupleandHashmap("tau+:LFV_lll", photon_names=photon_names, IsItNominal=True, Ntuple_name=output_file, hashmap_name=hashmapName, path=my_path)
@@ -400,7 +417,7 @@ if(args.vertex):
     pdg.add_particle('phi_test', 9000008, 999., 999., 0, 0)  # name, PDG, mass, width, charge, spin
     ma.reconstructDecay("phi_test:LFV_vertex -> mu+:taulfv mu-:taulfv", cut="", path=my_path)
     ma.reconstructDecay("tau+:LFV_vertex -> phi_test:LFV_vertex mu+:taulfv", tauLFVCuts3, 10, path=my_path)
-    BasicAnalysisForTau("tau+:LFV_vertex", sample_index=sample_index, type_index=type_index, path=my_path)
+    BasicAnalysisForTau("tau+:LFV_vertex", sample_index=sample_index, type_index=type_index, energy_index=energy_index, path=my_path)
     MakeNtupleandHashmap("tau+:LFV_vertex", photon_names=photon_names, IsItNominal=False, Ntuple_name=output_file, hashmap_name=hashmapName, path=my_path)
              
 # progress
