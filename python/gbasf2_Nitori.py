@@ -13,6 +13,7 @@ import modularAnalysis as ma
 import variables as va
 import variables.collections as vc
 import variables.utils as vu
+from variables import variables as vm
 import vertex
 
 import stdPi0s
@@ -215,9 +216,9 @@ def BasicAnalysisForTau(tau_list, sample_index, type_index, energy_index, path):
     ma.matchMCTruth(tau_list, path=path)
 
     # add event type / sample type
-    ma.variablesToEventExtraInfo(particleList=tau_list, variables = {"constant(" + str(sample_index) + ")" : "MySampleType"}, path=path)
-    ma.variablesToEventExtraInfo(particleList=tau_list, variables = {"constant(" + str(type_index) + ")" : "MyEventType"}, path=path)
-    ma.variablesToEventExtraInfo(particleList=tau_list, variables = {"constant(" + str(energy_index) + ")" : "MyEnergyType"}, path=path)
+    vm.addAlias("MySampleType", "constant(" + str(sample_index) + ")")
+    vm.addAlias("MyEventType", "constant(" + str(type_index) + ")")
+    vm.addAlias("MyEnergyType", "constant(" + str(energy_index) + ")")
 
 def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, Ntuple_name, hashmap_name, path):
     # names
@@ -287,7 +288,7 @@ def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, Ntuple_name, hashm
     tag_vars = vc.recoil_kinematics + GetROEVariables("cleanMask")
     event_vars = ["beamE"] + vc.event_shape + vc.event_kinematics + ["cosToThrustOfEvent"] + ["eventExtraInfo(EventCode)"] + ["nParticlesInList(pi+:evtshape_kinematics)", "nParticlesInList(gamma:evtshape_kinematics)"] + \
                  ["totalEnergyOfParticlesInList(gamma:evtshape_kinematics)"] + \
-                 ["eventExtraInfo(MySampleType)", "eventExtraInfo(MyEventType)"]
+                 ["MySampleType", "MyEventType", "MyEnergyType"]
     triggers = ["L1FTDL(fff)", "L1FTDL(ffo)", "L1FTDL(fyo)", "L1FTDL(ffy)", "L1FTDL(stt)", "L1FTDL(hie)", "L1FTDL(lml0)", "L1FTDL(lml1)", "L1FTDL(lml2)", "L1FTDL(lml3)", \
                 "L1FTDL(lml4)", "L1FTDL(lml5)", "L1FTDL(lml6)", "L1FTDL(lml7)", "L1FTDL(lml8)", "L1FTDL(lml9)", "L1FTDL(lml10)", "L1FTDL(lml11)", "L1FTDL(lml12)", "L1FTDL(lml13)", \
                 "L1PSNM(fff)", "L1PSNM(ffo)", "L1PSNM(fyo)", "L1PSNM(ffy)", "L1PSNM(stt)", "L1PSNM(hie)", "L1PSNM(lml0)", "L1PSNM(lml1)", "L1PSNM(lml2)", "L1PSNM(lml3)", \
