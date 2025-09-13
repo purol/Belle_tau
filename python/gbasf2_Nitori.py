@@ -288,7 +288,10 @@ def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, Ntuple_name, hashm
     event_vars = ["beamE"] + vc.event_shape + vc.event_kinematics + ["cosToThrustOfEvent"] + ["eventExtraInfo(EventCode)"] + ["nParticlesInList(pi+:evtshape_kinematics)", "nParticlesInList(gamma:evtshape_kinematics)"] + \
                  ["totalEnergyOfParticlesInList(gamma:evtshape_kinematics)"] + \
                  ["eventExtraInfo(MySampleType)", "eventExtraInfo(MyEventType)"]
-    ECL_triggers = [ "psnm_hie", "psnm_lml2", "psnm_lml6", "psnm_lml7", "psnm_lml8", "psnm_lml10", "psnm_lml12"]
+    triggers = ["L1FTDL(fff)", "L1FTDL(ffo)", "L1FTDL(fyo)", "L1FTDL(ffy)", "L1FTDL(stt)", "L1FTDL(hie)", "L1FTDL(lml0)", "L1FTDL(lml1)", "L1FTDL(lml2)", "L1FTDL(lml3)", \
+                "L1FTDL(lml4)", "L1FTDL(lml5)", "L1FTDL(lml6)", "L1FTDL(lml7)", "L1FTDL(lml8)", "L1FTDL(lml9)", "L1FTDL(lml10)", "L1FTDL(lml11)", "L1FTDL(lml12)", "L1FTDL(lml13)", \
+                "L1PSNM(fff)", "L1PSNM(ffo)", "L1PSNM(fyo)", "L1PSNM(ffy)", "L1PSNM(stt)", "L1PSNM(hie)", "L1PSNM(lml0)", "L1PSNM(lml1)", "L1PSNM(lml2)", "L1PSNM(lml3)", \
+                "L1PSNM(lml4)", "L1PSNM(lml5)", "L1PSNM(lml6)", "L1PSNM(lml7)", "L1PSNM(lml8)", "L1PSNM(lml9)", "L1PSNM(lml10)", "L1PSNM(lml11)", "L1PSNM(lml12)", "L1PSNM(lml13)"]
     MC_vars = ["isSignal", "isSignalAcceptMissingNeutrino"] + ['extraInfo(DecayHash)', 'extraInfo(DecayHashExtended)']
 
     # add variables about other photon candidates
@@ -298,9 +301,9 @@ def MakeNtupleandHashmap(tau_list, photon_names, IsItNominal, Ntuple_name, hashm
 
     # Ntuple output
     if(IsItNominal):
-        ma.variablesToNtuple(decayString=tau_list ,variables=sig_vars + daughter_vars + tag_vars + event_vars + ECL_triggers + MC_vars, filename=output_file, treename="tau_lfv", path=path)
+        ma.variablesToNtuple(decayString=tau_list ,variables=sig_vars + daughter_vars + tag_vars + event_vars + triggers + MC_vars, filename=output_file, treename="tau_lfv", path=path)
     else:
-        ma.variablesToNtuple(decayString=tau_list ,variables=sig_vars + daughter_vars + tag_vars + event_vars + ECL_triggers + MC_vars, filename=output_file, treename="tau_vertex", path=path)
+        ma.variablesToNtuple(decayString=tau_list ,variables=sig_vars + daughter_vars + tag_vars + event_vars + triggers + MC_vars, filename=output_file, treename="tau_vertex", path=path)
 
 # get data type
 parser = argparse.ArgumentParser(description='Sample type')
