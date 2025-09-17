@@ -9,8 +9,7 @@ Ntuple_path="/home/belle2/junewoo/storage_ghi/tau_Ntuple"
          "EEKK" "EEMUMU" "EEPIPI" "EEPP" "EETAUTAU"
          "GG" "K0K0ISR" "KKISR" "MIX" "MUMU"
          "MUMUMUMU" "MUMUTAUTAU" "PIPIISR" "PIPIPI0ISR" "SIGNAL"
-         "SSBAR" "TAUPAIR" "TAUTAUTAUTAU" "UUBAR"
-         )
+         "SSBAR" "TAUPAIR" "TAUTAUTAUTAU" "UUBAR")
 
 4S_flag=("ccbar" "charged" "ddbar" "ee" "eeee"
         "eeKK" "eemumu" "eepipi" "eepp" "eetautau"
