@@ -5,16 +5,16 @@ script="./python/gbasf2_${version}.py"
 Skim_path="/home/belle2/junewoo/storage_ghi/tau_SKIM"
 Ntuple_path="/home/belle2/junewoo/storage_ghi/tau_Ntuple"
 
-4S_list=("CHARM" "CHG" "DDBAR" "EE" "EEEE"
-         "EEKK" "EEMUMU" "EEPIPI" "EEPP" "EETAUTAU"
-         "GG" "K0K0ISR" "KKISR" "MIX" "MUMU"
-         "MUMUMUMU" "MUMUTAUTAU" "PIPIISR" "PIPIPI0ISR" "SIGNAL"
+4S_list=("CHARM" "CHG" "DDBAR" "EE" "EEEE"\
+         "EEKK" "EEMUMU" "EEPIPI" "EEPP" "EETAUTAU"\
+         "GG" "K0K0ISR" "KKISR" "MIX" "MUMU"\
+         "MUMUMUMU" "MUMUTAUTAU" "PIPIISR" "PIPIPI0ISR" "SIGNAL"\
          "SSBAR" "TAUPAIR" "TAUTAUTAUTAU" "UUBAR")
 
-4S_flag=("ccbar" "charged" "ddbar" "ee" "eeee"
-        "eeKK" "eemumu" "eepipi" "eepp" "eetautau"
-        "gg" "K0K0barISR" "KKISR" "mixed" "mumu"
-        "mumumumu" "mumutautau" "pipiISR" "pipipi0ISR" "signal"
+4S_flag=("ccbar" "charged" "ddbar" "ee" "eeee"\
+        "eeKK" "eemumu" "eepipi" "eepp" "eetautau"\
+        "gg" "K0K0barISR" "KKISR" "mixed" "mumu"\
+        "mumumumu" "mumutautau" "pipiISR" "pipipi0ISR" "signal"\
         "ssbar" "taupair" "tautautautau" "uubar")
 
 for i in "${!4S_list[@]}"; do
@@ -39,14 +39,14 @@ for i in "${!4S_list[@]}"; do
 done 
 
 
-off_list=("CHARM" "DDBAR" "EE" "EEEE" "EEKK"
-          "EEMUMU" "EEPIPI" "EEPP" "EETAUTAU" "GG" 
-          "MUMU" "MUMUMUMU" "SIGNAL" "SSBAR" "TAUPAIR"
+off_list=("CHARM" "DDBAR" "EE" "EEEE" "EEKK"\
+          "EEMUMU" "EEPIPI" "EEPP" "EETAUTAU" "GG"\
+          "MUMU" "MUMUMUMU" "SIGNAL" "SSBAR" "TAUPAIR"\
           "UUBAR")
 
-off_flag=("ccbar" "ddbar" "ee" "eeee" "eeKK"
-          "eemumu" "eepipi" "eepp" "eetautau" "gg"
-          "mumu" "mumumumu" "signal" "ssbar" "taupair"
+off_flag=("ccbar" "ddbar" "ee" "eeee" "eeKK"\
+          "eemumu" "eepipi" "eepp" "eetautau" "gg"\
+          "mumu" "mumumumu" "signal" "ssbar" "taupair"\
           "uubar")
 
 for i in "${!off_list[@]}"; do
@@ -70,12 +70,12 @@ for i in "${!off_list[@]}"; do
     done
 done 
 
-10810_list=("BBs" "BsBs" "CHARM" "CHG" "DDBAR"
-            "MIX" "MUMU" "SIGNAL" "SSBAR" "TAUPAIR"
+10810_list=("BBs" "BsBs" "CHARM" "CHG" "DDBAR"\
+            "MIX" "MUMU" "SIGNAL" "SSBAR" "TAUPAIR"\
             "UUBAR")
 
-10810_flag=("BBs" "BsBs" "ccbar" "charged" "ddbar" 
-            "mixed" "mumu" "signal" "ssbar" "taupair"
+10810_flag=("BBs" "BsBs" "ccbar" "charged" "ddbar"\
+            "mixed" "mumu" "signal" "ssbar" "taupair"\
             "uubar")
 
 for i in "${!10810_list[@]}"; do
