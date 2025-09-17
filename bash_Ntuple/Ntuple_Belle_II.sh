@@ -5,21 +5,21 @@ script="./python/gbasf2_${version}.py"
 Skim_path="/home/belle2/junewoo/storage_ghi/tau_SKIM"
 Ntuple_path="/home/belle2/junewoo/storage_ghi/tau_Ntuple"
 
-4S_list=("CHARM" "CHG" "DDBAR" "EE" "EEEE"
+on_list=("CHARM" "CHG" "DDBAR" "EE" "EEEE"
          "EEKK" "EEMUMU" "EEPIPI" "EEPP" "EETAUTAU"
          "GG" "K0K0ISR" "KKISR" "MIX" "MUMU"
          "MUMUMUMU" "MUMUTAUTAU" "PIPIISR" "PIPIPI0ISR" "SIGNAL"
          "SSBAR" "TAUPAIR" "TAUTAUTAUTAU" "UUBAR")
 
-4S_flag=("ccbar" "charged" "ddbar" "ee" "eeee"
+on_flag=("ccbar" "charged" "ddbar" "ee" "eeee"
         "eeKK" "eemumu" "eepipi" "eepp" "eetautau"
         "gg" "K0K0barISR" "KKISR" "mixed" "mumu"
         "mumumumu" "mumutautau" "pipiISR" "pipipi0ISR" "signal"
         "ssbar" "taupair" "tautautautau" "uubar")
 
-for i in "${!4S_list[@]}"; do
-    Type="${4S_list[$i]}"
-    Flag="${4S_flag[$i]}"
+for i in "${!on_list[@]}"; do
+    Type="${on_list[$i]}"
+    Flag="${on_flag[$i]}"
 
     Type_path="${Ntuple_path}/${version}/${Type}"
     output_path="${Type_path}/MC15ri_4S"
@@ -70,17 +70,17 @@ for i in "${!off_list[@]}"; do
     done
 done 
 
-10810_list=("BBs" "BsBs" "CHARM" "CHG" "DDBAR"
+Scan_10810_list=("BBs" "BsBs" "CHARM" "CHG" "DDBAR"
             "MIX" "MUMU" "SIGNAL" "SSBAR" "TAUPAIR"
             "UUBAR")
 
-10810_flag=("BBs" "BsBs" "ccbar" "charged" "ddbar" 
+Scan_10810_flag=("BBs" "BsBs" "ccbar" "charged" "ddbar" 
             "mixed" "mumu" "signal" "ssbar" "taupair"
             "uubar")
 
-for i in "${!10810_list[@]}"; do
-    Type="${10810_list[$i]}"
-    Flag="${10810_flag[$i]}"
+for i in "${!Scan_10810_list[@]}"; do
+    Type="${Scan_10810_list[$i]}"
+    Flag="${Scan_10810_flag[$i]}"
 
     Type_path="${Ntuple_path}/${version}/${Type}"
     output_path="${Type_path}/MC15ri_10810"
