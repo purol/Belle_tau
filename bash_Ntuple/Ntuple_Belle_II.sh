@@ -23,7 +23,7 @@ for i in "${!on_list[@]}"; do
 
     Type_path="${Ntuple_path}/${version}/${Type}"
     output_path="${Type_path}/MC15ri_4S"
-    log_path="${Type_path}/log"
+    log_path="${Type_path}/MC15ri_4S/log"
 
     mkdir -p "${Type_path}"
     mkdir -p "${output_path}"
@@ -33,7 +33,7 @@ for i in "${!on_list[@]}"; do
     do
         echo $file
         basename=$(basename -s .root $file)
-        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "4S" --vertex --KEKCC --input_file ${file} --destination "${output_path}"
+        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "4S" --vertex --KEKCC --inputfile ${file} --destination "${output_path}"
         sleep 0.3
     done
 done 
@@ -55,7 +55,7 @@ for i in "${!off_list[@]}"; do
 
     Type_path="${Ntuple_path}/${version}/${Type}"
     output_path="${Type_path}/MC15ri_off"
-    log_path="${Type_path}/log"
+    log_path="${Type_path}/MC15ri_off/log"
 
     mkdir -p "${Type_path}"
     mkdir -p "${output_path}"
@@ -65,7 +65,7 @@ for i in "${!off_list[@]}"; do
     do
         echo $file
         basename=$(basename -s .root $file)
-        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "off" --vertex --KEKCC --input_file ${file} --destination "${output_path}"
+        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "off" --vertex --KEKCC --inputfile ${file} --destination "${output_path}"
         sleep 0.3
     done
 done 
@@ -84,7 +84,7 @@ for i in "${!Scan_10810_list[@]}"; do
 
     Type_path="${Ntuple_path}/${version}/${Type}"
     output_path="${Type_path}/MC15ri_10810"
-    log_path="${Type_path}/log"
+    log_path="${Type_path}/MC15ri_10810/log"
 
     mkdir -p "${Type_path}"
     mkdir -p "${output_path}"
@@ -94,7 +94,7 @@ for i in "${!Scan_10810_list[@]}"; do
     do
         echo $file
         basename=$(basename -s .root $file)
-        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "10810" --vertex --KEKCC --input_file ${file} --destination "${output_path}"
+        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "10810" --vertex --KEKCC --inputfile ${file} --destination "${output_path}"
         sleep 0.3
     done
 done 
