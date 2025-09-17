@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 version="Nitori"
 script="./python/gbasf2_${version}.py"
