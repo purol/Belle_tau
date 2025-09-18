@@ -82,6 +82,8 @@
 # define Scale_SIGNAL_BelleII_off_MC15ri (Nevt_SIGNAL_BelleII_off/Nevt_SIGNAL_BelleII_off_MC15ri)
 # define Scale_SIGNAL_BelleII_10810_MC15ri (Nevt_SIGNAL_BelleII_10810/Nevt_SIGNAL_BelleII_10810_MC15ri)
 
+# define Nevt_SIGNAL (Nevt_SIGNAL_BelleII_4S + Nevt_SIGNAL_BelleII_off + Nevt_SIGNAL_BelleII_10810)
+
 // systematics
 # define track_rel_uncertainty 0.24 // %
 

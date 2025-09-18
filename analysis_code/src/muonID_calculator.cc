@@ -352,10 +352,11 @@ int main(int argc, char* argv[]) {
     TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
 
     std::vector<std::string> signal_list = { "SIGNAL" };
-    std::vector<std::string> background_list = { "CHARM", "CHG", "DDBAR", "EE", "EEEE", 
-        "EEKK", "EEMUMU", "EEPIPI", "EEPP", "EETAUTAU", "GG", 
-        "K0K0BARISR", "KKISR", "MIX", "MUMU", "MUMUMUMU", 
-        "MUMUTAUTAU", "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
+    std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
+        "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
+        "EEPP", "EETAUTAU", "GG", "K0K0BARISR", "KKISR",
+        "MIX", "MUMU", "MUMUMUMU", "MUMUTAUTAU", "PIPIPI0ISR",
+        "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
 
     double deltaE_peak;
     double deltaE_left_sigma;

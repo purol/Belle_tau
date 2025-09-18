@@ -25,10 +25,11 @@ int main(int argc, char* argv[]) {
     std::string variable_name_1(argv[1]);
     std::string variable_name_2(argv[2]);
 
-    std::vector<std::string> background_list = { "CHARM", "CHG", "DDBAR", "EE", "EEEE", 
-        "EEKK", "EEMUMU", "EEPIPI", "EEPP", "EETAUTAU", "GG", 
-        "K0K0BARISR", "KKISR", "MIX", "MUMU", "MUMUMUMU", 
-        "MUMUTAUTAU", "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
+    std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
+        "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
+        "EEPP", "EETAUTAU", "GG", "K0K0BARISR", "KKISR",
+        "MIX", "MUMU", "MUMUMUMU", "MUMUTAUTAU", "PIPIPI0ISR",
+        "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
 
     ObtainWeight = MyScaleFunction_halfsplit;
 
