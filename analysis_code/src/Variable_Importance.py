@@ -111,7 +111,7 @@ def calculate_weights(df: pd.DataFrame) -> pd.Series:
     # Energy type conditions
     is_4s = (df[energy_type_col] > 0.5) & (df[energy_type_col] < 1.5)
     is_off = (df[energy_type_col] > 1.5) & (df[energy_type_col] < 2.5)
-    is_10810 = (df[energy_type_col] > 4.5) & (df[energy_type_col] < 5.5)
+    is_10810 = (df[energy_type_col] > 5.5) & (df[energy_type_col] < 6.5)
 
     # A list of all conditions and their corresponding weight choices
     conditions = [

@@ -84,7 +84,7 @@ double MyScaleFunction(std::vector<Data>::iterator data_, std::vector<std::strin
         else if ((2.5 < EnergyType) && (EnergyType < 3.5)) {} // 10657
         else if ((3.5 < EnergyType) && (EnergyType < 4.5)) {} // 10706
         else if ((4.5 < EnergyType) && (EnergyType < 5.5)) {} // 10751
-        else if ((4.5 < EnergyType) && (EnergyType < 5.5)) { // 10810
+        else if ((5.5 < EnergyType) && (EnergyType < 6.5)) { // 10810
             if ((0.5 < EventType) && (EventType < 1.5)) return Scale_BelleII_10810_CHG_MC15ri; // CHG
             else if ((1.5 < EventType) && (EventType < 2.5)) return Scale_BelleII_10810_MIX_MC15ri; // MIX
             else if ((2.5 < EventType) && (EventType < 3.5)) return Scale_BelleII_10810_UUBAR_MC15ri; // UUBAR
