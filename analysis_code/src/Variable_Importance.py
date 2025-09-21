@@ -115,8 +115,8 @@ def calculate_weights(df: pd.DataFrame) -> pd.Series:
 
     # A list of all conditions and their corresponding weight choices
     conditions = [
-        # Belle MC
-        (df[sample_type_col] > 5.5) & (df[sample_type_col] < 6.5),
+        # Belle data
+        (df[sample_type_col] > 4.5) & (df[sample_type_col] < 5.5),
         # Data
         (df[sample_type_col] > -1.5) & (df[sample_type_col] < -0.5),
         
@@ -179,7 +179,7 @@ def calculate_weights(df: pd.DataFrame) -> pd.Series:
     ]
     
     choices = [
-        1.0, # Belle MC weight
+        1.0, # Belle data weight
         1.0, # Data weight
         
         Scale_SIGNAL_BelleII_4S_MC15ri,
