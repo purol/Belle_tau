@@ -147,6 +147,7 @@ def calculate_weights(df: pd.DataFrame) -> pd.Series:
         is_mc15ri & is_4s & (df[event_type_col] > 22.5) & (df[event_type_col] < 23.5),  # PIPIPI0ISR
 
         # MC15ri @ off-resonance
+        is_mc15ri & is_off & (df[event_type_col] > -0.5) & (df[event_type_col] < 0.5),   # SIGNAL
         is_mc15ri & is_off & (df[event_type_col] > 2.5) & (df[event_type_col] < 3.5),   # UUBAR
         is_mc15ri & is_off & (df[event_type_col] > 3.5) & (df[event_type_col] < 4.5),   # DDBAR
         is_mc15ri & is_off & (df[event_type_col] > 4.5) & (df[event_type_col] < 5.5),   # SSBAR
@@ -164,6 +165,7 @@ def calculate_weights(df: pd.DataFrame) -> pd.Series:
         is_mc15ri & is_off & (df[event_type_col] > 21.5) & (df[event_type_col] < 22.5), # TAUPAIR
         
         # MC15ri @ 10810
+        is_mc15ri & is_10810 & (df[event_type_col] > -0.5) & (df[event_type_col] < 0.5),   # SIGNAL
         is_mc15ri & is_10810 & (df[event_type_col] > 0.5) & (df[event_type_col] < 1.5),   # CHG
         is_mc15ri & is_10810 & (df[event_type_col] > 1.5) & (df[event_type_col] < 2.5),   # MIX
         is_mc15ri & is_10810 & (df[event_type_col] > 2.5) & (df[event_type_col] < 3.5),   # UUBAR
@@ -205,6 +207,7 @@ def calculate_weights(df: pd.DataFrame) -> pd.Series:
         Scale_BelleII_4S_TAUPAIR_MC15ri,
         Scale_BelleII_4S_PIPIPI0ISR_MC15ri,
         
+        Scale_SIGNAL_BelleII_off_MC15ri,
         Scale_BelleII_off_UUBAR_MC15ri,
         Scale_BelleII_off_DDBAR_MC15ri,
         Scale_BelleII_off_SSBAR_MC15ri,
@@ -221,6 +224,7 @@ def calculate_weights(df: pd.DataFrame) -> pd.Series:
         Scale_BelleII_off_MUMUMUMU_MC15ri,
         Scale_BelleII_off_TAUPAIR_MC15ri,
         
+        Scale_SIGNAL_BelleII_10810_MC15ri
         Scale_BelleII_10810_CHG_MC15ri,
         Scale_BelleII_10810_MIX_MC15ri,
         Scale_BelleII_10810_UUBAR_MC15ri,

@@ -65,7 +65,8 @@ double MyScaleFunction(std::vector<Data>::iterator data_, std::vector<std::strin
             else if ((22.5 < EventType) && (EventType < 23.5)) return Scale_BelleII_4S_PIPIPI0ISR_MC15ri; // PIPIPI0ISR
         }
         else if ((1.5 < EnergyType) && (EnergyType < 2.5)) { // off-resonance
-            if ((2.5 < EventType) && (EventType < 3.5)) return Scale_BelleII_off_UUBAR_MC15ri; // UUBAR
+            if ((-0.5 < EventType) && (EventType < 0.5)) return Scale_SIGNAL_BelleII_off_MC15ri; // signal
+            else if ((2.5 < EventType) && (EventType < 3.5)) return Scale_BelleII_off_UUBAR_MC15ri; // UUBAR
             else if ((3.5 < EventType) && (EventType < 4.5)) return Scale_BelleII_off_DDBAR_MC15ri; // DDBAR
             else if ((4.5 < EventType) && (EventType < 5.5)) return Scale_BelleII_off_SSBAR_MC15ri; // SSBAR
             else if ((5.5 < EventType) && (EventType < 6.5)) return Scale_BelleII_off_CHARM_MC15ri; // CHARM
@@ -85,7 +86,8 @@ double MyScaleFunction(std::vector<Data>::iterator data_, std::vector<std::strin
         else if ((3.5 < EnergyType) && (EnergyType < 4.5)) {} // 10706
         else if ((4.5 < EnergyType) && (EnergyType < 5.5)) {} // 10751
         else if ((5.5 < EnergyType) && (EnergyType < 6.5)) { // 10810
-            if ((0.5 < EventType) && (EventType < 1.5)) return Scale_BelleII_10810_CHG_MC15ri; // CHG
+            if ((-0.5 < EventType) && (EventType < 0.5)) return Scale_SIGNAL_BelleII_10810_MC15ri; // signal
+            else if ((0.5 < EventType) && (EventType < 1.5)) return Scale_BelleII_10810_CHG_MC15ri; // CHG
             else if ((1.5 < EventType) && (EventType < 2.5)) return Scale_BelleII_10810_MIX_MC15ri; // MIX
             else if ((2.5 < EventType) && (EventType < 3.5)) return Scale_BelleII_10810_UUBAR_MC15ri; // UUBAR
             else if ((3.5 < EventType) && (EventType < 4.5)) return Scale_BelleII_10810_DDBAR_MC15ri; // DDBAR
