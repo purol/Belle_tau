@@ -9,8 +9,8 @@ submit_analysis() {
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/log_second"
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/err_second"
 
-  if compgen -G "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection/*" > /dev/null; then
-    for file in "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection"/*; do
+  if compgen -G "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection/*.root" > /dev/null; then
+    for file in "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection"/*.root; do
       filename=$(basename "$file" .root) # without path, without extension
       bsub -q s -J Analyze -o "./${VerName}/${Analysis_VerName}/${SampleName}/log_second/${filename}_${SampleName}_${VerName}_${Analysis_VerName}.log" -e "./${VerName}/${Analysis_VerName}/${SampleName}/err_second/${filename}_${SampleName}_${VerName}_${Analysis_VerName}.err" ${Code} "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection" "${filename}.root" "./${VerName}/${Analysis_VerName}/${SampleName}" "./${VerName}/${Analysis_VerName}/"
     done
@@ -25,13 +25,13 @@ submit_logger() {
 
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/final_output"
 
-  if compgen -G "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection/*" > /dev/null; then
+  if compgen -G "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection/*.root" > /dev/null; then
     bsub -q l -J Logger -o "./${VerName}/${Analysis_VerName}/${SampleName}/${SampleName}_${VerName}_${Analysis_VerName}_second.log" -e "./${VerName}/${Analysis_VerName}/${SampleName}/${SampleName}_${VerName}_${Analysis_VerName}_second.err" ${Code} "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection" "./${VerName}/${Analysis_VerName}/"
   fi
 
 }
 
-Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CHARM" "MUMU" "EE" "EEEE" "EEMUMU" "EEPIPI" "EEKK" "EEPP" "PIPIISR" "KKISR" "GG" "EETAUTAU" "K0K0BARISR" "MUMUMUMU" "MUMUTAUTAU" "TAUTAUTAUTAU" "TAUPAIR" "SIGNAL")
+Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CHARM" "MUMU" "EE" "EEEE" "EEMUMU" "EEPIPI" "EEKK" "EEPP" "PIPIISR" "PIPIPI0ISR" "KKISR" "GG" "EETAUTAU" "K0K0BARISR" "MUMUMUMU" "MUMUTAUTAU" "TAUTAUTAUTAU" "TAUPAIR" "BBs" "BsBs" "SIGNAL")
 
 code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main_second"
 for Type in "${Types[@]}"; do

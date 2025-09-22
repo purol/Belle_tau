@@ -5,6 +5,7 @@ script="./python/gbasf2_${version}.py"
 Skim_path="/home/belle2/junewoo/storage_ghi/tau_SKIM"
 Ntuple_path="/home/belle2/junewoo/storage_ghi/tau_Ntuple"
 
+# 4S on-resonance
 on_list=("CHARM" "CHG" "DDBAR" "EE" "EEEE"
          "EEKK" "EEMUMU" "EEPIPI" "EEPP" "EETAUTAU"
          "GG" "K0K0ISR" "KKISR" "MIX" "MUMU"
@@ -22,8 +23,8 @@ for i in "${!on_list[@]}"; do
     Flag="${on_flag[$i]}"
 
     Type_path="${Ntuple_path}/${version}/${Type}"
-    output_path="${Type_path}/MC15ri_4S"
-    log_path="${Type_path}/MC15ri_4S/log"
+    output_path="${Type_path}/MC15ri"
+    log_path="${Type_path}/MC15ri/log"
 
     mkdir -p "${Type_path}"
     mkdir -p "${output_path}"
@@ -38,7 +39,7 @@ for i in "${!on_list[@]}"; do
     done
 done 
 
-
+# off-resonance
 off_list=("CHARM" "DDBAR" "EE" "EEEE" "EEKK"
           "EEMUMU" "EEPIPI" "EEPP" "EETAUTAU" "GG" 
           "MUMU" "MUMUMUMU" "SIGNAL" "SSBAR" "TAUPAIR"
@@ -54,8 +55,8 @@ for i in "${!off_list[@]}"; do
     Flag="${off_flag[$i]}"
 
     Type_path="${Ntuple_path}/${version}/${Type}"
-    output_path="${Type_path}/MC15ri_off"
-    log_path="${Type_path}/MC15ri_off/log"
+    output_path="${Type_path}/MC15ri"
+    log_path="${Type_path}/MC15ri/log"
 
     mkdir -p "${Type_path}"
     mkdir -p "${output_path}"
@@ -70,6 +71,7 @@ for i in "${!off_list[@]}"; do
     done
 done 
 
+# E = 10.810 GeV
 Scan_10810_list=("BBs" "BsBs" "CHARM" "CHG" "DDBAR"
             "MIX" "MUMU" "SIGNAL" "SSBAR" "TAUPAIR"
             "UUBAR")
@@ -83,8 +85,8 @@ for i in "${!Scan_10810_list[@]}"; do
     Flag="${Scan_10810_flag[$i]}"
 
     Type_path="${Ntuple_path}/${version}/${Type}"
-    output_path="${Type_path}/MC15ri_10810"
-    log_path="${Type_path}/MC15ri_10810/log"
+    output_path="${Type_path}/MC15ri"
+    log_path="${Type_path}/MC15ri/log"
 
     mkdir -p "${Type_path}"
     mkdir -p "${output_path}"

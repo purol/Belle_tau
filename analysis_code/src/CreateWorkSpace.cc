@@ -101,7 +101,8 @@ double MyScaleFunction_correction_halfsplit(std::vector<Data>::iterator data_, s
             else if ((22.5 < EventType) && (EventType < 23.5)) return 2.0 * Scale_BelleII_4S_PIPIPI0ISR_MC15ri * total_correction; // PIPIPI0ISR
         }
         else if ((1.5 < EnergyType) && (EnergyType < 2.5)) { // off-resonance
-            if ((2.5 < EventType) && (EventType < 3.5)) return 2.0 * Scale_BelleII_off_UUBAR_MC15ri * total_correction; // UUBAR
+            if ((-0.5 < EventType) && (EventType < 0.5)) return 2.0 * Scale_SIGNAL_BelleII_off_MC15ri * total_correction; // signal
+            else if ((2.5 < EventType) && (EventType < 3.5)) return 2.0 * Scale_BelleII_off_UUBAR_MC15ri * total_correction; // UUBAR
             else if ((3.5 < EventType) && (EventType < 4.5)) return 2.0 * Scale_BelleII_off_DDBAR_MC15ri * total_correction; // DDBAR
             else if ((4.5 < EventType) && (EventType < 5.5)) return 2.0 * Scale_BelleII_off_SSBAR_MC15ri * total_correction; // SSBAR
             else if ((5.5 < EventType) && (EventType < 6.5)) return 2.0 * Scale_BelleII_off_CHARM_MC15ri * total_correction; // CHARM
@@ -120,8 +121,9 @@ double MyScaleFunction_correction_halfsplit(std::vector<Data>::iterator data_, s
         else if ((2.5 < EnergyType) && (EnergyType < 3.5)) {} // 10657
         else if ((3.5 < EnergyType) && (EnergyType < 4.5)) {} // 10706
         else if ((4.5 < EnergyType) && (EnergyType < 5.5)) {} // 10751
-        else if ((4.5 < EnergyType) && (EnergyType < 5.5)) { // 10810
-            if ((0.5 < EventType) && (EventType < 1.5)) return 2.0 * Scale_BelleII_10810_CHG_MC15ri * total_correction; // CHG
+        else if ((5.5 < EnergyType) && (EnergyType < 6.5)) { // 10810
+            if ((-0.5 < EventType) && (EventType < 0.5)) return 2.0 * Scale_SIGNAL_BelleII_10810_MC15ri * total_correction; // signal
+            else if ((0.5 < EventType) && (EventType < 1.5)) return 2.0 * Scale_BelleII_10810_CHG_MC15ri * total_correction; // CHG
             else if ((1.5 < EventType) && (EventType < 2.5)) return 2.0 * Scale_BelleII_10810_MIX_MC15ri * total_correction; // MIX
             else if ((2.5 < EventType) && (EventType < 3.5)) return 2.0 * Scale_BelleII_10810_UUBAR_MC15ri * total_correction; // UUBAR
             else if ((3.5 < EventType) && (EventType < 4.5)) return 2.0 * Scale_BelleII_10810_DDBAR_MC15ri * total_correction; // DDBAR
@@ -136,12 +138,12 @@ double MyScaleFunction_correction_halfsplit(std::vector<Data>::iterator data_, s
     else if ((1.5 < SampleType) && (SampleType < 2.5)) {} // MC15rd
     else if ((2.5 < SampleType) && (SampleType < 3.5)) {} // MC16ri
     else if ((3.5 < SampleType) && (SampleType < 4.5)) {} // MC16rd
-    else if ((4.5 < SampleType) && (SampleType < 5.5)) {} // Belle data
-    else if ((5.5 < SampleType) && (SampleType < 6.5)) { // Belle MC
+    else if ((4.5 < SampleType) && (SampleType < 5.5)) { // Belle data
         printf("why do you try to split data?\n");
         exit(1);
         return 0.0;
     }
+    else if ((5.5 < SampleType) && (SampleType < 6.5)) {} // Belle MC
 
     printf("unexpected sample type\n");
     exit(1);
@@ -299,10 +301,11 @@ int main(int argc, char* argv[]) {
     std::vector<TH1D*> bkg_MC_th1d_muonID;
 
     std::vector<std::string> signal_list = { "SIGNAL" };
-    std::vector<std::string> background_list = { "CHARM", "CHG", "DDBAR", "EE", "EEEE", 
-        "EEKK", "EEMUMU", "EEPIPI", "EEPP", "EETAUTAU", "GG", 
-        "K0K0BARISR", "KKISR", "MIX", "MUMU", "MUMUMUMU", 
-        "MUMUTAUTAU", "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
+    std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
+        "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
+        "EEPP", "EETAUTAU", "GG", "K0K0BARISR", "KKISR",
+        "MIX", "MUMU", "MUMUMUMU", "MUMUTAUTAU", "PIPIPI0ISR",
+        "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
 
     double deltaE_peak;
     double deltaE_left_sigma;
