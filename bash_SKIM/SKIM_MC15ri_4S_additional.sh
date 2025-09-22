@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# bkgs
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p UUBAR_SKIM_A1 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025676/s00/e1003/4S/r00000/uubar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p UUBAR_SKIM_A2 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025677/s00/e1003/4S/r00000/uubar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p UUBAR_SKIM_A3 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025678/s00/e1003/4S/r00000/uubar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p UUBAR_SKIM_A4 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025679/s00/e1003/4S/r00000/uubar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p UUBAR_SKIM_A5 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025680/s00/e1003/4S/r00000/uubar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p UUBAR_SKIM_A6 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00027677/s00/e1003/4S/r00000/uubar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p UUBAR_SKIM_A7 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00027678/s00/e1003/4S/r00000/uubar/mdst -s light-2505-deimos --cputime 1600
+
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p DDBAR_SKIM_A1 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025681/s00/e1003/4S/r00000/ddbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p DDBAR_SKIM_A2 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025682/s00/e1003/4S/r00000/ddbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p DDBAR_SKIM_A3 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025683/s00/e1003/4S/r00000/ddbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p DDBAR_SKIM_A4 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025684/s00/e1003/4S/r00000/ddbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p DDBAR_SKIM_A5 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025685/s00/e1003/4S/r00000/ddbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p DDBAR_SKIM_A6 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00027679/s00/e1003/4S/r00000/ddbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p DDBAR_SKIM_A7 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00027680/s00/e1003/4S/r00000/ddbar/mdst -s light-2505-deimos --cputime 1600
+
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p SSBAR_SKIM_A1 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025691/s00/e1003/4S/r00000/ssbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p SSBAR_SKIM_A2 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025692/s00/e1003/4S/r00000/ssbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p SSBAR_SKIM_A3 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025693/s00/e1003/4S/r00000/ssbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p SSBAR_SKIM_A4 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025694/s00/e1003/4S/r00000/ssbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p SSBAR_SKIM_A5 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025695/s00/e1003/4S/r00000/ssbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p SSBAR_SKIM_A6 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00027683/s00/e1003/4S/r00000/ssbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p SSBAR_SKIM_A7 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00027684/s00/e1003/4S/r00000/ssbar/mdst -s light-2505-deimos --cputime 1600
+
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p CHARM_SKIM_A1 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025686/s00/e1003/4S/r00000/ccbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p CHARM_SKIM_A2 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025687/s00/e1003/4S/r00000/ccbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p CHARM_SKIM_A3 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025688/s00/e1003/4S/r00000/ccbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p CHARM_SKIM_A4 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025689/s00/e1003/4S/r00000/ccbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p CHARM_SKIM_A5 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00025690/s00/e1003/4S/r00000/ccbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p CHARM_SKIM_A6 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00027681/s00/e1003/4S/r00000/ccbar/mdst -s light-2505-deimos --cputime 1600
+gbasf2 ./python/tau_mumumu_SKIM.py --force -p CHARM_SKIM_A7 -i /belle/MC/release-06-00-08/DB00002100/MC15ri_b/prod00027682/s00/e1003/4S/r00000/ccbar/mdst -s light-2505-deimos --cputime 1600
+
