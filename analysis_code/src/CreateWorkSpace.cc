@@ -168,6 +168,46 @@ double mapping_function(std::vector<double> variables_) {
 
 }
 
+double mapping_function_plus_M(std::vector<double> variables_) {
+    double M = variables_.at(0);
+    double deltaE = variables_.at(1);
+
+    if (((M_peak_g - 4.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 6.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
+    else if (((M_peak_g - 2.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 4.0 * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
+    else return NAN;
+
+}
+
+double mapping_function_minus_M(std::vector<double> variables_) {
+    double M = variables_.at(0);
+    double deltaE = variables_.at(1);
+
+    if (((M_peak_g - 6.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 4.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
+    else if (((M_peak_g - 4.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 2.0 * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
+    else return NAN;
+
+}
+
+double mapping_function_plus_DeltaE(std::vector<double> variables_) {
+    double M = variables_.at(0);
+    double deltaE = variables_.at(1);
+
+    if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 4 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 6 * deltaE_right_sigma_g))) return 1.0;
+    else if (((M_peak_g - 3.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 3.0 * M_right_sigma_g)) && ((deltaE_peak_g - 14 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 4 * deltaE_left_sigma_g))) return 2.0;
+    else return NAN;
+
+}
+
+double mapping_function_minus_DeltaE(std::vector<double> variables_) {
+    double M = variables_.at(0);
+    double deltaE = variables_.at(1);
+
+    if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 6 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 4 * deltaE_right_sigma_g))) return 1.0;
+    else if (((M_peak_g - 3.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 3.0 * M_right_sigma_g)) && ((deltaE_peak_g - 16 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 6 * deltaE_left_sigma_g))) return 2.0;
+    else return NAN;
+
+}
+
 void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, TH1D* data_th1d_stat_err_, TH1D* signal_MC_th1d_stat_err_, TH1D* bkg_MC_th1d_stat_err_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_) {
     // data
     Loader loader_data("tau_lfv");
@@ -195,6 +235,59 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     signal_MC_th1d_stat_err_->SetBinContent(2, signal_MC_th1d_->GetBinError(2));
     bkg_MC_th1d_stat_err_->SetBinContent(1, bkg_MC_th1d_->GetBinError(1));
     bkg_MC_th1d_stat_err_->SetBinContent(2, bkg_MC_th1d_->GetBinError(2));
+
+
+    // We do not open the box, So data_th1d is MC. We use the proper uncertainty
+    data_th1d_->SetBinError(1, std::sqrt(data_th1d_->GetBinContent(1)));
+    data_th1d_->SetBinError(2, std::sqrt(data_th1d_->GetBinContent(2)));
+}
+
+void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_, int fluc_mode) {
+    /*
+    * fluc mode:
+    * 0: positive M fluctuation
+    * 1: negative M fluctuation
+    * 2: positive DeltaE fluctuation
+    * 3: negative DeltaE fluctuation
+    */
+    // data
+    Loader loader_data("tau_lfv");
+    for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
+    if (fluc_mode == 0) loader_data.FillCustomizedTH1D(data_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_plus_M });
+    else if (fluc_mode == 1) loader_data.FillCustomizedTH1D(data_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_minus_M });
+    else if (fluc_mode == 2) loader_data.FillCustomizedTH1D(data_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_plus_DeltaE });
+    else if (fluc_mode == 3) loader_data.FillCustomizedTH1D(data_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_minus_DeltaE });
+    else {
+        printf("[FillHistogram_fluc_SR] fluctuation index should be one of 0, 1, 2, or 3\n");
+        exit(1);
+    }
+    loader_data.end();
+
+    // signal MC
+    Loader loader_signal("tau_lfv");
+    for (int i = 0; i < signal_list_.size(); i++) loader_signal.Load((input_path_1_ + std::string("/") + signal_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", signal_list_.at(i).c_str());
+    if (fluc_mode == 0) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_plus_M });
+    else if (fluc_mode == 1) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_minus_M });
+    else if (fluc_mode == 2) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_plus_DeltaE });
+    else if (fluc_mode == 3) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_minus_DeltaE });
+    else {
+        printf("[FillHistogram_fluc_SR] fluctuation index should be one of 0, 1, 2, or 3\n");
+        exit(1);
+    }
+    loader_signal.end();
+
+    // background MC
+    Loader loader_bkg("tau_lfv");
+    for (int i = 0; i < background_list_.size(); i++) loader_bkg.Load((input_path_1_ + std::string("/") + background_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", background_list_.at(i).c_str());
+    if (fluc_mode == 0) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_plus_M });
+    else if (fluc_mode == 1) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_minus_M });
+    else if (fluc_mode == 2) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_plus_DeltaE });
+    else if (fluc_mode == 3) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_minus_DeltaE });
+    else {
+        printf("[FillHistogram_fluc_SR] fluctuation index should be one of 0, 1, 2, or 3\n");
+        exit(1);
+    }
+    loader_bkg.end();
 
 
     // We do not open the box, So data_th1d is MC. We use the proper uncertainty
@@ -297,6 +390,22 @@ int main(int argc, char* argv[]) {
     TH1D* signal_MC_th1d_stat_err = new TH1D("signal_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
     TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
 
+    TH1D* data_pos_M_th1d = new TH1D("data_pos_M_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* signal_pos_M_MC_th1d = new TH1D("signal_pos_M_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* bkg_pos_M_MC_th1d = new TH1D("bkg_pos_M_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+
+    TH1D* data_neg_M_th1d = new TH1D("data_neg_M_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* signal_neg_M_MC_th1d = new TH1D("signal_neg_M_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* bkg_neg_M_MC_th1d = new TH1D("bkg_neg_M_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+
+    TH1D* data_pos_DeltaE_th1d = new TH1D("data_pos_DeltaE_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* signal_pos_DeltaE_MC_th1d = new TH1D("signal_pos_DeltaE_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* bkg_pos_DeltaE_MC_th1d = new TH1D("bkg_pos_DeltaE_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+
+    TH1D* data_neg_DeltaE_th1d = new TH1D("data_neg_DeltaE_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* signal_neg_DeltaE_MC_th1d = new TH1D("signal_neg_DeltaE_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* bkg_neg_DeltaE_MC_th1d = new TH1D("bkg_neg_DeltaE_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+
     std::vector<TH1D*> signal_MC_th1d_muonID;
     std::vector<TH1D*> bkg_MC_th1d_muonID;
 
@@ -332,6 +441,12 @@ int main(int argc, char* argv[]) {
 
     // muonID histogram
     ReadPCA((std::string(argv[1]) + "/muonID_PCA").c_str(), signal_MC_th1d, bkg_MC_th1d, "muonID", &signal_MC_th1d_muonID, &bkg_MC_th1d_muonID);
+
+    // SR fluctuation
+    FillHistogram_fluc_SR(argv[1], argv[2], data_pos_M_th1d, signal_pos_M_MC_th1d, bkg_pos_M_MC_th1d, background_list, signal_list, background_list, 0);
+    FillHistogram_fluc_SR(argv[1], argv[2], data_neg_M_th1d, signal_neg_M_MC_th1d, bkg_neg_M_MC_th1d, background_list, signal_list, background_list, 1);
+    FillHistogram_fluc_SR(argv[1], argv[2], data_pos_DeltaE_th1d, signal_pos_DeltaE_MC_th1d, bkg_pos_DeltaE_MC_th1d, background_list, signal_list, background_list, 2);
+    FillHistogram_fluc_SR(argv[1], argv[2], data_neg_DeltaE_th1d, signal_neg_DeltaE_MC_th1d, bkg_neg_DeltaE_MC_th1d, background_list, signal_list, background_list, 3);
 
     // print information
     printf("data:\n");
@@ -387,12 +502,16 @@ int main(int argc, char* argv[]) {
     signal_Belle_II.ActivateStatError("signal_MC_th1d_stat_err", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
     signal_Belle_II.AddNormFactor("mu", 1.0, 0.0, 100.0);
     signal_Belle_II.AddOverallSys("tracking_efficiency", 1.0 - (track_rel_uncertainty / 100.0) * 3, 1.0 + (track_rel_uncertainty / 100.0) * 3);
+    signal_Belle_II.AddHistoSys("M_resolution", "signal_neg_M_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "", "signal_pos_M_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
+    signal_Belle_II.AddHistoSys("DeltaE_resolution", "signal_neg_DeltaE_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "", "signal_pos_DeltaE_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
     for (int i = 0; i < signal_MC_th1d_muonID.size() / 2; i++) signal_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("signal_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("signal_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
     signal_Belle_II.SetNormalizeByTheory(false);
 
     RooStats::HistFactory::Sample bkg_Belle_II("bkg_Belle_II", "bkg_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str());
     bkg_Belle_II.ActivateStatError("bkg_MC_th1d_stat_err", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
     bkg_Belle_II.AddOverallSys("tracking_efficiency", 1.0 - (track_rel_uncertainty / 100.0) * 3, 1.0 + (track_rel_uncertainty / 100.0) * 3);
+    bkg_Belle_II.AddHistoSys("M_resolution", "bkg_neg_M_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "", "bkg_pos_M_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
+    bkg_Belle_II.AddHistoSys("DeltaE_resolution", "bkg_neg_DeltaE_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "", "bkg_pos_DeltaE_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
     for (int i = 0; i < bkg_MC_th1d_muonID.size() / 2; i++) bkg_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("bkg_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("bkg_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
     bkg_Belle_II.SetNormalizeByTheory(false);
 
