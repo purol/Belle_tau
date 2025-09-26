@@ -10,5 +10,5 @@ for datfile in $DAT_DIR/*.dat; do
     B=$(echo $datfile | grep -oP 'B\K-?[01]')
     
     echo "Generating MC for $datfile"
-    python3 ALP_generator_MC15ri.py "$datfile" "$mass" "$lifetime" "$A" "$B"
+    bsub -q l -o "./${datfile}.log" ./ALP_generator_MC15ri.py "$datfile" "$mass" "$lifetime" "$A" "$B"
 done
