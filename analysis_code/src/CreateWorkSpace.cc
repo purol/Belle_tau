@@ -504,6 +504,7 @@ int main(int argc, char* argv[]) {
     signal_Belle_II.AddOverallSys("tracking_efficiency", 1.0 - (track_rel_uncertainty / 100.0) * 3, 1.0 + (track_rel_uncertainty / 100.0) * 3);
     signal_Belle_II.AddHistoSys("M_resolution", "signal_neg_M_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "", "signal_pos_M_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
     signal_Belle_II.AddHistoSys("DeltaE_resolution", "signal_neg_DeltaE_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "", "signal_pos_DeltaE_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
+    signal_Belle_II.AddOverallSys("cross_section", 1.0 - (tau_crosssection_4S_uncertainty / tau_crosssection_4S), 1.0 + (tau_crosssection_4S_uncertainty / tau_crosssection_4S));
     for (int i = 0; i < signal_MC_th1d_muonID.size() / 2; i++) signal_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("signal_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("signal_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
     signal_Belle_II.SetNormalizeByTheory(false);
 

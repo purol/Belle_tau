@@ -64,6 +64,7 @@
 # define tau_crosssection_4S 0.919 // cross section in 4S (nb)
 # define tau_crosssection_off 0.929 // cross section in off-resonance (nb)
 # define tau_crosssection_10810 0.880 // cross section in 10.810 GeV (nb)
+# define tau_crosssection_4S_uncertainty 0.003 // cross section uncertainty in 4S (nb). Absolute uncertainty.
 # define Nevt_taupair_BelleII_4S ((lumi_BelleII_4S/0.000000001) * tau_crosssection_4S)
 # define Nevt_taupair_BelleII_off ((lumi_BelleII_off/0.000000001) * tau_crosssection_off)
 # define Nevt_taupair_BelleII_10810 ((lumi_BelleII_10810/0.000000001) * tau_crosssection_10810)
