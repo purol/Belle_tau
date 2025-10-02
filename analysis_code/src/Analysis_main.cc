@@ -73,6 +73,9 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== 1.5 < M < 1.9 ==========");
     //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.3, 1.9, 50, -0.9, 0.4, "M_deltaE_before_cut.png");
 
+    loader.Cut("((daughter__bo0__cmcosToThrustOfEvent__bc > 0) && (daughter__bo1__cmcosToThrustOfEvent__bc > 0) && (daughter__bo2__cmcosToThrustOfEvent__bc > 0)) || ((daughter__bo0__cmcosToThrustOfEvent__bc < 0) && (daughter__bo1__cmcosToThrustOfEvent__bc < 0) && (daughter__bo2__cmcosToThrustOfEvent__bc < 0))");
+    loader.PrintInformation("========== same hemisphere with thrust axis ==========");
+
     loader.Cut("(0.5 < L1PSNM__boffy__bc) || (0.5 < L1PSNM__bofyo__bc) || (0.5 < L1PSNM__bohie__bc) || (0.5 < L1PSNM__bolml6__bc) || (0.5 < L1PSNM__bolml7__bc) || (0.5 < L1PSNM__bolml8__bc) || (0.5 < L1PSNM__bolml9__bc) || (0.5 < L1PSNM__bolml10__bc) || (0.5 < L1PSNM__bolml12__bc)");
     loader.PrintInformation("========== trigger ==========");
 
