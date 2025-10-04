@@ -78,6 +78,8 @@ int main(int argc, char* argv[]) {
     loader.SetSignal(signal_list);
     loader.SetBackground(background_list);
 
+    loader.Cut("(0.5 < MyEnergyType) && (MyEnergyType < 1.5)");
+    loader.PrintInformation("========== 4S Energy ==========");
     loader.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
     loader.PrintInformation("========== -5 delta < deltaE < 5 delta ==========");
     loader.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());

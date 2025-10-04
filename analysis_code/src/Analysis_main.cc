@@ -16,6 +16,12 @@ std::map<std::string, std::string> momentum_muonID = {
     {"daughter__bo2__cm__spp__bc", "daughter__bo2__cmmuonID__bc"}
 };
 
+std::map<std::string, std::string> momentum_electronID = {
+    {"daughter__bo0__cm__spp__bc", "daughter__bo0__cmelectronID__bc"},
+    {"daughter__bo1__cm__spp__bc", "daughter__bo1__cmelectronID__bc"},
+    {"daughter__bo2__cm__spp__bc", "daughter__bo2__cmelectronID__bc"}
+};
+
 std::map<std::string, std::string> momentum_muonmomentum = {
     {"daughter__bo0__cm__spp__bc", "daughter__bo0__cm__spp__bc"},
     {"daughter__bo1__cm__spp__bc", "daughter__bo1__cm__spp__bc"},
@@ -54,6 +60,9 @@ int main(int argc, char* argv[]) {
     loader.ConditionalPairDefineNewVariable(momentum_muonID, 0, "first_muon_muonID");
     loader.ConditionalPairDefineNewVariable(momentum_muonID, 1, "second_muon_muonID");
     loader.ConditionalPairDefineNewVariable(momentum_muonID, 2, "third_muon_muonID");
+    loader.ConditionalPairDefineNewVariable(momentum_electronID, 0, "first_muon_electronID");
+    loader.ConditionalPairDefineNewVariable(momentum_electronID, 1, "second_muon_electronID");
+    loader.ConditionalPairDefineNewVariable(momentum_electronID, 2, "third_muon_electronID");
     loader.ConditionalPairDefineNewVariable(momentum_isolation, 0, "first_muon_isolation");
     loader.ConditionalPairDefineNewVariable(momentum_isolation, 1, "second_muon_isolation");
     loader.ConditionalPairDefineNewVariable(momentum_isolation, 2, "third_muon_isolation");
@@ -72,9 +81,6 @@ int main(int argc, char* argv[]) {
     loader.Cut("(1.5 < M_inv_tau) && (M_inv_tau < 1.9)");
     loader.PrintInformation("========== 1.5 < M < 1.9 ==========");
     //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.3, 1.9, 50, -0.9, 0.4, "M_deltaE_before_cut.png");
-
-    loader.Cut("((daughter__bo0__cmcosToThrustOfEvent__bc > 0) && (daughter__bo1__cmcosToThrustOfEvent__bc > 0) && (daughter__bo2__cmcosToThrustOfEvent__bc > 0)) || ((daughter__bo0__cmcosToThrustOfEvent__bc < 0) && (daughter__bo1__cmcosToThrustOfEvent__bc < 0) && (daughter__bo2__cmcosToThrustOfEvent__bc < 0))");
-    loader.PrintInformation("========== same hemisphere with thrust axis ==========");
 
     loader.Cut("(0.5 < L1PSNM__boffy__bc) || (0.5 < L1PSNM__bofyo__bc) || (0.5 < L1PSNM__bohie__bc) || (0.5 < L1PSNM__bolml6__bc) || (0.5 < L1PSNM__bolml7__bc) || (0.5 < L1PSNM__bolml8__bc) || (0.5 < L1PSNM__bolml9__bc) || (0.5 < L1PSNM__bolml10__bc) || (0.5 < L1PSNM__bolml12__bc)");
     loader.PrintInformation("========== trigger ==========");
