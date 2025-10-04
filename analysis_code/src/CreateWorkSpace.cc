@@ -475,6 +475,22 @@ int main(int argc, char* argv[]) {
     signal_MC_th1d_stat_err->Write();
     bkg_MC_th1d_stat_err->Write();
 
+    data_pos_M_th1d->Write();
+    signal_pos_M_MC_th1d->Write();
+    bkg_pos_M_MC_th1d->Write();
+
+    data_neg_M_th1d->Write();
+    signal_neg_M_MC_th1d->Write();
+    bkg_neg_M_MC_th1d->Write();
+
+    data_pos_DeltaE_th1d->Write();
+    signal_pos_DeltaE_MC_th1d->Write();
+    bkg_pos_DeltaE_MC_th1d->Write();
+
+    data_neg_DeltaE_th1d->Write();
+    signal_neg_DeltaE_MC_th1d->Write();
+    bkg_neg_DeltaE_MC_th1d->Write();
+
     for (int i = 0; i < signal_MC_th1d_muonID.size(); i++) signal_MC_th1d_muonID.at(i)->Write();
     for (int i = 0; i < bkg_MC_th1d_muonID.size(); i++) bkg_MC_th1d_muonID.at(i)->Write();
 
