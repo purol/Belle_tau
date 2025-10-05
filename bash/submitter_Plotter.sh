@@ -49,6 +49,7 @@ other_variables_log=(
 other_variables_linear=(
     "missingMomentumOfEvent_theta"
     "thrustAxisCosTheta"
+    "thrust"
 )
 
 all_variables=(

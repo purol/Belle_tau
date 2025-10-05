@@ -102,8 +102,8 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== 0.5 < muonID for secondary muon ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_ThirdmuonID_selection").c_str(), "", "");
-    loader.Cut("0.1 < third_muon_muonID");
-    loader.PrintInformation("========== 0.1 < muonID for third muon ==========");
+    loader.Cut("0.5 < third_muon_muonID");
+    loader.PrintInformation("========== 0.5 < muonID for third muon ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_SecondarymuonP_selection").c_str(), "", "");
     loader.Cut("0.3 < second_muon_p");
@@ -116,8 +116,8 @@ int main(int argc, char* argv[]) {
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_thrust_cut").c_str(), "", "");
     //loader.DrawTH1D("thrust", "thrust", "thrust.png");
-    loader.Cut("(0.89 < thrust) && (thrust < 0.97)");
-    loader.PrintInformation("========== 0.89 < thrust < 0.97 ==========");
+    loader.Cut("(0.85 < thrust) && (thrust < 0.97)");
+    loader.PrintInformation("========== 0.85 < thrust < 0.97 ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_strict_M_deltaE_selection").c_str(), "", "");
 
