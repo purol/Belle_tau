@@ -22,6 +22,12 @@ std::map<std::string, std::string> momentum_electronID = {
     {"daughter__bo2__cm__spp__bc", "daughter__bo2__cmelectronID__bc"}
 };
 
+std::map<std::string, std::string> momentum_pionID = {
+    {"daughter__bo0__cm__spp__bc", "daughter__bo0__cmpionID__bc"},
+    {"daughter__bo1__cm__spp__bc", "daughter__bo1__cmpionID__bc"},
+    {"daughter__bo2__cm__spp__bc", "daughter__bo2__cmpionID__bc"}
+};
+
 std::map<std::string, std::string> momentum_muonmomentum = {
     {"daughter__bo0__cm__spp__bc", "daughter__bo0__cm__spp__bc"},
     {"daughter__bo1__cm__spp__bc", "daughter__bo1__cm__spp__bc"},
@@ -39,7 +45,6 @@ std::map<std::string, std::string> momentum_theta = {
     {"daughter__bo1__cm__spp__bc", "daughter__bo1__cm__sptheta__bc"},
     {"daughter__bo2__cm__spp__bc", "daughter__bo2__cm__sptheta__bc"}
 };
-
 
 int main(int argc, char* argv[]) {
     /*
@@ -63,6 +68,9 @@ int main(int argc, char* argv[]) {
     loader.ConditionalPairDefineNewVariable(momentum_electronID, 0, "first_muon_electronID");
     loader.ConditionalPairDefineNewVariable(momentum_electronID, 1, "second_muon_electronID");
     loader.ConditionalPairDefineNewVariable(momentum_electronID, 2, "third_muon_electronID");
+    loader.ConditionalPairDefineNewVariable(momentum_pionID, 0, "first_muon_pionID");
+    loader.ConditionalPairDefineNewVariable(momentum_pionID, 1, "second_muon_pionID");
+    loader.ConditionalPairDefineNewVariable(momentum_pionID, 2, "third_muon_pionID");
     loader.ConditionalPairDefineNewVariable(momentum_isolation, 0, "first_muon_isolation");
     loader.ConditionalPairDefineNewVariable(momentum_isolation, 1, "second_muon_isolation");
     loader.ConditionalPairDefineNewVariable(momentum_isolation, 2, "third_muon_isolation");

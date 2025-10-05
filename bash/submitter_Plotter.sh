@@ -41,6 +41,9 @@ other_variables_log=(
     "first_muon_electronID"
     "second_muon_electronID"
     "third_muon_electronID"
+    "first_muon_pionID"
+    "second_muon_pionID"
+    "third_muon_pionID"
 )
 
 other_variables_linear=(
