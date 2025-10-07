@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== 1.5 < M < 1.9 ==========");
     //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.3, 1.9, 50, -0.9, 0.4, "M_deltaE_before_cut.png");
 
-    loader.Cut("(0.5 < L1PSNM__boffy__bc) || (0.5 < L1PSNM__bofyo__bc) || (0.5 < L1PSNM__bohie__bc) || (0.5 < L1PSNM__bolml6__bc) || (0.5 < L1PSNM__bolml7__bc) || (0.5 < L1PSNM__bolml8__bc) || (0.5 < L1PSNM__bolml9__bc) || (0.5 < L1PSNM__bolml10__bc) || (0.5 < L1PSNM__bolml12__bc)");
+    loader.Cut("(0.5 < L1PSNM__boffy__bc) || (0.5 < L1PSNM__bofyo__bc) || (0.5 < L1PSNM__bostt__bc) || (0.5 < L1PSNM__bohie__bc) || (0.5 < L1PSNM__bolml6__bc) || (0.5 < L1PSNM__bolml7__bc) || (0.5 < L1PSNM__bolml8__bc) || (0.5 < L1PSNM__bolml9__bc) || (0.5 < L1PSNM__bolml10__bc) || (0.5 < L1PSNM__bolml12__bc)");
     loader.PrintInformation("========== trigger ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_PrimarymuonID_selection").c_str(), "", "");
@@ -102,8 +102,8 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== 0.5 < muonID for secondary muon ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_ThirdmuonID_selection").c_str(), "", "");
-    loader.Cut("0.5 < third_muon_muonID");
-    loader.PrintInformation("========== 0.5 < muonID for third muon ==========");
+    loader.Cut("0.1 < third_muon_muonID");
+    loader.PrintInformation("========== 0.1 < muonID for third muon ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_SecondarymuonP_selection").c_str(), "", "");
     loader.Cut("0.3 < second_muon_p");
@@ -116,8 +116,12 @@ int main(int argc, char* argv[]) {
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_thrust_cut").c_str(), "", "");
     //loader.DrawTH1D("thrust", "thrust", "thrust.png");
-    loader.Cut("(0.85 < thrust) && (thrust < 0.97)");
-    loader.PrintInformation("========== 0.85 < thrust < 0.97 ==========");
+    loader.Cut("(0.86 < thrust) && (thrust < 0.97)");
+    loader.PrintInformation("========== 0.86 < thrust < 0.97 ==========");
+
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_Eecl_cut").c_str(), "", "");
+    loader.Cut("roeEextra__bocleanMask__bc < 5.5");
+    loader.PrintInformation("========== Eecl < 5.5 GeV ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_strict_M_deltaE_selection").c_str(), "", "");
 
