@@ -46,6 +46,12 @@ std::map<std::string, std::string> momentum_theta = {
     {"daughter__bo2__cm__spp__bc", "daughter__bo2__cm__sptheta__bc"}
 };
 
+std::vector<std::string> cosToThrustOfEvent_CM = {
+    "daughter__bo0__cmcosToThrustOfEvent__bc",
+    "daughter__bo1__cmcosToThrustOfEvent__bc",
+    "daughter__bo2__cmcosToThrustOfEvent__bc"
+};
+
 int main(int argc, char* argv[]) {
     /*
     * argv[1]: dirname
@@ -78,6 +84,9 @@ int main(int argc, char* argv[]) {
     loader.DefineNewVariable("(E*E-px*px-py*py-pz*pz)^0.5", "M_inv_tau");
     loader.DefineNewVariable("charge*roeCharge__bocleanMask__bc", "charge_times_ROEcharge");
     loader.DefineNewVariable("(flightTime/flightTimeErr)", "flightTime_dividedby_flightTimeErr");
+    loader.GetAverage(cosToThrustOfEvent_CM, "avg_cosToThrustOfEvent_CM");
+    loader.GetStdDev(cosToThrustOfEvent_CM, "stddev_cosToThrustOfEvent_CM");
+    loader.GetDiff(cosToThrustOfEvent_CM, "diff_cosToThrustOfEvent_CM");
 
     loader.PrintInformation("========== initial ==========");
 

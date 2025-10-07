@@ -50,6 +50,9 @@ other_variables_linear=(
     "missingMomentumOfEvent_theta"
     "thrustAxisCosTheta"
     "thrust"
+    "avg_cosToThrustOfEvent_CM"
+    "stddev_cosToThrustOfEvent_CM"
+    "diff_cosToThrustOfEvent_CM"
 )
 
 all_variables=(
