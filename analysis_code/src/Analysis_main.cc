@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
     loader.DefineNewVariable("(flightTime/flightTimeErr)", "flightTime_dividedby_flightTimeErr");
     loader.GetAverage(cosToThrustOfEvent_CM, "avg_cosToThrustOfEvent_CM");
     loader.GetStdDev(cosToThrustOfEvent_CM, "stddev_cosToThrustOfEvent_CM");
-    loader.GetDiff(cosToThrustOfEvent_CM, "diff_cosToThrustOfEvent_CM");
+    loader.GetDiff(cosToThrustOfEvent_CM, 0, "diff_cosToThrustOfEvent_CM");
 
     loader.PrintInformation("========== initial ==========");
 
