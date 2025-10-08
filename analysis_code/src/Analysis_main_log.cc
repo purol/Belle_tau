@@ -127,8 +127,12 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== 0.86 < thrust < 0.97 ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_Eecl_cut").c_str(), "", "");
-    loader.Cut("roeEextra__bocleanMask__bc < 5.5");
-    loader.PrintInformation("========== Eecl < 5.5 GeV ==========");
+    loader.Cut("roeEextra__bocleanMask__bc < 5.0");
+    loader.PrintInformation("========== Eecl < 5.0 GeV ==========");
+
+    //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_diffthrust_cut").c_str(), "", "");
+    loader.Cut("diff_cosToThrustOfEvent_CM < 1.6");
+    loader.PrintInformation("========== Maxdiff(cosToThrustOfEvent from daughter) < 1.6 rad ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_strict_M_deltaE_selection").c_str(), "", "");
 

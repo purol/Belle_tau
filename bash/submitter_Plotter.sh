@@ -117,6 +117,8 @@ Directories=(
     "before_SecondarymuonP_selection"
     "before_theta_miss_cut"
     "before_thrust_cut"
+    "before_Eecl_cut"
+    "before_diffthrust_cut"
     "before_strict_M_deltaE_selection"
     "final_output"
 )
