@@ -56,7 +56,7 @@ submit_GridSearch() {
 
 code="${Belle_tau_DIR}/analysis_code/bin/FBDT_AUC_train_one"
 output="GridSearch_one"
-for nTree in 100 500 1000 1500 2000
+for nTree in 50 100 250 500
 do
   for depth in 1 2 3 4
   do
@@ -75,7 +75,7 @@ done
 
 code="${Belle_tau_DIR}/analysis_code/bin/FBDT_AUC_train_two"
 output="GridSearch_two"
-for nTree in 100 500 1000 1500 2000
+for nTree in 50 100 250 500
 do
   for depth in 1 2 3 4
   do
