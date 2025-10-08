@@ -136,6 +136,14 @@ int main(int argc, char* argv[]) {
     loader.Cut("diff_cosToThrustOfEvent_CM < 1.6");
     loader.PrintInformation("========== Maxdiff(cosToThrustOfEvent from daughter) < 1.6 rad ==========");
 
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_avgthrust_cut").c_str(), "", "");
+    loader.Cut("(avg_cosToThrustOfEvent_CM < -0.5) || (avg_cosToThrustOfEvent_CM > 0.5)");
+    loader.PrintInformation("========== |avg(cosToThrustOfEvent from daughter)| > 0.5 rad ==========");
+
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_missingEnergy_cut").c_str(), "", "");
+    loader.Cut("missingEnergyOfEventCMS > 0.0");
+    loader.PrintInformation("========== missing Energy CMS > 0.0 GeV ==========");
+
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_strict_M_deltaE_selection").c_str(), "", "");
 
     loader.end();

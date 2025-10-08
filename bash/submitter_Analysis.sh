@@ -15,6 +15,7 @@ submit_analysis() {
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/before_thrust_cut"
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/before_Eecl_cut"
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/before_diffthrust_cut"
+  mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/before_avgthrust_cut"
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection"
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/log"
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/err"
