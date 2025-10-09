@@ -15,8 +15,8 @@ dat_template = """0.08711                         * c*tau(tau life time) (mm)
 1                               * switch for KKMC-JETSET (1:on, 0:off)
 ********** Above is for basf *********
 
-* MCEventType: 341cltnkeu Descriptor: tau- -> pi-nu, tau+ -> mu+alpha [and cc]
-* alpha -> pi- pi+ [alpha: pseudoscalar, mass 1 GeV, width 4 MeV, ctau = 50 cm]
+* MCEventType: 341cltnkeu Descriptor: tau+ -> mu+alpha [and cc]
+* alpha -> mu- mu+ [alpha: pseudoscalar, mass 1 GeV, width 4 MeV, ctau = 50 cm]
 
 BeginX
 ********************************************************************************
