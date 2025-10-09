@@ -52,13 +52,13 @@ BeginX
  2909            1e0      CHCONJUGATE = 1: swap JAK1/JAK2 for alternate events
  2910            0e0      TauToElOrMu = 1: swap e/mu decay for alternate events
 ********************************************************************************
- 2911          {mass:.3f}d0      AMALFA: mass of exotic axion-like particle [GeV]
+ 2911{mass:>13.3f}d0      AMALFA: mass of exotic axion-like particle [GeV]
  2912            0e0      ISALFA: spin of exotic axion-like particle
- 2913          {a_coef:.1f}d0      VCALFA: coupling coefficient A in (A+B gamma5) term
- 2914          {b_coef:.1f}d0      ACALFA: coupling coefficient B in (A+B gamma5) term
+ 2913{a_coef:>13.1f}d0      VCALFA: coupling coefficient A in (A+B gamma5) term
+ 2914{b_coef:>13.1f}d0      ACALFA: coupling coefficient B in (A+B gamma5) term
  2920            3e0      0:invi,1:gg,2:e+e-,3:mu+mu-,4:pi+pi-,5:pi0pi0,6:pi0eta,7:etaeta,8:K+K-,9:KS0KS0,10:pi+K-,11:pi-K+
  2921        0.004d0      GMALFA: width of the exotic particle [GeV]
- 2922          {lifetime:.3f}d0      CTALFA : c*tau (alpha lifetime) (mm)
+ 2922{lifetime:>13.3f}d0      CTALFA : c*tau (alpha lifetime) (mm)
 ********************************************************************************
 EndX
 """
