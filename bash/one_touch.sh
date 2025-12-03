@@ -115,7 +115,7 @@ fi
 bash ./submitter_Plotter_third.sh
 
 bash ./submitter_Calculator.sh
-wait_job "PIDCAL"
+wait_job "SYSTCAL"
 
 bash ./submitter_PCA.sh
 wait_job "PCA"

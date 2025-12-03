@@ -17,3 +17,9 @@ toys="muonID_toys"
 output_name="muonID_PCA"
 submit_code ${code} ${Analysis_Name} ${toys} ${output_name}
 
+
+code="${Belle_tau_DIR}/analysis_code/src/PCA_toys.py"
+toys="luminosity_toys"
+output_name="luminosity_PCA"
+submit_code ${code} ${Analysis_Name} ${toys} ${output_name}
+

@@ -409,6 +409,9 @@ int main(int argc, char* argv[]) {
     std::vector<TH1D*> signal_MC_th1d_muonID;
     std::vector<TH1D*> bkg_MC_th1d_muonID;
 
+    std::vector<TH1D*> signal_MC_th1d_luminosity;
+    std::vector<TH1D*> bkg_MC_th1d_luminosity;
+
     std::vector<std::string> signal_list = { "SIGNAL" };
     std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
         "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
@@ -441,6 +444,9 @@ int main(int argc, char* argv[]) {
 
     // muonID histogram
     ReadPCA((std::string(argv[1]) + "/muonID_PCA").c_str(), signal_MC_th1d, bkg_MC_th1d, "muonID", &signal_MC_th1d_muonID, &bkg_MC_th1d_muonID);
+
+    // luminosity histogram
+    ReadPCA((std::string(argv[1]) + "/luminosity_PCA").c_str(), signal_MC_th1d, bkg_MC_th1d, "luminosity", &signal_MC_th1d_luminosity, &bkg_MC_th1d_luminosity);
 
     // SR fluctuation
     FillHistogram_fluc_SR(argv[1], argv[2], data_pos_M_th1d, signal_pos_M_MC_th1d, bkg_pos_M_MC_th1d, background_list, signal_list, background_list, 0);
@@ -494,6 +500,9 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < signal_MC_th1d_muonID.size(); i++) signal_MC_th1d_muonID.at(i)->Write();
     for (int i = 0; i < bkg_MC_th1d_muonID.size(); i++) bkg_MC_th1d_muonID.at(i)->Write();
 
+    for (int i = 0; i < signal_MC_th1d_luminosity.size(); i++) signal_MC_th1d_luminosity.at(i)->Write();
+    for (int i = 0; i < bkg_MC_th1d_luminosity.size(); i++) bkg_MC_th1d_luminosity.at(i)->Write();
+
     file->Close();
 
 
@@ -522,6 +531,7 @@ int main(int argc, char* argv[]) {
     signal_Belle_II.AddHistoSys("DeltaE_resolution", "signal_neg_DeltaE_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "", "signal_pos_DeltaE_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
     signal_Belle_II.AddOverallSys("cross_section", 1.0 - (tau_crosssection_4S_uncertainty / tau_crosssection_4S), 1.0 + (tau_crosssection_4S_uncertainty / tau_crosssection_4S));
     for (int i = 0; i < signal_MC_th1d_muonID.size() / 2; i++) signal_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("signal_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("signal_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
+    for (int i = 0; i < signal_MC_th1d_luminosity.size() / 2; i++) signal_Belle_II.AddHistoSys(("luminosity_" + std::to_string(i)).c_str(), ("signal_hist_luminosity_n_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("signal_hist_luminosity_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
     signal_Belle_II.SetNormalizeByTheory(false);
 
     RooStats::HistFactory::Sample bkg_Belle_II("bkg_Belle_II", "bkg_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str());
@@ -530,6 +540,7 @@ int main(int argc, char* argv[]) {
     bkg_Belle_II.AddHistoSys("M_resolution", "bkg_neg_M_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "", "bkg_pos_M_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
     bkg_Belle_II.AddHistoSys("DeltaE_resolution", "bkg_neg_DeltaE_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "", "bkg_pos_DeltaE_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
     for (int i = 0; i < bkg_MC_th1d_muonID.size() / 2; i++) bkg_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("bkg_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("bkg_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
+    for (int i = 0; i < bkg_MC_th1d_luminosity.size() / 2; i++) bkg_Belle_II.AddHistoSys(("luminosity_" + std::to_string(i)).c_str(), ("bkg_hist_luminosity_n_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("bkg_hist_luminosity_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
     bkg_Belle_II.SetNormalizeByTheory(false);
 
     channel_Belle_II.AddSample(signal_Belle_II);
