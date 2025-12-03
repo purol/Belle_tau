@@ -6,6 +6,12 @@
 # define lumi_BelleII_off 0.04228 // ab-1
 # define lumi_BelleII_10810 0.00469 // ab-1
 
+// luminosity uncertainty
+// https://xwiki.desy.de/xwiki/bin/view/BI/Belle%20II%20Internal/Data%20Production%20WebHome/Offline%20Luminosity%20Page/?srid=IIYdLMEl
+# define lumi_BelleII_4S_uncertainty 0.0017 // ab-1
+# define lumi_BelleII_off_uncertainty 0.0002 // ab-1
+# define lumi_BelleII_10810_uncertainty 0.000027 // ab-1
+
 
 // Scale factors
 # define Scale_BelleII_4S_CHG_MC15ri (lumi_BelleII_4S/6.0)

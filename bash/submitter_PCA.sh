@@ -8,7 +8,7 @@ submit_code() {
 
   cat "./${VerName}/${Analysis_VerName}/cal_out/${toys_name}"*csv > "./${VerName}/${Analysis_VerName}/${toys_name}.csv"
 
-  bsub -q s -J PCA -o "./test.log" ${Code} --input_file "./${VerName}/${Analysis_VerName}/${toys_name}.csv" --output_file "./${VerName}/${Analysis_VerName}/${output_name}"
+  bsub -q s -J PCA -o "./${VerName}/${Analysis_VerName}/${toys_name}_cal.log" ${Code} --input_file "./${VerName}/${Analysis_VerName}/${toys_name}.csv" --output_file "./${VerName}/${Analysis_VerName}/${output_name}"
 }
 
 
