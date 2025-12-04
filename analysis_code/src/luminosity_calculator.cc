@@ -17,8 +17,8 @@
 #include "data.h"
 
 // for the random fluctuation
-std::random_device rd;
-std::mt19937 gen(rd());
+std::random_device rd_lumi;
+std::mt19937 gen_lumi(rd_lumi());
 std::normal_distribution<double> Normal_distribution(0.0, 1.0);
 
 double lumi_BelleII_4S_fluc = lumi_BelleII_4S;
@@ -348,9 +348,9 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
 }
 
 void FluctuateLuminosity() {
-    lumi_BelleII_4S_fluc = lumi_BelleII_4S + lumi_BelleII_4S_uncertainty * Normal_distribution(gen);
-    lumi_BelleII_off_fluc = lumi_BelleII_off + lumi_BelleII_off_uncertainty * Normal_distribution(gen);
-    lumi_BelleII_10810_fluc = lumi_BelleII_10810 + lumi_BelleII_10810_uncertainty * Normal_distribution(gen);
+    lumi_BelleII_4S_fluc = lumi_BelleII_4S + lumi_BelleII_4S_uncertainty * Normal_distribution(gen_lumi);
+    lumi_BelleII_off_fluc = lumi_BelleII_off + lumi_BelleII_off_uncertainty * Normal_distribution(gen_lumi);
+    lumi_BelleII_10810_fluc = lumi_BelleII_10810 + lumi_BelleII_10810_uncertainty * Normal_distribution(gen_lumi);
 }
 
 int main(int argc, char* argv[]) {
