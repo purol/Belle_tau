@@ -37,8 +37,8 @@ int main(int argc, char* argv[]) {
 
     loader.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
     loader.PrintInformation("========== -15 delta < deltaE < -5 delta ==========");
-    loader.Cut(("(" + std::to_string(M_peak - 3 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 3 * M_right_sigma) + ")").c_str());
-    loader.PrintInformation("========== -3 delta < M < 3 delta ==========");
+    loader.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
+    loader.PrintInformation("========== -5 delta < M < 5 delta ==========");
     //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.3, 1.9, 50, -0.9, 0.4, "M_deltaE_before_cut.png");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/final_output").c_str(), "", "");
