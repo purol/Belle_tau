@@ -13,3 +13,5 @@ gbasf2_Nitori.py
 gbasf2_Kicchou.py
 - (add momentum scale, fix ALP reconstruction, add charge variable for muon) ->
 gbasf2_Reimu.py
+- (unify variable for ALP) ->
+gbasf2_Marisa.py

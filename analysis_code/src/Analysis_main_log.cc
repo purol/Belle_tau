@@ -11,45 +11,45 @@
 #include "MyModule.h"
 
 std::map<std::string, std::string> momentum_muonID = {
-    {"daughter__bo0__cm__spp__bc", "daughter__bo0__cmmuonID__bc"},
-    {"daughter__bo1__cm__spp__bc", "daughter__bo1__cmmuonID__bc"},
-    {"daughter__bo2__cm__spp__bc", "daughter__bo2__cmmuonID__bc"}
+    {"extraInfo__boOneMuon_p__bc", "extraInfo__boOneMuon_muonID__bc"},
+    {"extraInfo__boTwoMuon_p__bc", "extraInfo__boTwoMuon_muonID__bc"},
+    {"extraInfo__boThreeMuon_p__bc", "extraInfo__boThreeMuon_muonID__bc"}
 };
 
 std::map<std::string, std::string> momentum_electronID = {
-    {"daughter__bo0__cm__spp__bc", "daughter__bo0__cmelectronID__bc"},
-    {"daughter__bo1__cm__spp__bc", "daughter__bo1__cmelectronID__bc"},
-    {"daughter__bo2__cm__spp__bc", "daughter__bo2__cmelectronID__bc"}
+    {"extraInfo__boOneMuon_p__bc", "extraInfo__boOneMuon_electronID__bc"},
+    {"extraInfo__boTwoMuon_p__bc", "extraInfo__boTwoMuon_electronID__bc"},
+    {"extraInfo__boThreeMuon_p__bc", "extraInfo__boThreeMuon_electronID__bc"}
 };
 
 std::map<std::string, std::string> momentum_pionID = {
-    {"daughter__bo0__cm__spp__bc", "daughter__bo0__cmpionID__bc"},
-    {"daughter__bo1__cm__spp__bc", "daughter__bo1__cmpionID__bc"},
-    {"daughter__bo2__cm__spp__bc", "daughter__bo2__cmpionID__bc"}
+    {"extraInfo__boOneMuon_p__bc", "extraInfo__boOneMuon_pionID__bc"},
+    {"extraInfo__boTwoMuon_p__bc", "extraInfo__boTwoMuon_pionID__bc"},
+    {"extraInfo__boThreeMuon_p__bc", "extraInfo__boThreeMuon_pionID__bc"}
 };
 
 std::map<std::string, std::string> momentum_muonmomentum = {
-    {"daughter__bo0__cm__spp__bc", "daughter__bo0__cm__spp__bc"},
-    {"daughter__bo1__cm__spp__bc", "daughter__bo1__cm__spp__bc"},
-    {"daughter__bo2__cm__spp__bc", "daughter__bo2__cm__spp__bc"}
+    {"extraInfo__boOneMuon_p__bc", "extraInfo__boOneMuon_p__bc"},
+    {"extraInfo__boTwoMuon_p__bc", "extraInfo__boTwoMuon_p__bc"},
+    {"extraInfo__boThreeMuon_p__bc", "extraInfo__boThreeMuon_p__bc"}
 };
 
 std::map<std::string, std::string> momentum_isolation = {
-    {"daughter__bo0__cm__spp__bc", "daughter__bo0__cmminET2ETIsoScoreAsWeightedAvg__bomu__pl__cltaulfv__cm__sp0__cm__spECL__cm__spKLM__bc__bc"},
-    {"daughter__bo1__cm__spp__bc", "daughter__bo1__cmminET2ETIsoScoreAsWeightedAvg__bomu__pl__cltaulfv__cm__sp0__cm__spECL__cm__spKLM__bc__bc"},
-    {"daughter__bo2__cm__spp__bc", "daughter__bo2__cmminET2ETIsoScoreAsWeightedAvg__bomu__pl__cltaulfv__cm__sp0__cm__spECL__cm__spKLM__bc__bc"}
+    {"extraInfo__boOneMuon_p__bc", "extraInfo__boOneMuon_minET2ETIsoScoreAsWeightedAvg_mu_taulfv_0_ECL_KLM__bc"},
+    {"extraInfo__boTwoMuon_p__bc", "extraInfo__boTwoMuon_minET2ETIsoScoreAsWeightedAvg_mu_taulfv_0_ECL_KLM__bc"},
+    {"extraInfo__boThreeMuon_p__bc", "extraInfo__boThreeMuon_minET2ETIsoScoreAsWeightedAvg_mu_taulfv_0_ECL_KLM__bc"}
 };
 
 std::map<std::string, std::string> momentum_theta = {
-    {"daughter__bo0__cm__spp__bc", "daughter__bo0__cm__sptheta__bc"},
-    {"daughter__bo1__cm__spp__bc", "daughter__bo1__cm__sptheta__bc"},
-    {"daughter__bo2__cm__spp__bc", "daughter__bo2__cm__sptheta__bc"}
+    {"extraInfo__boOneMuon_p__bc", "extraInfo__boOneMuon_theta__bc"},
+    {"extraInfo__boTwoMuon_p__bc", "extraInfo__boTwoMuon_theta__bc"},
+    {"extraInfo__boThreeMuon_p__bc", "extraInfo__boThreeMuon_theta__bc"}
 };
 
 std::vector<std::string> cosToThrustOfEvent_CM = {
-    "daughter__bo0__cmcosToThrustOfEvent__bc",
-    "daughter__bo1__cmcosToThrustOfEvent__bc",
-    "daughter__bo2__cmcosToThrustOfEvent__bc"
+    "extraInfo__boOneMuon_cosToThrustOfEvent__bc",
+    "extraInfo__boTwoMuon_cosToThrustOfEvent__bc",
+    "extraInfo__boThreeMuon_cosToThrustOfEvent__bc"
 };
 
 int main(int argc, char* argv[]) {
