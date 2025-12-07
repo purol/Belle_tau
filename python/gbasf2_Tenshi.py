@@ -287,7 +287,8 @@ def DefineVariables(tau_list, photon_names, IsItNominal, path):
 
         variable_list_converted_ALP = ["ALP_" + var for var in variable_list_converted]
 
-        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", dict(zip(variable_list_ALP, variable_list_converted_ALP)), path=roe_path_prompt)
+        for original_variable, converted_name in zip(variable_list_ALP, variable_list_converted_ALP):
+            ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {original_variable: converted_name}, path=roe_path_prompt)
 
         path.for_each('RestOfEvent', 'RestOfEvents', roe_path_prompt)
 
@@ -333,7 +334,8 @@ def DefineVariables(tau_list, photon_names, IsItNominal, path):
 
         variable_list_converted_ALP = ["ALP_" + var for var in variable_list_converted]
 
-        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", dict(zip(variable_list_ALP, variable_list_converted_ALP)), path=roe_path_ALP)
+        for original_variable, converted_name in zip(variable_list_ALP, variable_list_converted_ALP):
+            ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {original_variable: converted_name}, path=roe_path_ALP)
 
         path.for_each('RestOfEvent', 'RestOfEvents', roe_path_ALP)
 
