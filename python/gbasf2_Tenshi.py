@@ -531,7 +531,7 @@ if(args.vertex):
 
 # do the same thing for the control sample
 if(args.control):
-    ma.reconstructDecay("tau+:LFV_control -> pi+:taulfv pi+:taulfv pi-:taulfv", tauLFVCuts_control, 20, path=my_path)
+    ma.reconstructDecay("tau+:LFV_control -> pi+:all pi-:all pi+:taulfv", tauLFVCuts_control, 20, path=my_path)
     BasicAnalysisForTau("tau+:LFV_control", sample_index=sample_index, type_index=type_index, energy_index=energy_index, path=my_path)
     var_list = DefineVariables("tau+:LFV_control", photon_names=photon_names, IsItNominal=True, path=my_path)
     tau_list = tau_list + ["tau+:LFV_control"]
