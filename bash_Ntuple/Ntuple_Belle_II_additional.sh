@@ -26,7 +26,7 @@ for i in "${!on_list[@]}"; do
     do
         echo $file
         basename=$(basename -s .root $file)
-        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "4S" --KEKCC --inputfile ${file} --destination "${output_path}"
+        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "4S" --prompt --vertex --KEKCC --inputfile ${file} --destination "${output_path}"
         sleep 0.3
     done
 done 

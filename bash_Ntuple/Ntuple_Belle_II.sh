@@ -34,7 +34,7 @@ for i in "${!on_list[@]}"; do
     do
         echo $file
         basename=$(basename -s .root $file)
-        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "4S" --vertex --KEKCC --inputfile ${file} --destination "${output_path}"
+        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "4S" --prompt --vertex --KEKCC --inputfile ${file} --destination "${output_path}"
         sleep 0.3
     done
 done 
@@ -66,7 +66,7 @@ for i in "${!off_list[@]}"; do
     do
         echo $file
         basename=$(basename -s .root $file)
-        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "off" --vertex --KEKCC --inputfile ${file} --destination "${output_path}"
+        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "off" --prompt --vertex --KEKCC --inputfile ${file} --destination "${output_path}"
         sleep 0.3
     done
 done 
@@ -96,7 +96,7 @@ for i in "${!Scan_10810_list[@]}"; do
     do
         echo $file
         basename=$(basename -s .root $file)
-        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "10810" --vertex --KEKCC --inputfile ${file} --destination "${output_path}"
+        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "10810" --prompt --vertex --KEKCC --inputfile ${file} --destination "${output_path}"
         sleep 0.3
     done
 done 
