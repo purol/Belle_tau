@@ -15,3 +15,5 @@ gbasf2_Kicchou.py
 gbasf2_Reimu.py
 - (unify variable for ALP) ->
 gbasf2_Marisa.py
+- (unify branch between prompt and ALP, add control flag) ->
+gbasf2_Tenshi.py
