@@ -79,7 +79,7 @@ for EXP in "${EXP_LIST[@]}"; do
                         mkdir -p ${LOG_DIR}
                         mkdir -p ${OUTPUT_DIR}
 
-                        bsub -q l -o "${LOG_DIR}/${file_name}.log" ./python/tau_mumumu_SKIM.py --input_file ${mdst_file} --output_file "${OUTPUT_DIR}/SKIM_${file_name}.root" --b2bii
+                        bsub -q l -o "${LOG_DIR}/${file_name}.log" ./python/tau_mumumu_TauToMuMuMu.py --input_file ${mdst_file} --output_file "${OUTPUT_DIR}/SKIM_${file_name}.root" --b2bii
 
                         sleep 0.3s
                     done
