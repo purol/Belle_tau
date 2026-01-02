@@ -21,6 +21,16 @@ int main(int argc, char* argv[]) {
     * argv[6]: FOM_2 filename
     */
 
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution((std::string(argv[4]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
     double BDT_cut_1 = -1;
     double BDT_cut_2 = -1;
 
@@ -35,8 +45,8 @@ int main(int argc, char* argv[]) {
 
     loader.PrintInformation("========== initial ==========");
 
-    std::string cut_BDT_1 = "(" + get_region_upper((std::string(argv[4]) + "/M_deltaE_result.txt").c_str(), "deltaE", "M_inv_tau") + " && ( BDT_output_1 > " + std::to_string(BDT_cut_1) + "))";
-    std::string cut_BDT_2 = "(" + get_region_lower((std::string(argv[4]) + "/M_deltaE_result.txt").c_str(), "deltaE", "M_inv_tau") + " && ( BDT_output_2 > " + std::to_string(BDT_cut_2) + "))";
+    std::string cut_BDT_1 = "((deltaE >= " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ") && ( BDT_output_1 > " + std::to_string(BDT_cut_1) + "))";
+    std::string cut_BDT_2 = "((deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ") && ( BDT_output_2 > " + std::to_string(BDT_cut_2) + "))";
     std::string cut_total = cut_BDT_1 + "||" + cut_BDT_2;
 
     loader.Cut(cut_total.c_str());
