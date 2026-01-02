@@ -18,34 +18,20 @@ int main(int argc, char* argv[]) {
     * argv[3]: resolution file path
     */
 
-    double deltaE_peak;
-    double deltaE_left_sigma;
-    double deltaE_right_sigma;
-    double M_peak;
-    double M_left_sigma;
-    double M_right_sigma;
-    double theta;
-
-    ReadResolution((std::string(argv[3]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
-
     ObtainWeight = MyScaleFunction_halfsplit;
 
     Loader loader_one("tau_lfv");
     loader_one.Load(argv[1], argv[2], "label");
     loader_one.PrintInformation("========== initial ==========");
-    loader_one.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
-    loader_one.PrintInformation("========== -5 delta < deltaE < 5 delta ==========");
-    loader_one.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
-    loader_one.PrintInformation("========== -5 delta < M < 5 delta ==========");
+    loader_one.Cut(get_region_one((std::string(argv[3]) + "/M_deltaE_result.txt").c_str(), "deltaE", "M_inv_tau").c_str());
+    loader_one.PrintInformation("========== (-5 delta < M < 5 delta) && (-5 delta < deltaE < 5 delta) ==========");
     loader_one.end();
 
     Loader loader_two("tau_lfv");
     loader_two.Load(argv[1], argv[2], "label");
     loader_two.PrintInformation("========== initial ==========");
-    loader_two.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
-    loader_two.PrintInformation("========== -15 delta < deltaE < -5 delta ==========");
-    loader_two.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
-    loader_two.PrintInformation("========== -5 delta < M < 5 delta ==========");
+    loader_two.Cut(get_region_two((std::string(argv[3]) + "/M_deltaE_result.txt").c_str(), "deltaE", "M_inv_tau").c_str());
+    loader_two.PrintInformation("========== (-5 delta < M < 5 delta) && (-15 delta < deltaE < -5 delta) ==========");
     loader_two.end();
 
     return 0;

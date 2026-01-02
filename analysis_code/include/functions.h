@@ -47,6 +47,511 @@ void ReadResolution(const char* filename_, double* deltaE_peak_, double* deltaE_
     *theta_ = theta;
 }
 
+// this functions have some overhead: we call `ReadResolution` every time. However, it is not dominant during the entire process
+std::string get_region_large(const char* filename_, const char* deltaE_name_, const char* M_name_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "((" + std::to_string(M_peak - 20.0 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 20.0 * M_right_sigma) + "))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "(" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak + 20.0 * deltaE_right_sigma) + ")";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + ")";
+
+    return total;
+}
+
+std::string get_region_upper(const char* filename_, const char* deltaE_name_, const char* M_name_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "(" + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + " =< " + std::string(deltaE_name_) + ")";
+
+    std::string total = condition_deltaE;
+
+    return total;
+}
+
+std::string get_region_lower(const char* filename_, const char* deltaE_name_, const char* M_name_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "(" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + ")";
+
+    std::string total = condition_deltaE;
+
+    return total;
+}
+
+std::string get_region_one(const char* filename_, const char* deltaE_name_, const char* M_name_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "((" + std::to_string(M_peak - 5.0 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 5.0 * M_right_sigma) + "))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak + 5.0 * deltaE_right_sigma) + "))";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + ")";
+
+    return total;
+}
+
+std::string get_region_one_A(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "((" + std::to_string(M_peak - 5.0 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 5.0 * M_right_sigma) + "))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak + 5.0 * deltaE_right_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "(" + std::to_string(BDT_cut_) + "<" + std::string(BDT_name_) + ")";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
+std::string get_region_one_B(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "(((" + std::to_string(M_peak - 10.0 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak - 5.0 * M_left_sigma) + ")) || ((" + std::to_string(M_peak + 5.0 * M_right_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 10.0 * M_right_sigma) + ")))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak + 5.0 * deltaE_right_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "(" + std::to_string(BDT_cut_) + "<" + std::string(BDT_name_) + ")";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
+std::string get_region_one_C(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "((" + std::to_string(M_peak - 5.0 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 5.0 * M_right_sigma) + "))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak + 5.0 * deltaE_right_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "((" + std::to_string(0.5) + "<" + std::string(BDT_name_) + ") && (" + std::string(BDT_name_) + "<" + std::to_string(BDT_cut_) + "))";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
+std::string get_region_one_D(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "(((" + std::to_string(M_peak - 10.0 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak - 5.0 * M_left_sigma) + ")) || ((" + std::to_string(M_peak + 5.0 * M_right_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 10.0 * M_right_sigma) + ")))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak + 5.0 * deltaE_right_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "((" + std::to_string(0.5) + "<" + std::string(BDT_name_) + ") && (" + std::string(BDT_name_) + "<" + std::to_string(BDT_cut_) + "))";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
+std::string get_region_one_Aprime(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "(((" + std::to_string(M_peak - 7.5 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak - 5.0 * M_left_sigma) + ")) || ((" + std::to_string(M_peak + 5.0 * M_right_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 7.5 * M_right_sigma) + ")))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak + 5.0 * deltaE_right_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "(" + std::to_string(BDT_cut_) + "<" + std::string(BDT_name_) + ")";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
+std::string get_region_one_Bprime(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "(((" + std::to_string(M_peak - 10.0 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak - 7.5 * M_left_sigma) + ")) || ((" + std::to_string(M_peak + 7.5 * M_right_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 10.0 * M_right_sigma) + ")))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak + 5.0 * deltaE_right_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "(" + std::to_string(BDT_cut_) + "<" + std::string(BDT_name_) + ")";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
+std::string get_region_one_Cprime(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "(((" + std::to_string(M_peak - 7.5 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak - 5.0 * M_left_sigma) + ")) || ((" + std::to_string(M_peak + 5.0 * M_right_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 7.5 * M_right_sigma) + ")))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak + 5.0 * deltaE_right_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "((" + std::to_string(0.5) + "<" + std::string(BDT_name_) + ") && (" + std::string(BDT_name_) + "<" + std::to_string(BDT_cut_) + "))";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
+std::string get_region_one_Dprime(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "(((" + std::to_string(M_peak - 10.0 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak - 7.5 * M_left_sigma) + ")) || ((" + std::to_string(M_peak + 7.5 * M_right_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 10.0 * M_right_sigma) + ")))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak + 5.0 * deltaE_right_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "((" + std::to_string(0.5) + "<" + std::string(BDT_name_) + ") && (" + std::string(BDT_name_) + "<" + std::to_string(BDT_cut_) + "))";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
+std::string get_region_two(const char* filename_, const char* deltaE_name_, const char* M_name_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "((" + std::to_string(M_peak - 5.0 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 5.0 * M_right_sigma) + "))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 15.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "))";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + ")";
+
+    return total;
+}
+
+std::string get_region_two_A(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "((" + std::to_string(M_peak - 5.0 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 5.0 * M_right_sigma) + "))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 15.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "(" + std::to_string(BDT_cut_) + "<" + std::string(BDT_name_) + ")";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
+std::string get_region_two_B(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "(((" + std::to_string(M_peak - 10.0 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak - 5.0 * M_left_sigma) + ")) || ((" + std::to_string(M_peak + 5.0 * M_right_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 10.0 * M_right_sigma) + ")))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 15.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "(" + std::to_string(BDT_cut_) + "<" + std::string(BDT_name_) + ")";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
+std::string get_region_two_C(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "((" + std::to_string(M_peak - 5.0 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 5.0 * M_right_sigma) + "))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 15.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "((" + std::to_string(0.5) + "<" + std::string(BDT_name_) + ") && (" + std::string(BDT_name_) + "<" + std::to_string(BDT_cut_) + "))";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
+std::string get_region_two_D(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "(((" + std::to_string(M_peak - 10.0 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak - 5.0 * M_left_sigma) + ")) || ((" + std::to_string(M_peak + 5.0 * M_right_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 10.0 * M_right_sigma) + ")))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 15.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "((" + std::to_string(0.5) + "<" + std::string(BDT_name_) + ") && (" + std::string(BDT_name_) + "<" + std::to_string(BDT_cut_) + "))";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
+std::string get_region_two_Aprime(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "(((" + std::to_string(M_peak - 7.5 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak - 5.0 * M_left_sigma) + ")) || ((" + std::to_string(M_peak + 5.0 * M_right_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 7.5 * M_right_sigma) + ")))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 15.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "(" + std::to_string(BDT_cut_) + "<" + std::string(BDT_name_) + ")";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
+std::string get_region_two_Bprime(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "(((" + std::to_string(M_peak - 10.0 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak - 7.5 * M_left_sigma) + ")) || ((" + std::to_string(M_peak + 7.5 * M_right_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 10.0 * M_right_sigma) + ")))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 15.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "(" + std::to_string(BDT_cut_) + "<" + std::string(BDT_name_) + ")";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
+std::string get_region_two_Cprime(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "(((" + std::to_string(M_peak - 7.5 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak - 5.0 * M_left_sigma) + ")) || ((" + std::to_string(M_peak + 5.0 * M_right_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 7.5 * M_right_sigma) + ")))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 15.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "((" + std::to_string(0.5) + "<" + std::string(BDT_name_) + ") && (" + std::string(BDT_name_) + "<" + std::to_string(BDT_cut_) + "))";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
+std::string get_region_two_Dprime(const char* filename_, const char* deltaE_name_, const char* M_name_, const char* BDT_name_, double BDT_cut_) {
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution(filename_, &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // M direction criteria
+    std::string condition_M = "(((" + std::to_string(M_peak - 10.0 * M_left_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak - 7.5 * M_left_sigma) + ")) || ((" + std::to_string(M_peak + 7.5 * M_right_sigma) + "<" + std::string(M_name_) + ") && (" + std::string(M_name_) + "< " + std::to_string(M_peak + 10.0 * M_right_sigma) + ")))";
+
+    // deltaE direction criteria
+    std::string condition_deltaE = "((" + std::to_string(deltaE_peak - 15.0 * deltaE_left_sigma) + "< " + std::string(deltaE_name_) + ") && (" + std::string(deltaE_name_) + " < " + std::to_string(deltaE_peak - 5.0 * deltaE_left_sigma) + "))";
+
+    // BDT criteria
+    std::string condition_BDT = "((" + std::to_string(0.5) + "<" + std::string(BDT_name_) + ") && (" + std::string(BDT_name_) + "<" + std::to_string(BDT_cut_) + "))";
+
+    std::string total = "(" + condition_M + "&&" + condition_deltaE + "&&" + condition_BDT + ")";
+
+    return total;
+}
+
 void ReadFOM(const char* filename, double* cut_value_) {
     std::ifstream logFile(filename);
     if (!logFile.is_open()) {

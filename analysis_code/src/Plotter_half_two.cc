@@ -29,15 +29,6 @@ int main(int argc, char* argv[]) {
         "MIX", "MUMU", "MUMUMUMU", "MUMUTAUTAU", "PIPIPI0ISR",
         "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
 
-    double deltaE_peak;
-    double deltaE_left_sigma;
-    double deltaE_right_sigma;
-    double M_peak;
-    double M_left_sigma;
-    double M_right_sigma;
-    double theta;
-
-    ReadResolution((std::string(argv[2]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
     ObtainWeight = MyScaleFunction_halfsplit;
 
@@ -57,11 +48,8 @@ int main(int argc, char* argv[]) {
     loader.SetSignal(signal_list);
     loader.SetBackground(background_list);
 
-    // cut on deltaE
-    loader.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
-    loader.PrintInformation("========== -15 delta < deltaE < -5 delta ==========");
-    loader.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
-    loader.PrintInformation("========== -5 delta < M < 5 delta ==========");
+    loader.Cut(get_region_two((std::string(argv[2]) + "/M_deltaE_result.txt").c_str(), "deltaE", "M_inv_tau").c_str());
+    loader.PrintInformation("========== (-5 delta < M < 5 delta) && (-15 delta < deltaE < -5 delta) ==========");
 
     if(argc == 6) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), true, false);
     else if (argc == 8) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), 50, std::stod(argv[6]), std::stod(argv[7]), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), true, false);
