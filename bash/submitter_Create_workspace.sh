@@ -4,7 +4,7 @@ submit_workspace() {
   local Code=$1 # ex. ./bin/Analysis_main
   local VerName=$2 # ex. Alice
 
-  bsub -q s -J CRTWS -o "./${VerName}/${Analysis_VerName}/CreateWorkSpace.log" ${Code} "./${VerName}/${Analysis_VerName}" "final_output_test_after_application_after_cut" "./${VerName}/${Analysis_VerName}/" 
+  bsub -q s -J CRTWS -o "./${VerName}/${Analysis_VerName}/CreateWorkSpace.log" ${Code} "./${VerName}/${Analysis_VerName}" "final_output_test_after_application_after_cut" "final_output_test_after_application" "./${VerName}/${Analysis_VerName}/GridSearch_one/FOM.log" "./${VerName}/${Analysis_VerName}/GridSearch_two/FOM.log" "./${VerName}/${Analysis_VerName}/" 
 }
 
 

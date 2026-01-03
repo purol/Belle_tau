@@ -228,13 +228,13 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_bkg.end();
 
 
-    // get statistical uncertainty
-    data_th1d_stat_err_->SetBinContent(1, data_th1d_->GetBinError(1));
-    data_th1d_stat_err_->SetBinContent(2, data_th1d_->GetBinError(2));
-    signal_MC_th1d_stat_err_->SetBinContent(1, signal_MC_th1d_->GetBinError(1));
-    signal_MC_th1d_stat_err_->SetBinContent(2, signal_MC_th1d_->GetBinError(2));
-    bkg_MC_th1d_stat_err_->SetBinContent(1, bkg_MC_th1d_->GetBinError(1));
-    bkg_MC_th1d_stat_err_->SetBinContent(2, bkg_MC_th1d_->GetBinError(2));
+    // get statistical uncertainty (relative error)
+    data_th1d_stat_err_->SetBinContent(1, data_th1d_->GetBinError(1) / data_th1d_->GetBinContent(1));
+    data_th1d_stat_err_->SetBinContent(2, data_th1d_->GetBinError(2) / data_th1d_->GetBinContent(2));
+    signal_MC_th1d_stat_err_->SetBinContent(1, signal_MC_th1d_->GetBinError(1) / signal_MC_th1d_->GetBinContent(1));
+    signal_MC_th1d_stat_err_->SetBinContent(2, signal_MC_th1d_->GetBinError(2) / signal_MC_th1d_->GetBinContent(2));
+    bkg_MC_th1d_stat_err_->SetBinContent(1, bkg_MC_th1d_->GetBinError(1) / bkg_MC_th1d_->GetBinContent(1));
+    bkg_MC_th1d_stat_err_->SetBinContent(2, bkg_MC_th1d_->GetBinError(2) / bkg_MC_th1d_->GetBinContent(2));
 
 
     // We do not open the box, So data_th1d is MC. We use the proper uncertainty
@@ -360,11 +360,216 @@ void ReadPCA(const char* filename, TH1D* signal_MC_th1d_nominal, TH1D* bkg_MC_th
 
 }
 
+double BDT_cut_1_g = -1;
+double BDT_cut_2_g = -1;
+
+double mapping_function_A(std::vector<double> variables_) {
+    double M = variables_.at(0);
+    double deltaE = variables_.at(1);
+    double BDT_1 = variables_.at(2);
+    double BDT_2 = variables_.at(3);
+
+    if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (BDT_cut_1_g < BDT_1)) return 1.0;
+    else if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (BDT_cut_2_g < BDT_2)) return 2.0;
+    else return NAN;
+
+}
+
+double mapping_function_B(std::vector<double> variables_) {
+    double M = variables_.at(0);
+    double deltaE = variables_.at(1);
+    double BDT_1 = variables_.at(2);
+    double BDT_2 = variables_.at(3);
+
+    if (((((M_peak_g - 10.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 10.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (BDT_cut_1_g < BDT_1)) return 1.0;
+    else if (((((M_peak_g - 10.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 10.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (BDT_cut_2_g < BDT_2)) return 2.0;
+    else return NAN;
+
+}
+
+double mapping_function_C(std::vector<double> variables_) {
+    double M = variables_.at(0);
+    double deltaE = variables_.at(1);
+    double BDT_1 = variables_.at(2);
+    double BDT_2 = variables_.at(3);
+
+    if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (0.5 < BDT_1) && (BDT_1 <= BDT_cut_1_g)) return 1.0;
+    else if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (0.5 < BDT_2) && (BDT_2 <= BDT_cut_2_g)) return 2.0;
+    else return NAN;
+
+}
+
+double mapping_function_D(std::vector<double> variables_) {
+    double M = variables_.at(0);
+    double deltaE = variables_.at(1);
+    double BDT_1 = variables_.at(2);
+    double BDT_2 = variables_.at(3);
+
+    if (((((M_peak_g - 10.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 10.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (0.5 < BDT_1) && (BDT_1 <= BDT_cut_1_g)) return 1.0;
+    else if (((((M_peak_g - 10.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 10.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (0.5 < BDT_2) && (BDT_2 <= BDT_cut_2_g)) return 2.0;
+    else return NAN;
+
+}
+
+double mapping_function_Aprime(std::vector<double> variables_) {
+    double M = variables_.at(0);
+    double deltaE = variables_.at(1);
+    double BDT_1 = variables_.at(2);
+    double BDT_2 = variables_.at(3);
+
+    if (((((M_peak_g - 7.5 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 7.5 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (BDT_cut_1_g < BDT_1)) return 1.0;
+    else if (((((M_peak_g - 7.5 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 7.5 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (BDT_cut_2_g < BDT_2)) return 2.0;
+    else return NAN;
+
+}
+
+double mapping_function_Bprime(std::vector<double> variables_) {
+    double M = variables_.at(0);
+    double deltaE = variables_.at(1);
+    double BDT_1 = variables_.at(2);
+    double BDT_2 = variables_.at(3);
+
+    if (((((M_peak_g - 10.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 7.5 * M_left_sigma_g))) || (((M_peak_g + 7.5 * M_right_sigma_g) < M) && (M <= (M_peak_g + 10.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (BDT_cut_1_g < BDT_1)) return 1.0;
+    else if (((((M_peak_g - 10.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 7.5 * M_left_sigma_g))) || (((M_peak_g + 7.5 * M_right_sigma_g) < M) && (M <= (M_peak_g + 10.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (BDT_cut_2_g < BDT_2)) return 2.0;
+    else return NAN;
+
+}
+
+double mapping_function_Cprime(std::vector<double> variables_) {
+    double M = variables_.at(0);
+    double deltaE = variables_.at(1);
+    double BDT_1 = variables_.at(2);
+    double BDT_2 = variables_.at(3);
+
+    if (((((M_peak_g - 7.5 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 7.5 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (0.5 < BDT_1) && (BDT_1 <= BDT_cut_1_g)) return 1.0;
+    else if (((((M_peak_g - 7.5 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 7.5 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (0.5 < BDT_2) && (BDT_2 <= BDT_cut_2_g)) return 2.0;
+    else return NAN;
+
+}
+
+double mapping_function_Dprime(std::vector<double> variables_) {
+    double M = variables_.at(0);
+    double deltaE = variables_.at(1);
+    double BDT_1 = variables_.at(2);
+    double BDT_2 = variables_.at(3);
+
+    if (((((M_peak_g - 10.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 7.5 * M_left_sigma_g))) || (((M_peak_g + 7.5 * M_right_sigma_g) < M) && (M <= (M_peak_g + 10.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (0.5 < BDT_1) && (BDT_1 <= BDT_cut_1_g)) return 1.0;
+    else if (((((M_peak_g - 10.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 7.5 * M_left_sigma_g))) || (((M_peak_g + 7.5 * M_right_sigma_g) < M) && (M <= (M_peak_g + 10.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (0.5 < BDT_2) && (BDT_2 <= BDT_cut_2_g)) return 2.0;
+    else return NAN;
+
+}
+
+void ABCD_method(const char* input_path_1_, const char* input_path_2_, const char* FOM_1_path_, const char* FOM_2_path_, TH1D* bkg_ABCD_th1d_, TH1D* bkg_ABCD_th1d_stat_err_, std::vector<std::string> data_list_) {
+    ReadFOM(FOM_1_path_, &BDT_cut_1_g);
+    ReadFOM(FOM_2_path_, &BDT_cut_2_g);
+
+    TH1D* data_th1d_A = new TH1D("data_th1d_A", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d_B = new TH1D("data_th1d_B", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d_C = new TH1D("data_th1d_C", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d_D = new TH1D("data_th1d_D", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d_Aprime = new TH1D("data_th1d_Aprime", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d_Bprime = new TH1D("data_th1d_Bprime", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d_Cprime = new TH1D("data_th1d_Cprime", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d_Dprime = new TH1D("data_th1d_Dprime", ";bin index;", 2, 0.5, 2.5);
+
+    TH1D* data_th1d_A_bkg_exp = new TH1D("data_th1d_A", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d_Aprime_bkg_exp = new TH1D("data_th1d_Aprime", ";bin index;", 2, 0.5, 2.5);
+
+    Loader loader_data("tau_lfv");
+    for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
+    loader_data.FillCustomizedTH1D(data_th1d_A, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_A });
+    loader_data.FillCustomizedTH1D(data_th1d_B, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_B });
+    loader_data.FillCustomizedTH1D(data_th1d_C, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_C });
+    loader_data.FillCustomizedTH1D(data_th1d_D, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_D });
+    loader_data.FillCustomizedTH1D(data_th1d_Aprime, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Aprime });
+    loader_data.FillCustomizedTH1D(data_th1d_Bprime, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Bprime });
+    loader_data.FillCustomizedTH1D(data_th1d_Cprime, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Cprime });
+    loader_data.FillCustomizedTH1D(data_th1d_Dprime, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Dprime });
+    loader_data.end();
+
+    // We do not open the box, So data_th1d is MC. We use the proper uncertainty
+    data_th1d_A->SetBinError(1, std::sqrt(data_th1d_A->GetBinContent(1)));
+    data_th1d_A->SetBinError(2, std::sqrt(data_th1d_A->GetBinContent(2)));
+    data_th1d_B->SetBinError(1, std::sqrt(data_th1d_B->GetBinContent(1)));
+    data_th1d_B->SetBinError(2, std::sqrt(data_th1d_B->GetBinContent(2)));
+    data_th1d_C->SetBinError(1, std::sqrt(data_th1d_C->GetBinContent(1)));
+    data_th1d_C->SetBinError(2, std::sqrt(data_th1d_C->GetBinContent(2)));
+    data_th1d_D->SetBinError(1, std::sqrt(data_th1d_D->GetBinContent(1)));
+    data_th1d_D->SetBinError(2, std::sqrt(data_th1d_D->GetBinContent(2)));
+    data_th1d_Aprime->SetBinError(1, std::sqrt(data_th1d_Aprime->GetBinContent(1)));
+    data_th1d_Aprime->SetBinError(2, std::sqrt(data_th1d_Aprime->GetBinContent(2)));
+    data_th1d_Bprime->SetBinError(1, std::sqrt(data_th1d_Bprime->GetBinContent(1)));
+    data_th1d_Bprime->SetBinError(2, std::sqrt(data_th1d_Bprime->GetBinContent(2)));
+    data_th1d_Cprime->SetBinError(1, std::sqrt(data_th1d_Cprime->GetBinContent(1)));
+    data_th1d_Cprime->SetBinError(2, std::sqrt(data_th1d_Cprime->GetBinContent(2)));
+    data_th1d_Dprime->SetBinError(1, std::sqrt(data_th1d_Dprime->GetBinContent(1)));
+    data_th1d_Dprime->SetBinError(2, std::sqrt(data_th1d_Dprime->GetBinContent(2)));
+
+    // check 0 event
+    if (data_th1d_D->GetBinContent(1) == 0) {
+        printf("[ABCD_method] 0 event in region D\n");
+        exit(1);
+    }
+    else if (data_th1d_D->GetBinContent(2) == 0) {
+        printf("[ABCD_method] 0 event in region D\n");
+        exit(1);
+    }
+    else if (data_th1d_Dprime->GetBinContent(1) == 0) {
+        printf("[ABCD_method] 0 event in region D'\n");
+        exit(1);
+    }
+    else if (data_th1d_Dprime->GetBinContent(2) == 0) {
+        printf("[ABCD_method] 0 event in region D'\n");
+        exit(1);
+    }
+
+    // validation
+    data_th1d_Aprime_bkg_exp->Divide(data_th1d_Cprime, data_th1d_Dprime);
+    data_th1d_Aprime_bkg_exp->Multiply(data_th1d_Bprime);
+    printf("============== ABCD method validation region 1 ==============");
+    printf("N_A' = %lf+-%lf\n", data_th1d_Aprime->GetBinContent(1), data_th1d_Aprime->GetBinError(1));
+    printf("N_B' = %lf+-%lf\n", data_th1d_Bprime->GetBinContent(1), data_th1d_Bprime->GetBinError(1));
+    printf("N_C' = %lf+-%lf\n", data_th1d_Cprime->GetBinContent(1), data_th1d_Cprime->GetBinError(1));
+    printf("N_D' = %lf+-%lf\n", data_th1d_Dprime->GetBinContent(1), data_th1d_Dprime->GetBinError(1));
+    printf("estimated N_A' = %lf+-%lf\n", data_th1d_Aprime_bkg_exp->GetBinContent(1), data_th1d_Aprime_bkg_exp->GetBinError(1));
+    printf("============== ABCD method validation region 2 ==============");
+    printf("N_A' = %lf+-%lf\n", data_th1d_Aprime->GetBinContent(2), data_th1d_Aprime->GetBinError(2));
+    printf("N_B' = %lf+-%lf\n", data_th1d_Bprime->GetBinContent(2), data_th1d_Bprime->GetBinError(2));
+    printf("N_C' = %lf+-%lf\n", data_th1d_Cprime->GetBinContent(2), data_th1d_Cprime->GetBinError(2));
+    printf("N_D' = %lf+-%lf\n", data_th1d_Dprime->GetBinContent(2), data_th1d_Dprime->GetBinError(2));
+    printf("estimated N_A' = %lf+-%lf\n", data_th1d_Aprime_bkg_exp->GetBinContent(2), data_th1d_Aprime_bkg_exp->GetBinError(2));
+
+    // application
+    data_th1d_A_bkg_exp->Divide(data_th1d_C, data_th1d_D);
+    data_th1d_A_bkg_exp->Multiply(data_th1d_B);
+    printf("============== ABCD method region 1 ==============");
+    printf("N_A' = %lf+-%lf\n", data_th1d_A->GetBinContent(1), data_th1d_A->GetBinError(1));
+    printf("N_B' = %lf+-%lf\n", data_th1d_B->GetBinContent(1), data_th1d_B->GetBinError(1));
+    printf("N_C' = %lf+-%lf\n", data_th1d_C->GetBinContent(1), data_th1d_C->GetBinError(1));
+    printf("N_D' = %lf+-%lf\n", data_th1d_D->GetBinContent(1), data_th1d_D->GetBinError(1));
+    printf("estimated N_A' = %lf+-%lf\n", data_th1d_A_bkg_exp->GetBinContent(1), data_th1d_A_bkg_exp->GetBinError(1));
+    printf("============== ABCD method region 2 ==============");
+    printf("N_A' = %lf+-%lf\n", data_th1d_A->GetBinContent(2), data_th1d_A->GetBinError(2));
+    printf("N_B' = %lf+-%lf\n", data_th1d_B->GetBinContent(2), data_th1d_B->GetBinError(2));
+    printf("N_C' = %lf+-%lf\n", data_th1d_C->GetBinContent(2), data_th1d_C->GetBinError(2));
+    printf("N_D' = %lf+-%lf\n", data_th1d_D->GetBinContent(2), data_th1d_D->GetBinError(2));
+    printf("estimated N_A' = %lf+-%lf\n", data_th1d_A_bkg_exp->GetBinContent(2), data_th1d_A_bkg_exp->GetBinError(2));
+
+    // save
+    bkg_ABCD_th1d_->SetBinContent(1, data_th1d_A_bkg_exp->GetBinContent(1));
+    bkg_ABCD_th1d_->SetBinContent(2, data_th1d_A_bkg_exp->GetBinContent(2));
+    bkg_ABCD_th1d_stat_err_->SetBinContent(1, data_th1d_A_bkg_exp->GetBinError(1) / data_th1d_A_bkg_exp->GetBinContent(1));
+    bkg_ABCD_th1d_stat_err_->SetBinContent(2, data_th1d_A_bkg_exp->GetBinError(2) / data_th1d_A_bkg_exp->GetBinContent(2));
+}
+
 int main(int argc, char* argv[]) {
     /*
     * argv[1]: input path 1
     * argv[2]: input path 2
-    * argv[3]: output path
+    * argv[3]: input path 1 for ABCD method
+    * argv[4]: FOM_1 filename
+    * argv[5]: FOM_2 filename
+    * argv[6]: output path
     */
 
     // TH1 list
@@ -375,20 +580,23 @@ int main(int argc, char* argv[]) {
     *   +5 +-----+-------+-----+
     *      |     |       |     |
     *      |     |   1   |     |
-    *   -5 +-----+-+---+-+-----+
-    *      |     | |   | |     |
-    *      |     | |   | |     |
-    *      |     | | 2 | |     |
-    *  -15 +-----+-+---+-+-----+---> M
-    *     -20  -5 -3  +3 +5   +20
+    *   -5 +-----+-------+-----+
+    *      |     |       |     |
+    *      |     |       |     |
+    *      |     |   2   |     |
+    *  -15 +-----+-------+-----+---> M
+    *     -20   -5      +5    +20
     */
     TH1D* data_th1d = new TH1D("data_th1d", ";bin index;", 2, 0.5, 2.5);
     TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", 2, 0.5, 2.5);
     TH1D* bkg_MC_th1d = new TH1D("bkg_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* bkg_ABCD_th1d = new TH1D("bkg_ABCD_th1d", ";bin index;", 2, 0.5, 2.5);
 
+    // relative error
     TH1D* data_th1d_stat_err = new TH1D("data_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
     TH1D* signal_MC_th1d_stat_err = new TH1D("signal_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
     TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
+    TH1D* bkg_ABCD_th1d_stat_err = new TH1D("bkg_ABCD_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
 
     TH1D* data_pos_M_th1d = new TH1D("data_pos_M_th1d", ";bin index;", 2, 0.5, 2.5);
     TH1D* signal_pos_M_MC_th1d = new TH1D("signal_pos_M_MC_th1d", ";bin index;", 2, 0.5, 2.5);
@@ -454,6 +662,9 @@ int main(int argc, char* argv[]) {
     FillHistogram_fluc_SR(argv[1], argv[2], data_pos_DeltaE_th1d, signal_pos_DeltaE_MC_th1d, bkg_pos_DeltaE_MC_th1d, background_list, signal_list, background_list, 2);
     FillHistogram_fluc_SR(argv[1], argv[2], data_neg_DeltaE_th1d, signal_neg_DeltaE_MC_th1d, bkg_neg_DeltaE_MC_th1d, background_list, signal_list, background_list, 3);
 
+    // ABCD method
+    ABCD_method(argv[1], argv[3], argv[4], argv[5], bkg_ABCD_th1d, bkg_ABCD_th1d_stat_err, background_list);
+
     // print information
     printf("data:\n");
     printf("%lf+-%lf %lf+-%lf\n", data_th1d->GetBinContent(1), data_th1d->GetBinError(1), data_th1d->GetBinContent(2), data_th1d->GetBinError(2));
@@ -471,15 +682,17 @@ int main(int argc, char* argv[]) {
     printf("\n");
 
     // Save in root file
-    TFile* file = new TFile((std::string(argv[3]) + "/histogram_output.root").c_str(), "RECREATE");
+    TFile* file = new TFile((std::string(argv[6]) + "/histogram_output.root").c_str(), "RECREATE");
 
     data_th1d->Write();
     signal_MC_th1d->Write();
     bkg_MC_th1d->Write();
+    bkg_ABCD_th1d->Write();
 
     data_th1d_stat_err->Write();
     signal_MC_th1d_stat_err->Write();
     bkg_MC_th1d_stat_err->Write();
+    bkg_ABCD_th1d_stat_err->Write();
 
     data_pos_M_th1d->Write();
     signal_pos_M_MC_th1d->Write();
@@ -521,26 +734,28 @@ int main(int argc, char* argv[]) {
     channel_Belle_II.SetStatErrorConfig(1e-5, "Gaussian");
 
     // fill channels
-    channel_Belle_II.SetData("data_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str());
+    channel_Belle_II.SetData("data_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str());
 
-    RooStats::HistFactory::Sample signal_Belle_II("signal_Belle_II", "signal_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str());
-    signal_Belle_II.ActivateStatError("signal_MC_th1d_stat_err", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
+    RooStats::HistFactory::Sample signal_Belle_II("signal_Belle_II", "signal_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str());
+    signal_Belle_II.ActivateStatError("signal_MC_th1d_stat_err", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
     signal_Belle_II.AddNormFactor("mu", 1.0, 0.0, 100.0);
     signal_Belle_II.AddOverallSys("tracking_efficiency", 1.0 - (track_rel_uncertainty / 100.0) * 3, 1.0 + (track_rel_uncertainty / 100.0) * 3);
-    signal_Belle_II.AddHistoSys("M_resolution", "signal_neg_M_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "", "signal_pos_M_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
-    signal_Belle_II.AddHistoSys("DeltaE_resolution", "signal_neg_DeltaE_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "", "signal_pos_DeltaE_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
+    signal_Belle_II.AddHistoSys("M_resolution", "signal_neg_M_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "", "signal_pos_M_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
+    signal_Belle_II.AddHistoSys("DeltaE_resolution", "signal_neg_DeltaE_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "", "signal_pos_DeltaE_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
     signal_Belle_II.AddOverallSys("cross_section", 1.0 - tau_crosssection_4S_reluncertainty, 1.0 + tau_crosssection_4S_reluncertainty);
-    for (int i = 0; i < signal_MC_th1d_muonID.size() / 2; i++) signal_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("signal_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("signal_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
-    for (int i = 0; i < signal_MC_th1d_luminosity.size() / 2; i++) signal_Belle_II.AddHistoSys(("luminosity_" + std::to_string(i)).c_str(), ("signal_hist_luminosity_n_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("signal_hist_luminosity_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
+    for (int i = 0; i < signal_MC_th1d_muonID.size() / 2; i++) signal_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("signal_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("signal_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
+    for (int i = 0; i < signal_MC_th1d_luminosity.size() / 2; i++) signal_Belle_II.AddHistoSys(("luminosity_" + std::to_string(i)).c_str(), ("signal_hist_luminosity_n_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("signal_hist_luminosity_p_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
     signal_Belle_II.SetNormalizeByTheory(false);
 
-    RooStats::HistFactory::Sample bkg_Belle_II("bkg_Belle_II", "bkg_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str());
-    bkg_Belle_II.ActivateStatError("bkg_MC_th1d_stat_err", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
-    bkg_Belle_II.AddOverallSys("tracking_efficiency", 1.0 - (track_rel_uncertainty / 100.0) * 3, 1.0 + (track_rel_uncertainty / 100.0) * 3);
-    bkg_Belle_II.AddHistoSys("M_resolution", "bkg_neg_M_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "", "bkg_pos_M_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
-    bkg_Belle_II.AddHistoSys("DeltaE_resolution", "bkg_neg_DeltaE_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "", "bkg_pos_DeltaE_MC_th1d", (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
-    for (int i = 0; i < bkg_MC_th1d_muonID.size() / 2; i++) bkg_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("bkg_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("bkg_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
-    for (int i = 0; i < bkg_MC_th1d_luminosity.size() / 2; i++) bkg_Belle_II.AddHistoSys(("luminosity_" + std::to_string(i)).c_str(), ("bkg_hist_luminosity_n_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "", ("bkg_hist_luminosity_p_" + std::to_string(i)).c_str(), (std::string(argv[3]) + "/histogram_output.root").c_str(), "");
+    RooStats::HistFactory::Sample bkg_Belle_II("bkg_Belle_II", "bkg_ABCD_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str());
+    bkg_Belle_II.ActivateStatError("bkg_ABCD_th1d_stat_err", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
+    /* <<following uncertainties are not needed because we use ABCD method>>
+    * bkg_Belle_II.AddOverallSys("tracking_efficiency", 1.0 - (track_rel_uncertainty / 100.0) * 3, 1.0 + (track_rel_uncertainty / 100.0) * 3);
+    * bkg_Belle_II.AddHistoSys("M_resolution", "bkg_neg_M_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "", "bkg_pos_M_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
+    * bkg_Belle_II.AddHistoSys("DeltaE_resolution", "bkg_neg_DeltaE_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "", "bkg_pos_DeltaE_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
+    * for (int i = 0; i < bkg_MC_th1d_muonID.size() / 2; i++) bkg_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("bkg_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("bkg_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
+    * for (int i = 0; i < bkg_MC_th1d_luminosity.size() / 2; i++) bkg_Belle_II.AddHistoSys(("luminosity_" + std::to_string(i)).c_str(), ("bkg_hist_luminosity_n_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("bkg_hist_luminosity_p_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
+    */
     bkg_Belle_II.SetNormalizeByTheory(false);
 
     channel_Belle_II.AddSample(signal_Belle_II);
@@ -554,7 +769,7 @@ int main(int argc, char* argv[]) {
     w = RooStats::HistFactory::MakeModelAndMeasurementFast(meas);
 
     w->Print();
-    w->writeToFile((std::string(argv[3]) + "/workspace.root").c_str());
+    w->writeToFile((std::string(argv[6]) + "/workspace.root").c_str());
 
     meas.PrintXML("my_measurement");
 
