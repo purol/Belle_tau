@@ -472,8 +472,8 @@ void ABCD_method(const char* input_path_1_, const char* input_path_2_, const cha
     TH1D* data_th1d_Cprime = new TH1D("data_th1d_Cprime", ";bin index;", 2, 0.5, 2.5);
     TH1D* data_th1d_Dprime = new TH1D("data_th1d_Dprime", ";bin index;", 2, 0.5, 2.5);
 
-    TH1D* data_th1d_A_bkg_exp = new TH1D("data_th1d_A", ";bin index;", 2, 0.5, 2.5);
-    TH1D* data_th1d_Aprime_bkg_exp = new TH1D("data_th1d_Aprime", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d_A_bkg_exp = new TH1D("data_th1d_A_bkg_exp", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d_Aprime_bkg_exp = new TH1D("data_th1d_Aprime_bkg_exp", ";bin index;", 2, 0.5, 2.5);
 
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
