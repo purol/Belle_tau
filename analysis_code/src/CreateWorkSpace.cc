@@ -526,13 +526,13 @@ void ABCD_method(const char* input_path_1_, const char* input_path_2_, const cha
     // validation
     data_th1d_Aprime_bkg_exp->Divide(data_th1d_Cprime, data_th1d_Dprime);
     data_th1d_Aprime_bkg_exp->Multiply(data_th1d_Bprime);
-    printf("============== ABCD method validation region 1 ==============");
+    printf("============== ABCD method validation region 1 ==============\n");
     printf("N_A' = %lf+-%lf\n", data_th1d_Aprime->GetBinContent(1), data_th1d_Aprime->GetBinError(1));
     printf("N_B' = %lf+-%lf\n", data_th1d_Bprime->GetBinContent(1), data_th1d_Bprime->GetBinError(1));
     printf("N_C' = %lf+-%lf\n", data_th1d_Cprime->GetBinContent(1), data_th1d_Cprime->GetBinError(1));
     printf("N_D' = %lf+-%lf\n", data_th1d_Dprime->GetBinContent(1), data_th1d_Dprime->GetBinError(1));
     printf("estimated N_A' = %lf+-%lf\n", data_th1d_Aprime_bkg_exp->GetBinContent(1), data_th1d_Aprime_bkg_exp->GetBinError(1));
-    printf("============== ABCD method validation region 2 ==============");
+    printf("============== ABCD method validation region 2 ==============\n");
     printf("N_A' = %lf+-%lf\n", data_th1d_Aprime->GetBinContent(2), data_th1d_Aprime->GetBinError(2));
     printf("N_B' = %lf+-%lf\n", data_th1d_Bprime->GetBinContent(2), data_th1d_Bprime->GetBinError(2));
     printf("N_C' = %lf+-%lf\n", data_th1d_Cprime->GetBinContent(2), data_th1d_Cprime->GetBinError(2));
@@ -542,13 +542,13 @@ void ABCD_method(const char* input_path_1_, const char* input_path_2_, const cha
     // application
     data_th1d_A_bkg_exp->Divide(data_th1d_C, data_th1d_D);
     data_th1d_A_bkg_exp->Multiply(data_th1d_B);
-    printf("============== ABCD method region 1 ==============");
+    printf("============== ABCD method region 1 ==============\n");
     printf("N_A' = %lf+-%lf\n", data_th1d_A->GetBinContent(1), data_th1d_A->GetBinError(1));
     printf("N_B' = %lf+-%lf\n", data_th1d_B->GetBinContent(1), data_th1d_B->GetBinError(1));
     printf("N_C' = %lf+-%lf\n", data_th1d_C->GetBinContent(1), data_th1d_C->GetBinError(1));
     printf("N_D' = %lf+-%lf\n", data_th1d_D->GetBinContent(1), data_th1d_D->GetBinError(1));
     printf("estimated N_A' = %lf+-%lf\n", data_th1d_A_bkg_exp->GetBinContent(1), data_th1d_A_bkg_exp->GetBinError(1));
-    printf("============== ABCD method region 2 ==============");
+    printf("============== ABCD method region 2 ==============\n");
     printf("N_A' = %lf+-%lf\n", data_th1d_A->GetBinContent(2), data_th1d_A->GetBinError(2));
     printf("N_B' = %lf+-%lf\n", data_th1d_B->GetBinContent(2), data_th1d_B->GetBinError(2));
     printf("N_C' = %lf+-%lf\n", data_th1d_C->GetBinContent(2), data_th1d_C->GetBinError(2));
@@ -558,6 +558,8 @@ void ABCD_method(const char* input_path_1_, const char* input_path_2_, const cha
     // save
     bkg_ABCD_th1d_->SetBinContent(1, data_th1d_A_bkg_exp->GetBinContent(1));
     bkg_ABCD_th1d_->SetBinContent(2, data_th1d_A_bkg_exp->GetBinContent(2));
+    bkg_ABCD_th1d_->SetBinError(1, data_th1d_A_bkg_exp->GetBinError(1));
+    bkg_ABCD_th1d_->SetBinError(2, data_th1d_A_bkg_exp->GetBinError(2));
     bkg_ABCD_th1d_stat_err_->SetBinContent(1, data_th1d_A_bkg_exp->GetBinError(1) / data_th1d_A_bkg_exp->GetBinContent(1));
     bkg_ABCD_th1d_stat_err_->SetBinContent(2, data_th1d_A_bkg_exp->GetBinError(2) / data_th1d_A_bkg_exp->GetBinContent(2));
 }
@@ -678,6 +680,11 @@ int main(int argc, char* argv[]) {
 
     printf("bkg:\n");
     printf("%lf+-%lf %lf+-%lf\n", bkg_MC_th1d->GetBinContent(1), bkg_MC_th1d->GetBinError(1), bkg_MC_th1d->GetBinContent(2), bkg_MC_th1d->GetBinError(2));
+
+    printf("\n");
+
+    printf("estimated bkg:\n");
+    printf("%lf+-%lf %lf+-%lf\n", bkg_ABCD_th1d->GetBinContent(1), bkg_ABCD_th1d->GetBinError(1), bkg_ABCD_th1d->GetBinContent(2), bkg_ABCD_th1d->GetBinError(2));
 
     printf("\n");
 
