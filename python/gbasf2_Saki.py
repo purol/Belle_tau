@@ -505,7 +505,7 @@ ma.buildEventShape(inputListNames=['pi+:evtshape_kinematics', 'gamma:evtshape_ki
 # define default cut criteria
 tauLFVCuts3 = "nParticlesInList(pi+:taulfv) < 7 and 1.3 < M < 2.2 and -1.0 < deltaE < 0.5"
 tauLFVCuts_control_base = "nParticlesInList(pi+:taulfv) < 7 and 0.5 < M < 2.0 and -1.0 < deltaE < 0.5"
-tauLFVCuts_control_prompt = tauLFVCuts_control_base + " and [daughter(0, pionID) > 0.1] and [daughter(1, pionID) > 0.1] and [daughter(2, pionID) > 0.1]"
+tauLFVCuts_control_prompt = tauLFVCuts_control_base + " and [daughter(0, pionID) > 0.5] and [daughter(1, pionID) > 0.5] and [daughter(2, pionID) > 0.5]"
 tauLFVCuts_control_vertex = tauLFVCuts_control_base + " and [daughter(1, pionID) > 0.1]"
 
 # define tau particle list and variable list
