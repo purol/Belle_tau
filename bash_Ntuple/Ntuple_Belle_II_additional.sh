@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version="Nitori"
+version="Saki"
 script="./python/gbasf2_${version}.py"
 Skim_path="/home/belle2/junewoo/storage_ghi/tau_SKIM"
 Ntuple_path="/home/belle2/junewoo/storage_ghi/tau_Ntuple"

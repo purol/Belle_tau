@@ -122,17 +122,19 @@ def AssignIndex(sample_name, event_name, energy_name):
     elif(event_name=="BsBs"):
         type_index = 25
     elif(event_name=="uds"):
-        type_index = 25
+        type_index = 26
     elif(event_name=="bsbs"):
-        type_index = 25
+        type_index = 27
     elif(event_name=="nonbsbs"):
-        type_index = 25
+        type_index = 28
     elif(event_name=="eecc"):
-        type_index = 25
+        type_index = 29
     elif(event_name=="eess"):
-        type_index = 25
+        type_index = 30
     elif(event_name=="eeuu"):
-        type_index = 25
+        type_index = 31
+    elif(event_name=="ALP"):
+        type_index = 32
     else:
         print("enter the proper event type")
         exit(1)

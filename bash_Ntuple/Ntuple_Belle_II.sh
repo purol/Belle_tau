@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version="Nitori"
+version="Saki"
 script="./python/gbasf2_${version}.py"
 Skim_path="/home/belle2/junewoo/storage_ghi/tau_SKIM"
 Ntuple_path="/home/belle2/junewoo/storage_ghi/tau_Ntuple"
@@ -10,13 +10,13 @@ on_list=("CHARM" "CHG" "DDBAR" "EE" "EEEE"
          "EEKK" "EEMUMU" "EEPIPI" "EEPP" "EETAUTAU"
          "GG" "K0K0ISR" "KKISR" "MIX" "MUMU"
          "MUMUMUMU" "MUMUTAUTAU" "PIPIISR" "PIPIPI0ISR" "SIGNAL"
-         "SSBAR" "TAUPAIR" "TAUTAUTAUTAU" "UUBAR")
+         "SSBAR" "TAUPAIR" "TAUTAUTAUTAU" "UUBAR" "ALP")
 
 on_flag=("ccbar" "charged" "ddbar" "ee" "eeee"
         "eeKK" "eemumu" "eepipi" "eepp" "eetautau"
         "gg" "K0K0barISR" "KKISR" "mixed" "mumu"
         "mumumumu" "mumutautau" "pipiISR" "pipipi0ISR" "signal"
-        "ssbar" "taupair" "tautautautau" "uubar")
+        "ssbar" "taupair" "tautautautau" "uubar" "ALP")
 
 for i in "${!on_list[@]}"; do
     Type="${on_list[$i]}"
