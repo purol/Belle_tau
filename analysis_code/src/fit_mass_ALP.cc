@@ -118,8 +118,8 @@ int main(int argc, char* argv[]) {
         loader.end();
 
         // set range
-        M_ALP.setRange("full", GetMAX(dataset.mean(M_ALP) - dataset.sigma(M_ALP) * 4.0, p.mass - 0.2), GetMIN(dataset.mean(M_ALP) + dataset.sigma(M_ALP) * 4.0, p.mass + 0.2));
-        M_ALP.setRange("peak", dataset.mean(M_ALP) - dataset.sigma(M_ALP) * 0.5, dataset.mean(M_ALP) + dataset.sigma(M_ALP) * 0.5);
+        M_ALP.setRange("full", GetMAX(dataset.mean(M_ALP) - dataset.sigma(M_ALP) * 4.0, p.mass - 0.1), GetMIN(dataset.mean(M_ALP) + dataset.sigma(M_ALP) * 4.0, p.mass + 0.1));
+        M_ALP.setRange("peak", dataset.mean(M_ALP) - dataset.sigma(M_ALP) * 1.0, dataset.mean(M_ALP) + dataset.sigma(M_ALP) * 1.0);
 
 
         // M_ALP fit
