@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
 
         loader.Load(argv[1], ("alpha_mass" + std::to_string(p.mass) + "_life" + std::to_string(p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_").c_str(), "SIGNAL");
 
-        loader.Cut("(" + std::to_string(p.mass - 0.2) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(p.mass + 0.2) + ")");
+        loader.Cut(("(" + std::to_string(p.mass - 0.2) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(p.mass + 0.2) + ")").c_str());
         loader.PrintInformation("========== nominal_mass - 0.2 < M_alp < nominal_mass + 0.2 ==========");
 
         RooRealVar M_ALP("M_ALP", "M_ALP", p.mass - 0.2, p.mass + 0.2);
@@ -117,15 +117,15 @@ int main(int argc, char* argv[]) {
         loader.end();
 
         // set range
-        M_ALP.setRange("full", GetMAX(dataset.mean(M_ALP) - dataset.rms(M_ALP) * 4.0, p.mass - 0.2), GetMIN(dataset.mean(M_ALP) + dataset.rms(M_ALP) * 4.0, p.mass + 0.2));
-        M_ALP.setRange("peak", dataset.mean(M_ALP) - dataset.rms(M_ALP) * 0.5, dataset.mean(M_ALP) + dataset.rms(M_ALP) * 0.5);
+        M_ALP.setRange("full", GetMAX(dataset.mean(M_ALP) - dataset.sigma(M_ALP) * 4.0, p.mass - 0.2), GetMIN(dataset.mean(M_ALP) + dataset.sigma(M_ALP) * 4.0, p.mass + 0.2));
+        M_ALP.setRange("peak", dataset.mean(M_ALP) - dataset.sigma(M_ALP) * 0.5, dataset.mean(M_ALP) + dataset.sigma(M_ALP) * 0.5);
 
 
         // M_ALP fit
         RooDataSet* dataset_M = (RooDataSet*)dataset.reduce(RooArgSet(M_ALP));
         RooRealVar mean_M("mean_M", "mean_M", p.mass, p.mass - 0.03, p.mass + 0.03);
-        RooRealVar sigma_left_M("sigma_left_M", "sigma_left_M", dataset.rms(M_ALP), dataset.rms(M_ALP) * 0.7, dataset.rms(M_ALP) * 1.3);
-        RooRealVar sigma_right_M("sigma_right_M", "sigma_right_M", dataset.rms(M_ALP), dataset.rms(M_ALP) * 0.7, dataset.rms(M_ALP) * 1.3);
+        RooRealVar sigma_left_M("sigma_left_M", "sigma_left_M", dataset.sigma(M_ALP), dataset.sigma(M_ALP) * 0.7, dataset.sigma(M_ALP) * 1.3);
+        RooRealVar sigma_right_M("sigma_right_M", "sigma_right_M", dataset.sigma(M_ALP), dataset.sigma(M_ALP) * 0.7, dataset.sigma(M_ALP) * 1.3);
 
         RooBifurGauss bifurcated_M("bifurcated_M", "bifurcated_M", M_ALP, mean_M, sigma_left_M, sigma_right_M);
 
