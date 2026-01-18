@@ -158,7 +158,7 @@ int main(int argc, char* argv[]) {
 
         // plot M fit
         RooPlot* M_ALP_frame = M_ALP.frame(RooFit::Bins(200), RooFit::Title(" "));
-        dataset_M->plotOn(M_ALP_frame, RooFit::DataError(RooAbsData::SumW2), RooFit::Name("signal MC"));
+        dataset_M->plotOn(M_ALP_frame, RooFit::DataError(RooAbsData::SumW2), RooFit::Name("signal MC"), RooFit::Range("full"));
         bifurcated_M.plotOn(M_ALP_frame, RooFit::LineColor(kRed), RooFit::LineStyle(kDashed), RooFit::Range("full"), RooFit::NormRange("peak"));
         bifurcated_M.plotOn(M_ALP_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kSolid), RooFit::Range("peak"), RooFit::NormRange("peak"), RooFit::Name("BifurGauss"));
 
