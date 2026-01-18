@@ -156,22 +156,22 @@ int main(int argc, char* argv[]) {
         }
 
         // plot M fit
-        RooPlot* M_inv_frame = M_inv.frame(RooFit::Bins(200), RooFit::Title(" "));
-        dataset_M->plotOn(M_inv_frame, RooFit::DataError(RooAbsData::SumW2), RooFit::Name("signal MC"));
-        bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kRed), RooFit::LineStyle(kDashed), RooFit::Range("full"), RooFit::NormRange("peak"));
-        bifurcated_M.plotOn(M_inv_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kSolid), RooFit::Range("peak"), RooFit::NormRange("peak"), RooFit::Name("BifurGauss"));
+        RooPlot* M_ALP_frame = M_ALP.frame(RooFit::Bins(200), RooFit::Title(" "));
+        dataset_M->plotOn(M_ALP_frame, RooFit::DataError(RooAbsData::SumW2), RooFit::Name("signal MC"));
+        bifurcated_M.plotOn(M_ALP_frame, RooFit::LineColor(kRed), RooFit::LineStyle(kDashed), RooFit::Range("full"), RooFit::NormRange("peak"));
+        bifurcated_M.plotOn(M_ALP_frame, RooFit::LineColor(kBlue), RooFit::LineStyle(kSolid), RooFit::Range("peak"), RooFit::NormRange("peak"), RooFit::Name("BifurGauss"));
 
-        RooHist* pull_M = M_inv_frame->pullHist("signal MC", "BifurGauss");
-        RooPlot* M_inv_pull_frame = M_inv.frame(RooFit::Title(""));
-        M_inv_pull_frame->addPlotable(pull_M, "P");
+        RooHist* pull_M = M_ALP_frame->pullHist("signal MC", "BifurGauss");
+        RooPlot* M_ALP_pull_frame = M_ALP.frame(RooFit::Title(""));
+        M_ALP_pull_frame->addPlotable(pull_M, "P");
 
         TCanvas* c_M = new TCanvas("canvas_M_fit", "canvas_M_fit", 800, 800);
 
         c_M->cd();
         TPad* pad1_M = new TPad("pad1_M", "pad1_M", 0.0, 0.3, 1.0, 1.0);
         pad1_M->SetBottomMargin(0.05); pad1_M->SetLeftMargin(0.15); pad1_M->SetGridx(); pad1_M->Draw(); pad1_M->cd();
-        M_inv_frame->GetXaxis()->SetLabelSize(0); M_inv_frame->GetXaxis()->SetTitleSize(0);
-        M_inv_frame->Draw();
+        M_ALP_frame->GetXaxis()->SetLabelSize(0); M_ALP_frame->GetXaxis()->SetTitleSize(0);
+        M_ALP_frame->Draw();
         TLegend* legend_M = new TLegend(0.2, 0.75, 0.45, 0.85);
         legend_M->AddEntry("signal MC", "signal MC", "lpe");
         legend_M->AddEntry("BifurGauss", "BifurGauss", "l");
@@ -187,9 +187,9 @@ int main(int argc, char* argv[]) {
         c_M->cd();
         TPad* pad2_M = new TPad("pad2_M", "pad2_M", 0.0, 0.0, 1, 0.3);
         pad2_M->SetTopMargin(0.05); pad2_M->SetBottomMargin(0.3); pad2_M->SetLeftMargin(0.15); pad2_M->SetGridx(); pad2_M->Draw(); pad2_M->cd();
-        M_inv_pull_frame->GetXaxis()->SetLabelSize(0.1); M_inv_pull_frame->GetXaxis()->SetTitleSize(0.1); M_inv_pull_frame->GetYaxis()->SetTitleOffset(0.4);
-        M_inv_pull_frame->GetYaxis()->SetLabelSize(0.1); M_inv_pull_frame->GetYaxis()->SetTitleSize(0.1); M_inv_pull_frame->GetYaxis()->SetTitle("pull"); M_inv_pull_frame->SetTitle("");
-        M_inv_pull_frame->Draw();
+        M_ALP_pull_frame->GetXaxis()->SetLabelSize(0.1); M_ALP_pull_frame->GetXaxis()->SetTitleSize(0.1); M_ALP_pull_frame->GetYaxis()->SetTitleOffset(0.4);
+        M_ALP_pull_frame->GetYaxis()->SetLabelSize(0.1); M_ALP_pull_frame->GetYaxis()->SetTitleSize(0.1); M_ALP_pull_frame->GetYaxis()->SetTitle("pull"); M_ALP_pull_frame->SetTitle("");
+        M_ALP_pull_frame->Draw();
 
         c_M->SetBottomMargin(0.0);
         c_M->SaveAs((std::string(argv[2]) + "/" + "alpha_mass" + std::to_string(p.mass) + "_life" + std::to_string(p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_M_fit.png").c_str());
