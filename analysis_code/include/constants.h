@@ -92,6 +92,17 @@
 
 # define Nevt_SIGNAL (Nevt_SIGNAL_BelleII_4S + Nevt_SIGNAL_BelleII_off + Nevt_SIGNAL_BelleII_10810)
 
+
+// for ALP signal
+# define Nevt_ALP_BelleII_4S_MC15ri 200000
+
+# define BR_ALP 0.00000001 // just set 10^(-8) 
+
+# define Nevt_ALP_BelleII_4S ((Nevt_taupair_BelleII_4S + Nevt_taupair_BelleII_off + Nevt_taupair_BelleII_10810) * BR_ALP * 2.0) // here, we only produce on-resonance
+
+# define Scale_ALP_BelleII_4S_MC15ri (Nevt_ALP_BelleII_4S/Nevt_ALP_BelleII_4S_MC15ri)
+
+
 // systematics
 # define track_rel_uncertainty 0.24 // %
 

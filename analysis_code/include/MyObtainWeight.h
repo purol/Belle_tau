@@ -63,6 +63,7 @@ double MyScaleFunction(std::vector<Data>::iterator data_, std::vector<std::strin
             else if ((20.5 < EventType) && (EventType < 21.5)) return Scale_BelleII_4S_TAUTAUTAUTAU_MC15ri; // TAUTAUTAUTAU
             else if ((21.5 < EventType) && (EventType < 22.5)) return Scale_BelleII_4S_TAUPAIR_MC15ri; // TAUPAIR
             else if ((22.5 < EventType) && (EventType < 23.5)) return Scale_BelleII_4S_PIPIPI0ISR_MC15ri; // PIPIPI0ISR
+            else if ((31.5 < EventType) && (EventType < 32.5)) return Scale_ALP_BelleII_4S_MC15ri; // ALP
         }
         else if ((1.5 < EnergyType) && (EnergyType < 2.5)) { // off-resonance
             if ((-0.5 < EventType) && (EventType < 0.5)) return Scale_SIGNAL_BelleII_off_MC15ri; // signal
@@ -170,6 +171,7 @@ double MyScaleFunction_halfsplit(std::vector<Data>::iterator data_, std::vector<
             else if ((20.5 < EventType) && (EventType < 21.5)) return 2.0 * Scale_BelleII_4S_TAUTAUTAUTAU_MC15ri; // TAUTAUTAUTAU
             else if ((21.5 < EventType) && (EventType < 22.5)) return 2.0 * Scale_BelleII_4S_TAUPAIR_MC15ri; // TAUPAIR
             else if ((22.5 < EventType) && (EventType < 23.5)) return 2.0 * Scale_BelleII_4S_PIPIPI0ISR_MC15ri; // PIPIPI0ISR
+            else if ((31.5 < EventType) && (EventType < 32.5)) return 2.0 * Scale_ALP_BelleII_4S_MC15ri; // ALP
         }
         else if ((1.5 < EnergyType) && (EnergyType < 2.5)) { // off-resonance
             if ((-0.5 < EventType) && (EventType < 0.5)) return 2.0 * Scale_SIGNAL_BelleII_off_MC15ri; // signal
