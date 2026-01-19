@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
         loader.Cut("0.5 < isSignal");
         loader.PrintInformation("========== isSignal ==========");
         loader.Cut(("(" + std::to_string(p.mass - M_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(p.mass + M_cut_value) + ")").c_str());
-        loader.PrintInformation("========== nominal_mass - " + std::to_string(M_cut_value) + " < M_alp < nominal_mass + " + std::to_string(M_cut_value) + " ==========");
+        loader.PrintInformation(("========== nominal_mass - " + std::to_string(M_cut_value) + " < M_alp < nominal_mass + " + std::to_string(M_cut_value) + " ==========").c_str());
 
         RooRealVar M_ALP("M_ALP", "M_ALP", p.mass - M_cut_value, p.mass + M_cut_value);
         RooRealVar weight("weight", "weight", 0.0, 1.0);
