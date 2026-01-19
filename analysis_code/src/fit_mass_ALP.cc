@@ -163,7 +163,7 @@ int main(int argc, char* argv[]) {
         TCanvas* c_M = new TCanvas("canvas_M_fit", "canvas_M_fit", 800, 560);
 
         c_M->cd();
-        TPad* pad1_M = new TPad("pad1_M", "pad1_M", 0.0, 0.0, 1.0, 1.0);
+        TPad* pad1_M = new TPad("pad1_M", "pad1_M", 0.0, 0.1, 1.0, 1.0);
         pad1_M->SetBottomMargin(0.05); pad1_M->SetLeftMargin(0.15); pad1_M->SetGridx(); pad1_M->Draw(); pad1_M->cd();
         M_ALP_frame->GetXaxis()->SetLabelSize(0.1); M_ALP_frame->GetXaxis()->SetTitleSize(0.1);
         M_ALP_frame->Draw();
@@ -175,7 +175,7 @@ int main(int argc, char* argv[]) {
         latex_M.SetNDC();
         latex_M.SetTextSize(0.04);
         latex_M.DrawLatex(0.2, 0.7, ("m_{#alpha} = " + std::format("{:g}", p.mass) + " [GeV]").c_str());
-        latex_M.DrawLatex(0.2, 0.6, ("c#cdot#tau = " + std::format("{:g}", p.life) + " [mm]").c_str());
+        latex_M.DrawLatex(0.2, 0.6, ("c*#tau = " + std::format("{:g}", p.life) + " [mm]").c_str());
         latex_M.DrawLatex(0.2, 0.5, ("A = " + std::to_string(p.A)).c_str());
         latex_M.DrawLatex(0.2, 0.4, ("B = " + std::to_string(p.B)).c_str());
 
