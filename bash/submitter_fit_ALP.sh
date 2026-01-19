@@ -17,6 +17,7 @@ submit_fitter() {
     bsub -q s -J ALPFIT -o "/dev/null" ${Code} "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection" "./${VerName}/${Analysis_VerName}/" "${mass}" "${life}" "${A}" "${B}"
   done
 
+  sleep 0.5s
 }
 
 
