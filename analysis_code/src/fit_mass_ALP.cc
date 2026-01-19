@@ -92,12 +92,25 @@ int main(int argc, char* argv[]) {
     /*
     * argv[1]: dirname
     * argv[2]: output path
+    * argv[3]: mass
+    * argv[4]: lifetime
+    * argv[5]: A constant
+    * argv[6]: B constant
     */
 
-    std::set<Params> parameters = GetParameters(argv[1]);
+    double mass = std::stod(argv[3]);
+    double life = std::stod(argv[4]);
+    int A = std::stoi(argv[5]);
+    int B = std::stoi(argv[6]);
+
+    Params p { mass, life, A, B };
+
+    std::set<Params> parameters; // currently single-point execution, kept as set for future grid scan
+    parameters.insert(p);
 
     // open file to save the results
-    FILE* fp = fopen((std::string(argv[2]) + "/M_deltaE_result.csv").c_str(), "w");
+    std::string tag = "alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B);
+    FILE* fp = fopen((std::string(argv[2]) + "/" + tag + "_ALP_fit.csv").c_str(), "w");
 
     for (const auto& p : parameters) {
         ObtainWeight = MyScaleFunction;
@@ -200,7 +213,7 @@ int main(int argc, char* argv[]) {
         M_ALP_pull_frame->Draw();
 
         c_M->SetBottomMargin(0.0);
-        c_M->SaveAs((std::string(argv[2]) + "/" + "alpha_mass" + std::to_string(p.mass) + "_life" + std::to_string(p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_M_fit.png").c_str());
+        c_M->SaveAs((std::string(argv[2]) + "/" + "alpha_mass" + std::format("{:g}", p.mass) + "_life" + std::format("{:g}", p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_M_fit.png").c_str());
         delete c_M;
 
         // save result
