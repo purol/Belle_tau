@@ -126,14 +126,14 @@ int main(int argc, char* argv[]) {
 
         // set range
         M_ALP.setRange("full", p.mass - M_cut_value, p.mass + M_cut_value);
-        M_ALP.setRange("peak", p.mass - dataset.sigma(M_ALP) * 0.5, p.mass + dataset.sigma(M_ALP) * 0.5);
+        M_ALP.setRange("peak", p.mass - dataset.sigma(M_ALP) * 0.6, p.mass + dataset.sigma(M_ALP) * 0.6);
 
 
         // M_ALP fit
         RooDataSet* dataset_M = (RooDataSet*)dataset.reduce(RooArgSet(M_ALP));
         RooRealVar mean_M("mean_M", "mean_M", p.mass, p.mass - 0.03, p.mass + 0.03);
-        RooRealVar sigma_left_M("sigma_left_M", "sigma_left_M", dataset.sigma(M_ALP), dataset.sigma(M_ALP) * 0.7, dataset.sigma(M_ALP) * 1.3);
-        RooRealVar sigma_right_M("sigma_right_M", "sigma_right_M", dataset.sigma(M_ALP), dataset.sigma(M_ALP) * 0.7, dataset.sigma(M_ALP) * 1.3);
+        RooRealVar sigma_left_M("sigma_left_M", "sigma_left_M", dataset.sigma(M_ALP), dataset.sigma(M_ALP) * 0.2, dataset.sigma(M_ALP) * 1.8);
+        RooRealVar sigma_right_M("sigma_right_M", "sigma_right_M", dataset.sigma(M_ALP), dataset.sigma(M_ALP) * 0.2, dataset.sigma(M_ALP) * 1.8);
 
         RooBifurGauss bifurcated_M("bifurcated_M", "bifurcated_M", M_ALP, mean_M, sigma_left_M, sigma_right_M);
 
