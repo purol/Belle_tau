@@ -139,7 +139,7 @@ int main(int argc, char* argv[]) {
 
         // set range
         M_ALP.setRange("full", p.mass - M_cut_value, p.mass + M_cut_value);
-        M_ALP.setRange("peak", p.mass - dataset.sigma(M_ALP) * 0.6, p.mass + dataset.sigma(M_ALP) * 0.6);
+        M_ALP.setRange("peak", p.mass - dataset.sigma(M_ALP) * 0.5, p.mass + dataset.sigma(M_ALP) * 0.5);
 
 
         // M_ALP fit
