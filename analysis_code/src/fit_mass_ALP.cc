@@ -119,17 +119,31 @@ int main(int argc, char* argv[]) {
 
         loader.Load(argv[1], ("alpha_mass" + std::format("{:g}", p.mass) + "_life" + std::format("{:g}", p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_").c_str(), "SIGNAL");
 
-        double M_cut_value = 0;
-        if ((0 < p.life) && (p.life < 15)) M_cut_value = 0.05;
-        else if ((15 <= p.life) && (p.life < 85)) M_cut_value = 0.15;
-        else if (85 <= p.life) M_cut_value = 0.3;
+        double M_left_cut_value = 0;
+        double M_right_cut_value = 0;
+        if ((0 < p.life) && (p.life < 0.7)) {
+            M_left_cut_value = 0.02;
+            M_right_cut_value = 0.02;
+        }
+        else if ((0.7 <= p.life) && (p.life < 7)) {
+            M_left_cut_value = 0.03;
+            M_right_cut_value = 0.03;
+        }
+        else if ((7 <= p.life) && (p.life < 70)) {
+            M_left_cut_value = 0.1;
+            M_right_cut_value = 0.1;
+        }
+        else if (70 <= p.life) {
+            M_left_cut_value = 0.25;
+            M_right_cut_value = 0.2;
+        }
 
         loader.Cut("0.5 < isSignal");
         loader.PrintInformation("========== isSignal ==========");
-        loader.Cut(("(" + std::to_string(p.mass - M_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(p.mass + M_cut_value) + ")").c_str());
-        loader.PrintInformation(("========== nominal_mass - " + std::to_string(M_cut_value) + " < M_alp < nominal_mass + " + std::to_string(M_cut_value) + " ==========").c_str());
+        loader.Cut(("(" + std::to_string(p.mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(p.mass + M_right_cut_value) + ")").c_str());
+        loader.PrintInformation(("========== nominal_mass - " + std::to_string(M_left_cut_value) + " < M_alp < nominal_mass + " + std::to_string(M_right_cut_value) + " ==========").c_str());
 
-        RooRealVar M_ALP("M_ALP", "M_ALP", p.mass - M_cut_value, p.mass + M_cut_value);
+        RooRealVar M_ALP("M_ALP", "M_ALP", p.mass - M_left_cut_value, p.mass + M_right_cut_value);
         RooRealVar weight("weight", "weight", 0.0, 1.0);
         RooDataSet dataset("dataset", "dataset", RooArgSet(M_ALP, weight), RooFit::WeightVar("weight"));
 
@@ -138,7 +152,7 @@ int main(int argc, char* argv[]) {
         loader.end();
 
         // set range
-        M_ALP.setRange("full", p.mass - M_cut_value, p.mass + M_cut_value);
+        M_ALP.setRange("full", p.mass - M_left_cut_value, p.mass + M_right_cut_value);
         M_ALP.setRange("peak", p.mass - dataset.sigma(M_ALP) * 0.5, p.mass + dataset.sigma(M_ALP) * 0.5);
 
 
