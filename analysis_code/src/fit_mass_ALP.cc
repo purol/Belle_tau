@@ -156,6 +156,7 @@ int main(int argc, char* argv[]) {
 
 
         // plot M fit
+        RooDataSet* dataset_M = (RooDataSet*)dataset.reduce(RooArgSet(M_ALP));
         RooPlot* M_ALP_frame = M_ALP.frame(RooFit::Bins(200), RooFit::Title(" "));
         dataset_M->plotOn(M_ALP_frame, RooFit::DataError(RooAbsData::SumW2), RooFit::Name("signal MC"), RooFit::Range("full"));
 
