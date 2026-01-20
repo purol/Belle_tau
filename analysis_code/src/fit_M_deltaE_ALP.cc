@@ -124,7 +124,7 @@ int main(int argc, char* argv[]) {
             deltaE_full_left = -0.3;
             deltaE_full_right = 0.15;
             deltaE_peak_left = -0.02;
-            deltaE_peak_right = -0.02;
+            deltaE_peak_right = 0.02;
         }
         else if ((0.7 <= p.life) && (p.life < 7)) {
             M_left_cut_value = 0.03;
@@ -132,7 +132,7 @@ int main(int argc, char* argv[]) {
             deltaE_full_left = -0.3;
             deltaE_full_right = 0.15;
             deltaE_peak_left = -0.02;
-            deltaE_peak_right = -0.02;
+            deltaE_peak_right = 0.02;
         }
         else if ((7 <= p.life) && (p.life < 70)) {
             M_left_cut_value = 0.1;
@@ -140,7 +140,7 @@ int main(int argc, char* argv[]) {
             deltaE_full_left = -0.35;
             deltaE_full_right = 0.20;
             deltaE_peak_left = -0.03;
-            deltaE_peak_right = -0.03;
+            deltaE_peak_right = 0.03;
         }
         else if (70 <= p.life) {
             M_left_cut_value = 0.25;
@@ -148,7 +148,7 @@ int main(int argc, char* argv[]) {
             deltaE_full_left = -0.45;
             deltaE_full_right = 0.30;
             deltaE_peak_left = -0.04;
-            deltaE_peak_right = -0.04;
+            deltaE_peak_right = 0.04;
         }
 
         loader.Cut(("(" + std::to_string(p.mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(p.mass + M_right_cut_value) + ")").c_str());
