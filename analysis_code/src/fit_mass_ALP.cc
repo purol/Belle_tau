@@ -163,7 +163,7 @@ int main(int argc, char* argv[]) {
         pad1_M->SetBottomMargin(0.1); pad1_M->SetLeftMargin(0.15); pad1_M->SetGridx(); pad1_M->Draw(); pad1_M->cd();
         M_ALP_frame->GetXaxis()->SetLabelSize(0.04); M_ALP_frame->GetXaxis()->SetTitleSize(0.04);
         M_ALP_frame->Draw();
-        TLegend* legend_M = new TLegend(0.2, 0.75, 0.40, 0.82);
+        TLegend* legend_M = new TLegend(0.18, 0.75, 0.38, 0.82);
         legend_M->AddEntry("signal MC", "signal MC", "lpe");
         legend_M->SetFillStyle(0); legend_M->SetLineWidth(0);
         legend_M->Draw();
@@ -171,9 +171,9 @@ int main(int argc, char* argv[]) {
         latex_M.SetNDC();
         latex_M.SetTextSize(0.04);
         latex_M.DrawLatex(0.2, 0.7, ("m_{#alpha} = " + std::format("{:g}", p.mass) + " [GeV]").c_str());
-        latex_M.DrawLatex(0.2, 0.6, ("c*#tau = " + std::format("{:g}", p.life) + " [mm]").c_str());
-        latex_M.DrawLatex(0.2, 0.5, ("A = " + std::to_string(p.A)).c_str());
-        latex_M.DrawLatex(0.2, 0.4, ("B = " + std::to_string(p.B)).c_str());
+        latex_M.DrawLatex(0.2, 0.62, ("c*#tau = " + std::format("{:g}", p.life) + " [mm]").c_str());
+        latex_M.DrawLatex(0.2, 0.54, ("A = " + std::to_string(p.A)).c_str());
+        latex_M.DrawLatex(0.2, 0.46, ("B = " + std::to_string(p.B)).c_str());
 
         c_M->SetBottomMargin(0.0);
         c_M->SaveAs((std::string(argv[2]) + "/" + "alpha_mass" + std::format("{:g}", p.mass) + "_life" + std::format("{:g}", p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_M_fit.png").c_str());
