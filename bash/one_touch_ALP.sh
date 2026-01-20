@@ -51,5 +51,4 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-bash ./submitter_fit_ALP.sh
-wait_job "ALPFIT"
+bash ./submitter_plot_M_ALP.sh

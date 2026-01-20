@@ -176,7 +176,7 @@ int main(int argc, char* argv[]) {
         latex_M.DrawLatex(0.2, 0.46, ("B = " + std::to_string(p.B)).c_str());
 
         c_M->SetBottomMargin(0.0);
-        c_M->SaveAs((std::string(argv[2]) + "/" + "alpha_mass" + std::format("{:g}", p.mass) + "_life" + std::format("{:g}", p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_M_fit.png").c_str());
+        c_M->SaveAs((std::string(argv[2]) + "/plot/" + "alpha_mass" + std::format("{:g}", p.mass) + "_life" + std::format("{:g}", p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_M_fit.png").c_str());
         delete c_M;
 
     }

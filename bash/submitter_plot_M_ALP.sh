@@ -13,13 +13,15 @@ submit_fitter() {
   local VerName=$2 # ex. Alice
   local SampleName=$3 # ex. MUMUTAUTAU
 
+  mkdir -p "./${VerName}/${Analysis_VerName}/plot/"
+
   get_params "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection" | while read mass life A B; do
-    bsub -q s -J ALPFIT -o "/dev/null" ${Code} "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection" "./${VerName}/${Analysis_VerName}/" "${mass}" "${life}" "${A}" "${B}"
+    bsub -q s -J M_ALP_PLT -o "/dev/null" ${Code} "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection" "./${VerName}/${Analysis_VerName}/" "${mass}" "${life}" "${A}" "${B}"
   done
 
   sleep 0.5s
 }
 
 
-code="${Belle_tau_DIR}/analysis_code/bin/fit_mass_ALP"
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_mass_ALP"
 submit_fitter ${code} ${Analysis_Name} "ALP"
