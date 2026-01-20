@@ -108,10 +108,6 @@ int main(int argc, char* argv[]) {
     std::set<Params> parameters; // currently single-point execution, kept as set for future grid scan
     parameters.insert(p);
 
-    // open file to save the results
-    std::string tag = "alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B);
-    FILE* fp = fopen((std::string(argv[2]) + "/" + tag + "_ALP_fit.csv").c_str(), "w");
-
     for (const auto& p : parameters) {
         ObtainWeight = MyScaleFunction;
 
@@ -164,10 +160,10 @@ int main(int argc, char* argv[]) {
 
         c_M->cd();
         TPad* pad1_M = new TPad("pad1_M", "pad1_M", 0.0, 0.0, 1.0, 1.0);
-        pad1_M->SetBottomMargin(0.05); pad1_M->SetLeftMargin(0.15); pad1_M->SetGridx(); pad1_M->Draw(); pad1_M->cd();
-        M_ALP_frame->GetXaxis()->SetLabelSize(0.01); M_ALP_frame->GetXaxis()->SetTitleSize(0.01);
+        pad1_M->SetBottomMargin(0.1); pad1_M->SetLeftMargin(0.15); pad1_M->SetGridx(); pad1_M->Draw(); pad1_M->cd();
+        M_ALP_frame->GetXaxis()->SetLabelSize(0.02); M_ALP_frame->GetXaxis()->SetTitleSize(0.02);
         M_ALP_frame->Draw();
-        TLegend* legend_M = new TLegend(0.2, 0.75, 0.45, 0.85);
+        TLegend* legend_M = new TLegend(0.2, 0.75, 0.40, 0.82);
         legend_M->AddEntry("signal MC", "signal MC", "lpe");
         legend_M->SetFillStyle(0); legend_M->SetLineWidth(0);
         legend_M->Draw();
