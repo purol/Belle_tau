@@ -154,7 +154,7 @@ int main(int argc, char* argv[]) {
         loader.Cut(("(" + std::to_string(p.mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(p.mass + M_right_cut_value) + ")").c_str());
         loader.PrintInformation(("========== nominal_mass - " + std::to_string(M_left_cut_value) + " < M_alp < nominal_mass + " + std::to_string(M_right_cut_value) + " ==========").c_str());
         loader.Cut(("(" + std::to_string(deltaE_full_left) + " < deltaE) && (deltaE < " + std::to_string(deltaE_full_right) + ")").c_str());
-        loader.PrintInformation("========== " + std::to_string(deltaE_full_left) + " < deltaE < " + std::to_string(deltaE_full_right) + " ==========");
+        loader.PrintInformation(("========== " + std::to_string(deltaE_full_left) + " < deltaE < " + std::to_string(deltaE_full_right) + " ==========").c_str());
         loader.Cut("(1.71 < M_inv_tau) && (M_inv_tau < 1.82)");
         loader.PrintInformation("========== 1.71 < M < 1.82 ==========");
 
