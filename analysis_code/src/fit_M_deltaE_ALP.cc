@@ -110,40 +110,64 @@ int main(int argc, char* argv[]) {
 
         double M_left_cut_value = 0;
         double M_right_cut_value = 0;
+        double M_inv_full_left = 0;
+        double M_inv_full_right = 0;
+        double M_inv_peak_left = 0;
+        double M_inv_peak_right = 0;
+        double deltaE_full_left = 0;
+        double deltaE_full_right = 0;
+        double deltaE_peak_left = 0;
+        double deltaE_peak_right = 0;
         if ((0 < p.life) && (p.life < 0.7)) {
             M_left_cut_value = 0.02;
             M_right_cut_value = 0.02;
+            deltaE_full_left = -0.3;
+            deltaE_full_right = 0.15;
+            deltaE_peak_left = -0.02;
+            deltaE_peak_right = -0.02;
         }
         else if ((0.7 <= p.life) && (p.life < 7)) {
             M_left_cut_value = 0.03;
             M_right_cut_value = 0.03;
+            deltaE_full_left = -0.3;
+            deltaE_full_right = 0.15;
+            deltaE_peak_left = -0.02;
+            deltaE_peak_right = -0.02;
         }
         else if ((7 <= p.life) && (p.life < 70)) {
             M_left_cut_value = 0.1;
             M_right_cut_value = 0.1;
+            deltaE_full_left = -0.35;
+            deltaE_full_right = 0.20;
+            deltaE_peak_left = -0.03;
+            deltaE_peak_right = -0.03;
         }
         else if (70 <= p.life) {
             M_left_cut_value = 0.25;
             M_right_cut_value = 0.2;
+            deltaE_full_left = -0.45;
+            deltaE_full_right = 0.30;
+            deltaE_peak_left = -0.04;
+            deltaE_peak_right = -0.04;
         }
 
         loader.Cut(("(" + std::to_string(p.mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(p.mass + M_right_cut_value) + ")").c_str());
         loader.PrintInformation(("========== nominal_mass - " + std::to_string(M_left_cut_value) + " < M_alp < nominal_mass + " + std::to_string(M_right_cut_value) + " ==========").c_str());
-        loader.Cut("(-0.3 < deltaE) && (deltaE < 0.15)");
-        loader.PrintInformation("========== -0.3 < deltaE < 0.15 ==========");
+        loader.Cut(("(" + std::to_string(deltaE_full_left) + " < deltaE) && (deltaE < " + std::to_string(deltaE_full_right) + ")").c_str());
+        loader.PrintInformation("========== " + std::to_string(deltaE_full_left) + " < deltaE < " + std::to_string(deltaE_full_right) + " ==========");
         loader.Cut("(1.71 < M_inv_tau) && (M_inv_tau < 1.82)");
         loader.PrintInformation("========== 1.71 < M < 1.82 ==========");
 
         RooRealVar M_inv("M_inv", "M_inv", 1.71, 1.82);
-        RooRealVar deltaE("deltaE", "deltaE", -0.3, 0.15);
+        RooRealVar deltaE("deltaE", "deltaE", deltaE_full_left, deltaE_full_right);
         RooRealVar weight("weight", "weight", 0.0, 1.0);
         RooDataSet dataset("dataset", "dataset", RooArgSet(M_inv, deltaE, weight), RooFit::WeightVar("weight"));
 
         // set range
         M_inv.setRange("full", 1.71, 1.82);
         M_inv.setRange("peak", 1.77, 1.785);
-        deltaE.setRange("full", -0.3, 0.15);
-        deltaE.setRange("peak", -0.02, 0.02);
+        deltaE.setRange("full", deltaE_full_left, deltaE_full_right);
+        deltaE.setRange("peak", deltaE_peak_left, deltaE_peak_right);
 
         loader.FillDataSet(&dataset, { &M_inv, &deltaE }, { "M_inv_tau", "deltaE" });
 
@@ -233,8 +257,8 @@ int main(int argc, char* argv[]) {
         // deltaE fit
         RooDataSet* dataset_deltaE = (RooDataSet*)dataset.reduce(RooArgSet(deltaE));
         RooRealVar mean_deltaE("mean_deltaE", "mean_deltaE", 0.0, -0.1, 0.1);
-        RooRealVar sigma_left_deltaE("sigma_left_deltaE", "sigma_left_deltaE", 0.014, 0.008, 0.020);
-        RooRealVar sigma_right_deltaE("sigma_right_deltaE", "sigma_right_deltaE", 0.014, 0.008, 0.020);
+        RooRealVar sigma_left_deltaE("sigma_left_deltaE", "sigma_left_deltaE", 0.014, 0.008, 0.024);
+        RooRealVar sigma_right_deltaE("sigma_right_deltaE", "sigma_right_deltaE", 0.014, 0.008, 0.024);
 
         RooBifurGauss bifurcated_deltaE("bifurcated_deltaE", "bifurcated_deltaE", deltaE, mean_deltaE, sigma_left_deltaE, sigma_right_deltaE);
 
