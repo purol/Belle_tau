@@ -145,7 +145,7 @@ int main(int argc, char* argv[]) {
         else if (70 <= p.life) {
             M_left_cut_value = 0.25;
             M_right_cut_value = 0.2;
-            deltaE_full_left = -0.45;
+            deltaE_full_left = -0.50;
             deltaE_full_right = 0.30;
             deltaE_peak_left = -0.04;
             deltaE_peak_right = 0.04;
