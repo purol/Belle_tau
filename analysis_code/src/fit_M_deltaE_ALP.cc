@@ -121,6 +121,10 @@ int main(int argc, char* argv[]) {
         if ((0 < p.life) && (p.life < 0.7)) {
             M_left_cut_value = 0.02;
             M_right_cut_value = 0.02;
+            M_inv_full_left = 1.71;
+            M_inv_full_right = 1.82;
+            M_inv_peak_left = 1.77;
+            M_inv_peak_right = 1.785;
             deltaE_full_left = -0.3;
             deltaE_full_right = 0.15;
             deltaE_peak_left = -0.02;
@@ -129,6 +133,10 @@ int main(int argc, char* argv[]) {
         else if ((0.7 <= p.life) && (p.life < 7)) {
             M_left_cut_value = 0.03;
             M_right_cut_value = 0.03;
+            M_inv_full_left = 1.67;
+            M_inv_full_right = 1.80;
+            M_inv_peak_left = 1.75;
+            M_inv_peak_right = 1.786;
             deltaE_full_left = -0.3;
             deltaE_full_right = 0.15;
             deltaE_peak_left = -0.02;
@@ -137,6 +145,10 @@ int main(int argc, char* argv[]) {
         else if ((7 <= p.life) && (p.life < 70)) {
             M_left_cut_value = 0.1;
             M_right_cut_value = 0.1;
+            M_inv_full_left = 1.6;
+            M_inv_full_right = 1.87;
+            M_inv_peak_left = 1.7;
+            M_inv_peak_right = 1.8;
             deltaE_full_left = -0.40;
             deltaE_full_right = 0.25;
             deltaE_peak_left = -0.025;
@@ -145,6 +157,10 @@ int main(int argc, char* argv[]) {
         else if (70 <= p.life) {
             M_left_cut_value = 0.25;
             M_right_cut_value = 0.2;
+            M_inv_full_left = 1.5;
+            M_inv_full_right = 1.9;
+            M_inv_peak_left = 1.65;
+            M_inv_peak_right = 1.83;
             deltaE_full_left = -0.50;
             deltaE_full_right = 0.30;
             deltaE_peak_left = -0.03;
@@ -158,20 +174,20 @@ int main(int argc, char* argv[]) {
         loader.Cut("(1.71 < M_inv_tau) && (M_inv_tau < 1.82)");
         loader.PrintInformation("========== 1.71 < M < 1.82 ==========");
 
-        RooRealVar M_inv("M_inv", "M_inv", 1.71, 1.82);
+        RooRealVar M_inv("M_inv", "M_inv", M_inv_full_left, M_inv_full_right);
         RooRealVar deltaE("deltaE", "deltaE", deltaE_full_left, deltaE_full_right);
         RooRealVar weight("weight", "weight", 0.0, 1.0);
         RooDataSet dataset("dataset", "dataset", RooArgSet(M_inv, deltaE, weight), RooFit::WeightVar("weight"));
 
         // set range
-        M_inv.setRange("full", 1.71, 1.82);
-        M_inv.setRange("peak", 1.77, 1.785);
+        M_inv.setRange("full", M_inv_full_left, M_inv_full_right);
+        M_inv.setRange("peak", M_inv_peak_left, M_inv_peak_right);
         deltaE.setRange("full", deltaE_full_left, deltaE_full_right);
         deltaE.setRange("peak", deltaE_peak_left, deltaE_peak_right);
 
         loader.FillDataSet(&dataset, { &M_inv, &deltaE }, { "M_inv_tau", "deltaE" });
 
-        TProfile* deltaE_M_profile = new TProfile("hprof", ";#Delta E_{3#mu} [GeV];M_{3#mu} [GeV]", 100, -0.3, 0.15, 1.71, 1.82);
+        TProfile* deltaE_M_profile = new TProfile("hprof", ";#Delta E_{3#mu} [GeV];M_{3#mu} [GeV]", 100, deltaE_full_left, deltaE_full_right, M_inv_full_left, M_inv_full_right);
         loader.FillTProfile(deltaE_M_profile, "deltaE", "M_inv_tau");
 
         loader.end();
@@ -179,8 +195,8 @@ int main(int argc, char* argv[]) {
         // M fit
         RooDataSet* dataset_M = (RooDataSet*)dataset.reduce(RooArgSet(M_inv));
         RooRealVar mean_M("mean_M", "mean_M", 1.777, 1.767, 1.787);
-        RooRealVar sigma_left_M("sigma_left_M", "sigma_left_M", 0.0048, 0.0038, 0.0058);
-        RooRealVar sigma_right_M("sigma_right_M", "sigma_right_M", 0.0048, 0.0038, 0.0058);
+        RooRealVar sigma_left_M("sigma_left_M", "sigma_left_M", 0.0048, 0.0038, 0.03);
+        RooRealVar sigma_right_M("sigma_right_M", "sigma_right_M", 0.0048, 0.0038, 0.03);
 
         RooBifurGauss bifurcated_M("bifurcated_M", "bifurcated_M", M_inv, mean_M, sigma_left_M, sigma_right_M);
 
