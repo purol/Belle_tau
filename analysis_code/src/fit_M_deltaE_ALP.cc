@@ -139,16 +139,16 @@ int main(int argc, char* argv[]) {
             M_right_cut_value = 0.1;
             deltaE_full_left = -0.40;
             deltaE_full_right = 0.25;
-            deltaE_peak_left = -0.03;
-            deltaE_peak_right = 0.03;
+            deltaE_peak_left = -0.025;
+            deltaE_peak_right = 0.025;
         }
         else if (70 <= p.life) {
             M_left_cut_value = 0.25;
             M_right_cut_value = 0.2;
             deltaE_full_left = -0.50;
             deltaE_full_right = 0.30;
-            deltaE_peak_left = -0.04;
-            deltaE_peak_right = 0.04;
+            deltaE_peak_left = -0.035;
+            deltaE_peak_right = 0.035;
         }
 
         loader.Cut(("(" + std::to_string(p.mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(p.mass + M_right_cut_value) + ")").c_str());
