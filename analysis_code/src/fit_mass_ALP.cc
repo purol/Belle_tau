@@ -161,7 +161,7 @@ int main(int argc, char* argv[]) {
         c_M->cd();
         TPad* pad1_M = new TPad("pad1_M", "pad1_M", 0.0, 0.0, 1.0, 1.0);
         pad1_M->SetBottomMargin(0.1); pad1_M->SetLeftMargin(0.15); pad1_M->SetGridx(); pad1_M->Draw(); pad1_M->cd();
-        M_ALP_frame->GetXaxis()->SetLabelSize(0.02); M_ALP_frame->GetXaxis()->SetTitleSize(0.02);
+        M_ALP_frame->GetXaxis()->SetLabelSize(0.04); M_ALP_frame->GetXaxis()->SetTitleSize(0.04);
         M_ALP_frame->Draw();
         TLegend* legend_M = new TLegend(0.2, 0.75, 0.40, 0.82);
         legend_M->AddEntry("signal MC", "signal MC", "lpe");
