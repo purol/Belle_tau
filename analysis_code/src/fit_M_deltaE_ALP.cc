@@ -147,8 +147,8 @@ int main(int argc, char* argv[]) {
             M_right_cut_value = 0.2;
             deltaE_full_left = -0.50;
             deltaE_full_right = 0.30;
-            deltaE_peak_left = -0.035;
-            deltaE_peak_right = 0.035;
+            deltaE_peak_left = -0.03;
+            deltaE_peak_right = 0.03;
         }
 
         loader.Cut(("(" + std::to_string(p.mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(p.mass + M_right_cut_value) + ")").c_str());
@@ -257,8 +257,8 @@ int main(int argc, char* argv[]) {
         // deltaE fit
         RooDataSet* dataset_deltaE = (RooDataSet*)dataset.reduce(RooArgSet(deltaE));
         RooRealVar mean_deltaE("mean_deltaE", "mean_deltaE", 0.0, -0.1, 0.1);
-        RooRealVar sigma_left_deltaE("sigma_left_deltaE", "sigma_left_deltaE", 0.014, 0.008, 0.024);
-        RooRealVar sigma_right_deltaE("sigma_right_deltaE", "sigma_right_deltaE", 0.014, 0.008, 0.024);
+        RooRealVar sigma_left_deltaE("sigma_left_deltaE", "sigma_left_deltaE", 0.014, 0.008, 0.025);
+        RooRealVar sigma_right_deltaE("sigma_right_deltaE", "sigma_right_deltaE", 0.014, 0.008, 0.025);
 
         RooBifurGauss bifurcated_deltaE("bifurcated_deltaE", "bifurcated_deltaE", deltaE, mean_deltaE, sigma_left_deltaE, sigma_right_deltaE);
 
