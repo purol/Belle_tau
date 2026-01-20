@@ -32,14 +32,6 @@
 #include <TProfile.h>
 #include <TF1.h>
 
-// https://gitlab.desy.de/belle2/publications/73/tau_eellell/-/blob/main/processing/SignalRegion_fit.py
-
-std::string toStringWithPrecision(double value, int precision) {
-    std::ostringstream out;
-    out << std::fixed << std::setprecision(precision) << value;
-    return out.str();
-}
-
 struct Params {
     double mass;
     double life;
@@ -76,16 +68,6 @@ std::set<Params> GetParameters(const char* dirname) {
 
     return results;
 
-}
-
-double GetMIN(double a, double b) {
-    if (a < b) return a;
-    else return b;
-}
-
-double GetMAX(double a, double b) {
-    if (a < b) return b;
-    else return a;
 }
 
 int main(int argc, char* argv[]) {

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export Analysis_Name="Okina"
-export Analysis_VerName="v004"
+export Analysis_Name="Saki"
+export Analysis_VerName="v000"
 
 export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau"
 export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple"
@@ -52,3 +52,6 @@ if [[ $? -ne 0 ]]; then
 fi
 
 bash ./submitter_plot_M_ALP.sh
+
+bash ./submitter_fit_2D_ALP.sh
+wait_job "2DFIT"

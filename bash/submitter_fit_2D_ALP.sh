@@ -1,0 +1,24 @@
+#!/bin/bash
+
+get_params() {
+  local dir="$1"
+
+  ls "$dir" | \
+  sed -n 's/.*alpha_mass\([0-9.+-eE]\+\)_life\([0-9.+-eE]\+\)_A\([0-9+-]\+\)_B\([0-9+-]\+\).*/\1 \2 \3 \4/p' | \
+  sort -u
+}
+
+submit_fitter() {
+  local Code=$1 # ex. ./bin/Analysis_main
+  local VerName=$2 # ex. Alice
+  local SampleName=$3 # ex. MUMUTAUTAU
+
+  get_params "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection" | while read mass life A B; do
+    bsub -q s -J 2DFIT -o "/dev/null" ${Code} "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection" "./${VerName}/${Analysis_VerName}/" "${mass}" "${life}" "${A}" "${B}"
+  done
+}
+
+
+code="${Belle_tau_DIR}/analysis_code/bin/fit_M_deltaE_ALP"
+submit_fitter ${code} ${Analysis_Name} "ALP"
+
