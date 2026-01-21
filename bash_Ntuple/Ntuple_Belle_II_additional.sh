@@ -2,7 +2,7 @@
 
 version="Saki"
 script="./python/gbasf2_${version}.py"
-Skim_path="/home/belle2/junewoo/storage_ghi/tau_SKIM"
+Skim_path="/home/belle2/junewoo/storage_ghi/tau_SKIM_2"
 Ntuple_path="/home/belle2/junewoo/storage_ghi/tau_Ntuple"
 
 # 4S on-resonance
@@ -22,7 +22,7 @@ for i in "${!on_list[@]}"; do
     mkdir -p "${output_path}"
     mkdir -p "${log_path}"
 
-    for file in $(find "/home/belle2/junewoo/storage_ghi/tau_SKIM/MC15ri_on_additional_qqbar/${Type}/output" -maxdepth 1 -name "*.root")
+    for file in $(find "${Skim_path}/MC15ri_on_additional_qqbar/${Type}/output" -maxdepth 1 -name "*.root")
     do
         echo $file
         basename=$(basename -s .root $file)
