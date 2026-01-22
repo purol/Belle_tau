@@ -98,8 +98,8 @@ int main(int argc, char* argv[]) {
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_M_deltaE_selection").c_str(), "", "");
     loader.Cut("(-0.9 < deltaE) && (deltaE < 0.4)");
     loader.PrintInformation("========== -0.9 < deltaE < 0.4 ==========");
-    loader.Cut("(1.5 < M_inv_tau) && (M_inv_tau < 1.9)");
-    loader.PrintInformation("========== 1.5 < M < 1.9 ==========");
+    loader.Cut("(1.4 < M_inv_tau) && (M_inv_tau < 2.1)");
+    loader.PrintInformation("========== 1.4 < M < 2.1 ==========");
     //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.3, 1.9, 50, -0.9, 0.4, "M_deltaE_before_cut.png");
 
     loader.Cut("(0.5 < L1PSNM__boffy__bc) || (0.5 < L1PSNM__bofyo__bc) || (0.5 < L1PSNM__bostt__bc) || (0.5 < L1PSNM__bohie__bc) || (0.5 < L1PSNM__bolml6__bc) || (0.5 < L1PSNM__bolml7__bc) || (0.5 < L1PSNM__bolml8__bc) || (0.5 < L1PSNM__bolml9__bc) || (0.5 < L1PSNM__bolml10__bc) || (0.5 < L1PSNM__bolml12__bc)");
