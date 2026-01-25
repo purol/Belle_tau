@@ -133,10 +133,10 @@ int main(int argc, char* argv[]) {
         else if ((0.7 <= p.life) && (p.life < 7)) {
             M_left_cut_value = 0.03;
             M_right_cut_value = 0.03;
-            M_inv_full_left = 1.67;
-            M_inv_full_right = 1.80;
-            M_inv_peak_left = 1.75;
-            M_inv_peak_right = 1.786;
+            M_inv_full_left = 1.71;
+            M_inv_full_right = 1.82;
+            M_inv_peak_left = 1.77;
+            M_inv_peak_right = 1.785;
             deltaE_full_left = -0.3;
             deltaE_full_right = 0.15;
             deltaE_peak_left = -0.02;
@@ -147,8 +147,8 @@ int main(int argc, char* argv[]) {
             M_right_cut_value = 0.1;
             M_inv_full_left = 1.6;
             M_inv_full_right = 1.87;
-            M_inv_peak_left = 1.7;
-            M_inv_peak_right = 1.8;
+            M_inv_peak_left = 1.77;
+            M_inv_peak_right = 1.785;
             deltaE_full_left = -0.40;
             deltaE_full_right = 0.25;
             deltaE_peak_left = -0.025;
@@ -159,8 +159,8 @@ int main(int argc, char* argv[]) {
             M_right_cut_value = 0.2;
             M_inv_full_left = 1.5;
             M_inv_full_right = 1.9;
-            M_inv_peak_left = 1.65;
-            M_inv_peak_right = 1.83;
+            M_inv_peak_left = 1.77;
+            M_inv_peak_right = 1.785;
             deltaE_full_left = -0.50;
             deltaE_full_right = 0.30;
             deltaE_peak_left = -0.03;
@@ -171,8 +171,8 @@ int main(int argc, char* argv[]) {
         loader.PrintInformation(("========== nominal_mass - " + std::to_string(M_left_cut_value) + " < M_alp < nominal_mass + " + std::to_string(M_right_cut_value) + " ==========").c_str());
         loader.Cut(("(" + std::to_string(deltaE_full_left) + " < deltaE) && (deltaE < " + std::to_string(deltaE_full_right) + ")").c_str());
         loader.PrintInformation(("========== " + std::to_string(deltaE_full_left) + " < deltaE < " + std::to_string(deltaE_full_right) + " ==========").c_str());
-        loader.Cut("(1.71 < M_inv_tau) && (M_inv_tau < 1.82)");
-        loader.PrintInformation("========== 1.71 < M < 1.82 ==========");
+        loader.Cut(("(" + std::to_string(M_inv_full_left) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_inv_full_right) + ")").c_str());
+        loader.PrintInformation("========== " + std::to_string(M_inv_full_left) + " < M < " + std::to_string(M_inv_full_right) + " ==========");
 
         RooRealVar M_inv("M_inv", "M_inv", M_inv_full_left, M_inv_full_right);
         RooRealVar deltaE("deltaE", "deltaE", deltaE_full_left, deltaE_full_right);
