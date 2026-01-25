@@ -17,7 +17,7 @@
 
 Corrector_PID muonID_corrector_05("/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC15ri/mu_efficiency_table.csv");
 
-double MyScaleFunction_correction_halfsplit(std::vector<Data>::iterator data_, std::vector<std::string> variable_names_) {
+double MyScaleFunction_correction_halfsplit(std::deque<Data>::iterator data_, std::vector<std::string> variable_names_) {
 
     std::vector<std::string>::iterator it;
 
@@ -144,7 +144,7 @@ double MyScaleFunction_correction_halfsplit(std::vector<Data>::iterator data_, s
     return 0.0;
 }
 
-double MyScaleFunction_correction_fluctuation_halfsplit(std::vector<Data>::iterator data_, std::vector<std::string> variable_names_) {
+double MyScaleFunction_correction_fluctuation_halfsplit(std::deque<Data>::iterator data_, std::vector<std::string> variable_names_) {
 
     std::vector<std::string>::iterator it;
     

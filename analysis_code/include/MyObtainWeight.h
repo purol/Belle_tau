@@ -2,12 +2,13 @@
 #define MYOBTAINWEIGHT_H
 
 #include <vector>
+#include <deque>
 #include <string>
 
 #include "data.h"
 #include "constants.h"
 
-double MyScaleFunction(std::vector<Data>::iterator data_, std::vector<std::string> variable_names_) {
+double MyScaleFunction(std::deque<Data>::iterator data_, std::vector<std::string> variable_names_) {
 
     std::vector<std::string>::iterator it;
 
@@ -113,7 +114,7 @@ double MyScaleFunction(std::vector<Data>::iterator data_, std::vector<std::strin
     return 0.0;
 }
 
-double MyScaleFunction_halfsplit(std::vector<Data>::iterator data_, std::vector<std::string> variable_names_) {
+double MyScaleFunction_halfsplit(std::deque<Data>::iterator data_, std::vector<std::string> variable_names_) {
 
     std::vector<std::string>::iterator it;
 

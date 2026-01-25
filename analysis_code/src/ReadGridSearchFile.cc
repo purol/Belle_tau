@@ -9,7 +9,7 @@
 #include <TGraph.h>
 #include <TCanvas.h>
 
-typedef struct data {
+typedef struct FBDTinfo {
     unsigned int nTrees;
     unsigned int depth;
     double shrinkage;
@@ -17,9 +17,9 @@ typedef struct data {
     unsigned int binning;
     double train_AUC;
     double test_AUC;
-} Data;
+} FBDTInfo;
 
-bool data_sorter(Data const& lhs, Data const& rhs) {
+bool data_sorter(FBDTInfo const& lhs, FBDTInfo const& rhs) {
     return lhs.test_AUC > rhs.test_AUC;
 }
 
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 
     std::string input_path = std::string(argv[1]);
     std::regex filename_pattern(R"((\d+\.\d+)_(\d+\.\d+)_(\d+\.\d+)_(\d+\.\d+)_(\d+\.\d+)\.auc)");
-    std::vector<Data> Datas;
+    std::vector<FBDTInfo> Datas;
 
     // read auc files
     for (std::filesystem::directory_entry entry : std::filesystem::directory_iterator(input_path)) {
