@@ -173,6 +173,8 @@ int main(int argc, char* argv[]) {
         loader.PrintInformation(("========== " + std::to_string(deltaE_full_left) + " < deltaE < " + std::to_string(deltaE_full_right) + " ==========").c_str());
         loader.Cut(("(" + std::to_string(M_inv_full_left) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_inv_full_right) + ")").c_str());
         loader.PrintInformation(("========== " + std::to_string(M_inv_full_left) + " < M < " + std::to_string(M_inv_full_right) + " ==========").c_str());
+        loader.Cut("0.5 < isSignal");
+        loader.PrintInformation("========== isSignal ==========");
 
         RooRealVar M_inv("M_inv", "M_inv", M_inv_full_left, M_inv_full_right);
         RooRealVar deltaE("deltaE", "deltaE", deltaE_full_left, deltaE_full_right);
