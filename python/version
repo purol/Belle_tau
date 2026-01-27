@@ -19,3 +19,5 @@ gbasf2_Marisa.py
 gbasf2_Tenshi.py
 - (add muonID_noSVD, separate conrol sample into prompt and KS0 daughter, tight cut for control sample) ->
 gbasf2_Saki.py
+- (do not Treefit for tau & do treefit for alpha) ->
+gbasf2_Ichirin.py

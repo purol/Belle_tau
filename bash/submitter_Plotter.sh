@@ -30,7 +30,6 @@ input_variables=(
     "flightTime_dividedby_flightTimeErr"
     "cosToThrustOfEvent"
     "KSFWVariables__bohso14__cm__spcleanMask__bc"
-    "chiProb"
     "charge_times_ROEcharge"
 )
 
