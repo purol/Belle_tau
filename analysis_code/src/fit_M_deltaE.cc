@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
 
     loader.Cut("(-0.3 < deltaE) && (deltaE < 0.15)");
     loader.PrintInformation("========== -0.3 < deltaE < 0.15 ==========");
-    loader.Cut("(1.71 < M_inv_tau) && (M_inv_tau < 1.82)");
+    loader.Cut("(1.71 < M) && (M < 1.82)");
     loader.PrintInformation("========== 1.71 < M < 1.82 ==========");
 
     RooRealVar M_inv("M_inv", "M_inv", 1.71, 1.82);
@@ -64,10 +64,10 @@ int main(int argc, char* argv[]) {
     deltaE.setRange("full", -0.3, 0.15);
     deltaE.setRange("peak", -0.02, 0.02);
 
-    loader.FillDataSet(&dataset, { &M_inv, &deltaE }, { "M_inv_tau", "deltaE" });
+    loader.FillDataSet(&dataset, { &M_inv, &deltaE }, { "M", "deltaE" });
 
     TProfile* deltaE_M_profile = new TProfile("hprof", ";#Delta E_{3#mu} [GeV];M_{3#mu} [GeV]", 100, -0.3, 0.15, 1.71, 1.82);
-    loader.FillTProfile(deltaE_M_profile, "deltaE", "M_inv_tau");
+    loader.FillTProfile(deltaE_M_profile, "deltaE", "M");
 
     loader.end();
 

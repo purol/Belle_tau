@@ -82,7 +82,7 @@ for i in range(0, len(root_list)):
     for j in range(0, len(data)):
 
         # get variables
-        Mtau = data.iloc[j]["M_inv_tau"]
+        Mtau = data.iloc[j]["M"]
         deltaE = data.iloc[j]["deltaE"]
 
         # cut

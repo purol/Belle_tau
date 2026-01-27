@@ -264,14 +264,14 @@ def summarize_variable_metrics(df, bins=1000, skip_cols=["label", "weight"]):
             bkg_values    = bkg_df[feature].values
             sep = compute_separation(signal_values, bkg_values, signal_weights, bkg_weights, bins)
 
-            signal_spea_M = spearmanr(signal_df[feature], signal_df["M_inv_tau"]).correlation if "M_inv_tau" in signal_df.columns else np.nan
+            signal_spea_M = spearmanr(signal_df[feature], signal_df["M"]).correlation if "M" in signal_df.columns else np.nan
             signal_spea_de  = spearmanr(signal_df[feature], signal_df["deltaE"]).correlation if "deltaE" in signal_df.columns else np.nan
-            bkg_spea_M = spearmanr(bkg_df[feature], bkg_df["M_inv_tau"]).correlation if "M_inv_tau" in bkg_df.columns else np.nan
+            bkg_spea_M = spearmanr(bkg_df[feature], bkg_df["M"]).correlation if "M" in bkg_df.columns else np.nan
             bkg_spea_de  = spearmanr(bkg_df[feature], bkg_df["deltaE"]).correlation if "deltaE" in bkg_df.columns else np.nan
 
-            signal_xi_M = chatterjeexi(signal_df[feature].values, signal_df["M_inv_tau"].values).statistic if "M_inv_tau" in signal_df.columns else np.nan
+            signal_xi_M = chatterjeexi(signal_df[feature].values, signal_df["M"].values).statistic if "M" in signal_df.columns else np.nan
             signal_xi_de  = chatterjeexi(signal_df[feature].values, signal_df["deltaE"].values).statistic if "deltaE" in signal_df.columns else np.nan
-            bkg_xi_M = chatterjeexi(bkg_df[feature].values, bkg_df["M_inv_tau"].values).statistic if "M_inv_tau" in bkg_df.columns else np.nan
+            bkg_xi_M = chatterjeexi(bkg_df[feature].values, bkg_df["M"].values).statistic if "M" in bkg_df.columns else np.nan
             bkg_xi_de  = chatterjeexi(bkg_df[feature].values, bkg_df["deltaE"].values).statistic if "deltaE" in bkg_df.columns else np.nan
 
             results.append({
@@ -424,7 +424,7 @@ def ReadResolution(file_path: str):
         
     Returns:
         dict: {
-            "M_inv_tau": {"peak": ..., "left_sigma": ..., "right_sigma": ...},
+            "M": {"peak": ..., "left_sigma": ..., "right_sigma": ...},
             "deltaE": {"peak": ..., "left_sigma": ..., "right_sigma": ...},
             "theta": ...
         }
@@ -438,7 +438,7 @@ def ReadResolution(file_path: str):
         theta = float(lines[2].split()[0])
         
     return {
-        "M_inv_tau": {
+        "M": {
             "peak": M_values[0],
             "left_sigma": M_values[1],
             "right_sigma": M_values[2],
@@ -620,9 +620,9 @@ df_test = df_test.drop(columns=removed_variables)
 # ====================================================== region one ====================================================== #
 # filter
 df_train_one = df_train[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]) < df_train["deltaE"]) & (df_train["deltaE"] < (resolution["deltaE"]["peak"] + 5*resolution["deltaE"]["right_sigma"]))]
-df_train_one = df_train_one[((resolution["M_inv_tau"]["peak"] - 5*resolution["M_inv_tau"]["left_sigma"]) < df_train_one["M_inv_tau"]) & (df_train_one["M_inv_tau"] < (resolution["M_inv_tau"]["peak"] + 5*resolution["M_inv_tau"]["right_sigma"]))]
+df_train_one = df_train_one[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_train_one["M"]) & (df_train_one["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
 df_test_one = df_test[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]) < df_test["deltaE"]) & (df_test["deltaE"] < (resolution["deltaE"]["peak"] + 5*resolution["deltaE"]["right_sigma"]))]
-df_test_one = df_test_one[((resolution["M_inv_tau"]["peak"] - 5*resolution["M_inv_tau"]["left_sigma"]) < df_test_one["M_inv_tau"]) & (df_test_one["M_inv_tau"] < (resolution["M_inv_tau"]["peak"] + 5*resolution["M_inv_tau"]["right_sigma"]))]
+df_test_one = df_test_one[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_test_one["M"]) & (df_test_one["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
 
 summary_result = summarize_variable_metrics(df_train_one)
 print(summary_result)
@@ -633,9 +633,9 @@ create_and_plot_correlation_matrices(df_train_one[df_train_one["label"] == 0], s
 # ====================================================== region two ====================================================== #
 # filter
 df_train_two = df_train[((resolution["deltaE"]["peak"] - 15*resolution["deltaE"]["left_sigma"]) < df_train["deltaE"]) & (df_train["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
-df_train_two = df_train_two[((resolution["M_inv_tau"]["peak"] - 3*resolution["M_inv_tau"]["left_sigma"]) < df_train_two["M_inv_tau"]) & (df_train_two["M_inv_tau"] < (resolution["M_inv_tau"]["peak"] + 3*resolution["M_inv_tau"]["right_sigma"]))]
+df_train_two = df_train_two[((resolution["M"]["peak"] - 3*resolution["M"]["left_sigma"]) < df_train_two["M"]) & (df_train_two["M"] < (resolution["M"]["peak"] + 3*resolution["M"]["right_sigma"]))]
 df_test_two = df_test[((resolution["deltaE"]["peak"] - 15*resolution["deltaE"]["left_sigma"]) < df_test["deltaE"]) & (df_test["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
-df_test_two = df_test_two[((resolution["M_inv_tau"]["peak"] - 3*resolution["M_inv_tau"]["left_sigma"]) < df_test_two["M_inv_tau"]) & (df_test_two["M_inv_tau"] < (resolution["M_inv_tau"]["peak"] + 3*resolution["M_inv_tau"]["right_sigma"]))]
+df_test_two = df_test_two[((resolution["M"]["peak"] - 3*resolution["M"]["left_sigma"]) < df_test_two["M"]) & (df_test_two["M"] < (resolution["M"]["peak"] + 3*resolution["M"]["right_sigma"]))]
 
 summary_result = summarize_variable_metrics(df_train_two)
 print(summary_result)

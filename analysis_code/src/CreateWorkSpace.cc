@@ -213,19 +213,19 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     // data
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
-    loader_data.FillCustomizedTH1D(data_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function });
+    loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE" }, { mapping_function });
     loader_data.end();
 
     // signal MC
     Loader loader_signal("tau_lfv");
     for (int i = 0; i < signal_list_.size(); i++) loader_signal.Load((input_path_1_ + std::string("/") + signal_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", signal_list_.at(i).c_str());
-    loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function });
+    loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE" }, { mapping_function });
     loader_signal.end();
 
     // background MC
     Loader loader_bkg("tau_lfv");
     for (int i = 0; i < background_list_.size(); i++) loader_bkg.Load((input_path_1_ + std::string("/") + background_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", background_list_.at(i).c_str());
-    loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function });
+    loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE" }, { mapping_function });
     loader_bkg.end();
 
 
@@ -254,10 +254,10 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
     // data
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
-    if (fluc_mode == 0) loader_data.FillCustomizedTH1D(data_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_plus_M });
-    else if (fluc_mode == 1) loader_data.FillCustomizedTH1D(data_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_minus_M });
-    else if (fluc_mode == 2) loader_data.FillCustomizedTH1D(data_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_plus_DeltaE });
-    else if (fluc_mode == 3) loader_data.FillCustomizedTH1D(data_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_minus_DeltaE });
+    if (fluc_mode == 0) loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE" }, { mapping_function_plus_M });
+    else if (fluc_mode == 1) loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE" }, { mapping_function_minus_M });
+    else if (fluc_mode == 2) loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE" }, { mapping_function_plus_DeltaE });
+    else if (fluc_mode == 3) loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE" }, { mapping_function_minus_DeltaE });
     else {
         printf("[FillHistogram_fluc_SR] fluctuation index should be one of 0, 1, 2, or 3\n");
         exit(1);
@@ -267,10 +267,10 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
     // signal MC
     Loader loader_signal("tau_lfv");
     for (int i = 0; i < signal_list_.size(); i++) loader_signal.Load((input_path_1_ + std::string("/") + signal_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", signal_list_.at(i).c_str());
-    if (fluc_mode == 0) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_plus_M });
-    else if (fluc_mode == 1) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_minus_M });
-    else if (fluc_mode == 2) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_plus_DeltaE });
-    else if (fluc_mode == 3) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_minus_DeltaE });
+    if (fluc_mode == 0) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE" }, { mapping_function_plus_M });
+    else if (fluc_mode == 1) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE" }, { mapping_function_minus_M });
+    else if (fluc_mode == 2) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE" }, { mapping_function_plus_DeltaE });
+    else if (fluc_mode == 3) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE" }, { mapping_function_minus_DeltaE });
     else {
         printf("[FillHistogram_fluc_SR] fluctuation index should be one of 0, 1, 2, or 3\n");
         exit(1);
@@ -280,10 +280,10 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
     // background MC
     Loader loader_bkg("tau_lfv");
     for (int i = 0; i < background_list_.size(); i++) loader_bkg.Load((input_path_1_ + std::string("/") + background_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", background_list_.at(i).c_str());
-    if (fluc_mode == 0) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_plus_M });
-    else if (fluc_mode == 1) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_minus_M });
-    else if (fluc_mode == 2) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_plus_DeltaE });
-    else if (fluc_mode == 3) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M_inv_tau", "deltaE" }, { mapping_function_minus_DeltaE });
+    if (fluc_mode == 0) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE" }, { mapping_function_plus_M });
+    else if (fluc_mode == 1) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE" }, { mapping_function_minus_M });
+    else if (fluc_mode == 2) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE" }, { mapping_function_plus_DeltaE });
+    else if (fluc_mode == 3) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE" }, { mapping_function_minus_DeltaE });
     else {
         printf("[FillHistogram_fluc_SR] fluctuation index should be one of 0, 1, 2, or 3\n");
         exit(1);
@@ -478,14 +478,14 @@ void ABCD_method(const char* input_path_1_, const char* input_path_2_, const cha
 
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
-    loader_data.FillCustomizedTH1D(data_th1d_A, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_A });
-    loader_data.FillCustomizedTH1D(data_th1d_B, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_B });
-    loader_data.FillCustomizedTH1D(data_th1d_C, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_C });
-    loader_data.FillCustomizedTH1D(data_th1d_D, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_D });
-    loader_data.FillCustomizedTH1D(data_th1d_Aprime, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Aprime });
-    loader_data.FillCustomizedTH1D(data_th1d_Bprime, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Bprime });
-    loader_data.FillCustomizedTH1D(data_th1d_Cprime, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Cprime });
-    loader_data.FillCustomizedTH1D(data_th1d_Dprime, { "M_inv_tau", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Dprime });
+    loader_data.FillCustomizedTH1D(data_th1d_A, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_A });
+    loader_data.FillCustomizedTH1D(data_th1d_B, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_B });
+    loader_data.FillCustomizedTH1D(data_th1d_C, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_C });
+    loader_data.FillCustomizedTH1D(data_th1d_D, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_D });
+    loader_data.FillCustomizedTH1D(data_th1d_Aprime, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Aprime });
+    loader_data.FillCustomizedTH1D(data_th1d_Bprime, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Bprime });
+    loader_data.FillCustomizedTH1D(data_th1d_Cprime, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Cprime });
+    loader_data.FillCustomizedTH1D(data_th1d_Dprime, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Dprime });
     loader_data.end();
 
     // We do not open the box, So data_th1d is MC. We use the proper uncertainty

@@ -171,7 +171,7 @@ int main(int argc, char* argv[]) {
         loader.PrintInformation(("========== nominal_mass - " + std::to_string(M_left_cut_value) + " < M_alp < nominal_mass + " + std::to_string(M_right_cut_value) + " ==========").c_str());
         loader.Cut(("(" + std::to_string(deltaE_full_left) + " < deltaE) && (deltaE < " + std::to_string(deltaE_full_right) + ")").c_str());
         loader.PrintInformation(("========== " + std::to_string(deltaE_full_left) + " < deltaE < " + std::to_string(deltaE_full_right) + " ==========").c_str());
-        loader.Cut(("(" + std::to_string(M_inv_full_left) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_inv_full_right) + ")").c_str());
+        loader.Cut(("(" + std::to_string(M_inv_full_left) + "< M) && (M < " + std::to_string(M_inv_full_right) + ")").c_str());
         loader.PrintInformation(("========== " + std::to_string(M_inv_full_left) + " < M < " + std::to_string(M_inv_full_right) + " ==========").c_str());
         loader.Cut("0.5 < isSignal");
         loader.PrintInformation("========== isSignal ==========");
@@ -187,10 +187,10 @@ int main(int argc, char* argv[]) {
         deltaE.setRange("full", deltaE_full_left, deltaE_full_right);
         deltaE.setRange("peak", deltaE_peak_left, deltaE_peak_right);
 
-        loader.FillDataSet(&dataset, { &M_inv, &deltaE }, { "M_inv_tau", "deltaE" });
+        loader.FillDataSet(&dataset, { &M_inv, &deltaE }, { "M", "deltaE" });
 
         TProfile* deltaE_M_profile = new TProfile("hprof", ";#Delta E_{3#mu} [GeV];M_{3#mu} [GeV]", 100, deltaE_full_left, deltaE_full_right, M_inv_full_left, M_inv_full_right);
-        loader.FillTProfile(deltaE_M_profile, "deltaE", "M_inv_tau");
+        loader.FillTProfile(deltaE_M_profile, "deltaE", "M");
 
         loader.end();
 

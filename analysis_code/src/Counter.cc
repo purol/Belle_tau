@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     loader_one.PrintInformation("========== initial ==========");
     loader_one.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
     loader_one.PrintInformation("========== -5 delta < deltaE < 5 delta ==========");
-    loader_one.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
+    loader_one.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_one.PrintInformation("========== -5 delta < M < 5 delta ==========");
     loader_one.end();
 
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
     loader_two.PrintInformation("========== initial ==========");
     loader_two.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
     loader_two.PrintInformation("========== -15 delta < deltaE < -5 delta ==========");
-    loader_two.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M_inv_tau) && (M_inv_tau < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
+    loader_two.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_two.PrintInformation("========== -5 delta < M < 5 delta ==========");
     loader_two.end();
 
