@@ -133,8 +133,8 @@ int main(int argc, char* argv[]) {
         else if ((0.7 <= p.life) && (p.life < 7)) {
             M_left_cut_value = 0.03;
             M_right_cut_value = 0.03;
-            M_inv_full_left = 1.70;
-            M_inv_full_right = 1.83;
+            M_inv_full_left = 1.71;
+            M_inv_full_right = 1.82;
             M_inv_peak_left = 1.77;
             M_inv_peak_right = 1.785;
             deltaE_full_left = -0.3;
@@ -143,10 +143,10 @@ int main(int argc, char* argv[]) {
             deltaE_peak_right = 0.02;
         }
         else if ((7 <= p.life) && (p.life < 70)) {
-            M_left_cut_value = 0.05;
-            M_right_cut_value = 0.05;
-            M_inv_full_left = 1.65;
-            M_inv_full_right = 1.85;
+            M_left_cut_value = 0.035;
+            M_right_cut_value = 0.035;
+            M_inv_full_left = 1.71;
+            M_inv_full_right = 1.82;
             M_inv_peak_left = 1.77;
             M_inv_peak_right = 1.785;
             deltaE_full_left = -0.40;
@@ -155,10 +155,10 @@ int main(int argc, char* argv[]) {
             deltaE_peak_right = 0.025;
         }
         else if (70 <= p.life) {
-            M_left_cut_value = 0.1;
-            M_right_cut_value = 0.1;
-            M_inv_full_left = 1.6;
-            M_inv_full_right = 1.9;
+            M_left_cut_value = 0.075;
+            M_right_cut_value = 0.075;
+            M_inv_full_left = 1.65;
+            M_inv_full_right = 1.85;
             M_inv_peak_left = 1.77;
             M_inv_peak_right = 1.785;
             deltaE_full_left = -0.50;

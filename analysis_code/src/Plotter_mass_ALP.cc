@@ -108,12 +108,12 @@ int main(int argc, char* argv[]) {
             M_right_cut_value = 0.03;
         }
         else if ((7 <= p.life) && (p.life < 70)) {
-            M_left_cut_value = 0.05;
-            M_right_cut_value = 0.05;
+            M_left_cut_value = 0.035;
+            M_right_cut_value = 0.035;
         }
         else if (70 <= p.life) {
-            M_left_cut_value = 0.1;
-            M_right_cut_value = 0.1;
+            M_left_cut_value = 0.075;
+            M_right_cut_value = 0.075;
         }
 
         loader.Cut("0.5 < isSignal");
