@@ -163,8 +163,8 @@ int main(int argc, char* argv[]) {
             M_inv_peak_right = 1.785;
             deltaE_full_left = -0.50;
             deltaE_full_right = 0.30;
-            deltaE_peak_left = -0.03;
-            deltaE_peak_right = 0.03;
+            deltaE_peak_left = -0.025;
+            deltaE_peak_right = 0.025;
         }
 
         loader.Cut(("(" + std::to_string(p.mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(p.mass + M_right_cut_value) + ")").c_str());

@@ -55,3 +55,21 @@ bash ./submitter_plot_M_ALP.sh
 
 bash ./submitter_fit_2D_ALP.sh
 wait_job "2DFIT"
+
+bash ./submitter_Analysis_second_ALP.sh
+wait_job "Analyze"
+
+bash ./checker_Analysis_second.sh
+if [[ $? -ne 0 ]]; then
+  echo "Unsuccessful logs found. Stopping the one touch analysis."
+  exit 1
+fi
+
+bash ./submitter_FBDT_splitter.sh
+wait_job "MVASPLIT"
+bash ./checker_FBDT_splitter.sh
+if [[ $? -ne 0 ]]; then
+  echo "Unsuccessful logs found. Stopping the one touch analysis."
+  exit 1
+fi
+
