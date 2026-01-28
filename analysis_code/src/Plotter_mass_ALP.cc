@@ -100,20 +100,20 @@ int main(int argc, char* argv[]) {
         double M_left_cut_value = 0;
         double M_right_cut_value = 0;
         if ((0 < p.life) && (p.life < 0.7)) {
-            M_left_cut_value = 0.02;
-            M_right_cut_value = 0.02;
+            M_left_cut_value = 0.025;
+            M_right_cut_value = 0.025;
         }
         else if ((0.7 <= p.life) && (p.life < 7)) {
             M_left_cut_value = 0.03;
             M_right_cut_value = 0.03;
         }
         else if ((7 <= p.life) && (p.life < 70)) {
-            M_left_cut_value = 0.1;
-            M_right_cut_value = 0.1;
+            M_left_cut_value = 0.05;
+            M_right_cut_value = 0.05;
         }
         else if (70 <= p.life) {
-            M_left_cut_value = 0.25;
-            M_right_cut_value = 0.2;
+            M_left_cut_value = 0.1;
+            M_right_cut_value = 0.1;
         }
 
         loader.Cut("0.5 < isSignal");

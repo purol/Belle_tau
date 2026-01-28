@@ -119,8 +119,8 @@ int main(int argc, char* argv[]) {
         double deltaE_peak_left = 0;
         double deltaE_peak_right = 0;
         if ((0 < p.life) && (p.life < 0.7)) {
-            M_left_cut_value = 0.02;
-            M_right_cut_value = 0.02;
+            M_left_cut_value = 0.025;
+            M_right_cut_value = 0.025;
             M_inv_full_left = 1.71;
             M_inv_full_right = 1.82;
             M_inv_peak_left = 1.77;
@@ -135,32 +135,32 @@ int main(int argc, char* argv[]) {
             M_right_cut_value = 0.03;
             M_inv_full_left = 1.70;
             M_inv_full_right = 1.83;
-            M_inv_peak_left = 1.765;
-            M_inv_peak_right = 1.790;
+            M_inv_peak_left = 1.77;
+            M_inv_peak_right = 1.785;
             deltaE_full_left = -0.3;
             deltaE_full_right = 0.15;
             deltaE_peak_left = -0.02;
             deltaE_peak_right = 0.02;
         }
         else if ((7 <= p.life) && (p.life < 70)) {
-            M_left_cut_value = 0.1;
-            M_right_cut_value = 0.1;
-            M_inv_full_left = 1.55;
-            M_inv_full_right = 1.90;
-            M_inv_peak_left = 1.75;
-            M_inv_peak_right = 1.795;
+            M_left_cut_value = 0.05;
+            M_right_cut_value = 0.05;
+            M_inv_full_left = 1.65;
+            M_inv_full_right = 1.85;
+            M_inv_peak_left = 1.77;
+            M_inv_peak_right = 1.785;
             deltaE_full_left = -0.40;
             deltaE_full_right = 0.25;
             deltaE_peak_left = -0.025;
             deltaE_peak_right = 0.025;
         }
         else if (70 <= p.life) {
-            M_left_cut_value = 0.25;
-            M_right_cut_value = 0.2;
-            M_inv_full_left = 1.4;
-            M_inv_full_right = 2.1;
-            M_inv_peak_left = 1.75;
-            M_inv_peak_right = 1.80;
+            M_left_cut_value = 0.1;
+            M_right_cut_value = 0.1;
+            M_inv_full_left = 1.6;
+            M_inv_full_right = 1.9;
+            M_inv_peak_left = 1.77;
+            M_inv_peak_right = 1.785;
             deltaE_full_left = -0.50;
             deltaE_full_right = 0.30;
             deltaE_peak_left = -0.03;
