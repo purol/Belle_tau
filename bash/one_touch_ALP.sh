@@ -73,3 +73,11 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
+bash ./submitter_FBDTGridSearch_ALP.sh
+wait_job "FBDTTRN"
+bash ./checker_FBDTGridSearch.sh
+if [[ $? -ne 0 ]]; then
+  echo "Unsuccessful logs found. Stopping the one touch analysis."
+  exit 1
+fi
+

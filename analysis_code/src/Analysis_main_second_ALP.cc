@@ -34,6 +34,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::priority_queue<double> deltaE_boundary_max;
+    std::priority_queue<double, std::vector<double>, std::greater<double>> deltaE_boundary_min;
     std::priority_queue<double> M_boundary_max;
     std::priority_queue<double, std::vector<double>, std::greater<double>> M_boundary_min;
 
@@ -51,6 +52,7 @@ int main(int argc, char* argv[]) {
         ReadResolution((std::string(argv[4]) + "/" + resolution_filename).c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
         deltaE_boundary_max.push(deltaE_peak + 20 * deltaE_right_sigma);
+        deltaE_boundary_min.push(deltaE_peak - 20 * deltaE_left_sigma);
         M_boundary_max.push(M_peak + 20 * M_right_sigma);
         M_boundary_min.push(M_peak - 20 * M_left_sigma);
     }
@@ -63,8 +65,8 @@ int main(int argc, char* argv[]) {
 
     loader.PrintInformation("========== initial ==========");
 
-    loader.Cut(("(deltaE < " + std::to_string(deltaE_boundary_max.top()) + ")").c_str());
-    loader.PrintInformation(("========== deltaE < " + std::to_string(deltaE_boundary_max.top()) + " ==========").c_str());
+    loader.Cut(("(" + std::to_string(deltaE_boundary_min.top()) + "< deltaE) && (deltaE < " + std::to_string(deltaE_boundary_max.top()) + ")").c_str());
+    loader.PrintInformation(("========== " + std::to_string(deltaE_boundary_min.top()) + " < deltaE < " + std::to_string(deltaE_boundary_max.top()) + " ==========").c_str());
     loader.Cut(("(" + std::to_string(M_boundary_min.top()) + "< M) && (M < " + std::to_string(M_boundary_max.top()) + ")").c_str());
     loader.PrintInformation(("========== " + std::to_string(M_boundary_min.top()) + " < M < " + std::to_string(M_boundary_max.top()) + " ==========").c_str());
     //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.3, 1.9, 50, -0.9, 0.4, "M_deltaE_before_cut.png");
