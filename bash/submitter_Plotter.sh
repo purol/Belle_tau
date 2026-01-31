@@ -1,7 +1,16 @@
 #!/bin/bash
 
+merge_unique_arrays() {
+  local -A seen
+  local out=()
+  for v in "$@"; do
+    [[ -z ${seen[$v]} ]] && seen[$v]=1 && out+=("$v")
+  done
+  printf '%s\n' "${out[@]}"
+}
+
 # predefined input variables
-input_variables=(
+input_variables_one=(
     "missingEnergyOfEventCMS"
     "roeMbc__bocleanMask__bc"
     "missingMomentumOfEventCMS"
@@ -32,6 +41,43 @@ input_variables=(
     "KSFWVariables__bohso14__cm__spcleanMask__bc"
     "charge_times_ROEcharge"
 )
+input_variables_two=(
+    "missingEnergyOfEventCMS"
+    "roeMbc__bocleanMask__bc"
+    "missingMomentumOfEventCMS"
+    "cosTBTO__bocleanMask__bc"
+    "harmonicMomentThrust1"
+    "second_muon_p"
+    "KSFWVariables__bohso22__cm__spcleanMask__bc"
+    "CleoConeCS__bo1__cm__spcleanMask__bc"
+    "roeE__bocleanMask__bc"
+    "third_muon_p"
+    "cosAngleBetweenMomentumAndVertexVector"
+    "first_muon_p"
+    "KSFWVariables__bohso24__cm__spcleanMask__bc"
+    "roeEextra__bocleanMask__bc"
+    "dcosTheta"
+    "angleToClosestInList__bopi__pl__clevtshape_kinematics__bc"
+    "totalEnergyOfParticlesInList__bogamma__clevtshape_kinematics__bc"
+    "dr"
+    "missingMomentumOfEventCMS_theta"
+    "cosTBz__bocleanMask__bc"
+    "useCMSFrame__botheta__bc"
+    "dphi"
+    "useCMSFrame__bophi__bc"
+    "thrustAxisCosTheta"
+    "harmonicMomentThrust3"
+    "flightTime_dividedby_flightTimeErr"
+    "cosToThrustOfEvent"
+    "KSFWVariables__bohso14__cm__spcleanMask__bc"
+    "charge_times_ROEcharge"
+)
+input_variables=()
+mapfile -t input_variables < <(
+  merge_unique_arrays \
+    "${input_variables_one[@]}" \
+    "${input_variables_two[@]}"
+)
 
 other_variables_log=(
     "first_muon_muonID"
@@ -54,9 +100,11 @@ other_variables_linear=(
     "diff_cosToThrustOfEvent_CM"
 )
 
-all_variables=(
-    "${input_variables[@]}"
-    "${other_variables_log[@]}"
+all_variables=()
+mapfile -t all_variables < <(
+  merge_unique_arrays \
+    "${input_variables[@]}" \
+    "${other_variables_log[@]}" \
     "${other_variables_linear[@]}"
 )
 

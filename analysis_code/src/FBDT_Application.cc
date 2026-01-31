@@ -29,36 +29,46 @@ std::string ReadSelect(const char* select_path) {
 
 int main(int argc, char* argv[]) {
     /*
-    * argv[1]: variable num (ex. N in here)
-    * argv[2]: variable name
-    * argv[1 + N]: variable name
-    * argv[2 + N]: input path
-    * argv[3 + N]: input file name
-    * argv[4 + N]: output path
-    * argv[5 + N]: select.txt path 1
-    * argv[6 + N]: select.txt path 2
+    * argv[1]: variable num for region one (ex. N in here)
+    * argv[2]: variable name for region one
+    * argv[1 + N]: variable name for region one
+    * argv[2 + N]: variable num for region two (ex. M in here)
+    * argv[3 + N]: variable name for region two
+    * argv[2 + N + M]: variable name for region two
+    * argv[3 + N + M]: input path
+    * argv[4 + N + M]: input file name
+    * argv[5 + N + M]: output path
+    * argv[6 + N + M]: select.txt path 1
+    * argv[7 + N + M]: select.txt path 2
     */
 
-    int variable_num = std::atoi(argv[1]);
-    std::vector<std::string> intput_variables;
-    for (int i = 0; i < variable_num; i++) {
+    int variable_num_one = std::atoi(argv[1]);
+    std::vector<std::string> intput_variables_one;
+    for (int i = 0; i < variable_num_one; i++) {
         std::string variable_(argv[2 + i]);
-        intput_variables.push_back(variable_);
+        intput_variables_one.push_back(variable_);
     }
 
-    std::string classifier_one_path = ReadSelect(argv[5 + variable_num]);
-    std::string classifier_two_path = ReadSelect(argv[6 + variable_num]);
+    int variable_num_two = std::atoi(argv[2 + variable_num_one]);
+    std::vector<std::string> intput_variables_two;
+    for (int i = 0; i < variable_num_two; i++) {
+        std::string variable_(argv[3 + variable_num_one + i]);
+        intput_variables_two.push_back(variable_);
+    }
+
+    std::string classifier_one_path = ReadSelect(argv[6 + variable_num_one + variable_num_two]);
+    std::string classifier_two_path = ReadSelect(argv[7 + variable_num_one + variable_num_two]);
 
     ObtainWeight = MyScaleFunction_halfsplit;
 
     Loader loader("tau_lfv");
 
-    loader.Load(argv[2 + variable_num], argv[3 + variable_num], "label");
+    loader.Load(argv[3 + variable_num_one + variable_num_two], argv[4 + variable_num_one + variable_num_two], "label");
 
     loader.FastBDTApplication(intput_variables, classifier_one_path.c_str(), "BDT_output_1");
     loader.FastBDTApplication(intput_variables, classifier_two_path.c_str(), "BDT_output_2");
 
-    loader.PrintSeparateRootFile(argv[4 + variable_num], "", "");
+    loader.PrintSeparateRootFile(argv[5 + variable_num_one + variable_num_two], "", "");
 
     loader.end();
 

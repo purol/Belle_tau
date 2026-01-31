@@ -1,7 +1,38 @@
 #!/bin/bash
 
 # predefined input variables
-input_variables=(
+input_variables_one=(
+    "missingEnergyOfEventCMS"
+    "roeMbc__bocleanMask__bc"
+    "missingMomentumOfEventCMS"
+    "cosTBTO__bocleanMask__bc"
+    "harmonicMomentThrust1"
+    "second_muon_p"
+    "KSFWVariables__bohso22__cm__spcleanMask__bc"
+    "CleoConeCS__bo1__cm__spcleanMask__bc"
+    "roeE__bocleanMask__bc"
+    "third_muon_p"
+    "cosAngleBetweenMomentumAndVertexVector"
+    "first_muon_p"
+    "KSFWVariables__bohso24__cm__spcleanMask__bc"
+    "roeEextra__bocleanMask__bc"
+    "dcosTheta"
+    "angleToClosestInList__bopi__pl__clevtshape_kinematics__bc"
+    "totalEnergyOfParticlesInList__bogamma__clevtshape_kinematics__bc"
+    "dr"
+    "missingMomentumOfEventCMS_theta"
+    "cosTBz__bocleanMask__bc"
+    "useCMSFrame__botheta__bc"
+    "dphi"
+    "useCMSFrame__bophi__bc"
+    "thrustAxisCosTheta"
+    "harmonicMomentThrust3"
+    "flightTime_dividedby_flightTimeErr"
+    "cosToThrustOfEvent"
+    "KSFWVariables__bohso14__cm__spcleanMask__bc"
+    "charge_times_ROEcharge"
+)
+input_variables_two=(
     "missingEnergyOfEventCMS"
     "roeMbc__bocleanMask__bc"
     "missingMomentumOfEventCMS"
@@ -42,13 +73,17 @@ submit_GridSearch() {
   local subsample=$6
   local binning=$7
   local OutputPath=$8
+  local array_name=$9
+
+  # nameref to the array
+  local -n input_variables_ref=${array_name}
 
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/out"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log_AUC_test"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err_AUC_test"
 
-  bsub -q l -J AUCTST -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log_AUC_test/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err_AUC_test/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.err" ${Code} "${#input_variables[@]}" "${input_variables[@]}" "./${VerName}/${Analysis_VerName}" "./${VerName}/${Analysis_VerName}/${OutputPath}/out" "${nTree}" "${depth}" "${shrinkage}" "${subsample}" "${binning}"
+  bsub -q l -J AUCTST -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log_AUC_test/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err_AUC_test/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.err" ${Code} "${#input_variables_ref[@]}" "${input_variables_ref[@]}" "./${VerName}/${Analysis_VerName}" "./${VerName}/${Analysis_VerName}/${OutputPath}/out" "${nTree}" "${depth}" "${shrinkage}" "${subsample}" "${binning}"
 
 }
 
@@ -65,7 +100,7 @@ do
       do
         for binning in 5 6 7 8 9
         do
-          submit_GridSearch ${code} ${Analysis_Name} ${nTree} ${depth} ${shrinkage} ${subsample} ${binning} ${output}
+          submit_GridSearch ${code} ${Analysis_Name} ${nTree} ${depth} ${shrinkage} ${subsample} ${binning} ${output} "input_variables_one"
         done
       done
     done
@@ -84,7 +119,7 @@ do
       do
         for binning in 5 6 7 8 9
         do
-          submit_GridSearch ${code} ${Analysis_Name} ${nTree} ${depth} ${shrinkage} ${subsample} ${binning} ${output}
+          submit_GridSearch ${code} ${Analysis_Name} ${nTree} ${depth} ${shrinkage} ${subsample} ${binning} ${output} "input_variables_two"
         done
       done
     done
