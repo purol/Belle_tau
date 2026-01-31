@@ -279,7 +279,7 @@ def calculate_weights(df: pd.DataFrame) -> pd.Series:
         Scale_BelleII_off_MUMUMUMU_MC15ri,
         Scale_BelleII_off_TAUPAIR_MC15ri,
         
-        Scale_SIGNAL_BelleII_10810_MC15ri
+        Scale_SIGNAL_BelleII_10810_MC15ri,
         Scale_BelleII_10810_CHG_MC15ri,
         Scale_BelleII_10810_MIX_MC15ri,
         Scale_BelleII_10810_UUBAR_MC15ri,
