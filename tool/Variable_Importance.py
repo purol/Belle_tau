@@ -95,6 +95,24 @@ Scale_SIGNAL_BelleII_4S_MC15ri = (Nevt_SIGNAL_BelleII_4S / Nevt_SIGNAL_BelleII_4
 Scale_SIGNAL_BelleII_off_MC15ri = (Nevt_SIGNAL_BelleII_off / Nevt_SIGNAL_BelleII_off_MC15ri)
 Scale_SIGNAL_BelleII_10810_MC15ri = (Nevt_SIGNAL_BelleII_10810 / Nevt_SIGNAL_BelleII_10810_MC15ri)
 
+def symmetric_xi(x, y):
+    """
+    Direction-robust Chatterjee's xi correlation.
+    Returns max(xi(x->y), xi(y->x)).
+    """
+    x = np.asarray(x)
+    y = np.asarray(y)
+
+    # remove NaNs consistently
+    mask = np.isfinite(x) & np.isfinite(y)
+    if mask.sum() < 5:
+        return np.nan
+
+    xi_xy = chatterjeexi(x[mask], y[mask]).statistic
+    xi_yx = chatterjeexi(y[mask], x[mask]).statistic
+
+    return max(xi_xy, xi_yx)
+
 def select_variables(summary_df, train_df, region_name):
     """
     Selects variables based on separation, correlation with M and deltaE,
@@ -133,8 +151,8 @@ def select_variables(summary_df, train_df, region_name):
                 signal_spearman_corr = spearmanr(signal_df[candidate_var], signal_df[selected_var]).correlation
 
                 # Chatterjee's Xi correlation
-                bkg_xi_corr = chatterjeexi(bkg_df[candidate_var].values, bkg_df[selected_var].values).statistic
-                signal_xi_corr = chatterjeexi(signal_df[candidate_var].values, signal_df[selected_var].values).statistic
+                bkg_xi_corr = symmetric_xi(bkg_df[candidate_var].values, bkg_df[selected_var].values)
+                signal_xi_corr = symmetric_xi(signal_df[candidate_var].values,signal_df[selected_var].values)
 
                 if (
                     (abs(bkg_spearman_corr) > 0.5 and abs(signal_spearman_corr) > 0.5) or
