@@ -21,10 +21,10 @@ lumi_BelleII_10810 = 0.00469
 # --- Scale factors for BelleII 4S ---
 Scale_BelleII_4S_CHG_MC15ri = (lumi_BelleII_4S/6.0)
 Scale_BelleII_4S_MIX_MC15ri = (lumi_BelleII_4S/6.0)
-Scale_BelleII_4S_UUBAR_MC15ri = (lumi_BelleII_4S/1.0)
-Scale_BelleII_4S_DDBAR_MC15ri = (lumi_BelleII_4S/1.0)
-Scale_BelleII_4S_SSBAR_MC15ri = (lumi_BelleII_4S/1.0)
-Scale_BelleII_4S_CHARM_MC15ri = (lumi_BelleII_4S/1.0)
+Scale_BelleII_4S_UUBAR_MC15ri = (lumi_BelleII_4S/8.0)
+Scale_BelleII_4S_DDBAR_MC15ri = (lumi_BelleII_4S/8.0)
+Scale_BelleII_4S_SSBAR_MC15ri = (lumi_BelleII_4S/8.0)
+Scale_BelleII_4S_CHARM_MC15ri = (lumi_BelleII_4S/8.0)
 Scale_BelleII_4S_MUMU_MC15ri = (lumi_BelleII_4S/1.0)
 Scale_BelleII_4S_EE_MC15ri = (lumi_BelleII_4S/0.1)
 Scale_BelleII_4S_EEEE_MC15ri = (lumi_BelleII_4S/0.2)
@@ -94,6 +94,61 @@ Nevt_SIGNAL_BelleII_10810 = (Nevt_taupair_BelleII_10810 * BR_SIGNAL * 2.0)
 Scale_SIGNAL_BelleII_4S_MC15ri = (Nevt_SIGNAL_BelleII_4S / Nevt_SIGNAL_BelleII_4S_MC15ri)
 Scale_SIGNAL_BelleII_off_MC15ri = (Nevt_SIGNAL_BelleII_off / Nevt_SIGNAL_BelleII_off_MC15ri)
 Scale_SIGNAL_BelleII_10810_MC15ri = (Nevt_SIGNAL_BelleII_10810 / Nevt_SIGNAL_BelleII_10810_MC15ri)
+
+def select_variables(summary_df, train_df, region_name):
+    """
+    Selects variables based on separation, correlation with M and deltaE,
+    and correlation with already selected variables.
+    """
+    print(f"\n--- Selecting variables for Region {region_name} ---")
+
+    # Sort variables by separation in descending order
+    sorted_summary = summary_df.sort_values(by="separation", ascending=False)
+
+    # Separate signal and background dataframes
+    signal_df = train_df[train_df["label"] == 1]
+    bkg_df = train_df[train_df["label"] == 0]
+
+    selected_variables = []
+
+    for index, row in sorted_summary.iterrows():
+        candidate_var = row["varname"]
+
+        # 1. Check correlation with M and deltaE
+        if (
+            abs(row["signal_spea_M"]) < 0.1 and
+            abs(row["signal_spea_deltaE"]) < 0.1 and
+            abs(row["bkg_spea_M"]) < 0.1 and
+            abs(row["bkg_spea_deltaE"]) < 0.1 and
+            abs(row["signal_xi_M"]) < 0.1 and
+            abs(row["signal_xi_deltaE"]) < 0.1 and
+            abs(row["bkg_xi_M"]) < 0.1 and
+            abs(row["bkg_xi_deltaE"]) < 0.1
+        ):
+            is_correlated_with_selected = False
+            # 2. Check correlation with already selected variables
+            for selected_var in selected_variables:
+                # Spearman correlation
+                bkg_spearman_corr = spearmanr(bkg_df[candidate_var], bkg_df[selected_var]).correlation
+                signal_spearman_corr = spearmanr(signal_df[candidate_var], signal_df[selected_var]).correlation
+
+                # Chatterjee's Xi correlation
+                bkg_xi_corr = chatterjeexi(bkg_df[candidate_var].values, bkg_df[selected_var].values).statistic
+                signal_xi_corr = chatterjeexi(signal_df[candidate_var].values, signal_df[selected_var].values).statistic
+
+                if (
+                    (abs(bkg_spearman_corr) > 0.5 and abs(signal_spearman_corr) > 0.5) or
+                    (abs(bkg_xi_corr) > 0.5 and abs(signal_xi_corr) > 0.5)
+                ):
+                    is_correlated_with_selected = True
+                    break  # No need to check other selected variables
+
+            if not is_correlated_with_selected:
+                selected_variables.append(candidate_var)
+
+    print(f"Selected {len(selected_variables)} variables for Region {region_name}:")
+    print(selected_variables)
+    return selected_variables
 
 def calculate_weights(df: pd.DataFrame) -> pd.Series:
     """
@@ -630,15 +685,21 @@ summary_result.to_csv("Importance_one.csv")
 create_and_plot_correlation_matrices(df_train_one[df_train_one["label"] == 1], summary_result, "one_signal")
 create_and_plot_correlation_matrices(df_train_one[df_train_one["label"] == 0], summary_result, "one_bkg")
 
+# Select variables for region one
+selected_vars_one = select_variables(summary_result, df_train_one, "one")
+
 # ====================================================== region two ====================================================== #
 # filter
 df_train_two = df_train[((resolution["deltaE"]["peak"] - 15*resolution["deltaE"]["left_sigma"]) < df_train["deltaE"]) & (df_train["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
-df_train_two = df_train_two[((resolution["M"]["peak"] - 3*resolution["M"]["left_sigma"]) < df_train_two["M"]) & (df_train_two["M"] < (resolution["M"]["peak"] + 3*resolution["M"]["right_sigma"]))]
+df_train_two = df_train_two[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_train_two["M"]) & (df_train_two["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
 df_test_two = df_test[((resolution["deltaE"]["peak"] - 15*resolution["deltaE"]["left_sigma"]) < df_test["deltaE"]) & (df_test["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
-df_test_two = df_test_two[((resolution["M"]["peak"] - 3*resolution["M"]["left_sigma"]) < df_test_two["M"]) & (df_test_two["M"] < (resolution["M"]["peak"] + 3*resolution["M"]["right_sigma"]))]
+df_test_two = df_test_two[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_test_two["M"]) & (df_test_two["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
 
 summary_result = summarize_variable_metrics(df_train_two)
 print(summary_result)
 summary_result.to_csv("Importance_two.csv")
 create_and_plot_correlation_matrices(df_train_two[df_train_two["label"] == 1], summary_result, "two_signal")
 create_and_plot_correlation_matrices(df_test_two[df_test_two["label"] == 0], summary_result, "two_bkg")
+
+# Select variables for region two
+selected_vars_two = select_variables(summary_result, df_train_two, "two")
