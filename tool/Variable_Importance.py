@@ -364,11 +364,23 @@ def summarize_variable_metrics(df, bins=1000, skip_cols=["label", "weight"]):
 
     return pd.DataFrame(results).sort_values(by="separation", ascending=False)
 
-def create_and_plot_correlation_matrices(df, summary_df, region_name, separation_thres=0.01, n_top=30):
+def create_and_plot_correlation_matrices(df, summary_df, region_name, separation_thres=-1, n_top=40):
     print(f"\n--- Generating Correlation Matrices for Region {region_name} ---")
 
-    # --- 1. Select variables by separation threshold ---
-    filtered_summary = summary_df[summary_df["separation"] >= separation_thres]
+    # --- 1. Select variables by separation threshold and correlations ---
+    filtered_summary = summary_df[
+    (summary_df["separation"] >= separation_thres) &
+
+    (summary_df["signal_spea_M"].abs() < 0.1) &
+    (summary_df["signal_spea_deltaE"].abs() < 0.1) &
+    (summary_df["bkg_spea_M"].abs() < 0.1) &
+    (summary_df["bkg_spea_deltaE"].abs() < 0.1) &
+
+    (summary_df["signal_xi_M"].abs() < 0.1) &
+    (summary_df["signal_xi_deltaE"].abs() < 0.1) &
+    (summary_df["bkg_xi_M"].abs() < 0.1) &
+    (summary_df["bkg_xi_deltaE"].abs() < 0.1)
+    ]
 
     if filtered_summary.empty:
         print(f"No variables passed separation >= {separation_thres}")
