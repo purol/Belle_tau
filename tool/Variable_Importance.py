@@ -364,19 +364,27 @@ def summarize_variable_metrics(df, bins=1000, skip_cols=["label", "weight"]):
 
     return pd.DataFrame(results).sort_values(by="separation", ascending=False)
 
-def create_and_plot_correlation_matrices(df, summary_df, region_name, n_top=300):
+def create_and_plot_correlation_matrices(df, summary_df, region_name, separation_thres=0.01, n_top=30):
     print(f"\n--- Generating Correlation Matrices for Region {region_name} ---")
 
-    # --- 1. Select top variables ---
-    top_vars = summary_df.head(n_top)['varname'].tolist()
+    # --- 1. Select variables by separation threshold ---
+    filtered_summary = summary_df[summary_df["separation"] >= separation_thres]
+
+    if filtered_summary.empty:
+        print(f"No variables passed separation >= {separation_thres}")
+        return
+
+    # --- 2. Select top variables ---
+    filtered_summary = filtered_summary.sort_values(by="separation", ascending=False).head(n_top)
+    top_vars = filtered_summary["varname"].tolist()
     df_top = df[top_vars]
     print(f"Selected top {len(top_vars)} variables with highest separation.")
 
-    # --- 2. Calculate Spearman correlation matrix ---
+    # --- 3. Calculate Spearman correlation matrix ---
     print("Calculating Spearman correlation matrix...")
     spearman_corr = df_top.corr(method='spearman')
 
-    # --- 3. Plot Spearman heatmap ---
+    # --- 4. Plot Spearman heatmap ---
     plt.figure(figsize=(20, 18))
     sns.heatmap(spearman_corr, annot=False, cmap='viridis', fmt=".2f")
     plt.title(f'Spearman Correlation Matrix (Top {n_top} Variables) - Region {region_name}', fontsize=16)
@@ -391,7 +399,7 @@ def create_and_plot_correlation_matrices(df, summary_df, region_name, n_top=300)
     # --- 5. csv Spearman heatmap ---
     spearman_corr.to_csv(f'spearman_correlation_heatmap_region_{region_name}.csv')
 
-    # --- 4. Calculate Chatterjee's Xi correlation matrix ---
+    # --- 6. Calculate Chatterjee's Xi correlation matrix ---
     print("Calculating Chatterjee's Xi correlation matrix (this may take a while)...")
     xi_corr_matrix = pd.DataFrame(index=top_vars, columns=top_vars, dtype=np.float64)
 
@@ -415,7 +423,7 @@ def create_and_plot_correlation_matrices(df, summary_df, region_name, n_top=300)
                     xi_corr_matrix.loc[var1, var2] = np.nan
                     xi_corr_matrix.loc[var2, var1] = np.nan
 
-    # --- 5. Plot Xi heatmap ---
+    # --- 7. Plot Xi heatmap ---
     plt.figure(figsize=(20, 18))
     sns.heatmap(xi_corr_matrix, annot=False, cmap='plasma', fmt=".2f")
     plt.title(f"Chatterjee's Xi Correlation Matrix (Top {n_top} Variables) - Region {region_name}", fontsize=16)
@@ -427,7 +435,7 @@ def create_and_plot_correlation_matrices(df, summary_df, region_name, n_top=300)
     plt.close()
     print(f"Saved Chatterjee's Xi heatmap to {xi_filename}")
 
-    # --- 5. csv Xi heatmap ---
+    # --- 8. csv Xi heatmap ---
     xi_corr_matrix.to_csv(f'xi_correlation_heatmap_region_{region_name}.csv')
 
 parser = argparse.ArgumentParser()
