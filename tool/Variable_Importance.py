@@ -456,10 +456,6 @@ parser.add_argument(
         "y_uncertainty",
         "z_uncertainty",
         "beamE",
-        "isSignal",
-        "isSignalAcceptMissingNeutrino",
-        "extraInfo__boDecayHash__bc",
-        "extraInfo__boDecayHashExtended__bc",
         "extraInfo__bodecayModeID__bc",
         "eventExtraInfo__boMySampleType__bc",
         "prodVertexX",
@@ -479,7 +475,7 @@ parser.add_argument(
         "MyEventType",
         "MyEnergyType"
     ],
-    help='List of removed variables'
+    help='List of removed variables. This variables are read but not used to calculate separation power and correlation.'
 )
 parser.add_argument(
     '--input_path', 
@@ -573,6 +569,31 @@ def read_all_root_files_self_function(
 
     # Create a list of "file:tree" strings for uproot
     files_with_trees = [f"{path}:{tree_name}" for path in root_files]
+
+    # remove unneeded variables
+    EXCLUDE_SUBSTRINGS = ( "OneMuon", "TwoMuon", "ThreeMuon", "FTDL", "PSNM", "bogamma__clcut_v", "isSignal", "DecayHash", "MCMode" )
+    branches_postfilter = []
+    if branches is None:
+        with uproot.open(files_with_trees[0]) as tree:
+            all_branches = tree.keys()
+        for b in all_branches:
+            skip = False
+            for s in EXCLUDE_SUBSTRINGS:
+                if s in b:
+                    skip = True
+                    break
+            if not skip:
+                branches_postfilter.append(b)
+    else:
+        for b in branches:
+            skip = False
+            for s in EXCLUDE_SUBSTRINGS:
+                if s in b:
+                    skip = True
+                    break
+            if not skip:
+                branches_postfilter.append(b)
+        
     
     # --- 2. Pre-scan to get total entries for tqdm ---
     total_entries = 0
@@ -595,7 +616,7 @@ def read_all_root_files_self_function(
     try:
         file_iterator = uproot.iterate(
             files_with_trees,
-            expressions=branches,
+            expressions=branches_postfilter,
             library="pd",
             step_size=step_size
         )
@@ -619,6 +640,7 @@ def read_all_root_files_self_function(
     return pd.concat(dfs, ignore_index=True)
 
 def read_with_weight(paths, tree_name, input_variables):
+    print("start to read %s" % paths)
     df = read_all_root_files_self_function(dirs=paths, tree_name=tree_name, branches=input_variables)
     if not df.empty:
         df["weight"] = calculate_weights(df)
