@@ -457,16 +457,12 @@ parser.add_argument(
         "z_uncertainty",
         "beamE",
         "extraInfo__bodecayModeID__bc",
-        "eventExtraInfo__boMySampleType__bc",
         "prodVertexX",
         "prodVertexY",
         "prodVertexZ",
         "prodVertexXErr",
         "prodVertexYErr",
         "prodVertexZErr",
-        "extraInfo__boOneMuon_minET2ETIsoScoreAsWeightedAvg_mu_taulfv_0_ECL_KLM__bc",
-        "extraInfo__boTwoMuon_minET2ETIsoScoreAsWeightedAvg_mu_taulfv_0_ECL_KLM__bc",
-        "extraInfo__boThreeMuon_minET2ETIsoScoreAsWeightedAvg_mu_taulfv_0_ECL_KLM__bc",
         "eventExtraInfo__boEventCode__bc",
         "first_muon_isolation",
         "second_muon_isolation",
@@ -709,8 +705,8 @@ df_train = pd.concat([df_SIGNAL_train, df_BKG_train], ignore_index=True)
 df_test = pd.concat([df_SIGNAL_test, df_BKG_test], ignore_index=True)
 
 # remove unneeded features
-df_train = df_train.drop(columns=removed_variables)
-df_test = df_test.drop(columns=removed_variables)
+df_train = df_train.drop(columns=removed_variables, errors='ignore')
+df_test = df_test.drop(columns=removed_variables, errors='ignore')
 
 # ====================================================== region one ====================================================== #
 # filter
