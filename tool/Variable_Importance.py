@@ -12,6 +12,9 @@ from scipy.stats import spearmanr, chatterjeexi
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from itertools import combinations
+from concurrent.futures import ProcessPoolExecutor
+
 # =========== scale factor for MC15ri ===========
 # Luminosity (ab-1)
 lumi_BelleII_4S = 0.36357
@@ -95,6 +98,31 @@ Scale_SIGNAL_BelleII_4S_MC15ri = (Nevt_SIGNAL_BelleII_4S / Nevt_SIGNAL_BelleII_4
 Scale_SIGNAL_BelleII_off_MC15ri = (Nevt_SIGNAL_BelleII_off / Nevt_SIGNAL_BelleII_off_MC15ri)
 Scale_SIGNAL_BelleII_10810_MC15ri = (Nevt_SIGNAL_BelleII_10810 / Nevt_SIGNAL_BelleII_10810_MC15ri)
 
+def calculate_symmetric_xi_for_pair(args):
+    """
+    Worker function for parallel execution.
+    Calculates symmetric xi for a single pair of variable names.
+    """
+    df, var1, var2 = args
+    try:
+        # Using .values is crucial for performance with multiprocessing
+        x = df[var1].values
+        y = df[var2].values
+
+        # Remove NaNs consistently before passing to the function
+        mask = np.isfinite(x) & np.isfinite(y)
+        if mask.sum() < 5: # Not enough data points to be meaningful
+             return var1, var2, np.nan
+
+        xi_xy = chatterjeexi(x[mask], y[mask]).statistic
+        xi_yx = chatterjeexi(y[mask], x[mask]).statistic
+        xi_val = max(xi_xy, xi_yx)
+        return var1, var2, xi_val
+    except Exception as e:
+        # This will run in a separate process, so printing might be messy.
+        # It's better to just return NaN on failure.
+        return var1, var2, np.nan
+        
 def symmetric_xi(x, y):
     """
     Direction-robust Chatterjee's xi correlation.
@@ -149,15 +177,17 @@ def select_variables(summary_df, train_df, region_name):
                 # Spearman correlation
                 bkg_spearman_corr = spearmanr(bkg_df[candidate_var], bkg_df[selected_var]).correlation
                 signal_spearman_corr = spearmanr(signal_df[candidate_var], signal_df[selected_var]).correlation
+                if (abs(bkg_spearman_corr) > 0.8 and abs(signal_spearman_corr) > 0.8):
+                    is_correlated_with_selected = True
+                    break  # No need to check other selected variables
 
+            for selected_var in selected_variables:
+                if is_correlated_with_selected: # already it turns out that there is a correlation from spearman
+                    break
                 # Chatterjee's Xi correlation
                 bkg_xi_corr = symmetric_xi(bkg_df[candidate_var].values, bkg_df[selected_var].values)
                 signal_xi_corr = symmetric_xi(signal_df[candidate_var].values,signal_df[selected_var].values)
-
-                if (
-                    (abs(bkg_spearman_corr) > 0.8 and abs(signal_spearman_corr) > 0.8) or
-                    (abs(bkg_xi_corr) > 0.8 and abs(signal_xi_corr) > 0.8)
-                ):
+                if (abs(bkg_xi_corr) > 0.8 and abs(signal_xi_corr) > 0.8):
                     is_correlated_with_selected = True
                     break  # No need to check other selected variables
 
@@ -364,7 +394,7 @@ def summarize_variable_metrics(df, bins=1000, skip_cols=["label", "weight"]):
 
     return pd.DataFrame(results).sort_values(by="separation", ascending=False)
 
-def create_and_plot_correlation_matrices(df, summary_df, region_name, separation_thres=-1, n_top=300):
+def create_and_plot_correlation_matrices(df, summary_df, region_name, separation_thres=0.001, n_top=300):
     print(f"\n--- Generating Correlation Matrices for Region {region_name} ---")
 
     # --- 1. Select variables by separation threshold and correlations ---
@@ -411,31 +441,21 @@ def create_and_plot_correlation_matrices(df, summary_df, region_name, separation
     # --- 5. csv Spearman heatmap ---
     spearman_corr.to_csv(f'spearman_correlation_heatmap_region_{region_name}.csv')
 
-    # --- 6. Calculate Chatterjee's Xi correlation matrix ---
-    print("Calculating Chatterjee's Xi correlation matrix (this may take a while)...")
-    xi_corr_matrix = pd.DataFrame(index=top_vars, columns=top_vars, dtype=np.float64)
+    # --- 6. Calculate Chatterjee's Xi correlation matrix (PARALLELIZED)---
+    print("Calculating Chatterjee's Xi correlation matrix (in parallel)...")
+    xi_corr_matrix = pd.DataFrame(1.0, index=top_vars, columns=top_vars, dtype=np.float64)
 
-    # Use tqdm for progress tracking
-    for i in tqdm.tqdm(range(len(top_vars)), desc="Calculating Xi"):
-        for j in range(i, len(top_vars)):
-            var1 = top_vars[i]
-            var2 = top_vars[j]
-            if i == j:
-                xi_corr_matrix.loc[var1, var2] = 1.0
-            else:
-                # Ensure data is numpy array for chatterjeexi
-                x = df_top[var1].values
-                y = df_top[var2].values
-                try:
-                    xi_xy = chatterjeexi(x, y).statistic
-                    xi_yx = chatterjeexi(y, x).statistic
-                    xi_val = max(xi_xy, xi_yx)
-                    xi_corr_matrix.loc[var1, var2] = xi_val
-                    xi_corr_matrix.loc[var2, var1] = xi_val # set just symmetric
-                except Exception as e:
-                    print(f"Could not calculate Xi for ({var1}, {var2}): {e}")
-                    xi_corr_matrix.loc[var1, var2] = np.nan
-                    xi_corr_matrix.loc[var2, var1] = np.nan
+    variable_pairs = list(combinations(top_vars, 2))
+
+    tasks = [(df_top, var1, var2) for var1, var2 in variable_pairs]
+
+    with ProcessPoolExecutor() as executor:
+        # Use tqdm to track progress of the parallel execution
+        results = list(tqdm.tqdm(executor.map(calculate_symmetric_xi_for_pair, tasks), total=len(tasks), desc="Calculating Xi"))
+
+    for var1, var2, xi_val in results:
+        xi_corr_matrix.loc[var1, var2] = xi_val
+        xi_corr_matrix.loc[var2, var1] = xi_val # It's a symmetric matrix
 
     # --- 7. Plot Xi heatmap ---
     plt.figure(figsize=(20, 18))
