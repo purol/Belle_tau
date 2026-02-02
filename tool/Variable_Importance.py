@@ -155,7 +155,7 @@ def select_variables(summary_df, train_df, region_name):
                 signal_xi_corr = symmetric_xi(signal_df[candidate_var].values,signal_df[selected_var].values)
 
                 if (
-                    (abs(bkg_spearman_corr) > 0.8 and abs(signal_spearman_corr) > 0.8) and
+                    (abs(bkg_spearman_corr) > 0.8 and abs(signal_spearman_corr) > 0.8) or
                     (abs(bkg_xi_corr) > 0.8 and abs(signal_xi_corr) > 0.8)
                 ):
                     is_correlated_with_selected = True
