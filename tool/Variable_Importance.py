@@ -155,8 +155,8 @@ def select_variables(summary_df, train_df, region_name):
                 signal_xi_corr = symmetric_xi(signal_df[candidate_var].values,signal_df[selected_var].values)
 
                 if (
-                    (abs(bkg_spearman_corr) > 0.5 and abs(signal_spearman_corr) > 0.5) or
-                    (abs(bkg_xi_corr) > 0.5 and abs(signal_xi_corr) > 0.5)
+                    (abs(bkg_spearman_corr) > 0.8 and abs(signal_spearman_corr) > 0.8) and
+                    (abs(bkg_xi_corr) > 0.8 and abs(signal_xi_corr) > 0.8)
                 ):
                     is_correlated_with_selected = True
                     break  # No need to check other selected variables
@@ -342,10 +342,10 @@ def summarize_variable_metrics(df, bins=1000, skip_cols=["label", "weight"]):
             bkg_spea_M = spearmanr(bkg_df[feature], bkg_df["M"]).correlation if "M" in bkg_df.columns else np.nan
             bkg_spea_de  = spearmanr(bkg_df[feature], bkg_df["deltaE"]).correlation if "deltaE" in bkg_df.columns else np.nan
 
-            signal_xi_M = chatterjeexi(signal_df[feature].values, signal_df["M"].values).statistic if "M" in signal_df.columns else np.nan
-            signal_xi_de  = chatterjeexi(signal_df[feature].values, signal_df["deltaE"].values).statistic if "deltaE" in signal_df.columns else np.nan
-            bkg_xi_M = chatterjeexi(bkg_df[feature].values, bkg_df["M"].values).statistic if "M" in bkg_df.columns else np.nan
-            bkg_xi_de  = chatterjeexi(bkg_df[feature].values, bkg_df["deltaE"].values).statistic if "deltaE" in bkg_df.columns else np.nan
+            signal_xi_M = max(chatterjeexi(signal_df[feature].values, signal_df["M"].values).statistic, chatterjeexi(signal_df["M"].values, signal_df[feature].values).statistic) if "M" in signal_df.columns else np.nan
+            signal_xi_de  = max(chatterjeexi(signal_df[feature].values, signal_df["deltaE"].values).statistic, chatterjeexi(signal_df["deltaE"].values, signal_df[feature].values).statistic) if "deltaE" in signal_df.columns else np.nan
+            bkg_xi_M = max(chatterjeexi(bkg_df[feature].values, bkg_df["M"].values).statistic, chatterjeexi(bkg_df["M"].values, bkg_df[feature].values).statistic) if "M" in bkg_df.columns else np.nan
+            bkg_xi_de  = max(chatterjeexi(bkg_df[feature].values, bkg_df["deltaE"].values).statistic, chatterjeexi(bkg_df["deltaE"].values, bkg_df[feature].values).statistic) if "deltaE" in bkg_df.columns else np.nan
 
             results.append({
                 "varname": feature,
@@ -364,7 +364,7 @@ def summarize_variable_metrics(df, bins=1000, skip_cols=["label", "weight"]):
 
     return pd.DataFrame(results).sort_values(by="separation", ascending=False)
 
-def create_and_plot_correlation_matrices(df, summary_df, region_name, separation_thres=-1, n_top=40):
+def create_and_plot_correlation_matrices(df, summary_df, region_name, separation_thres=-1, n_top=300):
     print(f"\n--- Generating Correlation Matrices for Region {region_name} ---")
 
     # --- 1. Select variables by separation threshold and correlations ---
@@ -427,9 +427,11 @@ def create_and_plot_correlation_matrices(df, summary_df, region_name, separation
                 x = df_top[var1].values
                 y = df_top[var2].values
                 try:
-                    xi_val = chatterjeexi(x, y).statistic
+                    xi_xy = chatterjeexi(x, y).statistic
+                    xi_yx = chatterjeexi(y, x).statistic
+                    xi_val = max(xi_xy, xi_yx)
                     xi_corr_matrix.loc[var1, var2] = xi_val
-                    xi_corr_matrix.loc[var2, var1] = xi_val # Matrix is symmetric
+                    xi_corr_matrix.loc[var2, var1] = xi_val # set just symmetric
                 except Exception as e:
                     print(f"Could not calculate Xi for ({var1}, {var2}): {e}")
                     xi_corr_matrix.loc[var1, var2] = np.nan
