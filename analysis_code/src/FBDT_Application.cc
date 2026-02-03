@@ -65,8 +65,8 @@ int main(int argc, char* argv[]) {
 
     loader.Load(argv[3 + variable_num_one + variable_num_two], argv[4 + variable_num_one + variable_num_two], "label");
 
-    loader.FastBDTApplication(intput_variables, classifier_one_path.c_str(), "BDT_output_1");
-    loader.FastBDTApplication(intput_variables, classifier_two_path.c_str(), "BDT_output_2");
+    loader.FastBDTApplication(intput_variables_one, classifier_one_path.c_str(), "BDT_output_1");
+    loader.FastBDTApplication(intput_variables_two, classifier_two_path.c_str(), "BDT_output_2");
 
     loader.PrintSeparateRootFile(argv[5 + variable_num_one + variable_num_two], "", "");
 
