@@ -191,6 +191,7 @@ plt.grid(True, ls="--", alpha=0.6)
 plt.legend()
 plt.tight_layout()
 plt.show()
+plt.savefig('roc_curve.png')
 
 
 # ================= basf2 ALIAS EXPORT =================
