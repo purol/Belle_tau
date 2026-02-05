@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version="Ichirin"
+version="Konpkau"
 script="./python/gbasf2_${version}.py"
 Skim_path="/home/belle2/junewoo/storage_ghi/tau_SKIM_2"
 Ntuple_path="/home/belle2/junewoo/storage_ghi/tau_Ntuple"

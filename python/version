@@ -21,3 +21,5 @@ gbasf2_Tenshi.py
 gbasf2_Saki.py
 - (do not Treefit for tau & do treefit for alpha) ->
 gbasf2_Ichirin.py
+- (do Treefit for prompt signal tau & prompt pi pi pi control sample) ->
+gbasf2_Konpaky.py

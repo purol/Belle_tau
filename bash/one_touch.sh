@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export Analysis_Name="Ichirin"
+export Analysis_Name="Konpaku"
 export Analysis_VerName="v000"
 
 export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau"
