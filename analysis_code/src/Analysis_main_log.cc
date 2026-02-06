@@ -91,8 +91,8 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== initial ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_M_deltaE_selection").c_str(), "", "");
-    loader.Cut("(-0.9 < deltaE) && (deltaE < 0.4)");
-    loader.PrintInformation("========== -0.9 < deltaE < 0.4 ==========");
+    loader.Cut("(-0.5 < deltaE) && (deltaE < 0.4)");
+    loader.PrintInformation("========== -0.5 < deltaE < 0.4 ==========");
     loader.Cut("(1.5 < M) && (M < 1.9)");
     loader.PrintInformation("========== 1.5 < M < 1.9 ==========");
     //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.3, 1.9, 50, -0.9, 0.4, "M_deltaE_before_cut.png");
