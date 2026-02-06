@@ -61,10 +61,8 @@ int main(int argc, char* argv[]) {
 
     Loader loader("tau_lfv");
 
-    loader.Load(argv[1], "root", "label");
-
     // It is prompt decay analysis
-    loader.Cut("(0.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 1.5)");
+    loader.LoadWithCut(argv[1], "root", "label", "(0.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 1.5)");
 
     loader.ConditionalPairDefineNewVariable(momentum_muonmomentum, 0, "first_muon_p");
     loader.ConditionalPairDefineNewVariable(momentum_muonmomentum, 1, "second_muon_p");
