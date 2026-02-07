@@ -177,7 +177,7 @@ def select_variables(summary_df, train_df, region_name):
                 # Spearman correlation
                 bkg_spearman_corr = spearmanr(bkg_df[candidate_var], bkg_df[selected_var]).correlation
                 signal_spearman_corr = spearmanr(signal_df[candidate_var], signal_df[selected_var]).correlation
-                if (abs(bkg_spearman_corr) > 0.8 and abs(signal_spearman_corr) > 0.8):
+                if (abs(bkg_spearman_corr) > 0.5 and abs(signal_spearman_corr) > 0.5):
                     is_correlated_with_selected = True
                     break  # No need to check other selected variables
 
@@ -187,7 +187,7 @@ def select_variables(summary_df, train_df, region_name):
                 # Chatterjee's Xi correlation
                 bkg_xi_corr = symmetric_xi(bkg_df[candidate_var].values, bkg_df[selected_var].values)
                 signal_xi_corr = symmetric_xi(signal_df[candidate_var].values,signal_df[selected_var].values)
-                if (abs(bkg_xi_corr) > 0.8 and abs(signal_xi_corr) > 0.8):
+                if (abs(bkg_xi_corr) > 0.5 and abs(signal_xi_corr) > 0.5):
                     is_correlated_with_selected = True
                     break  # No need to check other selected variables
 
