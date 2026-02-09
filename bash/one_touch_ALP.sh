@@ -81,3 +81,8 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
+bash ./submitter_FBDT_AUC_train_ALP.sh
+wait_job "AUCTRN"
+
+bash ./submitter_FBDT_AUC_test_ALP.sh
+wait_job "AUCTST"
