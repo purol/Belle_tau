@@ -89,7 +89,7 @@ submit_GridSearch() {
   # nameref to the array
   local -n input_variables_ref=${array_name}
 
-  get_params "./${VerName}/${Analysis_VerName}/${SampleName}/final_output" | while read mass life A B; do
+  get_params "./${VerName}/${Analysis_VerName}/ALP/final_output" | while read mass life A B; do
 
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/out_${mass}_${life}_${A}_${B}"

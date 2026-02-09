@@ -12,7 +12,7 @@ get_params() {
 check_log_files(){
   local VerName=$1 # ex. Alice
 
-  get_params "./${VerName}/${Analysis_VerName}/${SampleName}/final_output" | while read mass life A B; do
+  get_params "./${VerName}/${Analysis_VerName}/ALP/final_output" | while read mass life A B; do
 
     LogDirName="./${VerName}/${Analysis_VerName}/GridSearch_one/log_${mass}_${life}_${A}_${B}" 
     if compgen -G "${LogDirName}/*.log" > /dev/null; then
