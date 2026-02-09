@@ -104,11 +104,11 @@ int main(int argc, char* argv[]) {
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_PrimarymuonID_selection").c_str(), "", "");
     loader.Cut("0.5 < first_muon_muonID");
-    loader.PrintInformation("========== 0.5 < muonID for leading muon ==========");
+    loader.PrintInformation("========== 0.6 < muonID for leading muon ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_SecondarymuonID_selection").c_str(), "", "");
     loader.Cut("0.5 < second_muon_muonID");
-    loader.PrintInformation("========== 0.5 < muonID for secondary muon ==========");
+    loader.PrintInformation("========== 0.6 < muonID for secondary muon ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_ThirdmuonID_selection").c_str(), "", "");
     loader.Cut("0.1 < third_muon_muonID");
