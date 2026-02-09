@@ -102,7 +102,7 @@ int main(int argc, char* argv[]) {
     // get best result
     bool find_good_FBDT = false;
     for (int i = 0; i < Nlist; i++) {
-        if ((Datas.at(i).train_AUC / Datas.at(i).test_AUC) < 1.005) {
+        if ((Datas.at(i).train_AUC / Datas.at(i).test_AUC) < 1.015) {
             FILE* fp;
             fp = fopen((std::string(argv[2]) + "/selected.txt").c_str(), "w");
             fprintf(fp, "%u_%u_%lf_%lf_%u %lf %lf\n", Datas.at(i).nTrees, Datas.at(i).depth, Datas.at(i).shrinkage, Datas.at(i).subsample, Datas.at(i).binning, Datas.at(i).train_AUC, Datas.at(i).test_AUC);
