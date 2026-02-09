@@ -1,5 +1,13 @@
 #!/bin/bash
 
+get_params() {
+  local dir="$1"
+
+  ls "$dir" | \
+  sed -n 's/.*alpha_mass\([0-9.+-eE]\+\)_life\([0-9.+-eE]\+\)_A\([0-9+-]\+\)_B\([0-9+-]\+\).*/\1 \2 \3 \4/p' | \
+  sort -u
+}
+
 # predefined input variables
 input_variables_one=(
     "missingEnergyOfEventCMS"
@@ -81,27 +89,30 @@ submit_GridSearch() {
   # nameref to the array
   local -n input_variables_ref=${array_name}
 
-  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
-  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/out"
-  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
-  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
+  get_params "./${VerName}/${Analysis_VerName}/${SampleName}/final_output" | while read mass life A B; do
 
-  bsub -q l -J FBDTTRN -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.err" ${Code} "${#input_variables_ref[@]}" "${input_variables_ref[@]}" "./${VerName}/${Analysis_VerName}" "./${VerName}/${Analysis_VerName}/${OutputPath}/out" "${nTree}" "${depth}" "${shrinkage}" "${subsample}" "${binning}"
+    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
+    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/out_${mass}_${life}_${A}_${B}"
+    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log_${mass}_${life}_${A}_${B}"
+    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err_${mass}_${life}_${A}_${B}"
+
+    bsub -q s -J FBDTTRN -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log_${mass}_${life}_${A}_${B}/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err_${mass}_${life}_${A}_${B}/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.err" ${Code} "${#input_variables_ref[@]}" "${input_variables_ref[@]}" "./${VerName}/${Analysis_VerName}" "./${VerName}/${Analysis_VerName}/${OutputPath}/out_${mass}_${life}_${A}_${B}" "${nTree}" "${depth}" "${shrinkage}" "${subsample}" "${binning}" "${mass}" "${life}" "${A}" "${B}"
+  done
 
 }
 
 
-code="${Belle_tau_DIR}/analysis_code/bin/FBDT_GridSearch_one"
+code="${Belle_tau_DIR}/analysis_code/bin/FBDT_GridSearch_one_ALP"
 output="GridSearch_one"
-for nTree in 100 250 500 750 1000
+for nTree in 100 250
 do
-  for depth in 1 2 3 4
+  for depth in 1 2
   do
-    for shrinkage in 0.01 0.05 0.1
+    for shrinkage in 0.01 0.1
     do
-      for subsample in 0.01 0.3 0.4 0.5 0.6 0.7
+      for subsample in 0.01 0.5
       do
-        for binning in 5 6 7 8 9
+        for binning in 8
         do
           submit_GridSearch ${code} ${Analysis_Name} ${nTree} ${depth} ${shrinkage} ${subsample} ${binning} ${output} "input_variables_one"
         done
@@ -111,17 +122,17 @@ do
 done
 
 
-code="${Belle_tau_DIR}/analysis_code/bin/FBDT_GridSearch_two"
+code="${Belle_tau_DIR}/analysis_code/bin/FBDT_GridSearch_two_ALP"
 output="GridSearch_two"
-for nTree in 100 250 500 750 1000
+for nTree in 100 250
 do
-  for depth in 1 2 3 4
+  for depth in 1 2
   do
-    for shrinkage in 0.01 0.05 0.1
+    for shrinkage in 0.01 0.1
     do
-      for subsample in 0.01 0.3 0.4 0.5 0.6 0.7
+      for subsample in 0.01 0.5
       do
-        for binning in 5 6 7 8 9
+        for binning in 8
         do
           submit_GridSearch ${code} ${Analysis_Name} ${nTree} ${depth} ${shrinkage} ${subsample} ${binning} ${output} "input_variables_two"
         done
