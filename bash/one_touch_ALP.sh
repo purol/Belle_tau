@@ -86,3 +86,6 @@ wait_job "AUCTRN"
 
 bash ./submitter_FBDT_AUC_test_ALP.sh
 wait_job "AUCTST"
+
+bash ./submitter_ReadGridSearchFiles_ALP.sh
+wait_job "GRIDFILE"
