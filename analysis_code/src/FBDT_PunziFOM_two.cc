@@ -60,6 +60,8 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== -15 delta < deltaE < -5 delta ==========");
     loader.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader.PrintInformation("========== -5 delta < M < 5 delta ==========");
+    loader.Cut("0.5 < third_muon_muonID");
+    loader.PrintInformation("========== 0.5 < muonID for third muon ==========");
 
     loader.DrawPunziFOM(argv[2], 0.0, 1.0, 100, Nevt_SIGNAL, 1.28, 1, (std::string(argv[1])  + "/" + std::string(argv[3]) + "/PunziFOM.png").c_str());
 

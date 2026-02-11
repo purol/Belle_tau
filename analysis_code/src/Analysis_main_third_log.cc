@@ -52,6 +52,9 @@ int main(int argc, char* argv[]) {
     loader.Cut(cut_total.c_str());
     loader.PrintInformation(("========== BDT1 > " + std::to_string(BDT_cut_1) + ", BDT2 > " + std::to_string(BDT_cut_2) + " ==========").c_str());
 
+    loader.Cut("0.5 < third_muon_muonID");
+    loader.PrintInformation("========== 0.5 < muonID for third muon ==========");
+
     loader.RandomBCS();
     loader.IsBCSValid();
     loader.PrintInformation("========== Random BCS ==========");
