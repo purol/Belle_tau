@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
     TLegend* legend = new TLegend(0.15, 0.8, 0.35, 0.9); legend->SetFillStyle(0); legend->SetLineWidth(0);
     legend->AddEntry(gr_train, "train", "P"); legend->AddEntry(gr_test, "test", "P");
     legend->Draw();
-    c->SaveAs((std::string(argv[2]) + "/AUC.png").c_str());
+    c->SaveAs((std::string(argv[2]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_AUC.png").c_str());
 
     // get best result
     bool find_good_FBDT = false;
