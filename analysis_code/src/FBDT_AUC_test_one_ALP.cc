@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
     }
 
 
-    std::vector<std::string> signal_list = { "SIGNAL" };
+    std::vector<std::string> signal_list = { "ALP" };
     std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
         "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
         "EEPP", "EETAUTAU", "GG", "K0K0BARISR", "KKISR",
