@@ -107,9 +107,9 @@ for nTree in 25 50 100
 do
   for depth in 1 2
   do
-    for shrinkage in 0.01 0.1
+    for shrinkage in 0.005 0.01 0.1
     do
-      for subsample in 0.01 0.5
+      for subsample in 0.005 0.01 0.5
       do
         for binning in 5 8
         do
@@ -126,9 +126,9 @@ for nTree in 25 50 100
 do
   for depth in 1 2
   do
-    for shrinkage in 0.01 0.1
+    for shrinkage in 0.005 0.01 0.1
     do
-      for subsample in 0.01 0.5
+      for subsample in 0.005 0.01 0.5
       do
         for binning in 5 8
         do
