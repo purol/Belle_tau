@@ -89,3 +89,11 @@ wait_job "AUCTST"
 
 bash ./submitter_ReadGridSearchFiles_ALP.sh
 wait_job "GRIDFILE"
+
+bash ./submitter_FBDT_Application_ALP.sh
+wait_job "FBDTAPP"
+bash ./checker_FBDT_Application.sh
+if [[ $? -ne 0 ]]; then
+  echo "Unsuccessful logs found. Stopping the one touch analysis."
+  exit 1
+fi
