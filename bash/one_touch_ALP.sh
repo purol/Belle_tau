@@ -98,4 +98,4 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-bash ./submitter_KStest.sh
+bash ./submitter_KStest_ALP.sh
