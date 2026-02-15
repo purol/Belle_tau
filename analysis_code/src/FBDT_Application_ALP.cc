@@ -65,8 +65,8 @@ std::string ReadSelect(const char* select_path, const char* select_file_name) {
     fscanf(fp, "%lf_%lf_%lf_%lf_%lf %lf %lf\n", &nTrees, &depth, &shrinkage, &subsample, &binning, &train_AUC, &test_AUC);
     fclose(fp);
 
-    std::string classifier_path = std::string(select_path) + "/out/" + std::to_string(nTrees) + "_" + std::to_string(depth) + "_" + std::to_string(shrinkage) + "_" + std::to_string(subsample) + "_" + std::to_string(binning) + ".weightfile";
-    return classifier_path;
+    std::string classifier = std::to_string(nTrees) + "_" + std::to_string(depth) + "_" + std::to_string(shrinkage) + "_" + std::to_string(subsample) + "_" + std::to_string(binning) + ".weightfile";
+    return classifier;
 }
 
 int main(int argc, char* argv[]) {
@@ -109,6 +109,9 @@ int main(int argc, char* argv[]) {
     for (const Params& p : parameters) {
         std::string classifier_one_path = ReadSelect(argv[6 + variable_num_one + variable_num_two], ("alpha_mass" + std::format("{:g}", p.mass) + "_life" + std::format("{:g}", p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_selected.txt").c_str());
         std::string classifier_two_path = ReadSelect(argv[7 + variable_num_one + variable_num_two], ("alpha_mass" + std::format("{:g}", p.mass) + "_life" + std::format("{:g}", p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_selected.txt").c_str());
+
+        std::string classifier_one_path = std::string(argv[6 + variable_num_one + variable_num_two]) + "/out_" + std::format("{:g}", p.mass) + "_" + std::format("{:g}", p.life) + "_" + std::to_string(p.A) + "_" + std::to_string(p.B) + "/" + ReadSelect(argv[6 + variable_num_one + variable_num_two], "selected.txt");
+        std::string classifier_two_path = std::string(argv[7 + variable_num_one + variable_num_two]) + "/out_" + std::format("{:g}", p.mass) + "_" + std::format("{:g}", p.life) + "_" + std::to_string(p.A) + "_" + std::to_string(p.B) + "/" + ReadSelect(argv[7 + variable_num_one + variable_num_two], "selected.txt");
 
         loader.FastBDTApplication(intput_variables_one, classifier_one_path.c_str(), ("BDT_output_1" + std::format("{:g}", p.mass) + "_" + std::format("{:g}", p.life) + "_" + std::to_string(p.A) + "_" + std::to_string(p.B)).c_str());
         loader.FastBDTApplication(intput_variables_two, classifier_two_path.c_str(), ("BDT_output_2" + std::format("{:g}", p.mass) + "_" + std::format("{:g}", p.life) + "_" + std::to_string(p.A) + "_" + std::to_string(p.B)).c_str());

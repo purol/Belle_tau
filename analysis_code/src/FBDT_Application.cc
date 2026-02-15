@@ -23,8 +23,8 @@ std::string ReadSelect(const char* select_path, const char* select_file_name) {
     fscanf(fp, "%lf_%lf_%lf_%lf_%lf %lf %lf\n", &nTrees, &depth, &shrinkage, &subsample, &binning, &train_AUC, &test_AUC);
     fclose(fp);
 
-    std::string classifier_path = std::string(select_path) + "/out/" + std::to_string(nTrees) + "_" + std::to_string(depth) + "_" + std::to_string(shrinkage) + "_" + std::to_string(subsample) + "_" + std::to_string(binning) + ".weightfile";
-    return classifier_path;
+    std::string classifier = std::to_string(nTrees) + "_" + std::to_string(depth) + "_" + std::to_string(shrinkage) + "_" + std::to_string(subsample) + "_" + std::to_string(binning) + ".weightfile";
+    return classifier;
 }
 
 int main(int argc, char* argv[]) {
@@ -56,8 +56,8 @@ int main(int argc, char* argv[]) {
         intput_variables_two.push_back(variable_);
     }
 
-    std::string classifier_one_path = ReadSelect(argv[6 + variable_num_one + variable_num_two], "selected.txt");
-    std::string classifier_two_path = ReadSelect(argv[7 + variable_num_one + variable_num_two], "selected.txt");
+    std::string classifier_one_path = std::string(argv[6 + variable_num_one + variable_num_two]) + "/out/" + ReadSelect(argv[6 + variable_num_one + variable_num_two], "selected.txt");
+    std::string classifier_two_path = std::string(argv[7 + variable_num_one + variable_num_two]) + "/out/" + ReadSelect(argv[7 + variable_num_one + variable_num_two], "selected.txt");
 
     ObtainWeight = MyScaleFunction_halfsplit;
 
