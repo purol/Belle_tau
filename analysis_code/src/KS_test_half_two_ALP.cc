@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
     std::string variable_name(argv[1] + std::string("_") + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B));
     std::replace(variable_name.begin(), variable_name.end(), '-', 'm');
 
-    std::vector<std::string> signal_list = { "SIGNAL" };
+    std::vector<std::string> signal_list = { "ALP" };
     std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
         "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
         "EEPP", "EETAUTAU", "GG", "K0K0BARISR", "KKISR",
