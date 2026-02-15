@@ -5,6 +5,7 @@
 #include <set>
 #include <regex>
 #include <filesystem>
+#include <format>
 
 #include "TFile.h"
 
@@ -83,8 +84,6 @@ int main(int argc, char* argv[]) {
     * argv[7 + N + M]: select.txt path 2
     */
 
-    std::set<Params> parameters = GetParameters(argv[3 + variable_num_one + variable_num_two]);
-
     int variable_num_one = std::atoi(argv[1]);
     std::vector<std::string> intput_variables_one;
     for (int i = 0; i < variable_num_one; i++) {
@@ -104,6 +103,8 @@ int main(int argc, char* argv[]) {
     Loader loader("tau_lfv");
 
     loader.Load(argv[3 + variable_num_one + variable_num_two], argv[4 + variable_num_one + variable_num_two], "label");
+
+    std::set<Params> parameters = GetParameters(argv[3 + variable_num_one + variable_num_two]);
 
     for (const Params& p : parameters) {
         std::string classifier_one_path = ReadSelect(argv[6 + variable_num_one + variable_num_two], ("alpha_mass" + std::format("{:g}", p.mass) + "_life" + std::format("{:g}", p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_selected.txt").c_str());
