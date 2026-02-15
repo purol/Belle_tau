@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
 
     }
 
-    std::string variable_name(argv[1] + std::string("_") + std::format("{:g}", mass) + "_" + std::format("{:g}", p.life) + "_" + std::to_string(A) + "_" + std::to_string(B));
+    std::string variable_name(argv[1] + std::string("_") + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B));
     std::replace(variable_name.begin(), variable_name.end(), '-', 'm');
 
     std::vector<std::string> signal_list = { "SIGNAL" };
