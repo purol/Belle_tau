@@ -107,11 +107,8 @@ int main(int argc, char* argv[]) {
     std::set<Params> parameters = GetParameters(argv[3 + variable_num_one + variable_num_two]);
 
     for (const Params& p : parameters) {
-        std::string classifier_one_path = ReadSelect(argv[6 + variable_num_one + variable_num_two], ("alpha_mass" + std::format("{:g}", p.mass) + "_life" + std::format("{:g}", p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_selected.txt").c_str());
-        std::string classifier_two_path = ReadSelect(argv[7 + variable_num_one + variable_num_two], ("alpha_mass" + std::format("{:g}", p.mass) + "_life" + std::format("{:g}", p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_selected.txt").c_str());
-
-        std::string classifier_one_path = std::string(argv[6 + variable_num_one + variable_num_two]) + "/out_" + std::format("{:g}", p.mass) + "_" + std::format("{:g}", p.life) + "_" + std::to_string(p.A) + "_" + std::to_string(p.B) + "/" + ReadSelect(argv[6 + variable_num_one + variable_num_two], "selected.txt");
-        std::string classifier_two_path = std::string(argv[7 + variable_num_one + variable_num_two]) + "/out_" + std::format("{:g}", p.mass) + "_" + std::format("{:g}", p.life) + "_" + std::to_string(p.A) + "_" + std::to_string(p.B) + "/" + ReadSelect(argv[7 + variable_num_one + variable_num_two], "selected.txt");
+        std::string classifier_one_path = std::string(argv[6 + variable_num_one + variable_num_two]) + "/out_" + std::format("{:g}", p.mass) + "_" + std::format("{:g}", p.life) + "_" + std::to_string(p.A) + "_" + std::to_string(p.B) + "/" + ReadSelect(argv[6 + variable_num_one + variable_num_two], ("alpha_mass" + std::format("{:g}", p.mass) + "_life" + std::format("{:g}", p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_selected.txt").c_str());
+        std::string classifier_two_path = std::string(argv[7 + variable_num_one + variable_num_two]) + "/out_" + std::format("{:g}", p.mass) + "_" + std::format("{:g}", p.life) + "_" + std::to_string(p.A) + "_" + std::to_string(p.B) + "/" + ReadSelect(argv[7 + variable_num_one + variable_num_two], ("alpha_mass" + std::format("{:g}", p.mass) + "_life" + std::format("{:g}", p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_selected.txt").c_str());
 
         loader.FastBDTApplication(intput_variables_one, classifier_one_path.c_str(), ("BDT_output_1" + std::format("{:g}", p.mass) + "_" + std::format("{:g}", p.life) + "_" + std::to_string(p.A) + "_" + std::to_string(p.B)).c_str());
         loader.FastBDTApplication(intput_variables_two, classifier_two_path.c_str(), ("BDT_output_2" + std::format("{:g}", p.mass) + "_" + std::format("{:g}", p.life) + "_" + std::to_string(p.A) + "_" + std::to_string(p.B)).c_str());
