@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <sstream>
 #include <iomanip>
+#include <format>
+#include <algorithm>
 
 #include <TH1.h>
 #include <TLatex.h>
