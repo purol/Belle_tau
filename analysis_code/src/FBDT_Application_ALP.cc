@@ -104,7 +104,7 @@ int main(int argc, char* argv[]) {
 
     loader.Load(argv[3 + variable_num_one + variable_num_two], argv[4 + variable_num_one + variable_num_two], "label");
 
-    std::set<Params> parameters = GetParameters(argv[3 + variable_num_one + variable_num_two]);
+    std::set<Params> parameters = GetParameters(argv[6 + variable_num_one + variable_num_two]);
 
     for (const Params& p : parameters) {
         std::string classifier_one_path = std::string(argv[6 + variable_num_one + variable_num_two]) + "/out_" + std::format("{:g}", p.mass) + "_" + std::format("{:g}", p.life) + "_" + std::to_string(p.A) + "_" + std::to_string(p.B) + "/" + ReadSelect(argv[6 + variable_num_one + variable_num_two], ("alpha_mass" + std::format("{:g}", p.mass) + "_life" + std::format("{:g}", p.life) + "_A" + std::to_string(p.A) + "_B" + std::to_string(p.B) + "_selected.txt").c_str());
