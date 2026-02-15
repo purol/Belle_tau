@@ -97,3 +97,5 @@ if [[ $? -ne 0 ]]; then
   echo "Unsuccessful logs found. Stopping the one touch analysis."
   exit 1
 fi
+
+bash ./submitter_KStest.sh
