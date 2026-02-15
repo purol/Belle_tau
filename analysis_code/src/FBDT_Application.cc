@@ -10,7 +10,7 @@
 #include "MyObtainWeight.h"
 #include "MyModule.h"
 
-std::string ReadSelect(const char* select_path) {
+std::string ReadSelect(const char* select_path, const char* select_file_name) {
     double nTrees;
     double depth;
     double shrinkage;
@@ -19,7 +19,7 @@ std::string ReadSelect(const char* select_path) {
     double train_AUC;
     double test_AUC;
 
-    FILE* fp = fopen((std::string(select_path) + "/selected.txt").c_str(), "r");
+    FILE* fp = fopen((std::string(select_path) + "/" + std::string(select_file_name)).c_str(), "r");
     fscanf(fp, "%lf_%lf_%lf_%lf_%lf %lf %lf\n", &nTrees, &depth, &shrinkage, &subsample, &binning, &train_AUC, &test_AUC);
     fclose(fp);
 
@@ -56,8 +56,8 @@ int main(int argc, char* argv[]) {
         intput_variables_two.push_back(variable_);
     }
 
-    std::string classifier_one_path = ReadSelect(argv[6 + variable_num_one + variable_num_two]);
-    std::string classifier_two_path = ReadSelect(argv[7 + variable_num_one + variable_num_two]);
+    std::string classifier_one_path = ReadSelect(argv[6 + variable_num_one + variable_num_two], "selected.txt");
+    std::string classifier_two_path = ReadSelect(argv[7 + variable_num_one + variable_num_two], "selected.txt");
 
     ObtainWeight = MyScaleFunction_halfsplit;
 
