@@ -65,6 +65,7 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
+bash ./submitter_Plotter_ALP.sh
 bash ./submitter_FBDT_splitter.sh
 wait_job "MVASPLIT"
 bash ./checker_FBDT_splitter.sh
