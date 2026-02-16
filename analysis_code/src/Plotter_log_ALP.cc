@@ -24,10 +24,10 @@ int main(int argc, char* argv[]) {
     * argv[9 ? 11]: B constant
     */
 
-    double mass = (argc == 10) ? argv[6] : argv[8];
-    double life = (argc == 10) ? argv[7] : argv[9];
-    int A = (argc == 10) ? argv[8] : argv[10];
-    int B = (argc == 10) ? argv[9] : argv[11];
+    double mass = (argc == 10) ? std::stod(argv[6]) : std::stod(argv[8]);
+    double life = (argc == 10) ? std::stod(argv[7]) : std::stod(argv[9]);
+    int A = (argc == 10) ? std::stoi(argv[8]) : std::stoi(argv[10]);
+    int B = (argc == 10) ? std::stoi(argv[9]) : std::stoi(argv[11]);
 
     std::string variable_name(argv[1]);
 
