@@ -101,5 +101,7 @@ fi
 
 bash ./submitter_KStest_ALP.sh
 
+bash ./submitter_Plotter_secondary_ALP.sh
+
 bash ./submitter_PunziFOM_ALP.sh
 wait_job "FBDTFOM"

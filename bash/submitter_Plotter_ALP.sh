@@ -147,7 +147,7 @@ submit_Plotter() {
     local OutputName=$7 # ex. deltaE
     local OutputPath=$8 # ex. plot
 
-    get_params "./${VerName}/${Analysis_VerName}/${SampleName}/${InputDir}" | while read mass life A B; do
+    get_params "./${VerName}/${Analysis_VerName}/ALP/${InputDir}" | while read mass life A B; do
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}"
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log"
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err"
