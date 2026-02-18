@@ -114,33 +114,33 @@ int main(int argc, char* argv[]) {
     loader.Cut("0.1 < third_muon_muonID");
     loader.PrintInformation("========== 0.1 < muonID for third muon ==========");
 
-    //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_SecondarymuonP_selection").c_str(), "", "");
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_SecondarymuonP_selection").c_str(), "", "");
     loader.Cut("0.3 < second_muon_p");
     loader.PrintInformation("========== 0.3 < muon momentum for secondary muon ==========");
 
-    //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_theta_miss_cut").c_str(), "", "");
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_theta_miss_cut").c_str(), "", "");
     //loader.DrawTH1D("missingMomentumOfEventCMS_theta", "theta_miss", "theta_miss.png");
     loader.Cut("(0.3 < missingMomentumOfEventCMS_theta) && (missingMomentumOfEventCMS_theta < 2.7)");
     loader.PrintInformation("========== 0.3 < theta_miss < 2.7 ==========");
 
-    //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_thrust_cut").c_str(), "", "");
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_thrust_cut").c_str(), "", "");
     //loader.DrawTH1D("thrust", "thrust", "thrust.png");
     loader.Cut("(0.86 < thrust) && (thrust < 0.97)");
     loader.PrintInformation("========== 0.86 < thrust < 0.97 ==========");
 
-    //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_Eecl_cut").c_str(), "", "");
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_Eecl_cut").c_str(), "", "");
     loader.Cut("roeEextra__bocleanMask__bc < 5.0");
     loader.PrintInformation("========== Eecl < 5.0 GeV ==========");
 
-    //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_diffthrust_cut").c_str(), "", "");
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_diffthrust_cut").c_str(), "", "");
     loader.Cut("diff_cosToThrustOfEvent_CM < 1.6");
     loader.PrintInformation("========== Maxdiff(cosToThrustOfEvent from daughter) < 1.6 rad ==========");
 
-    //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_avgthrust_cut").c_str(), "", "");
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_avgthrust_cut").c_str(), "", "");
     loader.Cut("(avg_cosToThrustOfEvent_CM < -0.5) || (avg_cosToThrustOfEvent_CM > 0.5)");
     loader.PrintInformation("========== |avg(cosToThrustOfEvent from daughter)| > 0.5 rad ==========");
 
-    //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_missingEnergy_cut").c_str(), "", "");
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_missingEnergy_cut").c_str(), "", "");
     loader.Cut("missingEnergyOfEventCMS > 0.0");
     loader.PrintInformation("========== missing Energy CMS > 0.0 GeV ==========");
 
