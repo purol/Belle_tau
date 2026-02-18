@@ -82,22 +82,22 @@ VarName="BDT_output_2"
 submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_test_after_application" "final_output_test_after_application_BDT_output_2_two" "plot"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_signal_half_ALP"
-VarName_1="M_inv_tau"
+VarName_1="M"
 VarName_2="deltaE"
 submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_test_after_application" "final_output_test_after_application_M_deltaE_signal" "plot"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_bkg_half_ALP"
-VarName_1="M_inv_tau"
+VarName_1="M"
 VarName_2="deltaE"
 submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_test_after_application" "final_output_test_after_application_M_deltaE_bkg" "plot"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_signal_half_ALP"
-VarName_1="M_inv_tau"
+VarName_1="M"
 VarName_2="deltaE"
 submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M_deltaE_signal" "plot"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_bkg_half_ALP"
-VarName_1="M_inv_tau"
+VarName_1="M"
 VarName_2="deltaE"
 submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M_deltaE_bkg" "plot"
 

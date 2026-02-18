@@ -50,12 +50,12 @@ submit_Plotter_2D(){
  
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_signal_half"
-VarName_1="M_inv_tau"
+VarName_1="M"
 VarName_2="deltaE"
 submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_test_after_application_after_cut" "final_output_test_after_application_after_cut_M_deltaE_signal" "plot"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_bkg_half"
-VarName_1="M_inv_tau"
+VarName_1="M"
 VarName_2="deltaE"
 submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_test_after_application_after_cut" "final_output_test_after_application_after_cut_M_deltaE_bkg" "plot"
 
