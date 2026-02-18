@@ -149,16 +149,16 @@ submit_Plotter() {
 #submit_Plotter ${code} ${Analysis_Name} ${VarName} -1.1 0.6 "before_M_deltaE_selection" "before_M_deltaE_selection_deltaE" "plot"
 
 #code="${Belle_tau_DIR}/analysis_code/bin/Plotter"
-#VarName="M_inv_tau"
-#submit_Plotter ${code} ${Analysis_Name} ${VarName} 1.3 2.1 "before_M_deltaE_selection" "before_M_deltaE_selection_M_inv_tau" "plot"
+#VarName="M"
+#submit_Plotter ${code} ${Analysis_Name} ${VarName} 1.3 2.1 "before_M_deltaE_selection" "before_M_deltaE_selection_M" "plot"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter"
 VarName="deltaE"
 submit_Plotter ${code} ${Analysis_Name} ${VarName} -0.9 0.4 "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_deltaE" "plot"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter"
-VarName="M_inv_tau"
-submit_Plotter ${code} ${Analysis_Name} ${VarName} 1.5 1.9 "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M_inv_tau" "plot"
+VarName="M"
+submit_Plotter ${code} ${Analysis_Name} ${VarName} 1.5 1.9 "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M" "plot"
 
 Directories=(
     "before_PrimarymuonID_selection"
