@@ -113,10 +113,8 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== 4S Energy ==========");
     loader.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
     loader.PrintInformation("========== -5 delta < deltaE < 5 delta ==========");
-    loader.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
-    loader.PrintInformation("========== -5 delta < M < 5 delta ==========");
-    // loader.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
-    // loader.PrintInformation(("========== nominal_mass - " + std::to_string(M_left_cut_value) + " < M_alp < nominal_mass + " + std::to_string(M_right_cut_value) + " ==========").c_str());
+    loader.Cut(("(" + std::to_string(M_peak - 20 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + ")").c_str());
+    loader.PrintInformation("========== -20 delta < M < 20 delta ==========");
 
     loader.FastBDTTrain(intput_variables, "", "", hyperparameters, true, argv[3 + variable_num]);
 
