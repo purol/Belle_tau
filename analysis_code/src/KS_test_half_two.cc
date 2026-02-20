@@ -70,6 +70,7 @@ int main(int argc, char* argv[]) {
     loader_signal_train.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_signal_train.Cut("0.9 < first_muon_muonID");
     loader_signal_train.Cut("0.9 < second_muon_muonID");
+    loader_signal_train.Cut("0.5 < third_muon_muonID");
     loader_signal_train.FillTH1D(signal_train_th, variable_name);
     loader_signal_train.FillTH1D(signal_train_th_KS, variable_name);
     loader_signal_train.end();
@@ -81,6 +82,7 @@ int main(int argc, char* argv[]) {
     loader_signal_test.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_signal_test.Cut("0.9 < first_muon_muonID");
     loader_signal_test.Cut("0.9 < second_muon_muonID");
+    loader_signal_test.Cut("0.5 < third_muon_muonID");
     loader_signal_test.FillTH1D(signal_test_th, variable_name);
     loader_signal_test.FillTH1D(signal_test_th_KS, variable_name);
     loader_signal_test.end();
@@ -92,6 +94,7 @@ int main(int argc, char* argv[]) {
     loader_background_train.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_background_train.Cut("0.9 < first_muon_muonID");
     loader_background_train.Cut("0.9 < second_muon_muonID");
+    loader_background_train.Cut("0.5 < third_muon_muonID");
     loader_background_train.FillTH1D(background_train_th, variable_name);
     loader_background_train.FillTH1D(background_train_th_KS, variable_name);
     loader_background_train.end();
@@ -103,6 +106,7 @@ int main(int argc, char* argv[]) {
     loader_background_test.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_background_test.Cut("0.9 < first_muon_muonID");
     loader_background_test.Cut("0.9 < second_muon_muonID");
+    loader_background_test.Cut("0.5 < third_muon_muonID");
     loader_background_test.FillTH1D(background_test_th, variable_name);
     loader_background_test.FillTH1D(background_test_th_KS, variable_name);
     loader_background_test.end();

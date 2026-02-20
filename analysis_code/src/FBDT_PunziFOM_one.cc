@@ -63,6 +63,8 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== 0.9 < muonID for leading muon ==========");
     loader.Cut("0.9 < second_muon_muonID");
     loader.PrintInformation("========== 0.9 < muonID for secondary muon ==========");
+    loader.Cut("0.5 < third_muon_muonID");
+    loader.PrintInformation("========== 0.5 < muonID for third muon ==========");
 
     loader.DrawPunziFOM(argv[2], 0.0, 1.0, 100, Nevt_SIGNAL, 1.28, 1, (std::string(argv[1])  + "/" + std::string(argv[3]) + "/PunziFOM.png").c_str());
 
