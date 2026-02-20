@@ -82,10 +82,6 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== -15 delta < deltaE < -5 delta ==========");
     loader.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader.PrintInformation("========== -5 delta < M < 5 delta ==========");
-    loader.Cut("0.9 < first_muon_muonID");
-    loader.PrintInformation("========== 0.9 < muonID for leading muon ==========");
-    loader.Cut("0.9 < second_muon_muonID");
-    loader.PrintInformation("========== 0.9 < muonID for secondary muon ==========");
     loader.Cut("0.5 < third_muon_muonID");
     loader.PrintInformation("========== 0.5 < muonID for third muon ==========");
 
