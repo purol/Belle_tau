@@ -98,7 +98,7 @@ int main(int argc, char* argv[]) {
 
     // signal train
     Loader loader_signal_train("tau_lfv");
-    for (int i = 0; i < signal_list.size(); i++) loader_signal_train.LoadWithCut((argv[5] + std::string("/") + signal_list.at(i) + std::string("/final_output_train_after_application/")).c_str(), "root", signal_list.at(i).c_str(), "0.5 < isSignal");
+    for (int i = 0; i < signal_list.size(); i++) loader_signal_train.Load((argv[5] + std::string("/") + signal_list.at(i) + std::string("/final_output_train_after_application/")).c_str(), "root", signal_list.at(i).c_str());
     loader_signal_train.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
     loader_signal_train.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_signal_train.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
 
     // signal test
     Loader loader_signal_test("tau_lfv");
-    for (int i = 0; i < signal_list.size(); i++) loader_signal_test.LoadWithCut((argv[5] + std::string("/") + signal_list.at(i) + std::string("/final_output_test_after_application/")).c_str(), "root", signal_list.at(i).c_str(), "0.5 < isSignal");
+    for (int i = 0; i < signal_list.size(); i++) loader_signal_test.Load((argv[5] + std::string("/") + signal_list.at(i) + std::string("/final_output_test_after_application/")).c_str(), "root", signal_list.at(i).c_str());
     loader_signal_test.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
     loader_signal_test.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_signal_test.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
