@@ -103,7 +103,7 @@ submit_GridSearch() {
 
 code="${Belle_tau_DIR}/analysis_code/bin/FBDT_AUC_test_one_ALP"
 output="GridSearch_one"
-for nTree in 50 100 250 500 750
+for nTree in 250 500 750
 do
   for depth in 1 2
   do
@@ -111,7 +111,7 @@ do
     do
       for subsample in 0.01 0.2 0.5
       do
-        for binning in 3 4 5 6 8
+        for binning in 4 5 6 8
         do
           submit_GridSearch ${code} ${Analysis_Name} ${nTree} ${depth} ${shrinkage} ${subsample} ${binning} ${output} "input_variables_one"
         done
@@ -122,7 +122,7 @@ done
 
 code="${Belle_tau_DIR}/analysis_code/bin/FBDT_AUC_test_two_ALP"
 output="GridSearch_two"
-for nTree in 50 100 250 500 750
+for nTree in 100 250 500 750
 do
   for depth in 1 2
   do
@@ -130,7 +130,7 @@ do
     do
       for subsample in 0.01 0.2 0.5
       do
-        for binning in 3 4 5 6 8
+        for binning in 4 5 6 8
         do
           submit_GridSearch ${code} ${Analysis_Name} ${nTree} ${depth} ${shrinkage} ${subsample} ${binning} ${output} "input_variables_two"
         done
