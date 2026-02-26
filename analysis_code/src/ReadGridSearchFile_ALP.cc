@@ -111,7 +111,7 @@ int main(int argc, char* argv[]) {
     // get best result
     bool find_good_FBDT = false;
     for (int i = 0; i < Nlist; i++) {
-        if ((Datas.at(i).train_AUC / Datas.at(i).test_AUC) < 1.015) {
+        if ((Datas.at(i).train_AUC / Datas.at(i).test_AUC) < 1.03) {
             FILE* fp;
             fp = fopen((std::string(argv[2]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_selected.txt").c_str(), "w");
             fprintf(fp, "%u_%u_%lf_%lf_%u %lf %lf\n", Datas.at(i).nTrees, Datas.at(i).depth, Datas.at(i).shrinkage, Datas.at(i).subsample, Datas.at(i).binning, Datas.at(i).train_AUC, Datas.at(i).test_AUC);
