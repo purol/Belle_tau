@@ -109,6 +109,7 @@ double MyScaleFunction_correction_halfsplit(std::deque<Data>::iterator data_, st
             else if ((20.5 < EventType) && (EventType < 21.5)) return 2.0 * Scale_BelleII_4S_TAUTAUTAUTAU_MC15ri * total_correction; // TAUTAUTAUTAU
             else if ((21.5 < EventType) && (EventType < 22.5)) return 2.0 * Scale_BelleII_4S_TAUPAIR_MC15ri * total_correction; // TAUPAIR
             else if ((22.5 < EventType) && (EventType < 23.5)) return 2.0 * Scale_BelleII_4S_PIPIPI0ISR_MC15ri * total_correction; // PIPIPI0ISR
+            else if ((32.5 < EventType) && (EventType < 33.5)) return 2.0 * Scale_ALP_BelleII_4S_MC15ri * total_correction; // ALP
         }
         else if ((1.5 < EnergyType) && (EnergyType < 2.5)) { // off-resonance
             if ((-0.5 < EventType) && (EventType < 0.5)) return 2.0 * Scale_SIGNAL_BelleII_off_MC15ri * total_correction; // signal
@@ -236,6 +237,7 @@ double MyScaleFunction_correction_fluctuation_halfsplit(std::deque<Data>::iterat
             else if ((20.5 < EventType) && (EventType < 21.5)) return 2.0 * Scale_BelleII_4S_TAUTAUTAUTAU_MC15ri * total_correction; // TAUTAUTAUTAU
             else if ((21.5 < EventType) && (EventType < 22.5)) return 2.0 * Scale_BelleII_4S_TAUPAIR_MC15ri * total_correction; // TAUPAIR
             else if ((22.5 < EventType) && (EventType < 23.5)) return 2.0 * Scale_BelleII_4S_PIPIPI0ISR_MC15ri * total_correction; // PIPIPI0ISR
+            else if ((32.5 < EventType) && (EventType < 33.5)) return 2.0 * Scale_ALP_BelleII_4S_MC15ri * total_correction; // ALP
         }
         else if ((1.5 < EnergyType) && (EnergyType < 2.5)) { // off-resonance
             if ((-0.5 < EventType) && (EventType < 0.5)) return 2.0 * Scale_SIGNAL_BelleII_off_MC15ri * total_correction; // signal
