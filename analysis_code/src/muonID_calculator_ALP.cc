@@ -411,9 +411,9 @@ int main(int argc, char* argv[]) {
     std::string strLife = std::format("{:g}", life);
     std::string strA;
     std::string strB;
-    if (p.A >= 0) strA = std::to_string(A);
+    if (A >= 0) strA = std::to_string(A);
     else strA = "m" + std::to_string(std::abs(A));
-    if (p.B >= 0) strB = std::to_string(B);
+    if (B >= 0) strB = std::to_string(B);
     else strB = "m" + std::to_string(std::abs(B));
 
     BDT_output_1_name = "BDT_output_1_" + strMass + "_" + strLife + "_" + strA + "_" + strB;
