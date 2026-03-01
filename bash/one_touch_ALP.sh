@@ -105,3 +105,6 @@ bash ./submitter_Plotter_secondary_ALP.sh
 
 bash ./submitter_PunziFOM_ALP.sh
 wait_job "FBDTFOM"
+
+bash ./submitter_Calculator_ALP.sh
+wait_job "SYSTCAL"
