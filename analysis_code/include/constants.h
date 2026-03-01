@@ -1,16 +1,18 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#define lumi_scale (0.575/0.41054)
+
 // luminosity
-# define lumi_BelleII_4S 0.36357 // ab-1
-# define lumi_BelleII_off 0.04228 // ab-1
-# define lumi_BelleII_10810 0.00469 // ab-1
+# define lumi_BelleII_4S (lumi_scale * 0.36357) // ab-1
+# define lumi_BelleII_off (lumi_scale * 0.04228) // ab-1
+# define lumi_BelleII_10810 (lumi_scale * 0.00469) // ab-1
 
 // luminosity uncertainty
 // https://xwiki.desy.de/xwiki/bin/view/BI/Belle%20II%20Internal/Data%20Production%20WebHome/Offline%20Luminosity%20Page/?srid=IIYdLMEl
-# define lumi_BelleII_4S_uncertainty 0.0017 // ab-1
-# define lumi_BelleII_off_uncertainty 0.0002 // ab-1
-# define lumi_BelleII_10810_uncertainty 0.000027 // ab-1
+# define lumi_BelleII_4S_uncertainty (lumi_scale * 0.0017) // ab-1
+# define lumi_BelleII_off_uncertainty (lumi_scale * 0.0002) // ab-1
+# define lumi_BelleII_10810_uncertainty (lumi_scale * 0.000027) // ab-1
 
 
 // Scale factors
