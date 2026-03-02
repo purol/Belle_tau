@@ -122,9 +122,10 @@ void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, const char* mu, 
 int main(int argc, char* argv[]) {
 	/*
 	* argv[1]: input path
-	* argv[2]: output path
-	* argv[3]: mu value to test
-	* argv[4]: index
+	* argv[2]: workspace root file name
+	* argv[3]: output path
+	* argv[4]: mu value to test
+	* argv[5]: index
 	*/
 
 	RooRandom::randomGenerator()->SetSeed(rd());
@@ -135,7 +136,7 @@ int main(int argc, char* argv[]) {
 	double eps = 0.001;
 	ROOT::Math::MinimizerOptions::SetDefaultTolerance(eps); // default 0.01. but it is better to use 0.001
 
-	std::string fname = std::string(argv[1]) + "/workspace.root";
+	std::string fname = std::string(argv[1]) + "/" + std::string(argv[2]);
 
 	TFile* f = TFile::Open(fname.c_str());
 
@@ -173,7 +174,7 @@ int main(int argc, char* argv[]) {
 	//inverter.SetConfidenceLevel(0.90);
 	inverter.UseCLs(true);
 	inverter.SetVerbose(false);
-	inverter.SetFixedScan(1, std::stof(argv[3]), std::stof(argv[3])); // set number of points , xmin and xmax
+	inverter.SetFixedScan(1, std::stof(argv[4]), std::stof(argv[4])); // set number of points , xmin and xmax
 
 	TStopwatch sw;
 	sw.Start();
@@ -183,15 +184,15 @@ int main(int argc, char* argv[]) {
 	sw.Stop();
 	printf("consumed time: %lf (s)\n", sw.RealTime());
 
-	TFile* file = new TFile((std::string(argv[2]) + "/Hypotestinverter_freq_" + std::string(argv[3]) + "_" + std::string(argv[4]) + ".root").c_str(), "RECREATE");
+	TFile* file = new TFile((std::string(argv[3]) + "/Hypotestinverter_freq_" + std::string(argv[4]) + "_" + std::string(argv[5]) + ".root").c_str(), "RECREATE");
 	result->Write();
 	file->Close();
 
 
-	//GetExpectedCL(result, argv[3]);
-	//GetObservedCLs(result, argv[3], 0);
-	//GetObservedCLs(result, argv[3], 1);
-	//GetObservedCLs(result, argv[3], 2);
+	//GetExpectedCL(result, argv[4]);
+	//GetObservedCLs(result, argv[4], 0);
+	//GetObservedCLs(result, argv[4], 1);
+	//GetObservedCLs(result, argv[4], 2);
 
 	return 0;
 }

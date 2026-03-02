@@ -10,7 +10,7 @@ submit_CLs() {
   for mu in $(seq 0 0.1 5.0)
   do
     for index in {0..10}; do
-      bsub -q s -J TAUCLS -o "./${VerName}/${Analysis_VerName}/CLs/log/${mu}_${index}.log" ${Code} "./${VerName}/${Analysis_VerName}" "./${VerName}/${Analysis_VerName}/CLs/out" ${mu} ${index}
+      bsub -q s -J TAUCLS -o "./${VerName}/${Analysis_VerName}/CLs/log/${mu}_${index}.log" ${Code} "./${VerName}/${Analysis_VerName}" "workspace.root" "./${VerName}/${Analysis_VerName}/CLs/out" ${mu} ${index}
     done
   done
 

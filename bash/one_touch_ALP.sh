@@ -114,3 +114,6 @@ wait_job "PCA"
 
 bash ./submitter_Create_workspace_ALP.sh
 wait_job "CRTWS"
+
+bash ./submitter_CLs_ALP.sh
+wait_job "TAUCLS"
