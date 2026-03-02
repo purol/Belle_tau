@@ -117,3 +117,9 @@ wait_job "CRTWS"
 
 bash ./submitter_CLs_ALP.sh
 wait_job "TAUCLS"
+
+bash ./submitter_Merge_ALP.sh
+wait_job "MERGECLS"
+
+bash ./submitter_ReadCLs_ALP.sh
+wait_job "READCLS"
