@@ -108,3 +108,6 @@ wait_job "FBDTFOM"
 
 bash ./submitter_Calculator_ALP.sh
 wait_job "SYSTCAL"
+
+bash ./submitter_PCA_ALP.sh
+wait_job "PCA"
