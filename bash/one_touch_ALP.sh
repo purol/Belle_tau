@@ -111,3 +111,6 @@ wait_job "SYSTCAL"
 
 bash ./submitter_PCA_ALP.sh
 wait_job "PCA"
+
+bash ./submitter_Create_workspace_ALP.sh
+wait_job "CRTWS"
