@@ -16,6 +16,9 @@
 #include "correctors.h"
 #include "data.h"
 
+double BDT_cut_1;
+double BDT_cut_2;
+
 Corrector_PID muonID_corrector_05("/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC15ri/mu_efficiency_table.csv");
 
 double MyScaleFunction_correction_halfsplit(std::deque<Data>::iterator data_, std::vector<std::string> variable_names_) {
@@ -291,21 +294,53 @@ double mapping_function(std::vector<double> variables_) {
 }
 
 void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, TH1D* data_th1d_stat_err_, TH1D* signal_MC_th1d_stat_err_, TH1D* bkg_MC_th1d_stat_err_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_) {
+    std::string cut_BDT_1 = "(" + std::to_string(BDT_cut_1) + " < " + BDT_output_1_name + ")";
+    std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
+    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 5 * deltaE_right_sigma_g) + "))";
+    std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
+    std::string cut_total_1 = "(" + cut_M_deltaE_1 + "&&" + cut_BDT_1 + ")";
+
+    std::string cut_BDT_2 = "(" + std::to_string(BDT_cut_2) + " < " + BDT_output_2_name + ")";
+    std::string cut_M_2 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
+    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak_g - 15 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "))";
+    std::string cut_M_deltaE_2 = "(" + cut_M_2 + "&&" + cut_deltaE_2 + ")";
+    std::string cut_total_2 = "(" + cut_M_deltaE_2 + "&&" + cut_BDT_2 + ")";
+
+    std::string cut_region = cut_M_deltaE_1 + "||" + cut_M_deltaE_2;
+    std::string cut_total = cut_total_1 + "||" + cut_total_2;
+
+    std::string cut_muonID = "0.5 < third_muon_muonID";
+    
     // data
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
+    loader_data.Cut(cut_region.c_str());
+    loader_data.Cut(cut_muonID.c_str());
+    loader_data.RandomBCS();
+    loader_data.IsBCSValid();
+    loader_data.Cut(cut_total.c_str());
     loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE" }, { mapping_function });
     loader_data.end();
 
     // signal MC
     Loader loader_signal("tau_lfv");
     for (int i = 0; i < signal_list_.size(); i++) loader_signal.Load((input_path_1_ + std::string("/") + signal_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", signal_list_.at(i).c_str());
+    loader_signal.Cut(cut_region.c_str());
+    loader_signal.Cut(cut_muonID.c_str());
+    loader_signal.RandomBCS();
+    loader_signal.IsBCSValid();
+    loader_signal.Cut(cut_total.c_str());
     loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE" }, { mapping_function });
     loader_signal.end();
 
     // background MC
     Loader loader_bkg("tau_lfv");
     for (int i = 0; i < background_list_.size(); i++) loader_bkg.Load((input_path_1_ + std::string("/") + background_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", background_list_.at(i).c_str());
+    loader_bkg.Cut(cut_region.c_str());
+    loader_bkg.Cut(cut_muonID.c_str());
+    loader_bkg.RandomBCS();
+    loader_bkg.IsBCSValid();
+    loader_bkg.Cut(cut_total.c_str());
     loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE" }, { mapping_function });
     loader_bkg.end();
 
@@ -355,6 +390,9 @@ int main(int argc, char* argv[]) {
     TH1D* data_th1d_stat_err = new TH1D("data_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
     TH1D* signal_MC_th1d_stat_err = new TH1D("signal_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
     TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
+
+    ReadFOM((std::string(argv[1]) + "/GridSearch_one/FOM.log").c_str(), &BDT_cut_1);
+    ReadFOM((std::string(argv[1]) + "/GridSearch_two/FOM.log").c_str(), &BDT_cut_2);
 
     std::vector<std::string> signal_list = { "SIGNAL" };
     std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",

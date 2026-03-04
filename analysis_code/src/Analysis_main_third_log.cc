@@ -45,20 +45,37 @@ int main(int argc, char* argv[]) {
 
     loader.PrintInformation("========== initial ==========");
 
-    std::string cut_BDT_1 = "((deltaE >= " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ") && ( BDT_output_1 > " + std::to_string(BDT_cut_1) + "))";
-    std::string cut_BDT_2 = "((deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ") && ( BDT_output_2 > " + std::to_string(BDT_cut_2) + "))";
-    std::string cut_total = cut_BDT_1 + "||" + cut_BDT_2;
+    std::string cut_BDT_1 = "(" + std::to_string(BDT_cut_1) + " < " + BDT_output_1_name + ")";
+    std::string cut_M_1 = "((" + std::to_string(M_peak - 20 * M_left_sigma) + " < M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + "))";
+    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + "))";
+    std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
+    std::string cut_total_1 = "(" + cut_M_deltaE_1 + "&&" + cut_BDT_1 + ")";
 
-    loader.Cut(cut_total.c_str());
-    loader.PrintInformation(("========== BDT1 > " + std::to_string(BDT_cut_1) + ", BDT2 > " + std::to_string(BDT_cut_2) + " ==========").c_str());
-    loader.Cut("0.5 < third_muon_muonID");
+    std::string cut_BDT_2 = "(" + std::to_string(BDT_cut_2) + " < " + BDT_output_2_name + ")";
+    std::string cut_M_2 = "((" + std::to_string(M_peak - 20 * M_left_sigma) + " < M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + "))";
+    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "))";
+    std::string cut_M_deltaE_2 = "(" + cut_M_2 + "&&" + cut_deltaE_2 + ")";
+    std::string cut_total_2 = "(" + cut_M_deltaE_2 + "&&" + cut_BDT_2 + ")";
+
+    std::string cut_region = cut_M_deltaE_1 + "||" + cut_M_deltaE_2;
+    std::string cut_total = cut_total_1 + "||" + cut_total_2;
+
+    std::string cut_muonID = "0.5 < third_muon_muonID";
+
+    loader.Cut(cut_region.c_str());
+    loader.PrintInformation(("========== (-20 delta < M < 20 delta) && (-15 delta < deltaE < 5 delta) ==========").c_str());
+
+    loader.Cut(cut_muonID.c_str());
     loader.PrintInformation("========== 0.5 < muonID for third muon ==========");
 
     loader.RandomBCS();
     loader.IsBCSValid();
     loader.PrintInformation("========== Random BCS ==========");
 
-    //loader.PrintSeparateRootFile(argv[3], "", "");
+    loader.Cut(cut_total.c_str());
+    loader.PrintInformation(("========== BDT1 > " + std::to_string(BDT_cut_1) + ", BDT2 > " + std::to_string(BDT_cut_2) + " ==========").c_str());
+
+    // loader.PrintSeparateRootFile(argv[3], "", "");
 
     loader.end();
 
