@@ -26,15 +26,15 @@ submit_code() {
 
 
 code="${Belle_tau_DIR}/analysis_code/bin/muonID_calculator_ALP"
-NToys=25
-for i in {0..39}; do
+NToys=1
+for i in {0..99}; do
     submit_code ${code} ${Analysis_Name} ${NToys} ${i} "PID_calculator"
 done
 
 
 code="${Belle_tau_DIR}/analysis_code/bin/luminosity_calculator_ALP"
-NToys=25
-for i in {0..39}; do
+NToys=1
+for i in {0..99}; do
     submit_code ${code} ${Analysis_Name} ${NToys} ${i} "L_calculator"
 done
 
