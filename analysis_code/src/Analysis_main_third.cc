@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
 
     std::string cut_BDT_1 = "(" + std::to_string(BDT_cut_1) + " < BDT_output_1)";
     std::string cut_M_1 = "((" + std::to_string(M_peak - 20 * M_left_sigma) + " < M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + "))";
-    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + "))";
+    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak + 6 * deltaE_right_sigma) + "))";
     std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
     std::string cut_total_1 = "(" + cut_M_deltaE_1 + "&&" + cut_BDT_1 + ")";
 
@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
     std::string cut_muonID = "0.5 < third_muon_muonID";
 
     loader.Cut(cut_region.c_str());
-    loader.PrintInformation("========== (-20 delta < M < 20 delta) && (-15 delta < deltaE < 5 delta) ==========");
+    loader.PrintInformation("========== (-20 delta < M < 20 delta) && (-15 delta < deltaE < 6 delta) ==========");
 
     loader.Cut(cut_muonID.c_str());
     loader.PrintInformation("========== 0.5 < muonID for third muon ==========");
@@ -74,6 +74,9 @@ int main(int argc, char* argv[]) {
 
     loader.Cut(cut_total.c_str());
     loader.PrintInformation(("========== BDT1 > " + std::to_string(BDT_cut_1) + ", BDT2 > " + std::to_string(BDT_cut_2) + " ==========").c_str());
+
+    loader.Cut(("deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma)).c_str());
+    loader.PrintInformation("========== deltaE < 5 delta) ==========");
 
     loader.PrintSeparateRootFile(argv[3], "", "");
 
