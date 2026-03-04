@@ -324,33 +324,42 @@ double theta_g;
 double mapping_function(std::vector<double> variables_) {
     double M = variables_.at(0);
     double deltaE = variables_.at(1);
-    double M_ALP = variables_.at(2);
-    double BDT_output_1 = variables_.at(3);
-    double BDT_output_2 = variables_.at(4);
 
-    if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_1 < BDT_output_1)) return 1.0;
-    else if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_2 < BDT_output_2)) return 2.0;
+    if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
+    else if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
     else return NAN;
 
 }
 
 void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, TH1D* data_th1d_stat_err_, TH1D* signal_MC_th1d_stat_err_, TH1D* bkg_MC_th1d_stat_err_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_) {
+    std::string cut_BDT_1 = "((deltaE >= " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + ") && ( BDT_output_1 > " + std::to_string(BDT_cut_1) + "))";
+    std::string cut_BDT_2 = "((deltaE < " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + ") && ( BDT_output_2 > " + std::to_string(BDT_cut_2) + "))";
+    std::string cut_total = cut_BDT_1 + "||" + cut_BDT_2;
+
+    std::string cut_m_alpha = "(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")";
+
     // data
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
-    loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE", "extraInfo__boALP_M__bc", BDT_output_1_name.c_str(), BDT_output_2_name .c_str() }, { mapping_function });
+    loader_data.Cut(cut_total.c_str());
+    loader_data.Cut(cut_m_alpha.c_str());
+    loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE" }, { mapping_function });
     loader_data.end();
 
     // signal MC
     Loader loader_signal("tau_lfv");
     for (int i = 0; i < signal_list_.size(); i++) loader_signal.Load((input_path_1_ + std::string("/") + signal_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), ("alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_").c_str(), signal_list_.at(i).c_str());
-    loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE", "extraInfo__boALP_M__bc", BDT_output_1_name.c_str(), BDT_output_2_name.c_str() }, { mapping_function });
+    loader_signal.Cut(cut_total.c_str());
+    loader_signal.Cut(cut_m_alpha.c_str());
+    loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE" }, { mapping_function });
     loader_signal.end();
 
     // background MC
     Loader loader_bkg("tau_lfv");
     for (int i = 0; i < background_list_.size(); i++) loader_bkg.Load((input_path_1_ + std::string("/") + background_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", background_list_.at(i).c_str());
-    loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE", "extraInfo__boALP_M__bc", BDT_output_1_name.c_str(), BDT_output_2_name.c_str() }, { mapping_function });
+    loader_bkg.Cut(cut_total.c_str());
+    loader_bkg.Cut(cut_m_alpha.c_str());
+    loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE" }, { mapping_function });
     loader_bkg.end();
 
 
