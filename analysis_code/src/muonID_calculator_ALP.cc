@@ -308,8 +308,8 @@ double mapping_function(std::vector<double> variables_) {
 }
 
 void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, TH1D* data_th1d_stat_err_, TH1D* signal_MC_th1d_stat_err_, TH1D* bkg_MC_th1d_stat_err_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_) {
-    std::string cut_BDT_1 = "((deltaE >= " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + ") && ( BDT_output_1 > " + std::to_string(BDT_cut_1) + "))";
-    std::string cut_BDT_2 = "((deltaE < " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + ") && ( BDT_output_2 > " + std::to_string(BDT_cut_2) + "))";
+    std::string cut_BDT_1 = "((deltaE >= " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + ") && ( " + BDT_output_1_name + " > " + std::to_string(BDT_cut_1) + "))";
+    std::string cut_BDT_2 = "((deltaE < " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + ") && ( " + BDT_output_2_name + " > " + std::to_string(BDT_cut_2) + "))";
     std::string cut_total = cut_BDT_1 + "||" + cut_BDT_2;
 
     std::string cut_m_alpha = "(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")";
