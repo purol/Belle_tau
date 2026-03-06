@@ -165,6 +165,8 @@ void DrawPlots(const char* path, TGraphErrors* GraphObservedCLs, TGraphErrors* G
     if (gPad) gPad->RedrawAxis();
 
     c->SaveAs((std::string(path) + "/CLs.png").c_str());
+
+    delete c;
 }
 
 void DrawExpectedPlots(const char* path, TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, double conf = 0.9) {
@@ -175,7 +177,7 @@ void DrawExpectedPlots(const char* path, TGraphErrors* GraphObservedCLs, TMultiG
     gplot->GetHistogram()->SetTitle("CLs scan");
 
     // draw Expected
-    GraphExpectedCLs->Draw();
+    GraphExpectedCLs->Draw("APL");
 
     // draw line for conf level
   //  GraphExpectedCLs->Draw();
@@ -194,8 +196,8 @@ void DrawExpectedPlots(const char* path, TGraphErrors* GraphObservedCLs, TMultiG
     }
 
     // draw legend
-    double y0 = 0.6;
-    double verticalSize = 0.3;
+    double y0 = 0.7;
+    double verticalSize = 0.2;
     double y1 = y0 + verticalSize;
     TLegend* l = new TLegend(0.6, y0, 0.9, y1);
     // loop in reverse order (opposite to drawing one)
@@ -212,6 +214,8 @@ void DrawExpectedPlots(const char* path, TGraphErrors* GraphObservedCLs, TMultiG
     if (gPad) gPad->RedrawAxis();
 
     c->SaveAs((std::string(path) + "/CLs_expected.png").c_str());
+
+    delete c;
 }
 
 void ReadTxt(const char* path, bool IsItFreq, std::vector<double>* mu_values, std::vector<double>* ObsCLss,
