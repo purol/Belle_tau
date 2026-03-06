@@ -169,25 +169,23 @@ void DrawPlots(const char* path, TGraphErrors* GraphObservedCLs, TGraphErrors* G
     delete c;
 }
 
-void DrawExpectedPlots(const char* path, TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, double conf = 0.9) {
+void DrawExpectedPlots(const char* path, TMultiGraph* GraphExpectedCLs, double conf = 0.9) {
     TCanvas* c = new TCanvas("c", "c", 696, 472);
-
-    // draw observed CLs first
-    TGraphErrors* gplot = GraphObservedCLs;
-    gplot->GetHistogram()->SetTitle("CLs scan");
 
     // draw Expected
     GraphExpectedCLs->Draw("APL");
 
-    // draw line for conf level
-  //  GraphExpectedCLs->Draw();
+    // set gplot for ui
+    TMultiGraph* gplot = GraphExpectedCLs;
+    gplot->GetHistogram()->SetTitle("CLs scan");
 
     // draw line for conf level
     if (gplot) {
         double alpha = 1.0 - conf;
         double x1 = gplot->GetXaxis()->GetXmin();
         double x2 = gplot->GetXaxis()->GetXmax();
-        TLine* line = new TLine(x1, alpha, x2, alpha);
+        gplot->GetXaxis()->SetLimits(0.0, x2);
+        TLine* line = new TLine(0.0, alpha, x2, alpha);
         line->SetLineColor(kRed);
         line->Draw();
         // put axis labels
@@ -339,7 +337,7 @@ int main(int argc, char* argv[]) {
 
     // draw
     DrawPlots(argv[2], GraphObservedCLs, GraphObservedCLb, GraphObservedCLsplusb, GraphExpectedCLs);
-    DrawExpectedPlots(argv[2], GraphObservedCLs, GraphExpectedCLs);
+    DrawExpectedPlots(argv[2], GraphExpectedCLs);
 
     printf("Expected mu: %lf\n", GetCrossPoint(mu_values, ExpCLsMedian,0.9));
     printf("Expected mu +1sigma: %lf\n", GetCrossPoint(mu_values, ExpCLs1sigplus, 0.9));
