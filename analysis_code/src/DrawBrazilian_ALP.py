@@ -83,22 +83,24 @@ if __name__ == "__main__":
     expectedULMinusTwoList = [x[5] for x in results]
 
     # draw
-    plt.figure(figsize=(5,4))
+    plt.figure(figsize=(5,3))
 
     # +-2sigma band (yellow)
-    plt.fill_between(ALPMassList, expectedULMinusTwoList, expectedULPlusTwoList, label = r"Expected $\pm$ 2$\sigma$", alpha = 0.8)
+    plt.fill_between(ALPMassList, expectedULMinusTwoList, expectedULPlusTwoList, label = r"Expected $\pm$ 2$\sigma$", color="#F5E61A", alpha = 1.0, linewidth = 0)
 
     # +-1sigma band (green)
-    plt.fill_between(ALPMassList, expectedULMinusOneList, expectedULPlusOneList, label = r"Expected $\pm$ 1$\sigma$", alpha = 0.8)
+    plt.fill_between(ALPMassList, expectedULMinusOneList, expectedULPlusOneList, label = r"Expected $\pm$ 1$\sigma$", color="#32E600", alpha = 1.0, linewidth = 0)
 
     # median
-    plt.plot(ALPMassList, expectedULMedianList, "--", linewidth = 2, label = "Expected median")
+    plt.plot(ALPMassList, expectedULMedianList, "k--", linewidth = 2, label = "Expected median")
 
     # set ui
     plt.xlabel("Axion-like particle mass [GeV]")
-    plt.ylabel(r"Upper limit of branching fraction [$\times 10^{-8}$]")
+    plt.ylabel(r"$UL(\tau \to \alpha(\to \mu \mu) \mu)$ [$\times 10^{-8}$]")
     plt.legend()
     plt.tight_layout()
+    plt.grid(True, which="both", linestyle = ":", linewidth=0.8)
+    plt.xlim(min(ALPMassList), max(ALPMassList))
 
     plt.savefig(output_path + "/Brazilian_" + str(lifetime) + "_" + str(A) + "_" + str(B) + ".png", dpi = 300)
     plt.close()
