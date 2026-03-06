@@ -167,6 +167,53 @@ void DrawPlots(const char* path, TGraphErrors* GraphObservedCLs, TGraphErrors* G
     c->SaveAs((std::string(path) + "/CLs.png").c_str());
 }
 
+void DrawExpectedPlots(const char* path, TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, double conf = 0.9) {
+    TCanvas* c = new TCanvas("c", "c", 696, 472);
+
+    // draw observed CLs first
+    TGraphErrors* gplot = GraphObservedCLs;
+    gplot->GetHistogram()->SetTitle("CLs scan");
+
+    // draw Expected
+    GraphExpectedCLs->Draw();
+
+    // draw line for conf level
+  //  GraphExpectedCLs->Draw();
+
+    // draw line for conf level
+    if (gplot) {
+        double alpha = 1.0 - conf;
+        double x1 = gplot->GetXaxis()->GetXmin();
+        double x2 = gplot->GetXaxis()->GetXmax();
+        TLine* line = new TLine(x1, alpha, x2, alpha);
+        line->SetLineColor(kRed);
+        line->Draw();
+        // put axis labels
+        gplot->GetXaxis()->SetTitle("#mu");
+        gplot->GetYaxis()->SetTitle("p value");
+    }
+
+    // draw legend
+    double y0 = 0.6;
+    double verticalSize = 0.3;
+    double y1 = y0 + verticalSize;
+    TLegend* l = new TLegend(0.6, y0, 0.9, y1);
+    // loop in reverse order (opposite to drawing one)
+    int ngraphs = GraphExpectedCLs->GetListOfGraphs()->GetSize();
+    for (int i = ngraphs - 1; i >= 0; --i) {
+        TObject* obj = GraphExpectedCLs->GetListOfGraphs()->At(i);
+        TString lopt = "F";
+        if (i == ngraphs - 1) lopt = "L";
+        if (obj)  l->AddEntry(obj, "", lopt);
+    }
+    l->Draw();
+
+    // redraw the axis
+    if (gPad) gPad->RedrawAxis();
+
+    c->SaveAs((std::string(path) + "/CLs_expected.png").c_str());
+}
+
 void ReadTxt(const char* path, bool IsItFreq, std::vector<double>* mu_values, std::vector<double>* ObsCLss,
     std::vector<double>* ObsCLsErrors, std::vector<double>* ObsCLbs, std::vector<double>* ObsCLbErrors,
     std::vector<double>* ObsCLsPlusbs, std::vector<double>* ObsCLsPlusbErrors, std::vector<double>* ExpCLsMedian,
@@ -288,8 +335,13 @@ int main(int argc, char* argv[]) {
 
     // draw
     DrawPlots(argv[2], GraphObservedCLs, GraphObservedCLb, GraphObservedCLsplusb, GraphExpectedCLs);
+    DrawExpectedPlots(argv[2], GraphObservedCLs, GraphExpectedCLs);
 
     printf("Expected mu: %lf\n", GetCrossPoint(mu_values, ExpCLsMedian,0.9));
+    printf("Expected mu +1sigma: %lf\n", GetCrossPoint(mu_values, ExpCLs1sigplus, 0.9));
+    printf("Expected mu -1sigma: %lf\n", GetCrossPoint(mu_values, ExpCLs1sigminus, 0.9));
+    printf("Expected mu +2sigma: %lf\n", GetCrossPoint(mu_values, ExpCLs2sigplus, 0.9));
+    printf("Expected mu -2sigma: %lf\n", GetCrossPoint(mu_values, ExpCLs2sigminus, 0.9));
     printf("Observed mu: %lf\n", GetCrossPoint(mu_values, ObsCLss,0.9));
 
     return 0;
