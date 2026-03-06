@@ -83,7 +83,7 @@ if __name__ == "__main__":
     expectedULMinusTwoList = [x[5] for x in results]
 
     # draw
-    plt.figure(figsize=(8,6))
+    plt.figure(figsize=(5,4))
 
     # +-2sigma band (yellow)
     plt.fill_between(ALPMassList, expectedULMinusTwoList, expectedULPlusTwoList, label = r"Expected $\pm$ 2$\sigma$", alpha = 0.8)
@@ -96,7 +96,7 @@ if __name__ == "__main__":
 
     # set ui
     plt.xlabel("Axion-like particle mass [GeV]")
-    plt.ylabel("Upper limit of branching fraction")
+    plt.ylabel(r"Upper limit of branching fraction [$\times 10^{-8}$]")
     plt.legend()
     plt.tight_layout()
 

@@ -322,12 +322,24 @@ int main(int argc, char* argv[]) {
     std::vector<double> ExpCLs2sigplus;
     std::vector<double> ExpCLs2sigminus;
 
+    std::vector<double> ExpCLsMedian1sigplus;
+    std::vector<double> ExpCLsMedian1sigminus;
+    std::vector<double> ExpCLsMedian2sigplus;
+    std::vector<double> ExpCLsMedian2sigminus;
+
     // read txt files
     ReadTxt(argv[1], true, &mu_values, &ObsCLss,
         &ObsCLsErrors, &ObsCLbs, &ObsCLbErrors,
         &ObsCLsPlusbs, &ObsCLsPlusbErrors, &ExpCLsMedian,
         &ExpCLs1sigplus, &ExpCLs1sigminus, &ExpCLs2sigplus,
         &ExpCLs2sigminus);
+
+    for (size_t i = 0; i < ExpCLsMedian.size(); i++) {
+        ExpCLsMedian1sigplus.push_back(ExpCLsMedian.at(i) + ExpCLs1sigplus.at(i));
+        ExpCLsMedian1sigminus.push_back(ExpCLsMedian.at(i) - ExpCLs1sigminus.at(i));
+        ExpCLsMedian2sigplus.push_back(ExpCLsMedian.at(i) + ExpCLs2sigplus.at(i));
+        ExpCLsMedian2sigminus.push_back(ExpCLsMedian.at(i) - ExpCLs2sigminus.at(i));
+    }
 
     // get graphs
     TGraphErrors* GraphObservedCLs = ObservedGraph("CLS", mu_values, ObsCLss, ObsCLsErrors);
@@ -340,10 +352,10 @@ int main(int argc, char* argv[]) {
     DrawExpectedPlots(argv[2], GraphExpectedCLs);
 
     printf("Expected mu: %lf\n", GetCrossPoint(mu_values, ExpCLsMedian,0.9));
-    printf("Expected mu +1sigma: %lf\n", GetCrossPoint(mu_values, ExpCLs1sigplus, 0.9));
-    printf("Expected mu -1sigma: %lf\n", GetCrossPoint(mu_values, ExpCLs1sigminus, 0.9));
-    printf("Expected mu +2sigma: %lf\n", GetCrossPoint(mu_values, ExpCLs2sigplus, 0.9));
-    printf("Expected mu -2sigma: %lf\n", GetCrossPoint(mu_values, ExpCLs2sigminus, 0.9));
+    printf("Expected mu +1sigma: %lf\n", GetCrossPoint(mu_values, ExpCLsMedian1sigplus, 0.9));
+    printf("Expected mu -1sigma: %lf\n", GetCrossPoint(mu_values, ExpCLsMedian1sigminus, 0.9));
+    printf("Expected mu +2sigma: %lf\n", GetCrossPoint(mu_values, ExpCLsMedian2sigplus, 0.9));
+    printf("Expected mu -2sigma: %lf\n", GetCrossPoint(mu_values, ExpCLsMedian2sigminus, 0.9));
     printf("Observed mu: %lf\n", GetCrossPoint(mu_values, ObsCLss,0.9));
 
     return 0;
