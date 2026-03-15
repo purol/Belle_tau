@@ -553,8 +553,8 @@ df_BKG_train_list = []
 df_BKG_test_list = []
 
 for label in signal_list:
-    train_path = [f"{input_path}/{label}/final_output_train/"]
-    test_path = [f"{input_path}/{label}/final_output_test/"]
+    train_path = [f"{input_path}/{label}/final_output_train_after_application/"]
+    test_path = [f"{input_path}/{label}/final_output_test_after_application/"]
     
     df_train = read_with_weight(train_path, "tau_lfv", input_variables = ["M", "deltaE", "BDT_output_1", "BDT_output_2", "MySampleType", "MyEventType", "MyEnergyType"])
     df_test  = read_with_weight(test_path,  "tau_lfv", input_variables = ["M", "deltaE", "BDT_output_1", "BDT_output_2", "MySampleType", "MyEventType", "MyEnergyType"])
@@ -563,8 +563,8 @@ for label in signal_list:
     df_SIGNAL_test_list.append(df_test)
 
 for label in background_list:
-    train_path = [f"{input_path}/{label}/final_output_train/"]
-    test_path = [f"{input_path}/{label}/final_output_test/"]
+    train_path = [f"{input_path}/{label}/final_output_train_after_application/"]
+    test_path = [f"{input_path}/{label}/final_output_test_after_application/"]
     
     df_train = read_with_weight(train_path, "tau_lfv", input_variables = ["M", "deltaE", "BDT_output_1", "BDT_output_2", "MySampleType", "MyEventType", "MyEnergyType"])
     df_test  = read_with_weight(test_path, "tau_lfv", input_variables = ["M", "deltaE", "BDT_output_1", "BDT_output_2", "MySampleType", "MyEventType", "MyEnergyType"])
