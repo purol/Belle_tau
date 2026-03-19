@@ -286,6 +286,84 @@ def calculate_weights(df: pd.DataFrame) -> pd.Series:
     # np.select is a vectorized and efficient way to perform this assignment
     return pd.Series(np.select(conditions, choices, default=0.0), index=df.index)
 
+def plot_binned_1d_distributions(df, bdt_col, region_str, num_bins=4):
+    bkg_df = df[df["label"] == 0].copy()
+    
+    # do not draw if there is not enough background
+    if len(bkg_df) < num_bins:
+        print(f"Not enough data in {region_str} to plot binned distributions.")
+        return
+
+    # divide BDT region
+    # pd.qcut to put the same number of events
+    try:
+        bkg_df['BDT_bin'], bin_edges = pd.qcut(bkg_df[bdt_col], q=num_bins, retbins=True, duplicates='drop')
+    except ValueError:
+        print(f"Warning: Could not use qcut for {region_str}. Using equal-width bins instead.")
+        bkg_df['BDT_bin'], bin_edges = pd.cut(bkg_df[bdt_col], bins=num_bins, retbins=True)
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    
+    # define color map
+    colors = plt.cm.viridis(np.linspace(0, 0.9, len(bin_edges)-1))
+    
+    for i in range(len(bin_edges)-1):
+        lower = bin_edges[i]
+        upper = bin_edges[i+1]
+        
+        # masking the current region
+        if i == len(bin_edges) - 2:
+            mask = (bkg_df[bdt_col] >= lower) & (bkg_df[bdt_col] <= upper)
+        else:
+            mask = (bkg_df[bdt_col] >= lower) & (bkg_df[bdt_col] < upper)
+            
+        subset = bkg_df[mask]
+        if len(subset) == 0:
+            continue
+            
+        label_str = f"{lower:.3f} <= BDT < {upper:.3f} (N={len(subset)})"
+        
+        # 1. M distribution
+        axes[0].hist(
+            subset["M"], 
+            bins=30, 
+            weights=subset["weight"], 
+            density=True,          
+            histtype='step',      
+            linewidth=2.5, 
+            color=colors[i], 
+            label=label_str
+        )
+        
+        # 2. deltaE distribution
+        axes[1].hist(
+            subset["deltaE"], 
+            bins=30, 
+            weights=subset["weight"], 
+            density=True,
+            histtype='step', 
+            linewidth=2.5, 
+            color=colors[i], 
+            label=label_str
+        )
+
+    # setting for plots
+    axes[0].set_xlabel("M")
+    axes[0].set_ylabel("Normalized Events (A.U.)")
+    axes[0].set_title(f"[{region_str}] Weighted Shape of M across BDT Bins")
+    axes[0].legend(loc='best', fontsize='small')
+
+    axes[1].set_xlabel("deltaE")
+    axes[1].set_ylabel("Normalized Events (A.U.)")
+    axes[1].set_title(f"[{region_str}] Weighted Shape of deltaE across BDT Bins")
+    axes[1].legend(loc='best', fontsize='small')
+
+    plt.tight_layout()
+    save_name = f"Binned_1D_Shape_{region_str}.png"
+    plt.savefig(save_name, dpi=300)
+    plt.close()
+    print(f"Saved 1D shape comparison to: {save_name}\n")
+
 def summarize_variable_metrics(df, bins=1000, skip_cols=["label", "weight"], isItFirstRegion = True):
     bkg_df = df[df["label"] == 0].copy()
     
@@ -329,25 +407,16 @@ def summarize_variable_metrics(df, bins=1000, skip_cols=["label", "weight"], isI
     plt.close()
     print(f"Saved 2D distributions to: {save_name}")
 
-    # calculate correlation
-    weights = bkg_df["weight"].values
-    if weights.sum() > 0:
-        probs = weights / weights.sum()
-        resampled_idx = np.random.choice(bkg_df.index, size=len(bkg_df), p=probs, replace=True)
-        bkg_df_w = bkg_df.loc[resampled_idx]
-    else:
-        bkg_df_w = bkg_df
-
-    spea_M  = spearmanr(bkg_df_w[bdt_col], bkg_df_w["M"])[0]
-    spea_de = spearmanr(bkg_df_w[bdt_col], bkg_df_w["deltaE"])[0]
+    spea_M  = spearmanr(bkg_df[bdt_col], bkg_df["M"])[0]
+    spea_de = spearmanr(bkg_df[bdt_col], bkg_df["deltaE"])[0]
     
     xi_M = max(
-        chatterjeexi(bkg_df_w[bdt_col].values, bkg_df_w["M"].values).statistic, 
-        chatterjeexi(bkg_df_w["M"].values, bkg_df_w[bdt_col].values).statistic
+        chatterjeexi(bkg_df[bdt_col].values, bkg_df["M"].values).statistic, 
+        chatterjeexi(bkg_df["M"].values, bkg_df[bdt_col].values).statistic
     )
     xi_de = max(
-        chatterjeexi(bkg_df_w[bdt_col].values, bkg_df_w["deltaE"].values).statistic, 
-        chatterjeexi(bkg_df_w["deltaE"].values, bkg_df_w[bdt_col].values).statistic
+        chatterjeexi(bkg_df[bdt_col].values, bkg_df["deltaE"].values).statistic, 
+        chatterjeexi(bkg_df["deltaE"].values, bkg_df[bdt_col].values).statistic
     )
 
     print(f"[{region_str}] Weighted Correlation:")
@@ -604,6 +673,8 @@ df_test_one = df_test_one[0.3 < df_test_one["BDT_output_1"]]
 summary_one = summarize_variable_metrics(df_train_one, isItFirstRegion = True)
 print("%f %f %f %f" % (summary_one['Spearman_M'], summary_one['Spearman_deltaE'], summary_one['Xi_M'], summary_one['Xi_deltaE']))
 
+plot_binned_1d_distributions(df_train_one, "BDT_output_1", "Region_1", num_bins=4)
+
 # ====================================================== region two ====================================================== #
 # filter
 df_train_two = df_train[((resolution["deltaE"]["peak"] - 15*resolution["deltaE"]["left_sigma"]) < df_train["deltaE"]) & (df_train["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
@@ -615,3 +686,5 @@ df_test_two = df_test_two[0.3 < df_test_two["BDT_output_2"]]
 
 summary_two = summarize_variable_metrics(df_train_two, isItFirstRegion = False)
 print("%f %f %f %f" % (summary_two['Spearman_M'], summary_two['Spearman_deltaE'], summary_two['Xi_M'], summary_two['Xi_deltaE']))
+
+plot_binned_1d_distributions(df_train_two, "BDT_output_2", "Region_2", num_bins=4)
