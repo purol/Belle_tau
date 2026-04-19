@@ -17,14 +17,12 @@ submit_CLs() {
     mkdir -p "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/out"
     mkdir -p "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/log"
 
-    # life 값이 100 이상인지 awk를 이용해 확인 (소수점, 지수 표기법 처리 가능)
     is_large_life=$(awk -v life="$life" 'BEGIN { if (life >= 100) print 1; else print 0 }')
 
-    # 조건에 따라 mu 반복 범위(seq) 설정
     if [ "$is_large_life" -eq 1 ]; then
-      mu_list=$(seq 0 1 50)     # life가 100 이상일 때 (0부터 50까지 1단위)
+      mu_list=$(seq 0 1 50) 
     else
-      mu_list=$(seq 0 0.1 5.0)  # life가 100 미만일 때 (0부터 5.0까지 0.1단위)
+      mu_list=$(seq 0 0.1 5.0)
     fi
 
     for mu in $mu_list
