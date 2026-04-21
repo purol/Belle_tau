@@ -839,7 +839,7 @@ int main(int argc, char* argv[]) {
 
     // define channels
     RooStats::HistFactory::Channel channel_Belle_II("Belle_II");
-    channel_Belle_II.SetStatErrorConfig(1e-5, "Poisson");
+    channel_Belle_II.SetStatErrorConfig(1e-5, "Gaussian");
 
     // fill channels
     channel_Belle_II.SetData("data_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str());
