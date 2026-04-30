@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <map>
+#include <dirent.h>
+#include <sys/types.h>
 
 #include <RooStats/HypoTestInverterResult.h>
 #include <RooStats/SamplingDistribution.h>
@@ -14,6 +17,34 @@
 #include <TCanvas.h>
 
 #include "functions.h"
+
+std::map<double, std::string> GetMuValuesFromRootFiles(const char* path) {
+	std::map<double, std::string> mu_map; 
+	DIR* dir = opendir(path);
+	if (dir) {
+		struct dirent* ent;
+		while ((ent = readdir(dir)) != NULL) {
+			std::string fname = ent->d_name;
+			std::string prefix = "Hypotestinverter_freq_";
+
+			if (fname.find(prefix) == 0 && fname.find(".root") != std::string::npos) {
+				size_t p1 = prefix.size();
+				size_t p2 = fname.find('_', p1);
+				if (p2 != std::string::npos) {
+					std::string mu_str = fname.substr(p1, p2 - p1);
+					try {
+						mu_map[std::stod(mu_str)] = mu_str;
+					}
+					catch (...) {
+						// ignore
+					}
+				}
+			}
+		}
+		closedir(dir);
+	}
+	return mu_map;
+}
 
 void GetExpectedCL(RooStats::HypoTestInverterResult* fResults, const char* mu, const char* path) {
 	// get CLs CLb CLs+b
@@ -131,15 +162,10 @@ int main(int argc, char* argv[]) {
 	* argv[2]: output path
 	*/
 
-	const double mu_max = 5.0;
+	std::map<double, std::string> mu_map = GetMuValuesFromRootFiles(argv[1]);
 
-	double mu = 0.0;
-
-	mu = 0.0;
-	while (mu < mu_max) {
-		std::stringstream stream;
-		stream << std::fixed << std::setprecision(1) << mu;
-		std::string mu_string = stream.str();
+	for (auto const& pair : mu_map) {
+		std::string mu_string = pair.second;
 
 		std::vector<std::string> names;
 		My_load_files(argv[1], &names, ("Hypotestinverter_freq_" + mu_string + "_").c_str());
@@ -165,7 +191,6 @@ int main(int argc, char* argv[]) {
 			PrintTestStat(result, mu_string, argv[2]);
 		}
 
-		mu = mu + 0.1;
 	}
 
 	return 0;

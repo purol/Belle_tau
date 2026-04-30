@@ -5,6 +5,9 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
+#include <map>
+#include <dirent.h>
+#include <sys/types.h>
 
 #include "TGraph.h"
 #include "TGraphErrors.h"
@@ -17,6 +20,34 @@
 #include "TH1.h"
 #include "TAxis.h"
 #include "TLine.h"
+
+std::map<double, std::string> GetMuValuesFromTxtFiles(const char* path, bool IsItFreq) {
+    std::map<double, std::string> mu_map;
+    DIR* dir = opendir(path);
+    if (dir) {
+        struct dirent* ent;
+        while ((ent = readdir(dir)) != NULL) {
+            std::string fname = ent->d_name;
+            std::string prefix = IsItFreq ? "CLs_freq_" : "CLs_hyb_";
+            std::string suffix = ".txt";
+
+            if (fname.size() > prefix.size() + suffix.size() &&
+                fname.substr(0, prefix.size()) == prefix &&
+                fname.substr(fname.size() - suffix.size()) == suffix) {
+
+                std::string mu_str = fname.substr(prefix.size(), fname.size() - prefix.size() - suffix.size());
+                try {
+                    mu_map[std::stod(mu_str)] = mu_str;
+                }
+                catch (...) {
+                    // ignore
+                }
+            }
+        }
+        closedir(dir);
+    }
+    return mu_map;
+}
 
 TGraphErrors* ObservedGraph(const char* type, std::vector<double> xArray, std::vector<double> yArray, std::vector<double> yErrArray)
 {
@@ -222,16 +253,15 @@ void ReadTxt(const char* path, bool IsItFreq, std::vector<double>* mu_values, st
     std::vector<double>* ExpCLs1sigplus, std::vector<double>* ExpCLs1sigminus, std::vector<double>* ExpCLs2sigplus,
     std::vector<double>* ExpCLs2sigminus) {
 
-    for (int i = 0; i < 51; i++) {
-        std::ostringstream streamObj;
-        streamObj << std::fixed;
-        streamObj << std::setprecision(1);
+    std::map<double, std::string> mu_map = GetMuValuesFromTxtFiles(path, IsItFreq);
+
+    for (auto const& pair : mu_map) {
+        double mu = pair.first;
+        std::string mu_str = pair.second;
 
         std::string fname;
-        double mu = i * 0.1;
-        streamObj << mu;
-        if (IsItFreq) fname = std::string(path) + "/CLs_freq_" + streamObj.str() + ".txt";
-        else fname = std::string(path) + "/CLs_hyb_" + streamObj.str() + ".txt";
+        if (IsItFreq) fname = std::string(path) + "/CLs_freq_" + mu_str + ".txt";
+        else fname = std::string(path) + "/CLs_hyb_" + mu_str + ".txt";
 
         FILE* fp;
         fp = fopen(fname.c_str(), "r");
