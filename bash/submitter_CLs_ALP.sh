@@ -17,7 +17,7 @@ submit_CLs() {
     mkdir -p "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/out"
     mkdir -p "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/log"
 
-    is_large_life=$(awk -v life="$life" 'BEGIN { if (life >= 100) print 1; else print 0 }')
+    is_large_life=$(awk -v life="$life" 'BEGIN { if (life >= 300) print 1; else print 0 }')
 
     if [ "$is_large_life" -eq 1 ]; then
       mu_list=$(seq 0 1 50) 
