@@ -26,7 +26,7 @@ submit_splitter() {
 
 Types=("SIGNAL")
 
-code="${Belle_tau_DIR}/analysis_code/bin/Control_Splitter"
+code="${Belle_tau_DIR}/analysis_code/bin/Control_splitter"
 for Type in "${Types[@]}"; do
     submit_splitter ${code} ${Analysis_Name} ${Type}
     sleep 0.5s
