@@ -4,7 +4,7 @@ export Analysis_Name="Konpaku_CTRL"
 export Analysis_VerName="v000"
 
 export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau"
-export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple"
+export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple_CTRL"
 
 submit_splitter() {
   local Code=$1 # ex. ./bin/Analysis_main
