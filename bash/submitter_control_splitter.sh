@@ -24,7 +24,7 @@ submit_splitter() {
 
 }
 
-Types=("TAUPAIR")
+Types=("TAUPAIR_original")
 
 code="${Belle_tau_DIR}/analysis_code/bin/Control_splitter"
 for Type in "${Types[@]}"; do
