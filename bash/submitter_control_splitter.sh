@@ -19,7 +19,7 @@ submit_splitter() {
   for file in "${Ntuple_DIR}/${VerName}/${SampleName}/MC15ri"/*.root; do
     filename=$(basename "$file" .root) # without path, without extension
     bsub -q s -J Split -o "./${VerName}/${Analysis_VerName}/${SampleName}/log/${filename}.log" -e "./${VerName}/${Analysis_VerName}/${SampleName}/err/${filename}.err" ${Code} "${Ntuple_DIR}/${VerName}/${SampleName}/MC15ri" "${filename}.root" "./${VerName}/${Analysis_VerName}/${SampleName}/output/" "./${VerName}/${Analysis_VerName}/${SampleName}/output/"
-    sleep 0.5s
+    sleep 0.3s
   done
 
 }

@@ -17,12 +17,12 @@ int main(int argc, char* argv[]) {
     */
 
     Loader toSignal("tau_lfv");
-    toSignal.LoadWithCut(argv[1], argv[2], "label", "(((111.5 < tauPlusMCMode) && (tauPlusMCMode < 112.5)) || ((225.5 < tauPlusMCMode) && (tauPlusMCMode < 226.5))) || (((111.5 < tauMinusMCProng) && (tauMinusMCProng < 112.5)) || ((225.5 < tauMinusMCProng) && (tauMinusMCProng < 226.5)))");
+    toSignal.LoadWithCut(argv[1], argv[2], "label", "(((111.5 < tauPlusMCMode) && (tauPlusMCMode < 112.5)) || ((225.5 < tauPlusMCMode) && (tauPlusMCMode < 226.5))) || (((111.5 < tauMinusMCMode) && (tauMinusMCMode < 112.5)) || ((225.5 < tauMinusMCMode) && (tauMinusMCMode < 226.5)))");
     toSignal.PrintSeparateRootFile(argv[3], "SIGNAL_", "");
     toSignal.end();
 
     Loader toTau("tau_lfv");
-    toTau.LoadWithCut(argv[1], argv[2], "label", "(((111.5 > tauPlusMCMode) || (tauPlusMCMode > 112.5)) && ((225.5 > tauPlusMCMode) || (tauPlusMCMode > 226.5))) && (((111.5 > tauMinusMCProng) || (tauMinusMCProng > 112.5)) && ((225.5 > tauMinusMCProng) || (tauMinusMCProng > 226.5)))");
+    toTau.LoadWithCut(argv[1], argv[2], "label", "(((111.5 > tauPlusMCMode) || (tauPlusMCMode > 112.5)) && ((225.5 > tauPlusMCMode) || (tauPlusMCMode > 226.5))) && (((111.5 > tauMinusMCMode) || (tauMinusMCMode > 112.5)) && ((225.5 > tauMinusMCMode) || (tauMinusMCMode > 226.5)))");
     toTau.PrintSeparateRootFile(argv[4], "TAUPAIR_", "");
     toTau.end();
 
