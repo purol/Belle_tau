@@ -48,3 +48,9 @@ for Type in "${Types[@]}"; do
     submit_analysis ${code} ${Analysis_Name} ${Type}
     sleep 0.5s
 done
+
+code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main_CTRL_log"
+for Type in "${Types[@]}"; do
+    submit_logger ${code} ${Analysis_Name} ${Type}
+    sleep 0.5s
+done
