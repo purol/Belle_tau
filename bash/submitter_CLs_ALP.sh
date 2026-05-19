@@ -18,9 +18,9 @@ submit_CLs() {
   mkdir -p "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/log"
 
     if awk -v life="$life" 'BEGIN { exit !(life >= 700) }'; then
-      mu_list="$(seq 0 1 50) 60 70 80 90 100 110 120 130 140 150 160 170 180 190 200"
+      mu_list="$(seq 0 10 300)"
     elif awk -v life="$life" 'BEGIN { exit !(life >= 300 && life < 700) }'; then
-      mu_list="$(seq 0 1 50) 55 60 65 70 75 80 85 90 95 100 110 120 130 140 150"
+      mu_list="$(seq 0 10 200)"
     else
       mu_list="$(seq 0 0.1 5.0)"
     fi
