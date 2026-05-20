@@ -64,6 +64,9 @@ int main(int argc, char* argv[]) {
     // It is prompt decay analysis
     loader.LoadWithCut(argv[1], "root", "label", "(19.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 20.5)");
 
+    loader.RemoveVariable({ "nParticlesInList__botau__pl__clpipipi__bc" });
+    loader.RemoveVariable({ "nParticlesInList__botau__pl__cldirect__bc" });
+
     loader.ConditionalPairDefineNewVariable(momentum_muonmomentum, 0, "first_muon_p");
     loader.ConditionalPairDefineNewVariable(momentum_muonmomentum, 1, "second_muon_p");
     loader.ConditionalPairDefineNewVariable(momentum_muonmomentum, 2, "third_muon_p");
