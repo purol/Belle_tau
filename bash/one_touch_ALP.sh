@@ -13,6 +13,8 @@ export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple" # Ntuple path
 Background_Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CHARM" "MUMU" "EE" "EEEE" "EEMUMU" "EEPIPI" "EEKK" "EEPP" "PIPIISR" "PIPIPI0ISR" "KKISR" "GG" "EETAUTAU" "K0K0BARISR" "MUMUMUMU" "MUMUTAUTAU" "TAUTAUTAUTAU" "TAUPAIR" "BBs" "BsBs") # name of directories under ${Ntuple_DIR} for background sample
 Signal_Type="SIGNAL" # name of directories under ${Ntuple_DIR} for prompt signal sample
 ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample
+
+export MC_version="MC15ri" # version of MC. This should be under ${Ntuple_DIR}/${Analysis_Name}/(type name)
 # =================================================================================== #
 
 export shell_DIR="${Belle_tau_DIR}/bash"

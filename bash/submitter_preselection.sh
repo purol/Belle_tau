@@ -11,12 +11,12 @@ submit_preselection() {
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/log"
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/err"
 
-  for file in "${Ntuple_DIR}/${VerName}/${SampleName}/MC15ri"/*; do
+  for file in "${Ntuple_DIR}/${VerName}/${SampleName}/${MC_version}"/*; do
     filename=$(basename "$file" .root) # without path, without extension
     if [ "$SampleName" == "SIGNAL" ]; then
-      bsub -q l -J Presel -o "./${VerName}/${Analysis_VerName}/${SampleName}/log/${filename}.log" -e "./${VerName}/${Analysis_VerName}/${SampleName}/err/${filename}.err" ${Code} "${Ntuple_DIR}/${VerName}/${SampleName}/MC15ri" "${filename}.root" "./${VerName}/${Analysis_VerName}/${SampleName}"
+      bsub -q l -J Presel -o "./${VerName}/${Analysis_VerName}/${SampleName}/log/${filename}.log" -e "./${VerName}/${Analysis_VerName}/${SampleName}/err/${filename}.err" ${Code} "${Ntuple_DIR}/${VerName}/${SampleName}/${MC_version}" "${filename}.root" "./${VerName}/${Analysis_VerName}/${SampleName}"
     else
-      bsub -q s -J Presel -o "./${VerName}/${Analysis_VerName}/${SampleName}/log/${filename}.log" -e "./${VerName}/${Analysis_VerName}/${SampleName}/err/${filename}.err" ${Code} "${Ntuple_DIR}/${VerName}/${SampleName}/MC15ri" "${filename}.root" "./${VerName}/${Analysis_VerName}/${SampleName}"
+      bsub -q s -J Presel -o "./${VerName}/${Analysis_VerName}/${SampleName}/log/${filename}.log" -e "./${VerName}/${Analysis_VerName}/${SampleName}/err/${filename}.err" ${Code} "${Ntuple_DIR}/${VerName}/${SampleName}/${MC_version}" "${filename}.root" "./${VerName}/${Analysis_VerName}/${SampleName}"
     fi
     sleep 0.5s
   done

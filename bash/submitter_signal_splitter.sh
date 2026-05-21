@@ -16,14 +16,14 @@ submit_splitter() {
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/log"
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/err"
 
-  for file in "${Ntuple_DIR}/${VerName}/${SampleName}/MC15ri"/*; do
+  for file in "${Ntuple_DIR}/${VerName}/${SampleName}/${MC_version}"/*; do
     filename=$(basename "$file" .root) # without path, without extension
     for i in {0..19}
     do
       if [ "$SampleName" == "SIGNAL" ]; then
-        bsub -q l -J Split -o "./${VerName}/${Analysis_VerName}/${SampleName}/log/${filename}_20_${i}.log" -e "./${VerName}/${Analysis_VerName}/${SampleName}/err/${filename}_20_${i}.err" ${Code} "${Ntuple_DIR}/${VerName}/${SampleName}/MC15ri" "${filename}.root" "20" ${i} "./${VerName}/${Analysis_VerName}/${SampleName}/output/"
+        bsub -q l -J Split -o "./${VerName}/${Analysis_VerName}/${SampleName}/log/${filename}_20_${i}.log" -e "./${VerName}/${Analysis_VerName}/${SampleName}/err/${filename}_20_${i}.err" ${Code} "${Ntuple_DIR}/${VerName}/${SampleName}/${MC_version}" "${filename}.root" "20" ${i} "./${VerName}/${Analysis_VerName}/${SampleName}/output/"
       else
-        bsub -q s -J Split -o "./${VerName}/${Analysis_VerName}/${SampleName}/log/${filename}_20_${i}.log" -e "./${VerName}/${Analysis_VerName}/${SampleName}/err/${filename}_20_${i}.err" ${Code} "${Ntuple_DIR}/${VerName}/${SampleName}/MC15ri" "${filename}.root" "20" ${i} "./${VerName}/${Analysis_VerName}/${SampleName}/output/"
+        bsub -q s -J Split -o "./${VerName}/${Analysis_VerName}/${SampleName}/log/${filename}_20_${i}.log" -e "./${VerName}/${Analysis_VerName}/${SampleName}/err/${filename}_20_${i}.err" ${Code} "${Ntuple_DIR}/${VerName}/${SampleName}/${MC_version}" "${filename}.root" "20" ${i} "./${VerName}/${Analysis_VerName}/${SampleName}/output/"
       fi
     done
     sleep 0.5s
