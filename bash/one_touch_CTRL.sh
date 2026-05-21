@@ -8,6 +8,7 @@ export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple_CTRL"
 
 export shell_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau/bash"
 
+export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Konpaku/v012"
 
 wait_all_job() {
   while true; do
@@ -54,3 +55,11 @@ if [[ $? -ne 0 ]]; then
 fi
 
 bash ${shell_DIR}/submitter_Plotter_CTRL.sh
+
+bash ${shell_DIR}/submitter_FBDT_Application_CTRL.sh
+wait_job "FBDTAPP"
+bash ${shell_DIR}/checker_FBDT_Application_CTRL.sh
+if [[ $? -ne 0 ]]; then
+  echo "Unsuccessful logs found. Stopping the one touch analysis."
+  exit 1
+fi
