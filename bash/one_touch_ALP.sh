@@ -1,13 +1,17 @@
 #!/bin/bash
 
-export Analysis_Name="Konpaku"
-export Analysis_VerName="v000"
+# =================================================================================== #
+#  PREDEFINED VARIABLES
+#  You SHOULD change these values 
 
-export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau"
-export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple"
+export Analysis_Name="Konpaku" # name of analysis
+export Analysis_VerName="v000" # version of analysis
 
-export shell_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau/bash"
+export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau" # analysis code path
+export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple" # Ntuple path
+# =================================================================================== #
 
+export shell_DIR="${Belle_tau_DIR}/bash"
 
 wait_all_job() {
   while true; do

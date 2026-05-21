@@ -1,14 +1,19 @@
 #!/bin/bash
 
-export Analysis_Name="Konpaku_CTRL"
-export Analysis_VerName="v000"
+# =================================================================================== #
+#  PREDEFINED VARIABLES
+#  You SHOULD change these values 
 
-export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau"
-export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple_CTRL"
+export Analysis_Name="Konpaku_CTRL" # name of analysis
+export Analysis_VerName="v000" # version of analysis
 
-export shell_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau/bash"
+export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau" # analysis code path
+export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple_CTRL" # Ntuple path
 
-export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Konpaku/v012"
+export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Konpaku/v012" # FBDT weight file path
+# =================================================================================== #
+
+export shell_DIR="${Belle_tau_DIR}/bash"
 
 wait_all_job() {
   while true; do
