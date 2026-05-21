@@ -91,7 +91,7 @@ submit_Application() {
 
 }
 
-Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CHARM" "MUMU" "EE" "EEEE" "EEMUMU" "EEPIPI" "EEKK" "EEPP" "PIPIISR" "PIPIPI0ISR" "KKISR" "GG" "EETAUTAU" "K0K0BARISR" "MUMUMUMU" "MUMUTAUTAU" "TAUTAUTAUTAU" "TAUPAIR" "BBs" "BsBs" "SIGNAL" "ALP")
+IFS=':' read -r -a Types <<< "$Types_STR_WITH_SIGNAL_ALP"
 
 code="${Belle_tau_DIR}/analysis_code/bin/FBDT_Application_ALP"
 for Type in "${Types[@]}"; do

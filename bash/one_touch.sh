@@ -9,10 +9,39 @@ export Analysis_VerName="v000" # version of analysis
 
 export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau" # analysis code path
 export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple" # Ntuple path
+
+Background_Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CHARM" "MUMU" "EE" "EEEE" "EEMUMU" "EEPIPI" "EEKK" "EEPP" "PIPIISR" "PIPIPI0ISR" "KKISR" "GG" "EETAUTAU" "K0K0BARISR" "MUMUMUMU" "MUMUTAUTAU" "TAUTAUTAUTAU" "TAUPAIR" "BBs" "BsBs") # name of directories under ${Ntuple_DIR} for background sample
+Signal_Type="SIGNAL" # name of directories under ${Ntuple_DIR} for prompt signal sample
+ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample
 # =================================================================================== #
 
 
 export shell_DIR="${Belle_tau_DIR}/bash"
+
+Types_With_ALP=(
+  "${Background_Types[@]}"
+  "${ALP_Type}"
+)
+
+Types_With_SIGNAL=(
+  "${Background_Types[@]}"
+  "${Signal_Type}"
+)
+
+Types_With_SIGNAL_ALP=(
+  "${Background_Types[@]}"
+  "${Signal_Type}"
+  "${ALP_Type}"
+)
+
+export Types_STR_WITH_ALP
+Types_STR_WITH_ALP=$(IFS=:; echo "${Types_With_ALP[*]}")
+
+export Types_STR_WITH_SIGNAL
+Types_STR_WITH_SIGNAL=$(IFS=:; echo "${Types_With_SIGNAL[*]}")
+
+export Types_STR_WITH_SIGNAL_ALP
+Types_STR_WITH_SIGNAL_ALP=$(IFS=:; echo "${Types_With_SIGNAL_ALP[*]}")
 
 wait_all_job() {
   while true; do

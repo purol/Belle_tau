@@ -16,7 +16,8 @@ check_log_files(){
 
 }
 
-Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CHARM" "MUMU" "EE" "EEEE" "EEMUMU" "EEPIPI" "EEKK" "EEPP" "PIPIISR" "PIPIPI0ISR" "KKISR" "GG" "EETAUTAU" "K0K0BARISR" "MUMUMUMU" "MUMUTAUTAU" "TAUTAUTAUTAU" "TAUPAIR" "BBs" "BsBs" "SIGNAL" "ALP")
+IFS=':' read -r -a Types <<< "$Types_STR_WITH_SIGNAL_ALP"
+
 for Type in "${Types[@]}"; do
     check_log_files ${Analysis_Name} ${Type}
     sleep 0.5s

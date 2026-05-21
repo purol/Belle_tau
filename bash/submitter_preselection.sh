@@ -23,7 +23,7 @@ submit_preselection() {
 
 }
 
-Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CHARM" "MUMU" "EE" "EEEE" "EEMUMU" "EEPIPI" "EEKK" "EEPP" "PIPIISR" "KKISR" "GG" "EETAUTAU" "K0K0BARISR" "MUMUMUMU" "MUMUTAUTAU" "TAUTAUTAUTAU" "TAUPAIR" "SIGNAL")
+IFS=':' read -r -a Types <<< "$Types_STR_WITH_SIGNAL"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Preselection"
 for Type in "${Types[@]}"; do
