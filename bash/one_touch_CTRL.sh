@@ -6,6 +6,8 @@ export Analysis_VerName="v000"
 export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau"
 export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple_CTRL"
 
+export shell_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau/bash"
+
 
 wait_all_job() {
   while true; do
@@ -42,13 +44,13 @@ wait_job() {
   done
 }
 
-bash ./submitter_Analysis_CTRL.sh
+bash ${shell_DIR}/submitter_Analysis_CTRL.sh
 wait_job "Analyze"
 
-bash ./checker_Analysis.sh
+bash ${shell_DIR}/checker_Analysis.sh
 if [[ $? -ne 0 ]]; then
   echo "Unsuccessful logs found. Stopping the one touch analysis."
   exit 1
 fi
 
-bash ./submitter_Plotter_CTRL.sh
+bash ${shell_DIR}/submitter_Plotter_CTRL.sh
