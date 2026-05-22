@@ -8,6 +8,7 @@
 #include "Loader.h"
 #include "constants.h"
 #include "MyObtainWeight.h"
+#include "functions.h"
 
 int main(int argc, char* argv[]) {
     /*
