@@ -396,6 +396,8 @@ int main(int argc, char* argv[]) {
     * argv[3]: output path
     * argv[4]: NToys
     * argv[5]: indicator
+    * argv[6]: signal list (separated by colon)
+    * argv[7]: background list (separated by colon)
     */
 
     // TH1 list
@@ -424,12 +426,8 @@ int main(int argc, char* argv[]) {
     ReadFOM((std::string(argv[1]) + "/GridSearch_one/FOM.log").c_str(), &BDT_cut_1);
     ReadFOM((std::string(argv[1]) + "/GridSearch_two/FOM.log").c_str(), &BDT_cut_2);
 
-    std::vector<std::string> signal_list = { "SIGNAL" };
-    std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
-        "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
-        "EEPP", "EETAUTAU", "GG", "K0K0BARISR", "KKISR",
-        "MIX", "MUMU", "MUMUMUMU", "MUMUTAUTAU", "PIPIPI0ISR",
-        "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
+    std::vector<std::string> signal_list = split(argv[6], ':');
+    std::vector<std::string> background_list = split(argv[7], ':');
 
     double deltaE_peak;
     double deltaE_left_sigma;
