@@ -899,7 +899,7 @@ int main(int argc, char* argv[]) {
 
     RooStats::HistFactory::Sample signal_Belle_II("signal_Belle_II", "signal_MC_th1d", (std::string(argv[6]) + "/histogram_output_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".root").c_str());
     signal_Belle_II.ActivateStatError("signal_MC_th1d_stat_err", (std::string(argv[6]) + "/histogram_output_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".root").c_str(), "");
-    signal_Belle_II.AddNormFactor("mu", 1.0, 0.0, 600.0);
+    signal_Belle_II.AddNormFactor("mu", 1.0, 0.0, 1200.0);
     signal_Belle_II.AddOverallSys("tracking_efficiency", 1.0 - (track_rel_uncertainty / 100.0) * 3, 1.0 + (track_rel_uncertainty / 100.0) * 3);
     signal_Belle_II.AddHistoSys("M_resolution", "signal_neg_M_MC_th1d", (std::string(argv[6]) + "/histogram_output_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".root").c_str(), "", "signal_pos_M_MC_th1d", (std::string(argv[6]) + "/histogram_output_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".root").c_str(), "");
     signal_Belle_II.AddHistoSys("DeltaE_resolution", "signal_neg_DeltaE_MC_th1d", (std::string(argv[6]) + "/histogram_output_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".root").c_str(), "", "signal_pos_DeltaE_MC_th1d", (std::string(argv[6]) + "/histogram_output_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".root").c_str(), "");
