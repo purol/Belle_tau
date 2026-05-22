@@ -683,10 +683,12 @@ int main(int argc, char* argv[]) {
     * argv[4]: FOM_1 filename
     * argv[5]: FOM_2 filename
     * argv[6]: output path
-    * argv[7]: mass
-    * argv[8]: lifetime
-    * argv[9]: A constant
-    * argv[10]: B constant
+    * argv[7]: signal list (separated by colon)
+    * argv[8]: background list (separated by colon)
+    * argv[9]: mass
+    * argv[10]: lifetime
+    * argv[11]: A constant
+    * argv[12]: B constant
     */
 
     // TH1 list
@@ -731,10 +733,10 @@ int main(int argc, char* argv[]) {
     TH1D* signal_neg_DeltaE_MC_th1d = new TH1D("signal_neg_DeltaE_MC_th1d", ";bin index;", 2, 0.5, 2.5);
     TH1D* bkg_neg_DeltaE_MC_th1d = new TH1D("bkg_neg_DeltaE_MC_th1d", ";bin index;", 2, 0.5, 2.5);
 
-    mass = std::stod(argv[7]);
-    life = std::stod(argv[8]);
-    A = std::stoi(argv[9]);
-    B = std::stoi(argv[10]);
+    mass = std::stod(argv[9]);
+    life = std::stod(argv[10]);
+    A = std::stoi(argv[11]);
+    B = std::stoi(argv[12]);
 
     M_left_cut_value = 0;
     M_right_cut_value = 0;
@@ -778,12 +780,8 @@ int main(int argc, char* argv[]) {
     std::vector<TH1D*> signal_MC_th1d_luminosity;
     std::vector<TH1D*> bkg_MC_th1d_luminosity;
 
-    std::vector<std::string> signal_list = { "ALP" };
-    std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
-        "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
-        "EEPP", "EETAUTAU", "GG", "K0K0BARISR", "KKISR",
-        "MIX", "MUMU", "MUMUMUMU", "MUMUTAUTAU", "PIPIPI0ISR",
-        "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
+    std::vector<std::string> signal_list = split(argv[7], ':');
+    std::vector<std::string> background_list = split(argv[8], ':');
 
     double deltaE_peak;
     double deltaE_left_sigma;
