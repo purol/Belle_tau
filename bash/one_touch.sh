@@ -15,8 +15,8 @@ Background_Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CHARM"
     "PIPIPI0ISR" "KKISR" "GG" "EETAUTAU" "K0K0BARISR" "MUMUMUMU" 
     "MUMUTAUTAU" "TAUTAUTAUTAU" "TAUPAIR" "BBs" "BsBs"
     ) # name of directories under ${Ntuple_DIR} for background sample
-Signal_Type="SIGNAL" # name of directories under ${Ntuple_DIR} for prompt signal sample
-ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample
+export Signal_Type="SIGNAL" # name of directories under ${Ntuple_DIR} for prompt signal sample
+export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample
 
 export MC_version="MC15ri" # version of MC. This should be under ${Ntuple_DIR}/${Analysis_Name}/(type name)
 
@@ -120,6 +120,9 @@ input_variables_one_STR=$(IFS=:; echo "${input_variables_one[*]}")
 
 export input_variables_two_STR
 input_variables_two_STR=$(IFS=:; echo "${input_variables_two[*]}")
+
+export Background_Types_STR
+Background_Types_STR=$(IFS=:; echo "${Background_Types[*]}")
 
 wait_all_job() {
   while true; do
