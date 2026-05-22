@@ -16,27 +16,25 @@ int main(int argc, char* argv[]) {
     * argv[3]: input path 2
     * argv[4]: output path
     * argv[5]: output name
-    * (argv[6]): min value
-    * (argv[7]): max value
-    * argv[6 ? 8]: mass
-    * argv[7 ? 9]: lifetime
-    * argv[8 ? 10]: A constant
-    * argv[9 ? 11]: B constant
+    * argv[6]: signal list (separated by colon)
+    * argv[7]: background list (separated by colon)
+    * (argv[8]): min value
+    * (argv[9]): max value
+    * argv[8 ? 10]: mass
+    * argv[9 ? 11]: lifetime
+    * argv[10 ? 12]: A constant
+    * argv[11 ? 13]: B constant
     */
 
-    double mass = (argc == 10) ? std::stod(argv[6]) : std::stod(argv[8]);
-    double life = (argc == 10) ? std::stod(argv[7]) : std::stod(argv[9]);
-    int A = (argc == 10) ? std::stoi(argv[8]) : std::stoi(argv[10]);
-    int B = (argc == 10) ? std::stoi(argv[9]) : std::stoi(argv[11]);
+    double mass = (argc == 12) ? std::stod(argv[8]) : std::stod(argv[10]);
+    double life = (argc == 12) ? std::stod(argv[9]) : std::stod(argv[11]);
+    int A = (argc == 12) ? std::stoi(argv[10]) : std::stoi(argv[12]);
+    int B = (argc == 12) ? std::stoi(argv[11]) : std::stoi(argv[13]);
 
     std::string variable_name(argv[1]);
 
-    std::vector<std::string> signal_list = { "ALP" };
-    std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
-        "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
-        "EEPP", "EETAUTAU", "GG", "K0K0BARISR", "KKISR",
-        "MIX", "MUMU", "MUMUMUMU", "MUMUTAUTAU", "PIPIPI0ISR",
-        "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
+    std::vector<std::string> signal_list = split(argv[6], ':');
+    std::vector<std::string> background_list = split(argv[7], ':');
 
     ObtainWeight = MyScaleFunction;
 
@@ -56,8 +54,8 @@ int main(int argc, char* argv[]) {
     loader.SetSignal(signal_list);
     loader.SetBackground(background_list);
 
-    if(argc == 10) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), true, true);
-    else if (argc == 12) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), 50, std::stod(argv[6]), std::stod(argv[7]), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), true, true);
+    if(argc == 12) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), true, true);
+    else if (argc == 14) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), 50, std::stod(argv[8]), std::stod(argv[9]), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), true, true);
 
     loader.end();
 

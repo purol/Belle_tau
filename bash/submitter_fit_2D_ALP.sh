@@ -20,5 +20,5 @@ submit_fitter() {
 
 
 code="${Belle_tau_DIR}/analysis_code/bin/fit_M_deltaE_ALP"
-submit_fitter ${code} ${Analysis_Name} "ALP"
+submit_fitter ${code} ${Analysis_Name} "${ALP_Type}"
 

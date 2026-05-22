@@ -58,23 +58,25 @@ mapfile -t all_variables < <(
 
 submit_Plotter() {
 
-  if [ "$#" -eq 6 ]; then
+  if [ "$#" -eq 8 ]; then
     local Code=$1 # ex. ./bin/Plotter
     local VerName=$2 # ex. Alice
     local VarName=$3 # ex. deltaE
     local InputDir=$4 # ex. before_M_deltaE_selection
     local OutputName=$5 # ex. deltaE
     local OutputPath=$6 # ex. plot
+    local SignalTypes=$7
+    local BackgroundTypes=$8
 
     get_params "./${VerName}/${Analysis_VerName}/ALP/${InputDir}" | while read mass life A B; do
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}"
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log"
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err"
 
-      bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" "${OutputName}" "${mass}" "${life}" "${A}" "${B}"
+      bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" "${OutputName}" "${SignalTypes}" "${BackgroundTypes}" "${mass}" "${life}" "${A}" "${B}"
     done
 
-  elif [ "$#" -eq 8 ]; then
+  elif [ "$#" -eq 10 ]; then
     local Code=$1 # ex. ./bin/Plotter
     local VerName=$2 # ex. Alice
     local VarName=$3 # ex. deltaE
@@ -83,13 +85,15 @@ submit_Plotter() {
     local InputDir=$6 # ex. before_M_deltaE_selection
     local OutputName=$7 # ex. deltaE
     local OutputPath=$8 # ex. plot
+    local SignalTypes=$9
+    local BackgroundTypes=$10
 
     get_params "./${VerName}/${Analysis_VerName}/ALP/${InputDir}" | while read mass life A B; do
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}"
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log"
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err"
 
-      bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" "${OutputName}" "$VarMin" "$VarMax" "${mass}" "${life}" "${A}" "${B}"
+      bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" "${OutputName}" "${SignalTypes}" "${BackgroundTypes}" "$VarMin" "$VarMax" "${mass}" "${life}" "${A}" "${B}"
     done
 
   fi
@@ -99,19 +103,19 @@ submit_Plotter() {
  
 #code="${Belle_tau_DIR}/analysis_code/bin/Plotter_ALP"
 #VarName="deltaE"
-#submit_Plotter ${code} ${Analysis_Name} ${VarName} -1.1 0.6 "before_M_deltaE_selection" "before_M_deltaE_selection_deltaE" "plot"
+#submit_Plotter ${code} ${Analysis_Name} ${VarName} -1.1 0.6 "before_M_deltaE_selection" "before_M_deltaE_selection_deltaE" "plot" "${ALP_Type}" "${Background_Types_STR}"
 
 #code="${Belle_tau_DIR}/analysis_code/bin/Plotter_ALP"
 #VarName="M"
-#submit_Plotter ${code} ${Analysis_Name} ${VarName} 1.3 2.1 "before_M_deltaE_selection" "before_M_deltaE_selection_M" "plot"
+#submit_Plotter ${code} ${Analysis_Name} ${VarName} 1.3 2.1 "before_M_deltaE_selection" "before_M_deltaE_selection_M" "plot" "${ALP_Type}" "${Background_Types_STR}"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_ALP"
 VarName="deltaE"
-submit_Plotter ${code} ${Analysis_Name} ${VarName} -0.5 0.4 "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_deltaE" "plot"
+submit_Plotter ${code} ${Analysis_Name} ${VarName} -0.5 0.4 "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_deltaE" "plot" "${ALP_Type}" "${Background_Types_STR}"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_ALP"
 VarName="M"
-submit_Plotter ${code} ${Analysis_Name} ${VarName} 1.4 2.1 "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M" "plot"
+submit_Plotter ${code} ${Analysis_Name} ${VarName} 1.4 2.1 "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M" "plot" "${ALP_Type}" "${Background_Types_STR}"
 
 Directories=(
     "before_PrimarymuonID_selection"
@@ -134,19 +138,19 @@ for ((i = 0; i < ${#Directories[@]}; i++)); do
   for ((j = 0; j < ${#input_variables[@]}; j++)); do
     code="${Belle_tau_DIR}/analysis_code/bin/Plotter_ALP"
     VarName="${input_variables[j]}"
-    submit_Plotter ${code} ${Analysis_Name} ${VarName} "${Directory}" "${Directory}_${VarName}" "plot"
+    submit_Plotter ${code} ${Analysis_Name} ${VarName} "${Directory}" "${Directory}_${VarName}" "plot" "${ALP_Type}" "${Background_Types_STR}"
   done
 
   for ((j = 0; j < ${#other_variables_log[@]}; j++)); do
     code="${Belle_tau_DIR}/analysis_code/bin/Plotter_log_ALP"
     VarName="${other_variables_log[j]}"
-    submit_Plotter ${code} ${Analysis_Name} ${VarName} "${Directory}" "${Directory}_${VarName}" "plot"
+    submit_Plotter ${code} ${Analysis_Name} ${VarName} "${Directory}" "${Directory}_${VarName}" "plot" "${ALP_Type}" "${Background_Types_STR}"
   done
 
   for ((j = 0; j < ${#other_variables_linear[@]}; j++)); do
     code="${Belle_tau_DIR}/analysis_code/bin/Plotter_ALP"
     VarName="${other_variables_linear[j]}"
-    submit_Plotter ${code} ${Analysis_Name} ${VarName} "${Directory}" "${Directory}_${VarName}" "plot"
+    submit_Plotter ${code} ${Analysis_Name} ${VarName} "${Directory}" "${Directory}_${VarName}" "plot" "${ALP_Type}" "${Background_Types_STR}"
   done
 
 done
