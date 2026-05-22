@@ -23,7 +23,7 @@ submit_GridSearch() {
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
 
-  bsub -q l -J FBDTTRN -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.err" ${Code} "${#input_variables_ref[@]}" "${input_variables_ref[@]}" "./${VerName}/${Analysis_VerName}" "./${VerName}/${Analysis_VerName}/${OutputPath}/out" "${nTree}" "${depth}" "${shrinkage}" "${subsample}" "${binning}"
+  bsub -q l -J FBDTTRN -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.err" ${Code} "${#input_variables_ref[@]}" "${input_variables_ref[@]}" "./${VerName}/${Analysis_VerName}" "./${VerName}/${Analysis_VerName}/${OutputPath}/out" "${nTree}" "${depth}" "${shrinkage}" "${subsample}" "${binning}" "${Signal_Type}" "${Background_Types_STR}"
 
 }
 

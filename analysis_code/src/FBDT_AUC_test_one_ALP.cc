@@ -24,10 +24,12 @@ int main(int argc, char* argv[]) {
     * argv[6 + N]: Shrinkage
     * argv[7 + N]: Subsample
     * argv[8 + N]: Binning
-    * argv[9 + N]: mass
-    * argv[10 + N]: lifetime
-    * argv[11 + N]: A constant
-    * argv[12 + N]: B constant
+    * argv[9 + N]: signal list (separated by colon)
+    * argv[10 + N]: background list (separated by colon)
+    * argv[11 + N]: mass
+    * argv[12 + N]: lifetime
+    * argv[13 + N]: A constant
+    * argv[14 + N]: B constant
     */
 
     int variable_num = std::atoi(argv[1]);
@@ -43,10 +45,10 @@ int main(int argc, char* argv[]) {
     hyperparameters.insert(std::pair<std::string, double>("Subsample", std::stod(argv[7 + variable_num])));
     hyperparameters.insert(std::pair<std::string, double>("Binning", std::stod(argv[8 + variable_num])));
 
-    double mass = std::stod(argv[9 + variable_num]);
-    double life = std::stod(argv[10 + variable_num]);
-    int A = std::stoi(argv[11 + variable_num]);
-    int B = std::stoi(argv[12 + variable_num]);
+    double mass = std::stod(argv[11 + variable_num]);
+    double life = std::stod(argv[12 + variable_num]);
+    int A = std::stoi(argv[13 + variable_num]);
+    int B = std::stoi(argv[14 + variable_num]);
 
     double M_left_cut_value = 0;
     double M_right_cut_value = 0;
@@ -70,12 +72,8 @@ int main(int argc, char* argv[]) {
     }
 
 
-    std::vector<std::string> signal_list = { "ALP" };
-    std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
-        "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
-        "EEPP", "EETAUTAU", "GG", "K0K0BARISR", "KKISR",
-        "MIX", "MUMU", "MUMUMUMU", "MUMUTAUTAU", "PIPIPI0ISR",
-        "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
+    std::vector<std::string> signal_list = split(argv[9 + variable_num], ':');
+    std::vector<std::string> background_list = split(argv[10 + variable_num], ':');
 
     double deltaE_peak;
     double deltaE_left_sigma;

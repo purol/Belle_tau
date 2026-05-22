@@ -380,10 +380,12 @@ int main(int argc, char* argv[]) {
     * argv[3]: output path
     * argv[4]: NToys
     * argv[5]: indicator
-    * argv[6]: mass
-    * argv[7]: lifetime
-    * argv[8]: A constant
-    * argv[9]: B constant
+    * argv[6]: signal list (separated by colon)
+    * argv[7]: background list (separated by colon)
+    * argv[8]: mass
+    * argv[9]: lifetime
+    * argv[10]: A constant
+    * argv[11]: B constant
     */
 
     // TH1 list
@@ -409,10 +411,10 @@ int main(int argc, char* argv[]) {
     TH1D* signal_MC_th1d_stat_err = new TH1D("signal_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
     TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
 
-    mass = std::stod(argv[6]);
-    life = std::stod(argv[7]);
-    A = std::stoi(argv[8]);
-    B = std::stoi(argv[9]);
+    mass = std::stod(argv[8]);
+    life = std::stod(argv[9]);
+    A = std::stoi(argv[10]);
+    B = std::stoi(argv[11]);
 
     M_left_cut_value = 0;
     M_right_cut_value = 0;
@@ -450,12 +452,8 @@ int main(int argc, char* argv[]) {
     BDT_output_1_name = "BDT_output_1_" + strMass + "_" + strLife + "_" + strA + "_" + strB;
     BDT_output_2_name = "BDT_output_2_" + strMass + "_" + strLife + "_" + strA + "_" + strB;
 
-    std::vector<std::string> signal_list = { "ALP" };
-    std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
-        "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
-        "EEPP", "EETAUTAU", "GG", "K0K0BARISR", "KKISR",
-        "MIX", "MUMU", "MUMUMUMU", "MUMUTAUTAU", "PIPIPI0ISR",
-        "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
+    std::vector<std::string> signal_list = split(argv[6], ':');
+    std::vector<std::string> background_list = split(argv[7], ':');
 
     double deltaE_peak;
     double deltaE_left_sigma;

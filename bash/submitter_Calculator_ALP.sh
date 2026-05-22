@@ -19,7 +19,7 @@ submit_code() {
     mkdir -p "./${VerName}/${Analysis_VerName}/cal_out_${mass}_${life}_${A}_${B}"
     mkdir -p "./${VerName}/${Analysis_VerName}/cal_log_${mass}_${life}_${A}_${B}"
 
-    bsub -q s -J SYSTCAL -o "./${VerName}/${Analysis_VerName}/cal_log_${mass}_${life}_${A}_${B}/${LogName}_${indicator}.log" ${Code} "./${VerName}/${Analysis_VerName}" "final_output_test_after_application" "./${VerName}/${Analysis_VerName}/cal_out_${mass}_${life}_${A}_${B}" ${NToys} ${indicator} "${mass}" "${life}" "${A}" "${B}"
+    bsub -q s -J SYSTCAL -o "./${VerName}/${Analysis_VerName}/cal_log_${mass}_${life}_${A}_${B}/${LogName}_${indicator}.log" ${Code} "./${VerName}/${Analysis_VerName}" "final_output_test_after_application" "./${VerName}/${Analysis_VerName}/cal_out_${mass}_${life}_${A}_${B}" ${NToys} ${indicator} "${ALP_Type}" "${Background_Types_STR}" "${mass}" "${life}" "${A}" "${B}"
 
   done
 }

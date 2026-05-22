@@ -9,7 +9,7 @@ submit_code() {
   local MAX=$6
   local OutputPath=$7
 
-  bsub -q l -J KSTEST -o "/dev/null" ${Code} "${VarName}" "${Nbin}" "${MIN}" "${MAX}" "./${VerName}/${Analysis_VerName}" "./${VerName}/${Analysis_VerName}/${OutputPath}" "KS_${VarName}.png"
+  bsub -q l -J KSTEST -o "/dev/null" ${Code} "${VarName}" "${Nbin}" "${MIN}" "${MAX}" "./${VerName}/${Analysis_VerName}" "./${VerName}/${Analysis_VerName}/${OutputPath}" "KS_${VarName}.png" "${Signal_Type}" "${Background_Types_STR}"
 
 }
 

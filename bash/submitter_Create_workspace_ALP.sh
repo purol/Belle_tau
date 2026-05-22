@@ -13,7 +13,7 @@ submit_workspace() {
   local VerName=$2 # ex. Alice
 
   get_params "./${VerName}/${Analysis_VerName}/ALP/final_output" | while read mass life A B; do
-    bsub -q s -J CRTWS -o "./${VerName}/${Analysis_VerName}/CreateWorkSpace_${mass}_${life}_${A}_${B}.log" ${Code} "./${VerName}/${Analysis_VerName}" "final_output_test_after_application" "final_output_test_after_application" "./${VerName}/${Analysis_VerName}/GridSearch_one/FOM_${mass}_${life}_${A}_${B}.log" "./${VerName}/${Analysis_VerName}/GridSearch_two/FOM_${mass}_${life}_${A}_${B}.log" "./${VerName}/${Analysis_VerName}/" "${mass}" "${life}" "${A}" "${B}"
+    bsub -q s -J CRTWS -o "./${VerName}/${Analysis_VerName}/CreateWorkSpace_${mass}_${life}_${A}_${B}.log" ${Code} "./${VerName}/${Analysis_VerName}" "final_output_test_after_application" "final_output_test_after_application" "./${VerName}/${Analysis_VerName}/GridSearch_one/FOM_${mass}_${life}_${A}_${B}.log" "./${VerName}/${Analysis_VerName}/GridSearch_two/FOM_${mass}_${life}_${A}_${B}.log" "./${VerName}/${Analysis_VerName}/" ${ALP_Type} ${Background_Types_STR} "${mass}" "${life}" "${A}" "${B}"
   done
 }
 

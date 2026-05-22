@@ -24,4 +24,4 @@ submit_fitter() {
 
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_mass_ALP"
-submit_fitter ${code} ${Analysis_Name} "ALP"
+submit_fitter ${code} ${Analysis_Name} "${ALP_Type}"

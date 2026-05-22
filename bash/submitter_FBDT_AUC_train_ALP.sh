@@ -33,7 +33,7 @@ submit_GridSearch() {
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log_AUC_train_${mass}_${life}_${A}_${B}"
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err_AUC_train_${mass}_${life}_${A}_${B}"
 
-    bsub -q l -J AUCTRN -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log_AUC_train_${mass}_${life}_${A}_${B}/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err_AUC_train_${mass}_${life}_${A}_${B}/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.err" ${Code} "${#input_variables_ref[@]}" "${input_variables_ref[@]}" "./${VerName}/${Analysis_VerName}" "./${VerName}/${Analysis_VerName}/${OutputPath}/out_${mass}_${life}_${A}_${B}" "${nTree}" "${depth}" "${shrinkage}" "${subsample}" "${binning}" "${mass}" "${life}" "${A}" "${B}"
+    bsub -q l -J AUCTRN -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log_AUC_train_${mass}_${life}_${A}_${B}/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err_AUC_train_${mass}_${life}_${A}_${B}/${nTree}_${depth}_${shrinkage}_${subsample}_${binning}.err" ${Code} "${#input_variables_ref[@]}" "${input_variables_ref[@]}" "./${VerName}/${Analysis_VerName}" "./${VerName}/${Analysis_VerName}/${OutputPath}/out_${mass}_${life}_${A}_${B}" "${nTree}" "${depth}" "${shrinkage}" "${subsample}" "${binning}" "${ALP_Type}" "${Background_Types_STR}" "${mass}" "${life}" "${A}" "${B}"
   done
 }
 

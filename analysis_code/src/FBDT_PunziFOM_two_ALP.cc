@@ -17,16 +17,18 @@ int main(int argc, char* argv[]) {
     * argv[1]: input path
     * argv[2]: BDT variable name
     * argv[3]: gridsearch directory name
-    * argv[4]: mass
-    * argv[5]: lifetime
-    * argv[6]: A constant
-    * argv[7]: B constant
+    * argv[4]: signal list (separated by colon)
+    * argv[5]: background list (separated by colon)
+    * argv[6]: mass
+    * argv[7]: lifetime
+    * argv[8]: A constant
+    * argv[9]: B constant
     */
 
-    double mass = std::stod(argv[4]);
-    double life = std::stod(argv[5]);
-    int A = std::stoi(argv[6]);
-    int B = std::stoi(argv[7]);
+    double mass = std::stod(argv[6]);
+    double life = std::stod(argv[7]);
+    int A = std::stoi(argv[8]);
+    int B = std::stoi(argv[9]);
 
     double M_left_cut_value = 0;
     double M_right_cut_value = 0;
@@ -49,12 +51,8 @@ int main(int argc, char* argv[]) {
 
     }
 
-    std::vector<std::string> signal_list = { "ALP" };
-    std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
-        "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
-        "EEPP", "EETAUTAU", "GG", "K0K0BARISR", "KKISR",
-        "MIX", "MUMU", "MUMUMUMU", "MUMUTAUTAU", "PIPIPI0ISR",
-        "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
+    std::vector<std::string> signal_list = split(argv[4], ':');
+    std::vector<std::string> background_list = split(argv[5], ':');
 
     double deltaE_peak;
     double deltaE_left_sigma;

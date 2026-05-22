@@ -6,7 +6,7 @@ submit_PunziFOM() {
   local BDTName=$3
   local OutputPath=$4
 
-  bsub -q l -J FBDTFOM -o "./${VerName}/${Analysis_VerName}/${OutputPath}/FOM.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/FOM.err" ${Code} "./${VerName}/${Analysis_VerName}" ${BDTName} ${OutputPath}
+  bsub -q l -J FBDTFOM -o "./${VerName}/${Analysis_VerName}/${OutputPath}/FOM.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/FOM.err" ${Code} "./${VerName}/${Analysis_VerName}" ${BDTName} ${OutputPath} "${Signal_Type}" "${Background_Types_STR}"
 
 }
 

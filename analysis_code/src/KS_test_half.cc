@@ -11,6 +11,7 @@
 #include "Loader.h"
 #include "constants.h"
 #include "MyObtainWeight.h"
+#include "functions.h"
 
 std::string toStringWithPrecision(double value, int precision) {
     std::ostringstream out;
@@ -27,16 +28,14 @@ int main(int argc, char* argv[]) {
     * argv[5]: input path
     * argv[6]: output path
     * argv[7]: output name
+    * argv[8]: signal list (separated by colon)
+    * argv[9]: background list (separated by colon)
     */
 
     std::string variable_name(argv[1]);
 
-    std::vector<std::string> signal_list = { "SIGNAL" };
-    std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
-        "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
-        "EEPP", "EETAUTAU", "GG", "K0K0BARISR", "KKISR",
-        "MIX", "MUMU", "MUMUMUMU", "MUMUTAUTAU", "PIPIPI0ISR",
-        "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
+    std::vector<std::string> signal_list = split(argv[8], ':');
+    std::vector<std::string> background_list = split(argv[9], ':');
 
     ObtainWeight = MyScaleFunction_halfsplit;
 

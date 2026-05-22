@@ -7,6 +7,7 @@
 #include "Loader.h"
 #include "constants.h"
 #include "MyObtainWeight.h"
+#include "functions.h"
 
 int main(int argc, char* argv[]) {
     /*
@@ -16,16 +17,17 @@ int main(int argc, char* argv[]) {
     * argv[4]: input path 2
     * argv[5]: output path
     * argv[6]: output name
-    * (argv[7]): min value 1
-    * (argv[8]): max value 1
-    * (argv[9]): min value 2
-    * (argv[10]): max value 2
+    * argv[7]: signal list (separated by colon)
+    * (argv[8]): min value 1
+    * (argv[9]): max value 1
+    * (argv[10]): min value 2
+    * (argv[11]): max value 2
     */
 
     std::string variable_name_1(argv[1]);
     std::string variable_name_2(argv[2]);
 
-    std::vector<std::string> signal_list = { "SIGNAL" };
+    std::vector<std::string> signal_list = split(argv[7], ':');
 
     ObtainWeight = MyScaleFunction_halfsplit;
 
@@ -42,8 +44,8 @@ int main(int argc, char* argv[]) {
     loader.SetData({});
     loader.SetSignal(signal_list);
 
-    if (argc == 7) loader.DrawTH2D(variable_name_1.c_str(), variable_name_2.c_str(), (";" + variable_name_1 + ";" + variable_name_2 + ";Number of event").c_str(), (argv[5] + std::string("/") + argv[6] + ".png").c_str(), "BOX");
-    else if (argc == 11) loader.DrawTH2D(variable_name_1.c_str(), variable_name_2.c_str(), (";" + variable_name_1 + ";" + variable_name_2 + ";Number of event").c_str(), 50, std::stod(argv[7]), std::stod(argv[8]), 50, std::stod(argv[9]), std::stod(argv[10]), (argv[5] + std::string("/") + argv[6] + ".png").c_str(), "BOX");
+    if (argc == 8) loader.DrawTH2D(variable_name_1.c_str(), variable_name_2.c_str(), (";" + variable_name_1 + ";" + variable_name_2 + ";Number of event").c_str(), (argv[5] + std::string("/") + argv[6] + ".png").c_str(), "BOX");
+    else if (argc == 12) loader.DrawTH2D(variable_name_1.c_str(), variable_name_2.c_str(), (";" + variable_name_1 + ";" + variable_name_2 + ";Number of event").c_str(), 50, std::stod(argv[8]), std::stod(argv[9]), 50, std::stod(argv[10]), std::stod(argv[11]), (argv[5] + std::string("/") + argv[6] + ".png").c_str(), "BOX");
 
     loader.end();
 

@@ -670,6 +670,8 @@ int main(int argc, char* argv[]) {
     * argv[4]: FOM_1 filename
     * argv[5]: FOM_2 filename
     * argv[6]: output path
+    * argv[7]: signal list (separated by colon)
+    * argv[8]: background list (separated by colon)
     */
 
     // TH1 list
@@ -723,12 +725,8 @@ int main(int argc, char* argv[]) {
     std::vector<TH1D*> signal_MC_th1d_luminosity;
     std::vector<TH1D*> bkg_MC_th1d_luminosity;
 
-    std::vector<std::string> signal_list = { "SIGNAL" };
-    std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
-        "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
-        "EEPP", "EETAUTAU", "GG", "K0K0BARISR", "KKISR",
-        "MIX", "MUMU", "MUMUMUMU", "MUMUTAUTAU", "PIPIPI0ISR",
-        "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
+    std::vector<std::string> signal_list = split(argv[7], ':');
+    std::vector<std::string> background_list = split(argv[8], ':');
 
     double deltaE_peak;
     double deltaE_left_sigma;
