@@ -24,6 +24,8 @@ int main(int argc, char* argv[]) {
     * argv[6 + N]: Shrinkage
     * argv[7 + N]: Subsample
     * argv[8 + N]: Binning
+    * argv[9 + N]: signal list (separated by colon)
+    * argv[10 + N]: background list (separated by colon)
     */
 
     RooRandom::randomGenerator()->SetSeed(42);
@@ -43,12 +45,8 @@ int main(int argc, char* argv[]) {
     hyperparameters.insert(std::pair<std::string, double>("Binning", std::stod(argv[8 + variable_num])));
 
 
-    std::vector<std::string> signal_list = { "SIGNAL" };
-    std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
-        "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
-        "EEPP", "EETAUTAU", "GG", "K0K0BARISR", "KKISR",
-        "MIX", "MUMU", "MUMUMUMU", "MUMUTAUTAU", "PIPIPI0ISR",
-        "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
+    std::vector<std::string> signal_list = split(argv[9 + variable_num], ':');
+    std::vector<std::string> background_list = split(argv[10 + variable_num], ':');
 
     double deltaE_peak;
     double deltaE_left_sigma;
