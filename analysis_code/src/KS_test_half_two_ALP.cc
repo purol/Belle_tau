@@ -30,16 +30,18 @@ int main(int argc, char* argv[]) {
     * argv[5]: input path
     * argv[6]: output path
     * argv[7]: output name
-    * argv[8]: mass
-    * argv[9]: lifetime
-    * argv[10]: A constant
-    * argv[11]: B constant
+    * argv[8]: signal list (separated by colon)
+    * argv[9]: background list (separated by colon)
+    * argv[10]: mass
+    * argv[11]: lifetime
+    * argv[12]: A constant
+    * argv[13]: B constant
     */
 
-    double mass = std::stod(argv[8]);
-    double life = std::stod(argv[9]);
-    int A = std::stoi(argv[10]);
-    int B = std::stoi(argv[11]);
+    double mass = std::stod(argv[10]);
+    double life = std::stod(argv[11]);
+    int A = std::stoi(argv[12]);
+    int B = std::stoi(argv[13]);
 
     double M_left_cut_value = 0;
     double M_right_cut_value = 0;
@@ -65,12 +67,8 @@ int main(int argc, char* argv[]) {
     std::string variable_name(argv[1] + std::string("_") + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B));
     std::replace(variable_name.begin(), variable_name.end(), '-', 'm');
 
-    std::vector<std::string> signal_list = { "ALP" };
-    std::vector<std::string> background_list = { "BBs", "BsBs", "CHARM", "CHG", "DDBAR",
-        "EE", "EEEE", "EEKK", "EEMUMU", "EEPIPI",
-        "EEPP", "EETAUTAU", "GG", "K0K0BARISR", "KKISR",
-        "MIX", "MUMU", "MUMUMUMU", "MUMUTAUTAU", "PIPIPI0ISR",
-        "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR" };
+    std::vector<std::string> signal_list = split(argv[8], ':');
+    std::vector<std::string> background_list = split(argv[9], ':');
 
     double deltaE_peak;
     double deltaE_left_sigma;
