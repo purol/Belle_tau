@@ -56,12 +56,13 @@ submit_Plotter_2D(){
   local InputDir=$5 # ex. before_M_deltaE_selection
   local OutputName=$6 # ex. deltaE
   local OutputPath=$7 # ex. plot
+  local Types=$8
 
   get_params "./${VerName}/${Analysis_VerName}/ALP/${InputDir}" | while read mass life A B; do
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log"
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err"
 
-    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName_1}" "${VarName_2}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" "${OutputName}" "${mass}" "${life}" "${A}" "${B}"
+    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName_1}" "${VarName_2}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" "${OutputName}" "${Types}" "${mass}" "${life}" "${A}" "${B}"
   done
 }
  
@@ -84,20 +85,20 @@ submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_test_af
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_signal_half_ALP"
 VarName_1="M"
 VarName_2="deltaE"
-submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_test_after_application" "final_output_test_after_application_M_deltaE_signal" "plot"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_test_after_application" "final_output_test_after_application_M_deltaE_signal" "plot" "${ALP_Type}"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_bkg_half_ALP"
 VarName_1="M"
 VarName_2="deltaE"
-submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_test_after_application" "final_output_test_after_application_M_deltaE_bkg" "plot"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_test_after_application" "final_output_test_after_application_M_deltaE_bkg" "plot" "${Background_Types_STR}"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_signal_half_ALP"
 VarName_1="M"
 VarName_2="deltaE"
-submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M_deltaE_signal" "plot"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M_deltaE_signal" "plot" "${ALP_Type}"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_bkg_half_ALP"
 VarName_1="M"
 VarName_2="deltaE"
-submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M_deltaE_bkg" "plot"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M_deltaE_bkg" "plot" "${Background_Types_STR}"
 

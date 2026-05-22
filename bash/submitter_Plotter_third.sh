@@ -40,11 +40,12 @@ submit_Plotter_2D(){
   local InputDir=$5 # ex. before_M_deltaE_selection
   local OutputName=$6 # ex. deltaE
   local OutputPath=$7 # ex. plot
+  local Types=$8
 
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
 
-  bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName_1}" "${VarName_2}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}" "${OutputName}"
+  bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName_1}" "${VarName_2}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}" "${OutputName}" "${Types}"
 
 }
  
@@ -52,11 +53,11 @@ submit_Plotter_2D(){
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_signal_half"
 VarName_1="M"
 VarName_2="deltaE"
-submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_test_after_application_after_cut" "final_output_test_after_application_after_cut_M_deltaE_signal" "plot"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_test_after_application_after_cut" "final_output_test_after_application_after_cut_M_deltaE_signal" "plot" "${Signal_Type}"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_bkg_half"
 VarName_1="M"
 VarName_2="deltaE"
-submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_test_after_application_after_cut" "final_output_test_after_application_after_cut_M_deltaE_bkg" "plot"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_test_after_application_after_cut" "final_output_test_after_application_after_cut_M_deltaE_bkg" "plot" "${Background_Types_STR}"
 
 
