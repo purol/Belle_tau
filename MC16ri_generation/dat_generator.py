@@ -1,9 +1,9 @@
 import os
 
 # Parameter sets
-masses = [round(0.2 * i, 1) for i in range(1, 9)]  # 0.2 to 1.6 GeV
-lifetimes = [0.1, 0.5, 1, 5, 10, 50, 100, 500, 1000]  # mm
-coefficients = [(1, 1), (1, -1)]  # (A_COEF, B_COEF)
+masses = [round(0.3 + 0.2 * i, 1) for i in range(0, 7)]  # 0.2 to 1.6 GeV
+lifetimes = [0.1, 1, 10, 100, 250, 500, 1000]  # mm
+coefficients = [(1, -1)]  # (A_COEF, B_COEF)
 
 # Directories
 dat_dir = "dat_files"
@@ -57,7 +57,7 @@ BeginX
  2913{a_coef:>13.1f}d0      VCALFA: coupling coefficient A in (A+B gamma5) term
  2914{b_coef:>13.1f}d0      ACALFA: coupling coefficient B in (A+B gamma5) term
  2920            3e0      0:invi,1:gg,2:e+e-,3:mu+mu-,4:pi+pi-,5:pi0pi0,6:pi0eta,7:etaeta,8:K+K-,9:KS0KS0,10:pi+K-,11:pi-K+
- 2921        0.004d0      GMALFA: width of the exotic particle [GeV]
+ 2921        0.001d0      GMALFA: width of the exotic particle [GeV]
  2922{lifetime:>13.3f}d0      CTALFA : c*tau (alpha lifetime) (mm)
 ********************************************************************************
 EndX
@@ -67,7 +67,7 @@ dat_files = []
 for mass in masses:
     for lifetime in lifetimes:
         for a_coef, b_coef in coefficients:
-            filename = f"{dat_dir}/alpha_mass{mass:.1f}_life{lifetime}_A{a_coef}_B{b_coef}.dat"
+            filename = f"{dat_dir}/alpha_mass{mass:.1f}_life{lifetime}_A{a_coef}_B{b_coef}_plus.dat"
             with open(filename, "w") as f:
                 f.write(dat_template.format(mass=mass, lifetime=lifetime, a_coef=a_coef, b_coef=b_coef))
             dat_files.append(filename)
