@@ -68,13 +68,13 @@ int main(int argc, char* argv[]) {
     sample2_test_th->Scale(factor / sample2_test_th->Integral(), "width");
 
     // set color (sample1: kRed, sample2: kBlue)
-    signal_test_th->SetFillStyle(3004);
-    signal_test_th->SetLineColor(kBlue);
-    signal_test_th->SetFillColor(kBlue);
+    sample1_test_th->SetFillStyle(3004);
+    sample1_test_th->SetLineColor(kBlue);
+    sample1_test_th->SetFillColor(kBlue);
 
-    background_test_th->SetFillStyle(3005);
-    background_test_th->SetLineColor(kRed);
-    background_test_th->SetFillColor(kRed);
+    sample2_test_th->SetFillStyle(3005);
+    sample2_test_th->SetLineColor(kRed);
+    sample2_test_th->SetFillColor(kRed);
 
     double p_value = sample1_test_th_KS->KolmogorovTest(sample2_test_th_KS);
 
