@@ -82,6 +82,12 @@ int main(int argc, char* argv[]) {
 
     TCanvas* c_temp = new TCanvas("c", "", 600, 600); c_temp->cd();
 
+    double sample1_th_max = sample1_test_th->GetMaximum();
+    double sample2_th_max = sample2_test_th->GetMaximum();
+
+    if (sample1_th_max > sample2_th_max) sample2_test_th->SetMaximum(1.40 * sample1_th_max);
+    else sample2_test_th->SetMaximum(1.40 * sample2_th_max);
+
     sample2_test_th->SetTitle(""); sample1_test_th->SetTitle("");
 
     sample2_test_th->Draw("Hist"); sample1_test_th->Draw("HistSAME");
