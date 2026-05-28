@@ -86,7 +86,7 @@ submit_Plotter() {
     local OutputName=$7 # ex. deltaE
     local OutputPath=$8 # ex. plot
     local SignalTypes=$9
-    local BackgroundTypes=$10
+    local BackgroundTypes=${10}
 
     get_params "./${VerName}/${Analysis_VerName}/ALP/${InputDir}" | while read mass life A B; do
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}"

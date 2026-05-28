@@ -26,7 +26,7 @@ submit_Plotter() {
     local OutputName=$7 # ex. deltaE
     local OutputPath=$8 # ex. plot
     local SignalTypes=$9
-    local BackgroundTypes=$10
+    local BackgroundTypes=${10}
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
