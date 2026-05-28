@@ -33,6 +33,23 @@ submit_Plotter() {
   fi
 
 }
+
+submit_Plotter_2D(){
+  local Code=$1
+  local VerName=$2 # ex. Alice
+  local VarName_1=$3
+  local VarName_2=$4
+  local InputDir=$5 # ex. before_M_deltaE_selection
+  local OutputName=$6 # ex. deltaE
+  local OutputPath=$7 # ex. plot
+  local Types=$8
+
+  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
+  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
+
+  bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName_1}" "${VarName_2}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}" "${OutputName}" "${Types}"
+
+}
  
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_MC"
 VarName="BDT_output_1"
@@ -42,3 +59,12 @@ code="${Belle_tau_DIR}/analysis_code/bin/Plotter_MC"
 VarName="BDT_output_2"
 submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_2" "plot" "${Types_STR_WITH_SIGNAL}"
 
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_MC"
+VarName_1="M"
+VarName_2="deltaE"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_after_application" "final_output_after_application_M_deltaE_signal" "plot" "${Signal_Type}"
+
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_MC"
+VarName_1="M"
+VarName_2="deltaE"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_after_application" "final_output_after_application_M_deltaE_bkg" "plot" "${Background_Types_STR}"
