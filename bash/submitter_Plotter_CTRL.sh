@@ -95,7 +95,7 @@ submit_Plotter() {
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter"
 VarName="deltaE"
-submit_Plotter ${code} ${Analysis_Name} ${VarName} -0.5 0.0 "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_deltaE" "plot" "${Signal_Type}" "${Background_Types_STR}"
+submit_Plotter ${code} ${Analysis_Name} ${VarName} -0.4 0.0 "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_deltaE" "plot" "${Signal_Type}" "${Background_Types_STR}"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter"
 VarName="M"
