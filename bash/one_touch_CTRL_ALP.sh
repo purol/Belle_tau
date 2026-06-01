@@ -169,4 +169,4 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-bash ${shell_DIR}/submitter_Plotter_CTRL.sh
+bash ${shell_DIR}/submitter_Plotter_CTRL_ALP.sh

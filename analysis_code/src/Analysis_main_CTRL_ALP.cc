@@ -147,6 +147,18 @@ int main(int argc, char* argv[]) {
     loader.Cut("missingEnergyOfEventCMS > 0.0");
     loader.PrintInformation("========== missing Energy CMS > 0.0 GeV ==========");
 
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_flighttime_cut").c_str(), "", "");
+    loader.Cut("extraInfo__boALP_flightTime__bc > 0.0");
+    loader.PrintInformation("========== flighttime of KS0 > 0 ==========");
+
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_significance_distance_cut").c_str(), "", "");
+    loader.Cut("extraInfo__boALP_significanceOfDistance__bc > 10.0");
+    loader.PrintInformation("========== significance of distance of KS0 > 10 ==========");
+
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_KS0_M_cut").c_str(), "", "");
+    loader.Cut("(extraInfo__boALP_M__bc > 0.487611) && (extraInfo__boALP_M__bc < 0.507611)");
+    loader.PrintInformation("========== deltaM of KS0 < 0.01 GeV ==========");
+
     loader.RandomBCS();
     loader.IsBCSValid();
     loader.PrintInformation("========== Random BCS ==========");
