@@ -145,6 +145,10 @@ int main(int argc, char* argv[]) {
     loader.Cut("missingEnergyOfEventCMS > 0.0");
     loader.PrintInformation("========== missing Energy CMS > 0.0 GeV ==========");
 
+    loader.RandomBCS();
+    loader.IsBCSValid();
+    loader.PrintInformation("========== Random BCS ==========");
+
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_strict_M_deltaE_selection").c_str(), "", "");
 
     loader.end();
