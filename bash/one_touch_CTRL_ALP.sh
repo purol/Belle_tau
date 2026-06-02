@@ -178,3 +178,5 @@ if [[ $? -ne 0 ]]; then
   echo "Unsuccessful logs found. Stopping the one touch analysis."
   exit 1
 fi
+
+bash ${shell_DIR}/submitter_Plotter_secondary_CTRL_ALP.sh
