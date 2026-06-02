@@ -170,3 +170,11 @@ if [[ $? -ne 0 ]]; then
 fi
 
 bash ${shell_DIR}/submitter_Plotter_CTRL_ALP.sh
+
+bash ${shell_DIR}/submitter_FBDT_Application_CTRL_ALP.sh
+wait_job "FBDTAPP"
+bash ${shell_DIR}/checker_FBDT_Application_CTRL.sh
+if [[ $? -ne 0 ]]; then
+  echo "Unsuccessful logs found. Stopping the one touch analysis."
+  exit 1
+fi
