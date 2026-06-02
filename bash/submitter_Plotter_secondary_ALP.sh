@@ -22,6 +22,7 @@ submit_Plotter() {
 
     get_params "./${VerName}/${Analysis_VerName}/ALP/${InputDir}" | while read mass life A B; do
       VarNameLocal="${VarName}"
+      OutputNameLocal="${OutputName}"
 
       if [[ "${VarName}" = "BDT_output_1" || "${VarName}" = "BDT_output_2" ]]; then
         if [ "${B}" = "-1" ]; then
@@ -32,13 +33,14 @@ submit_Plotter() {
           B_tag="${B}"
         fi
         VarNameLocal="${VarName}_${mass}_${life}_${A}_${B_tag}"
+        OutputNameLocal="${OutputName}_${mass}_${life}_${A}_${B_tag}"
       fi
 
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}"
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log"
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err"
 
-      bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputName}.err" ${Code} "${VarNameLocal}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" "${OutputName}" "${SignalTypes}" "${BackgroundTypes}" "${mass}" "${life}" "${A}" "${B}"
+      bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputNameLocal}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputNameLocal}.err" ${Code} "${VarNameLocal}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" "${OutputNameLocal}" "${SignalTypes}" "${BackgroundTypes}" "${mass}" "${life}" "${A}" "${B}"
     done
 
   elif [ "$#" -eq 10 ]; then
@@ -55,6 +57,7 @@ submit_Plotter() {
 
     get_params "./${VerName}/${Analysis_VerName}/ALP/${InputDir}" | while read mass life A B; do
       VarNameLocal="${VarName}"
+      OutputNameLocal="${OutputName}"
 
       if [[ "${VarName}" = "BDT_output_1" || "${VarName}" = "BDT_output_2" ]]; then
         if [ "${B}" = "-1" ]; then
@@ -65,13 +68,14 @@ submit_Plotter() {
           B_tag="${B}"
         fi
         VarNameLocal="${VarName}_${mass}_${life}_${A}_${B_tag}"
+        OutputNameLocal="${OutputName}_${mass}_${life}_${A}_${B_tag}"
       fi
 
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}"
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log"
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err"
 
-      bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputName}.err" ${Code} "${VarNameLocal}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" "${OutputName}" "${SignalTypes}" "${BackgroundTypes}" "$VarMin" "$VarMax" "${mass}" "${life}" "${A}" "${B}"
+      bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputNameLocal}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputNameLocal}.err" ${Code} "${VarNameLocal}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" "${OutputNameLocal}" "${SignalTypes}" "${BackgroundTypes}" "$VarMin" "$VarMax" "${mass}" "${life}" "${A}" "${B}"
     done
 
   fi
