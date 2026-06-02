@@ -1,5 +1,13 @@
 #!/bin/bash
 
+get_params() {
+  local dir="$1"
+
+  ls "$dir" | \
+  sed -n 's/.*alpha_mass\([0-9.+-eE]\+\)_life\([0-9.+-eE]\+\)_A\([0-9+-]\+\)_B\([0-9+-]\+\).*/\1 \2 \3 \4/p' | \
+  sort -u
+}
+
 submit_Plotter() {
 
   if [ "$#" -eq 7 ]; then
@@ -50,14 +58,24 @@ submit_Plotter_2D(){
   bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName_1}" "${VarName_2}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}" "${OutputName}" "${Types}"
 
 }
- 
-code="${Belle_tau_DIR}/analysis_code/bin/Plotter_MC"
-VarName="BDT_output_1"
-submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_1" "plot" "${Types_STR_WITH_SIGNAL}"
 
-code="${Belle_tau_DIR}/analysis_code/bin/Plotter_MC"
-VarName="BDT_output_2"
-submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_2" "plot" "${Types_STR_WITH_SIGNAL}"
+get_params "./${FBDT_weight_DIR}/${ALP_Type}/final_output_test_after_application" | while read mass life A B; do
+  if [ "${B}" = "-1" ]; then
+    B_tag="m1"
+  elif [ "${B}" = "0" ]; then
+    B_tag="0"
+  else
+    B_tag="${B}"
+  fi
+
+  code="${Belle_tau_DIR}/analysis_code/bin/Plotter_MC"
+  VarName="BDT_output_1_${mass}_${life}_${A}_${B_tag}"
+  submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_1_${mass}_${life}_${A}_${B_tag}" "plot" "${Types_STR_WITH_SIGNAL}"
+
+  code="${Belle_tau_DIR}/analysis_code/bin/Plotter_MC"
+  VarName="BDT_output_2_${mass}_${life}_${A}_${B_tag}"
+  submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_2_${mass}_${life}_${A}_${B_tag}" "plot" "${Types_STR_WITH_SIGNAL}"
+done
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_MC"
 VarName_1="M"
