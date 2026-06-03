@@ -59,7 +59,7 @@ submit_Plotter_2D(){
 
 }
 
-get_params "./${FBDT_weight_DIR}/${ALP_Type}/final_output_test_after_application" | while read mass life A B; do
+get_params "${FBDT_weight_DIR}/${ALP_Type}/final_output_test_after_application" | while read mass life A B; do
   if [ "${B}" = "-1" ]; then
     B_tag="m1"
   elif [ "${B}" = "0" ]; then
