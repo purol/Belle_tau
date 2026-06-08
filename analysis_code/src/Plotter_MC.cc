@@ -17,25 +17,27 @@ int main(int argc, char* argv[]) {
     * argv[4]: output path
     * argv[5]: output name
     * argv[6]: MC list (separated by colon)
-    * (argv[7]): min value
-    * (argv[8]): max value
+    * argv[7]: MC legend list (separated by colon)
+    * (argv[8]): min value
+    * (argv[9]): max value
     */
 
     std::string variable_name(argv[1]);
 
     std::vector<std::string> MC_list = split(argv[6], ':');
+    std::vector<std::string> MC_legend_list = split(argv[7], ':');
 
     ObtainWeight = MyScaleFunction;
 
     Loader loader("tau_lfv");
 
-    for (int i = 0; i < MC_list.size(); i++) loader.Load((argv[2] + std::string("/") + MC_list.at(i) + std::string("/") + std::string(argv[3])).c_str(), "root", MC_list.at(i).c_str());
+    for (int i = 0; i < MC_list.size(); i++) loader.Load((argv[2] + std::string("/") + MC_list.at(i) + std::string("/") + std::string(argv[3])).c_str(), "root", MC_legend_list.at(i).c_str());
 
-    loader.SetMC(MC_list);
+    loader.SetMC(MC_legend_list);
     loader.SetData({});
 
-    if(argc == 7) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), false, false);
-    else if (argc == 9) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), 50, std::stod(argv[7]), std::stod(argv[8]), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), false, false);
+    if(argc == 8) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), false, false);
+    else if (argc == 10) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), 50, std::stod(argv[8]), std::stod(argv[9]), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), false, false);
 
     loader.end();
 

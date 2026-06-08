@@ -14,9 +14,17 @@ Background_Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CHARM"
     "MUMU" "EE" "EEEE" "EEMUMU" "EEPIPI" "EEKK" "EEPP" "PIPIISR"
     "PIPIPI0ISR" "KKISR" "GG" "EETAUTAU" "K0K0BARISR" "MUMUMUMU" 
     "MUMUTAUTAU" "TAUTAUTAUTAU" "TAUPAIR" "BBs" "BsBs"
-    ) # name of directories under ${Ntuple_DIR} for background sample
-export Signal_Type="SIGNAL" # name of directories under ${Ntuple_DIR} for prompt signal sample
-export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample
+    ) # name of directories under ${Ntuple_DIR} for background sample. Do not include colon.
+export Signal_Type="SIGNAL" # name of directories under ${Ntuple_DIR} for prompt signal sample. Do not include colon.
+export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample. Do not include colon.
+
+Background_Legends=("B#bar{B}" "B#bar{B}" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#bar{q}"
+    "#mu#mu" "ee" "others" "ee#mu#mu" "others" "others" "others" "others"
+    "others" "others" "others" "others" "others" "#mu#mu#mu#mu" 
+    "others" "others" "#tau#bar{#tau}" "others" "others"
+    ) # legends of background sample for plots. Do not include colon.
+export Signal_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
+export ALP_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
 
 export MC_version="MC15ri" # version of MC. This should be under ${Ntuple_DIR}/${Analysis_Name}/(type name)
 
@@ -106,6 +114,22 @@ Types_With_SIGNAL_ALP=(
   "${ALP_Type}"
 )
 
+Legends_With_ALP=(
+  "${Background_Legends[@]}"
+  "${ALP_Legends}"
+)
+
+Legends_With_SIGNAL=(
+  "${Background_Legends[@]}"
+  "${Signal_Legends}"
+)
+
+Legends_With_SIGNAL_ALP=(
+  "${Background_Legends[@]}"
+  "${Signal_Legends}"
+  "${ALP_Legends}"
+)
+
 export Types_STR_WITH_ALP
 Types_STR_WITH_ALP=$(IFS=:; echo "${Types_With_ALP[*]}")
 
@@ -123,6 +147,18 @@ input_variables_two_STR=$(IFS=:; echo "${input_variables_two[*]}")
 
 export Background_Types_STR
 Background_Types_STR=$(IFS=:; echo "${Background_Types[*]}")
+
+export Legends_STR_WITH_ALP
+Legends_STR_WITH_ALP=$(IFS=:; echo "${Legends_With_ALP[*]}")
+
+export Legends_STR_WITH_SIGNAL
+Legends_STR_WITH_SIGNAL=$(IFS=:; echo "${Legends_With_SIGNAL[*]}")
+
+export Legends_STR_WITH_SIGNAL_ALP
+Legends_STR_WITH_SIGNAL_ALP=$(IFS=:; echo "${Legends_With_SIGNAL_ALP[*]}")
+
+export Background_Legends_STR
+Background_Legends_STR=$(IFS=:; echo "${Background_Legends[*]}")
 
 wait_all_job() {
   while true; do
