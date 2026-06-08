@@ -101,6 +101,14 @@ code="${Belle_tau_DIR}/analysis_code/bin/Plotter"
 VarName="M"
 submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.5 1.7 "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M" "plot" "${Signal_Type}" "${Background_Types_STR}"
 
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter"
+VarName="deltaE"
+submit_Plotter ${code} ${Analysis_Name} ${VarName} -0.4 0.0 "final_output" "final_output_deltaE" "plot" "${Signal_Type}" "${Background_Types_STR}"
+
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter"
+VarName="M"
+submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.5 1.7 "final_output" "final_output_M" "plot" "${Signal_Type}" "${Background_Types_STR}"
+
 Directories=(
     "before_PrimarypionID_selection"
     "before_SecondarypionID_selection"
@@ -113,7 +121,7 @@ Directories=(
     "before_avgthrust_cut"
     "before_missingEnergy_cut"
     "before_strict_M_deltaE_selection"
-#    "final_output"
+    "final_output"
 )
 
 for ((i = 0; i < ${#Directories[@]}; i++)); do

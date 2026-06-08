@@ -152,6 +152,10 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== Random BCS ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_strict_M_deltaE_selection").c_str(), "", "");
+    loader.Cut("deltaE > (0.3*M - 0.76)"); // (M, deltaE) -> (1.2, -0.4), (1.7, -0.25)
+    loader.PrintInformation("========== deltaE > 0.3*M - 0.76 ==========");
+
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/final_output").c_str(), "", "");
 
     loader.end();
 
