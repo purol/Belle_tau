@@ -14,16 +14,18 @@ Background_Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CHARM"
     "MUMU" "EE" "EEEE" "EEMUMU" "EEPIPI" "EEKK" "EEPP" "PIPIISR"
     "PIPIPI0ISR" "KKISR" "GG" "EETAUTAU" "K0K0BARISR" "MUMUMUMU" 
     "MUMUTAUTAU" "TAUTAUTAUTAU" "TAUPAIR" "BBs" "BsBs"
+    "pipipinu_pure"
     ) # name of directories under ${Ntuple_DIR} for background sample. Do not include colon.
-export Signal_Type="SIGNAL" # name of directories under ${Ntuple_DIR} for prompt signal sample. Do not include colon.
+export Signal_Type="KS0pinu" # name of directories under ${Ntuple_DIR} for prompt signal sample. Do not include colon.
 export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample. Do not include colon.
 
 Background_Legends=("B#bar{B}" "B#bar{B}" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#bar{q}"
     "#mu#mu" "ee" "others" "ee#mu#mu" "others" "others" "others" "others"
     "others" "others" "others" "others" "others" "#mu#mu#mu#mu" 
     "others" "others" "#tau#bar{#tau}" "others" "others"
+    "#tau #to #pi #pi #pi #nu"
     ) # legends of background sample for plots. Do not include colon.
-export Signal_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
+export Signal_Legends="#tau #to K_{S}^{0} #pi #nu" # legends of prompt sample for plots. Do not include colon.
 export ALP_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
 
 export MC_version="MC15ri" # version of MC. This should be under ${Ntuple_DIR}/${Analysis_Name}/(type name)
