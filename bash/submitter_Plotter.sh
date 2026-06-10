@@ -49,6 +49,7 @@ mapfile -t all_variables < <(
 )
 
 submit_Plotter() {
+  local command
 
   if [ "$#" -eq 10 ]; then
     local Code=$1 # ex. ./bin/Plotter
@@ -65,7 +66,19 @@ submit_Plotter() {
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
 
-    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}" "${OutputName}" "${SignalTypes}" "${BackgroundTypes}" "${SignalLegends}" "${BackgroundLegends}"
+    printf -v command '%q ' \
+      "${Code}" \
+      "${VarName}" \
+      "./${VerName}/${Analysis_VerName}/" \
+      "/${InputDir}/" \
+      "./${VerName}/${Analysis_VerName}/${OutputPath}" \
+      "${OutputName}" \
+      "${SignalTypes}" \
+      "${BackgroundTypes}" \
+      "${SignalLegends}" \
+      "${BackgroundLegends}"
+
+    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" "${command}"
   elif [ "$#" -eq 12 ]; then
     local Code=$1 # ex. ./bin/Plotter
     local VerName=$2 # ex. Alice
@@ -83,7 +96,21 @@ submit_Plotter() {
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
 
-    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}" "${OutputName}" "${SignalTypes}" "${BackgroundTypes}" "${SignalLegends}" "${BackgroundLegends}" "$VarMin" "$VarMax"
+    printf -v command '%q ' \
+      "${Code}" \
+      "${VarName}" \
+      "./${VerName}/${Analysis_VerName}/" \
+      "/${InputDir}/" \
+      "./${VerName}/${Analysis_VerName}/${OutputPath}" \
+      "${OutputName}" \
+      "${SignalTypes}" \
+      "${BackgroundTypes}" \
+      "${SignalLegends}" \
+      "${BackgroundLegends}" \
+      "${VarMin}" \
+      "${VarMax}"
+
+    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" "${command}"
   fi
 
 }

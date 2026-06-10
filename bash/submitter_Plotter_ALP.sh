@@ -57,6 +57,7 @@ mapfile -t all_variables < <(
 )
 
 submit_Plotter() {
+  local command
 
   if [ "$#" -eq 10 ]; then
     local Code=$1 # ex. ./bin/Plotter
@@ -75,7 +76,23 @@ submit_Plotter() {
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log"
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err"
 
-      bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" "${OutputName}" "${SignalTypes}" "${BackgroundTypes}" "${SignalLegends}" "${BackgroundLegends}" "${mass}" "${life}" "${A}" "${B}"
+      printf -v command '%q ' \
+        "${Code}" \
+        "${VarName}" \
+        "./${VerName}/${Analysis_VerName}/" \
+        "/${InputDir}/" \
+        "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" \
+        "${OutputName}" \
+        "${SignalTypes}" \
+        "${BackgroundTypes}" \
+        "${SignalLegends}" \
+        "${BackgroundLegends}" \
+        "${mass}" \
+        "${life}" \
+        "${A}" \
+        "${B}"
+
+      bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputName}.err" "${command}"
     done
 
   elif [ "$#" -eq 12 ]; then
@@ -97,7 +114,25 @@ submit_Plotter() {
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log"
       mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err"
 
-      bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" "${OutputName}" "${SignalTypes}" "${BackgroundTypes}" "${SignalLegends}" "${BackgroundLegends}" "$VarMin" "$VarMax" "${mass}" "${life}" "${A}" "${B}"
+      printf -v command '%q ' \
+        "${Code}" \
+        "${VarName}" \
+        "./${VerName}/${Analysis_VerName}/" \
+        "/${InputDir}/" \
+        "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" \
+        "${OutputName}" \
+        "${SignalTypes}" \
+        "${BackgroundTypes}" \
+        "${SignalLegends}" \
+        "${BackgroundLegends}" \
+        "${VarMin}" \
+        "${VarMax}" \
+        "${mass}" \
+        "${life}" \
+        "${A}" \
+        "${B}"
+
+      bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputName}.err" "${command}"
     done
 
   fi

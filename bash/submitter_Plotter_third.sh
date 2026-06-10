@@ -1,6 +1,7 @@
 #!/bin/bash
 
 submit_Plotter() {
+  local command
 
   if [ "$#" -eq 10 ]; then
     local Code=$1 # ex. ./bin/Plotter
@@ -17,7 +18,19 @@ submit_Plotter() {
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
 
-    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}" "${OutputName}" "${SignalTypes}" "${BackgroundTypes}" "${SignalLegends}" "${BackgroundLegends}"
+    printf -v command '%q ' \
+      "${Code}" \
+      "${VarName}" \
+      "./${VerName}/${Analysis_VerName}/" \
+      "/${InputDir}/" \
+      "./${VerName}/${Analysis_VerName}/${OutputPath}" \
+      "${OutputName}" \
+      "${SignalTypes}" \
+      "${BackgroundTypes}" \
+      "${SignalLegends}" \
+      "${BackgroundLegends}"
+
+    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" "${command}"
   elif [ "$#" -eq 12 ]; then
     local Code=$1 # ex. ./bin/Plotter
     local VerName=$2 # ex. Alice
@@ -35,12 +48,28 @@ submit_Plotter() {
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
 
-    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}" "${OutputName}" "${SignalTypes}" "${BackgroundTypes}" "${SignalLegends}" "${BackgroundLegends}" "$VarMin" "$VarMax"
+    printf -v command '%q ' \
+      "${Code}" \
+      "${VarName}" \
+      "./${VerName}/${Analysis_VerName}/" \
+      "/${InputDir}/" \
+      "./${VerName}/${Analysis_VerName}/${OutputPath}" \
+      "${OutputName}" \
+      "${SignalTypes}" \
+      "${BackgroundTypes}" \
+      "${SignalLegends}" \
+      "${BackgroundLegends}" \
+      "${VarMin}" \
+      "${VarMax}"
+
+    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" "${command}"
   fi
 
 }
 
 submit_Plotter_2D(){
+  local command
+
   local Code=$1
   local VerName=$2 # ex. Alice
   local VarName_1=$3
@@ -54,7 +83,18 @@ submit_Plotter_2D(){
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
 
-  bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName_1}" "${VarName_2}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}" "${OutputName}" "${Types}" "${Legends}"
+  printf -v command '%q ' \
+    "${Code}" \
+    "${VarName_1}" \
+    "${VarName_2}" \
+    "./${VerName}/${Analysis_VerName}/" \
+    "/${InputDir}/" \
+    "./${VerName}/${Analysis_VerName}/${OutputPath}" \
+    "${OutputName}" \
+    "${Types}" \
+    "${Legends}"
+
+  bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" "${command}"
 
 }
  
