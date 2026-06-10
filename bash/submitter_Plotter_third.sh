@@ -2,7 +2,7 @@
 
 submit_Plotter() {
 
-  if [ "$#" -eq 8 ]; then
+  if [ "$#" -eq 10 ]; then
     local Code=$1 # ex. ./bin/Plotter
     local VerName=$2 # ex. Alice
     local VarName=$3 # ex. deltaE
@@ -18,7 +18,7 @@ submit_Plotter() {
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
 
     bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" ${Code} "${VarName}" "./${VerName}/${Analysis_VerName}/" "/${InputDir}/" "./${VerName}/${Analysis_VerName}/${OutputPath}" "${OutputName}" "${SignalTypes}" "${BackgroundTypes}" "${SignalLegends}" "${BackgroundLegends}"
-  elif [ "$#" -eq 10 ]; then
+  elif [ "$#" -eq 12 ]; then
     local Code=$1 # ex. ./bin/Plotter
     local VerName=$2 # ex. Alice
     local VarName=$3 # ex. deltaE
