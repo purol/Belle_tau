@@ -107,3 +107,13 @@ code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_MC"
 VarName_1="M"
 VarName_2="deltaE"
 submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_after_application" "final_output_after_application_M_deltaE_bkg" "plot" "${Background_Types_STR}" "${Background_Legends_STR}"
+
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_MC"
+VarName_1="M"
+VarName_2="deltaE"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M_deltaE_signal" "plot" "${Signal_Type}" "${Signal_Legends}"
+
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_MC"
+VarName_1="M"
+VarName_2="deltaE"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M_deltaE_bkg" "plot" "${Background_Types_STR}" "${Background_Legends_STR}"
