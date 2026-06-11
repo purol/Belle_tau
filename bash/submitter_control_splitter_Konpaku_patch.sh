@@ -24,7 +24,7 @@ submit_splitter() {
 
 }
 
-Types=("TAUTAU_CTRL3_OF_t")
+Types=("TAUPAIR_original_OF")
 
 code="${Belle_tau_DIR}/analysis_code/bin/Control_splitter_Konpaku_patch"
 for Type in "${Types[@]}"; do
