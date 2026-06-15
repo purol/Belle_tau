@@ -37,7 +37,7 @@ submit_Plotter() {
     local OutputName=$7 # ex. deltaE
     local OutputPath=$8 # ex. plot
     local MCTypes=$9
-    local MCLegends=$10
+    local MCLegends=${10}
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
