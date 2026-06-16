@@ -25,7 +25,7 @@ Background_Legends=("B#bar{B}" "B#bar{B}" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#ba
     "others" "others" "#tau#bar{#tau}" "others" "others"
     "#tau#to#pi#pi#pi#nu"
     ) # legends of background sample for plots. Do not include colon.
-export Signal_Legends="#tau#toK_{S}^{0}#pi#nu" # legends of prompt sample for plots. Do not include colon.
+export Signal_Legends="#tau#rightarrowK_{S}^{0}#pi#nu" # legends of prompt sample for plots. Do not include colon.
 export ALP_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
 
 export MC_version="MC15ri" # version of MC. This should be under ${Ntuple_DIR}/${Analysis_Name}/(type name)
