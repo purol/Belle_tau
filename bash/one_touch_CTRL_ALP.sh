@@ -23,7 +23,7 @@ Background_Legends=("B#bar{B}" "B#bar{B}" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#ba
     "#mu#mu" "ee" "others" "ee#mu#mu" "others" "others" "others" "others"
     "others" "others" "others" "others" "others" "#mu#mu#mu#mu" 
     "others" "others" "#tau#bar{#tau}" "others" "others"
-    "#tau#to#pi#pi#pi#nu"
+    "#tau#rightarrow#pi#pi#pi#nu"
     ) # legends of background sample for plots. Do not include colon.
 export Signal_Legends="#tau#rightarrowK_{S}^{0}#pi#nu" # legends of prompt sample for plots. Do not include colon.
 export ALP_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
