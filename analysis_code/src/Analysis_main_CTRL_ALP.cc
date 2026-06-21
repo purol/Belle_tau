@@ -159,11 +159,24 @@ int main(int argc, char* argv[]) {
     loader.Cut("(extraInfo__boALP_M__bc > 0.487611) && (extraInfo__boALP_M__bc < 0.507611)");
     loader.PrintInformation("========== deltaM of KS0 < 0.01 GeV ==========");
 
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_strict_M_deltaE_selection").c_str(), "", "");
+    loader.Cut("(missingEnergyOfEventCMS > 0.5) || (harmonicMomentThrust1 > 0.05) || (harmonicMomentThrust1 < -0.05)");
+    loader.PrintInformation("========== (missingEnergyOfEventCMS > 0.5) || (harmonicMomentThrust1 > 0.05) || (harmonicMomentThrust1 < -0.05) ==========");
+
+    loader.Cut("(KSFWVariables__bohso20__cm__spcleanMask__bc < (-0.2 * roeDeltae__bocleanMask__bc + 0.45)) && (KSFWVariables__bohso20__cm__spcleanMask__bc > (0.25 * roeDeltae__bocleanMask__bc + 0.2))");
+    loader.PrintInformation("========== (hso20 < (-0.2 * reoDeltaE + 0.45)) & (hso20 > (0.25 * reoDeltaE + 0.2) ==========");
+
+    loader.Cut("(extraInfo__boALP_E__bc > 2.0) || (M < 1.2)");
+    loader.PrintInformation("========== (ALP Energy > 2.0 GeV) || (M < 1.2 GeV) ==========");
+
+    loader.Cut("(M > 0.7) & (M < 1.1) && (roeDeltae__bocleanMask__bc < -2.5)");
+    loader.PrintInformation("========== (0.7 < M < 1.1 GeV) & (reoDeltaE < -2.5 GeV) ==========");
+
     loader.RandomBCS();
     loader.IsBCSValid();
     loader.PrintInformation("========== Random BCS ==========");
 
-    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_strict_M_deltaE_selection").c_str(), "", "");
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/final_output").c_str(), "", "");
 
     loader.end();
 

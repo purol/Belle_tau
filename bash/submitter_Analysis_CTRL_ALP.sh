@@ -21,6 +21,7 @@ submit_analysis() {
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/before_significance_distance_cut"
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/before_KS0_M_cut"
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection"
+  mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/final_output"
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/log"
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/err"
 
