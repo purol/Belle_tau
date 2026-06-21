@@ -169,7 +169,7 @@ int main(int argc, char* argv[]) {
     loader.Cut("(extraInfo__boALP_E__bc > 2.0) || (M < 1.2)");
     loader.PrintInformation("========== (ALP Energy > 2.0 GeV) || (M < 1.2 GeV) ==========");
 
-    loader.Cut("(M > 0.7) & (M < 1.1) && (roeDeltae__bocleanMask__bc < -2.5)");
+    loader.Cut("(M > 0.7) && (M < 1.1) && (roeDeltae__bocleanMask__bc < -2.5)");
     loader.PrintInformation("========== (0.7 < M < 1.1 GeV) & (reoDeltaE < -2.5 GeV) ==========");
 
     loader.RandomBCS();
