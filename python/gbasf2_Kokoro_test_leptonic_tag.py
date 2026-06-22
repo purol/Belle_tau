@@ -262,6 +262,55 @@ def DefineVariables(tau_list, photon_names, IsItPrompt, path):
         ma.signalSideParticleFilter(tau_list, '', roe_path_prompt, deadEndPath_prompt)
         ma.fillSignalSideParticleList(tau_list + "_ROE", "^" + tau_list, roe_path_prompt)
 
+        # for leptonic tag
+        ma.cutAndCopyList("e+:taulfv_eID5", "e+:taulfv", cut="electronID > 0.5", path=roe_path_prompt)
+        ma.cutAndCopyList("e+:taulfv_eID9", "e+:taulfv", cut="electronID > 0.9", path=roe_path_prompt)
+        ma.cutAndCopyList("e+:taulfv_eID95", "e+:taulfv", cut="electronID > 0.95", path=roe_path_prompt)
+
+        ma.cutAndCopyList("e+:taulfv_brem_eID5", "e+:taulfv_brem", cut="electronID > 0.5", path=roe_path_prompt)
+        ma.cutAndCopyList("e+:taulfv_brem_eID9", "e+:taulfv_brem", cut="electronID > 0.9", path=roe_path_prompt)
+        ma.cutAndCopyList("e+:taulfv_brem_eID95", "e+:taulfv_brem", cut="electronID > 0.95", path=roe_path_prompt)
+
+        ma.cutAndCopyList("mu+:taulfv_muID5", "mu+:taulfv", cut="muonID > 0.5", path=roe_path_prompt)
+        ma.cutAndCopyList("mu+:taulfv_muID9", "mu+:taulfv", cut="muonID > 0.9", path=roe_path_prompt)
+        ma.cutAndCopyList("mu+:taulfv_muID95", "mu+:taulfv", cut="muonID > 0.95", path=roe_path_prompt)
+
+        ma.reconstructDecay(decayString="vpho:eID5 -> " + tau_list + "_ROE" + " e-:taulfv_eID5", cut="", path=roe_path_prompt)
+        ma.reconstructDecay(decayString="vpho:eID9 -> " + tau_list + "_ROE" + " e-:taulfv_eID9", cut="", path=roe_path_prompt)
+        ma.reconstructDecay(decayString="vpho:eID95 -> " + tau_list + "_ROE" + " e-:taulfv_eID95", cut="", path=roe_path_prompt)
+
+        ma.reconstructDecay(decayString="vpho:brem_eID5 -> " + tau_list + "_ROE" + " e-:taulfv_brem_eID5", cut="", path=roe_path_prompt)
+        ma.reconstructDecay(decayString="vpho:brem_eID9 -> " + tau_list + "_ROE" + " e-:taulfv_brem_eID9", cut="", path=roe_path_prompt)
+        ma.reconstructDecay(decayString="vpho:brem_eID95 -> " + tau_list + "_ROE" + " e-:taulfv_brem_eID95", cut="", path=roe_path_prompt)
+
+        ma.reconstructDecay(decayString="vpho:muID5 -> " + tau_list + "_ROE" + " mu-:taulfv_muID5", cut="", path=roe_path_prompt)
+        ma.reconstructDecay(decayString="vpho:muID9 -> " + tau_list + "_ROE" + " mu-:taulfv_muID9", cut="", path=roe_path_prompt)
+        ma.reconstructDecay(decayString="vpho:muID95 -> " + tau_list + "_ROE" + " mu-:taulfv_muID95", cut="", path=roe_path_prompt)
+
+        ma.rankByLowest(particleList="vpho:eID5", variable="random", numBest = 1, path=roe_path_prompt)
+        ma.rankByLowest(particleList="vpho:eID9", variable="random", numBest = 1, path=roe_path_prompt)
+        ma.rankByLowest(particleList="vpho:eID95", variable="random", numBest = 1, path=roe_path_prompt)
+
+        ma.rankByLowest(particleList="vpho:brem_eID5", variable="random", numBest = 1, path=roe_path_prompt)
+        ma.rankByLowest(particleList="vpho:brem_eID9", variable="random", numBest = 1, path=roe_path_prompt)
+        ma.rankByLowest(particleList="vpho:brem_eID95", variable="random", numBest = 1, path=roe_path_prompt)
+
+        ma.rankByLowest(particleList="vpho:muID5", variable="random", numBest = 1, path=roe_path_prompt)
+        ma.rankByLowest(particleList="vpho:muID9", variable="random", numBest = 1, path=roe_path_prompt)
+        ma.rankByLowest(particleList="vpho:muID95", variable="random", numBest = 1, path=roe_path_prompt)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:eID5)":"n_vpho_eID5"}, path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:eID9)":"n_vpho_eID9"}, path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:eID95)":"n_vpho_eID95"}, path=roe_path_prompt)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:brem_eID5)":"n_vpho_brem_eID5"}, path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:brem_eID9)":"n_vpho_brem_eID9"}, path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:brem_eID95)":"n_vpho_brem_eID95"}, path=roe_path_prompt)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:muID5)":"n_vpho_muID5"}, path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:muID9)":"n_vpho_muID9"}, path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:muID95)":"n_vpho_muID95"}, path=roe_path_prompt)
+
         variable_list = ["dr", "dz"] + \
                         ["muonID", "muonID_noSVD", "electronID", "pionID", "pionIDNN"] + \
                         ["charge"] + \
@@ -310,6 +359,55 @@ def DefineVariables(tau_list, photon_names, IsItPrompt, path):
         deadEndPath_ALP = basf2.Path()
         ma.signalSideParticleFilter(tau_list, '', roe_path_ALP, deadEndPath_ALP)
         ma.fillSignalSideParticleList(tau_list + "_ROE", "^" + tau_list, roe_path_ALP)
+
+        # for leptonic tag
+        ma.cutAndCopyList("e+:taulfv_eID5", "e+:taulfv", cut="electronID > 0.5", path=roe_path_ALP)
+        ma.cutAndCopyList("e+:taulfv_eID9", "e+:taulfv", cut="electronID > 0.9", path=roe_path_ALP)
+        ma.cutAndCopyList("e+:taulfv_eID95", "e+:taulfv", cut="electronID > 0.95", path=roe_path_ALP)
+
+        ma.cutAndCopyList("e+:taulfv_brem_eID5", "e+:taulfv_brem", cut="electronID > 0.5", path=roe_path_ALP)
+        ma.cutAndCopyList("e+:taulfv_brem_eID9", "e+:taulfv_brem", cut="electronID > 0.9", path=roe_path_ALP)
+        ma.cutAndCopyList("e+:taulfv_brem_eID95", "e+:taulfv_brem", cut="electronID > 0.95", path=roe_path_ALP)
+
+        ma.cutAndCopyList("mu+:taulfv_muID5", "mu+:taulfv", cut="muonID > 0.5", path=roe_path_ALP)
+        ma.cutAndCopyList("mu+:taulfv_muID9", "mu+:taulfv", cut="muonID > 0.9", path=roe_path_ALP)
+        ma.cutAndCopyList("mu+:taulfv_muID95", "mu+:taulfv", cut="muonID > 0.95", path=roe_path_ALP)
+
+        ma.reconstructDecay(decayString="vpho:eID5 -> " + tau_list + "_ROE" + " e-:taulfv_eID5", cut="", path=roe_path_ALP)
+        ma.reconstructDecay(decayString="vpho:eID9 -> " + tau_list + "_ROE" + " e-:taulfv_eID9", cut="", path=roe_path_ALP)
+        ma.reconstructDecay(decayString="vpho:eID95 -> " + tau_list + "_ROE" + " e-:taulfv_eID95", cut="", path=roe_path_ALP)
+
+        ma.reconstructDecay(decayString="vpho:brem_eID5 -> " + tau_list + "_ROE" + " e-:taulfv_brem_eID5", cut="", path=roe_path_ALP)
+        ma.reconstructDecay(decayString="vpho:brem_eID9 -> " + tau_list + "_ROE" + " e-:taulfv_brem_eID9", cut="", path=roe_path_ALP)
+        ma.reconstructDecay(decayString="vpho:brem_eID95 -> " + tau_list + "_ROE" + " e-:taulfv_brem_eID95", cut="", path=roe_path_ALP)
+
+        ma.reconstructDecay(decayString="vpho:muID5 -> " + tau_list + "_ROE" + " mu-:taulfv_muID5", cut="", path=roe_path_ALP)
+        ma.reconstructDecay(decayString="vpho:muID9 -> " + tau_list + "_ROE" + " mu-:taulfv_muID9", cut="", path=roe_path_ALP)
+        ma.reconstructDecay(decayString="vpho:muID95 -> " + tau_list + "_ROE" + " mu-:taulfv_muID95", cut="", path=roe_path_ALP)
+
+        ma.rankByLowest(particleList="vpho:eID5", variable="random", numBest = 1, path=roe_path_ALP)
+        ma.rankByLowest(particleList="vpho:eID9", variable="random", numBest = 1, path=roe_path_ALP)
+        ma.rankByLowest(particleList="vpho:eID95", variable="random", numBest = 1, path=roe_path_ALP)
+
+        ma.rankByLowest(particleList="vpho:brem_eID5", variable="random", numBest = 1, path=roe_path_ALP)
+        ma.rankByLowest(particleList="vpho:brem_eID9", variable="random", numBest = 1, path=roe_path_ALP)
+        ma.rankByLowest(particleList="vpho:brem_eID95", variable="random", numBest = 1, path=roe_path_ALP)
+
+        ma.rankByLowest(particleList="vpho:muID5", variable="random", numBest = 1, path=roe_path_ALP)
+        ma.rankByLowest(particleList="vpho:muID9", variable="random", numBest = 1, path=roe_path_ALP)
+        ma.rankByLowest(particleList="vpho:muID95", variable="random", numBest = 1, path=roe_path_ALP)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:eID5)":"n_vpho_eID5"}, path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:eID9)":"n_vpho_eID9"}, path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:eID95)":"n_vpho_eID95"}, path=roe_path_ALP)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:brem_eID5)":"n_vpho_brem_eID5"}, path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:brem_eID9)":"n_vpho_brem_eID9"}, path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:brem_eID95)":"n_vpho_brem_eID95"}, path=roe_path_ALP)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:muID5)":"n_vpho_muID5"}, path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:muID9)":"n_vpho_muID9"}, path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:muID95)":"n_vpho_muID95"}, path=roe_path_ALP)
 
         variable_list = ["dr", "dz"] + \
                         ["muonID", "muonID_noSVD", "electronID", "pionID", "pionIDNN"] + \
@@ -363,7 +461,7 @@ def DefineVariables(tau_list, photon_names, IsItPrompt, path):
         ]
     else:
         pass
-    tag_vars = vc.recoil_kinematics + GetROEVariables("cleanMask") + ["nROE_RemainingTracks_cleanMask"]
+    tag_vars = vc.recoil_kinematics + GetROEVariables("cleanMask") + ["nROE_RemainingTracks_cleanMask"] + ["n_vpho_eID5", "n_vpho_eID9", "n_vpho_eID95", "n_vpho_brem_eID5", "n_vpho_brem_eID9", "n_vpho_brem_eID95", "n_vpho_muID5", "n_vpho_muID9", "n_vpho_muID95"]
     event_vars = ["beamE"] + vc.event_shape + vc.event_kinematics + ["cosToThrustOfEvent"] + ["eventExtraInfo(EventCode)"] + ["nParticlesInList(pi+:evtshape_kinematics)", "nParticlesInList(gamma:evtshape_kinematics)"] + \
                  ["totalEnergyOfParticlesInList(gamma:evtshape_kinematics)"] + \
                  ["MySampleType", "MyEventType", "MyEnergyType"]
