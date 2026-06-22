@@ -461,7 +461,7 @@ def DefineVariables(tau_list, photon_names, IsItPrompt, path):
         ]
     else:
         pass
-    tag_vars = vc.recoil_kinematics + GetROEVariables("cleanMask") + ["nROE_RemainingTracks_cleanMask"] + ["n_vpho_eID5", "n_vpho_eID9", "n_vpho_eID95", "n_vpho_brem_eID5", "n_vpho_brem_eID9", "n_vpho_brem_eID95", "n_vpho_muID5", "n_vpho_muID9", "n_vpho_muID95"]
+    tag_vars = vc.recoil_kinematics + GetROEVariables("cleanMask") + ["extraInfo(nROE_RemainingTracks_cleanMask)"] + ["extraInfo(" + var + ")" for var in ["n_vpho_eID5", "n_vpho_eID9", "n_vpho_eID95", "n_vpho_brem_eID5", "n_vpho_brem_eID9", "n_vpho_brem_eID95", "n_vpho_muID5", "n_vpho_muID9", "n_vpho_muID95"]]
     event_vars = ["beamE"] + vc.event_shape + vc.event_kinematics + ["cosToThrustOfEvent"] + ["eventExtraInfo(EventCode)"] + ["nParticlesInList(pi+:evtshape_kinematics)", "nParticlesInList(gamma:evtshape_kinematics)"] + \
                  ["totalEnergyOfParticlesInList(gamma:evtshape_kinematics)"] + \
                  ["MySampleType", "MyEventType", "MyEnergyType"]
