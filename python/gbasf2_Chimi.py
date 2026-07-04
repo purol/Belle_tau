@@ -393,6 +393,9 @@ def MakeNtupleandHashmap(tau_list, variable_list, Ntuple_name, hashmap_name, pat
     ma.variablesToNtuple(decayString=tau_list ,variables=variable_list, filename=output_file, treename="tau_lfv", path=path)
 
 def AnalysisGenCut(tau_list, Ntuple_name, path):
+    # names
+    output_file = Ntuple_name + ".root"
+
     # Load particles from MC at first
     ma.fillParticleListFromMC('pi+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
     ma.fillParticleListFromMC('K+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
@@ -494,7 +497,7 @@ def AnalysisGenCut(tau_list, Ntuple_name, path):
     variable_list.append("nParticlesInList(" + tau_list + ")")
 
     # make Ntuple
-    ma.variablesToNtuple(decayString="Z0:PrimaryMC", variables=variable_list, filename=Ntuple_name, treename="tree", path=my_path)
+    ma.variablesToNtuple(decayString="Z0:PrimaryMC", variables=variable_list, filename=output_file, treename="tree", path=my_path)
 
 # get data type
 parser = argparse.ArgumentParser(description='Sample type')
