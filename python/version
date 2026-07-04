@@ -27,3 +27,5 @@ gbasf2_Konpaky.py
 gbasf2_Patchouli.py
 - (bug fix on nROE_remainingtracks) ->
 gbasf2_Kokoro.py
+- (add gen cut study analysis) ->
+gbasf2_Chimi.py
