@@ -180,7 +180,7 @@ def GetROEVariables(maskname):
 
 def GetContinuumSuppressionVariables(maskname):
     var_names = ["R2", "thrustBm", "thrustOm", "cosTBTO", "cosTBz"] + \
-                ["KSFWVariables(et)", "KSFWVariables(mm2)"] + \
+                ["KSFWVariables(pt_sum)", "KSFWVariables(mm2)"] + \
                 ["KSFWVariables(hso00)", "KSFWVariables(hso01)", "KSFWVariables(hso02)", "KSFWVariables(hso03)", "KSFWVariables(hso04)"] + \
                 ["KSFWVariables(hso10)", "KSFWVariables(hso12)", "KSFWVariables(hso14)"] + \
                 ["KSFWVariables(hso20)", "KSFWVariables(hso22)", "KSFWVariables(hso24)"] + \
@@ -479,7 +479,7 @@ def AnalysisGenCut(tau_list, Ntuple_name, path):
     # define variables for 2nd order logistic regression
     va.variables.addAlias("Ntrack_gencut","formula(nParticlesInList(pi+:PrimaryMC) + nParticlesInList(K+:PrimaryMC) + nParticlesInList(e+:PrimaryMC) + nParticlesInList(mu+:PrimaryMC) + nParticlesInList(p+:PrimaryMC))")
     va.variables.addAlias("Ntau_gencut","nParticlesInList(tau+:fake)")
-    va.variables.addAlias("Net_gencut","averageValueInList(Z0:PrimaryMC,KSFWVariables(et))")
+    va.variables.addAlias("Net_gencut","averageValueInList(Z0:PrimaryMC,KSFWVariables(pt_sum))")
     va.variables.addAlias("NTBz_gencut","averageValueInList(Z0:PrimaryMC,cosTBz)")
 
     variable_list = []
@@ -490,7 +490,7 @@ def AnalysisGenCut(tau_list, Ntuple_name, path):
     variable_list = variable_list + ["nParticlesInList(tau+:fake)", "sumValueInList(tau+:BCS, dM)", "sumValueInList(tau+:BCS, M)", "sumValueInList(tau+:BCS, deltaE)", "sumValueInList(tau+:BCS, p)", "sumValueInList(tau+:BCS, Mbc)"]
     variable_list = variable_list + vc.mc_event_kinematics
     variable_list = variable_list + vc.event_shape
-    variable_list = variable_list + ["R2", "cosTBTO", "cosTBz", "thrustBm", "thrustOm", "CleoConeCS(1)", "CleoConeCS(2)", "CleoConeCS(3)", "CleoConeCS(4)", "CleoConeCS(5)", "CleoConeCS(6)", "CleoConeCS(7)", "CleoConeCS(8)", "CleoConeCS(9)", "KSFWVariables(mm2)", "KSFWVariables(et)", "KSFWVariables(hso00)", "KSFWVariables(hso01)", "KSFWVariables(hso02)", "KSFWVariables(hso03)", "KSFWVariables(hso04)", "KSFWVariables(hso10)", "KSFWVariables(hso12)", "KSFWVariables(hso14)", "KSFWVariables(hso20)", "KSFWVariables(hso22)", "KSFWVariables(hso24)", "KSFWVariables(hoo0)", "KSFWVariables(hoo1)", "KSFWVariables(hoo2)", "KSFWVariables(hoo3)", "KSFWVariables(hoo4)"]
+    variable_list = variable_list + ["R2", "cosTBTO", "cosTBz", "thrustBm", "thrustOm", "CleoConeCS(1)", "CleoConeCS(2)", "CleoConeCS(3)", "CleoConeCS(4)", "CleoConeCS(5)", "CleoConeCS(6)", "CleoConeCS(7)", "CleoConeCS(8)", "CleoConeCS(9)", "KSFWVariables(mm2)", "KSFWVariables(pt_sum)", "KSFWVariables(hso00)", "KSFWVariables(hso01)", "KSFWVariables(hso02)", "KSFWVariables(hso03)", "KSFWVariables(hso04)", "KSFWVariables(hso10)", "KSFWVariables(hso12)", "KSFWVariables(hso14)", "KSFWVariables(hso20)", "KSFWVariables(hso22)", "KSFWVariables(hso24)", "KSFWVariables(hoo0)", "KSFWVariables(hoo1)", "KSFWVariables(hoo2)", "KSFWVariables(hoo3)", "KSFWVariables(hoo4)"]
     variable_list = variable_list + ["sumValueInList(tau+:BCS,R2)", "sumValueInList(tau+:BCS,cosTBTO)", "sumValueInList(tau+:BCS,cosTBz)", "sumValueInList(tau+:BCS,thrustBm)", "sumValueInList(tau+:BCS,thrustOm)"]
     variable_list = variable_list + ["sumValueInList(tau+:BCS,daughterHighest(p))", "sumValueInList(tau+:BCS,daughterLowest(p))", "sumValueInList(tau+:BCS,daughterHighest(E))", "sumValueInList(tau+:BCS,daughterLowest(E))"]
     variable_list = variable_list + ["Ntrack_gencut", "Ntau_gencut", "Net_gencut", "NTBz_gencut"]
