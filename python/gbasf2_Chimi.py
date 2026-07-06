@@ -497,7 +497,7 @@ def AnalysisGenCut(tau_list, Ntuple_name, path):
     variable_list.append("nParticlesInList(" + tau_list + ")")
 
     # make Ntuple
-    ma.variablesToNtuple(decayString="Z0:PrimaryMC", variables=variable_list, filename=output_file, treename="tree", path=my_path)
+    ma.variablesToNtuple(decayString="Z0:PrimaryMC", variables=variable_list, filename=output_file, treename="gen_info", path=my_path)
 
 # get data type
 parser = argparse.ArgumentParser(description='Sample type')
