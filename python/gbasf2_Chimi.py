@@ -479,8 +479,8 @@ def AnalysisGenCut(tau_list, Ntuple_name, path):
     # define variables for 2nd order logistic regression
     va.variables.addAlias("Ntrack_gencut","formula(nParticlesInList(pi+:PrimaryMC) + nParticlesInList(K+:PrimaryMC) + nParticlesInList(e+:PrimaryMC) + nParticlesInList(mu+:PrimaryMC) + nParticlesInList(p+:PrimaryMC))")
     va.variables.addAlias("Ntau_gencut","nParticlesInList(tau+:fake)")
-    va.variables.addAlias("Net_gencut","averageValueInList(Z0:PrimaryMC,KSFWVariables(pt_sum))")
-    va.variables.addAlias("NTBz_gencut","averageValueInList(Z0:PrimaryMC,cosTBz)")
+    va.variables.addAlias("pt_sum_gencut","averageValueInList(Z0:PrimaryMC,KSFWVariables(pt_sum))")
+    va.variables.addAlias("cosTBz_gencut","averageValueInList(Z0:PrimaryMC,cosTBz)")
 
     variable_list = []
     variable_list = variable_list + ["formula(nParticlesInList(pi+:PrimaryMC) + nParticlesInList(K+:PrimaryMC) + nParticlesInList(e+:PrimaryMC) + nParticlesInList(mu+:PrimaryMC) + nParticlesInList(p+:PrimaryMC))"]
@@ -493,7 +493,7 @@ def AnalysisGenCut(tau_list, Ntuple_name, path):
     variable_list = variable_list + ["R2", "cosTBTO", "cosTBz", "thrustBm", "thrustOm", "CleoConeCS(1)", "CleoConeCS(2)", "CleoConeCS(3)", "CleoConeCS(4)", "CleoConeCS(5)", "CleoConeCS(6)", "CleoConeCS(7)", "CleoConeCS(8)", "CleoConeCS(9)", "KSFWVariables(mm2)", "KSFWVariables(pt_sum)", "KSFWVariables(hso00)", "KSFWVariables(hso01)", "KSFWVariables(hso02)", "KSFWVariables(hso03)", "KSFWVariables(hso04)", "KSFWVariables(hso10)", "KSFWVariables(hso12)", "KSFWVariables(hso14)", "KSFWVariables(hso20)", "KSFWVariables(hso22)", "KSFWVariables(hso24)", "KSFWVariables(hoo0)", "KSFWVariables(hoo1)", "KSFWVariables(hoo2)", "KSFWVariables(hoo3)", "KSFWVariables(hoo4)"]
     variable_list = variable_list + ["sumValueInList(tau+:BCS,R2)", "sumValueInList(tau+:BCS,cosTBTO)", "sumValueInList(tau+:BCS,cosTBz)", "sumValueInList(tau+:BCS,thrustBm)", "sumValueInList(tau+:BCS,thrustOm)"]
     variable_list = variable_list + ["sumValueInList(tau+:BCS,daughterHighest(p))", "sumValueInList(tau+:BCS,daughterLowest(p))", "sumValueInList(tau+:BCS,daughterHighest(E))", "sumValueInList(tau+:BCS,daughterLowest(E))"]
-    variable_list = variable_list + ["Ntrack_gencut", "Ntau_gencut", "Net_gencut", "NTBz_gencut"]
+    variable_list = variable_list + ["Ntrack_gencut", "Ntau_gencut", "pt_sum_gencut", "cosTBz_gencut"]
     variable_list.append("nParticlesInList(" + tau_list + ")")
 
     # make Ntuple
