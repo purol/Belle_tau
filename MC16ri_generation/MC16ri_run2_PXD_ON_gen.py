@@ -15,8 +15,40 @@ import simulation as si
 import reconstruction as re
 import mdst as mdst
 import glob as glob
+from pathlib import Path
 
 import argparse
+
+def extract_mass_and_life(decfile):
+    """
+    Example filename:
+    alpha_mass1.5_life1000_A1_B-1_plus.dat
+    """
+
+    filename = Path(decfile).stem
+    parts = filename.split("_")
+
+    mass = None
+    life = None
+
+    for part in parts:
+        if part.startswith("mass"):
+            mass = float(part[len("mass"):])
+
+        elif part.startswith("life"):
+            life = float(part[len("life"):])
+
+    if mass is None:
+        raise ValueError(
+            f"Cannot find mass value in decfile name: {filename}"
+        )
+
+    if life is None:
+        raise ValueError(
+            f"Cannot find life value in decfile name: {filename}"
+        )
+
+    return mass, life
 
 # generation settings
 parser = argparse.ArgumentParser(description='generation settings')
@@ -26,6 +58,11 @@ parser.add_argument('--outputfile', required=True, type=str, help='output file w
 args = parser.parse_args()
 decfile = args.decfile
 outputfile = args.outputfile
+
+# Add exotic particle
+width = 0.001 # GeV
+mass, life = extract_mass_and_life(decfile)
+pdg.add_particle('alpha', 94144, mass, width, 0, 0)
 
 # background (collision) files
 bg = glob.glob('./*.root')
