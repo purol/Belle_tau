@@ -148,11 +148,14 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== missing Energy CMS > 0.0 GeV ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_strict_M_deltaE_selection").c_str(), "", "");
-    loader.Cut("deltaE > (0.3*M - 0.76)"); // (M, deltaE) -> (1.2, -0.4), (1.7, -0.25)
-    loader.PrintInformation("========== deltaE > 0.3*M - 0.76 ==========");
+    loader.Cut("(M > 0.9) && (deltaE > -0.3)");
+    loader.PrintInformation("========== (M > 0.9) and (deltaE > -0.3) ==========");
 
-    loader.Cut("(missingEnergyOfEventCMS > 0.5) || (harmonicMomentThrust1 > 0.05) || (harmonicMomentThrust1 < -0.05)");
-    loader.PrintInformation("========== (missing Energy CMS > 0.5 GeV) or (harmonicMomentThrust1 > 0.05) or (harmonicMomentThrust1 < -0.05) ==========");
+    loader.Cut("missingEnergyOfEventCMS > 0.5");
+    loader.PrintInformation("========== missing Energy CMS > 0.5 GeV ==========");
+
+    loader.Cut("(extraInfo__bonROE_RemainingTracks_cleanMask__bc < 1.5) && (((extraInfo__bon_vpho_muID9__bc > 0.5) && (extraInfo__bon_vpho_muID9__bc < 1.5)) || ((extraInfo__bon_vpho_eID9__bc > 0.5) && (extraInfo__bon_vpho_eID9__bc < 1.5)))");
+    loader.PrintInformation("========== leptonic tag ==========");
 
     loader.RandomBCS();
     loader.IsBCSValid();
