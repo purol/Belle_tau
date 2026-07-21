@@ -828,7 +828,6 @@ int main(int argc, char* argv[]) {
     // make workspace
     RooStats::HistFactory::Measurement meas("my_measurement", "my measurement");
     meas.SetOutputFilePrefix((argv[1] + std::string("/") + "my_measurement").c_str());
-    meas.SetExportOnly(true);
 
     // setting measurement
     meas.SetPOI("mu");

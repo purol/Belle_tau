@@ -883,7 +883,6 @@ int main(int argc, char* argv[]) {
     // make workspace
     RooStats::HistFactory::Measurement meas(("my_measurement_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B)).c_str(), ("my_measurement_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B)).c_str());
     meas.SetOutputFilePrefix((argv[1] + std::string("/") + "my_measurement_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B)).c_str());
-    meas.SetExportOnly(true);
 
     // setting measurement
     meas.SetPOI("mu");
