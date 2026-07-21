@@ -29,3 +29,5 @@ gbasf2_Patchouli.py
 gbasf2_Kokoro.py
 - (add gen cut study analysis) ->
 gbasf2_Chimi.py
+- (dedicated gen cut study) ->
+gbasf2_Kyouko.py
