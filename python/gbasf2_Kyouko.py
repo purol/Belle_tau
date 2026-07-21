@@ -498,7 +498,7 @@ def AnalysisGenCut(tau_list, MDeltaCuts, Ntuple_name, path):
     variable_list = variable_list + ["nParticlesInList(pi+:PrimaryMC)", "nParticlesInList(mu+:PrimaryMC)"]
     variable_list = variable_list + ["nParticlesInList(D0:PrimaryMC)", "nParticlesInList(D+:PrimaryMC)"]
     variable_list = variable_list + ["formula(nParticlesInList(nu_e:PrimaryMC) + nParticlesInList(nu_mu:PrimaryMC) + nParticlesInList(nu_tau:PrimaryMC))"]
-    variable_list = variable_list + ["nParticlesInList(tau+:fake)"]
+    variable_list = variable_list + ["nParticlesInList(tau+:fake)", "nParticlesInList(tau+:fake_strict)"]
     variable_list = variable_list + ["sumValueInList(tau+:BCS_deltaE, dM)", "sumValueInList(tau+:BCS_deltaE, M)", "sumValueInList(tau+:BCS_deltaE, deltaE)", "sumValueInList(tau+:BCS_deltaE, p)", "sumValueInList(tau+:BCS_deltaE, Mbc)"]
     variable_list = variable_list + ["sumValueInList(tau+:BCS_dM, dM)", "sumValueInList(tau+:BCS_dM, M)", "sumValueInList(tau+:BCS_dM, deltaE)", "sumValueInList(tau+:BCS_dM, p)", "sumValueInList(tau+:BCS_dM, Mbc)"]
     variable_list = variable_list + ["sumValueInList(tau+:BCS_strict_deltaE, dM)", "sumValueInList(tau+:BCS_strict_deltaE, M)", "sumValueInList(tau+:BCS_strict_deltaE, deltaE)", "sumValueInList(tau+:BCS_strict_deltaE, p)", "sumValueInList(tau+:BCS_strict_deltaE, Mbc)"]
