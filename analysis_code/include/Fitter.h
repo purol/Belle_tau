@@ -343,7 +343,7 @@ RooDataSet* MyGenerate(RooWorkspace* w, std::vector<double> Nevts, bool extended
     RooRealVar* weight_ = new RooRealVar("weight_", "", 0.0, 1000.0);
 
     // define data
-    RooDataSet* genData = new RooDataSet("hmaster", "hmaster", RooArgSet(*x_val, *channelCat, *weight_), weight_->GetName());
+    RooDataSet* genData = new RooDataSet("hmaster", "hmaster", RooArgSet(*x_val, *channelCat, *weight_), RooFit::WeightVar(*weight_));
 
     for (int i = 0; i < binning.numBins(); i++) {
         x_val->setVal(0.5 + i);
