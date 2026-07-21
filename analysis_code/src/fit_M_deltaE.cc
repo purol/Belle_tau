@@ -81,14 +81,13 @@ int main(int argc, char* argv[]) {
 
     RooFitResult* result_M = bifurcated_M.fitTo(*dataset_M, RooFit::Save(), RooFit::Strategy(2), RooFit::SumW2Error(true), RooFit::Range("peak"));
     RooArgSet fitargs_M = result_M->floatParsFinal();
-    TIterator* iter_M(fitargs_M.createIterator());
     double mean_M_fit;
     double mean_M_fit_error;
     double sigma_left_M_fit;
     double sigma_left_M_fit_error;
     double sigma_right_M_fit;
     double sigma_right_M_fit_error;
-    for (TObject* a = iter_M->Next(); a != 0; a = iter_M->Next()) {
+    for (RooAbsArg* a : fitargs_M) {
         RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
         std::string name = rrv->GetName();
         if (name == std::string("mean_M")) {
@@ -159,14 +158,13 @@ int main(int argc, char* argv[]) {
 
     RooFitResult* result_deltaE = bifurcated_deltaE.fitTo(*dataset_deltaE, RooFit::Save(), RooFit::Strategy(2), RooFit::SumW2Error(true), RooFit::Range("peak"));
     RooArgSet fitargs_deltaE = result_deltaE->floatParsFinal();
-    TIterator* iter_deltaE(fitargs_deltaE.createIterator());
     double mean_deltaE_fit;
     double mean_deltaE_fit_error;
     double sigma_left_deltaE_fit;
     double sigma_left_deltaE_fit_error;
     double sigma_right_deltaE_fit;
     double sigma_right_deltaE_fit_error;
-    for (TObject* a = iter_deltaE->Next(); a != 0; a = iter_deltaE->Next()) {
+    for (RooAbsArg* a : fitargs_deltaE) {
         RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
         std::string name = rrv->GetName();
         if (name == std::string("mean_deltaE")) {

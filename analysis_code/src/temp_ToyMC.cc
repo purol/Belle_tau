@@ -36,9 +36,8 @@ int main(int argc, char* argv[]) {
 
 	// print fit result
 	RooArgSet fitargs = fitres->floatParsFinal();
-	TIterator* iter(fitargs.createIterator());
 
-	for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
+	for (RooAbsArg* a : fitargs) {
 		RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
 		std::string name = rrv->GetName();
 		double val = rrv->getVal();
