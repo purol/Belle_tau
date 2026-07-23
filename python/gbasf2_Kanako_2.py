@@ -484,6 +484,13 @@ def AnalysisGenCut(tau_list, MDeltaCuts, Ntuple_name, path):
         ma.cutAndCopyList(outputListName = "tau+:BCS_strict_deltaE" + str(idx), inputListName = "tau+:fake_strict" + str(idx), cut = "extraInfo(bcs_deltaE) == 1", path=path)
         ma.cutAndCopyList(outputListName = "tau+:BCS_strict_dM" + str(idx), inputListName = "tau+:fake_strict" + str(idx), cut = "extraInfo(bcs_dM) == 1", path=path)
 
+    # event kinematics
+    ma.buildEventKinematicsFromMC(inputListNames=None, selectionCut='', path=path)
+    ma.buildEventShape(inputListNames=["pi+:PrimaryMC", "K+:PrimaryMC", "e+:PrimaryMC", "mu+:PrimaryMC", "p+:PrimaryMC", "gamma:PrimaryMC"], default_cleanup=False, path=path)
+    ma.buildRestOfEventFromMC("Z0:PrimaryMC", inputParticlelists=["pi+:PrimaryMC", "K+:PrimaryMC", "e+:PrimaryMC", "mu+:PrimaryMC", "p+:PrimaryMC", "gamma:PrimaryMC"], path=path)
+    ma.appendROEMasks(list_name="Z0:PrimaryMC", mask_tuples=[("cleanMask_gencut","","")], path=path)
+    ma.buildContinuumSuppression(list_name="Z0:PrimaryMC", roe_mask="cleanMask_gencut", path=path)
+
     # define roe path for Z0 and variables
     roe_path_Z = basf2.Path()
     deadEndPath_Z = basf2.Path()
@@ -502,13 +509,6 @@ def AnalysisGenCut(tau_list, MDeltaCuts, Ntuple_name, path):
         tau_gencut_module.if_value("<1", tau_nonexist_path, basf2.AfterConditionPath.CONTINUE)
 
     path.for_each('RestOfEvent', 'RestOfEvents', roe_path_Z)
-
-    # event kinematics
-    ma.buildEventKinematicsFromMC(inputListNames=None, selectionCut='', path=path)
-    ma.buildEventShape(inputListNames=["pi+:PrimaryMC", "K+:PrimaryMC", "e+:PrimaryMC", "mu+:PrimaryMC", "p+:PrimaryMC", "gamma:PrimaryMC"], default_cleanup=False, path=path)
-    ma.buildRestOfEventFromMC("Z0:PrimaryMC", inputParticlelists=["pi+:PrimaryMC", "K+:PrimaryMC", "e+:PrimaryMC", "mu+:PrimaryMC", "p+:PrimaryMC", "gamma:PrimaryMC"], path=path)
-    ma.appendROEMasks(list_name="Z0:PrimaryMC", mask_tuples=[("cleanMask_gencut","","")], path=path)
-    ma.buildContinuumSuppression(list_name="Z0:PrimaryMC", roe_mask="cleanMask_gencut", path=path)
 
     # define variables for 2nd order logistic regression
     va.variables.addAlias("Ntrack_gencut","formula(nParticlesInList(pi+:PrimaryMC) + nParticlesInList(K+:PrimaryMC) + nParticlesInList(e+:PrimaryMC) + nParticlesInList(mu+:PrimaryMC) + nParticlesInList(p+:PrimaryMC))")
