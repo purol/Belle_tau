@@ -525,13 +525,6 @@ def AnalysisGenCut(tau_list, MDeltaCuts, Ntuple_name, path):
     variable_list = variable_list + vc.event_shape
     variable_list = variable_list + ["R2", "cosTBTO", "cosTBz", "thrustBm", "thrustOm", "CleoConeCS(1)", "CleoConeCS(2)", "CleoConeCS(3)", "CleoConeCS(4)", "CleoConeCS(5)", "CleoConeCS(6)", "CleoConeCS(7)", "CleoConeCS(8)", "CleoConeCS(9)", "KSFWVariables(mm2)", "KSFWVariables(pt_sum)", "KSFWVariables(hso00)", "KSFWVariables(hso01)", "KSFWVariables(hso02)", "KSFWVariables(hso03)", "KSFWVariables(hso04)", "KSFWVariables(hso10)", "KSFWVariables(hso12)", "KSFWVariables(hso14)", "KSFWVariables(hso20)", "KSFWVariables(hso22)", "KSFWVariables(hso24)", "KSFWVariables(hoo0)", "KSFWVariables(hoo1)", "KSFWVariables(hoo2)", "KSFWVariables(hoo3)", "KSFWVariables(hoo4)"]
 
-    variable_list = variable_list + ["sumValueInList(tau+:BCS_deltaE, dM)", "sumValueInList(tau+:BCS_deltaE, M)", "sumValueInList(tau+:BCS_deltaE, deltaE)", "sumValueInList(tau+:BCS_deltaE, p)", "sumValueInList(tau+:BCS_deltaE, Mbc)"]
-    variable_list = variable_list + ["sumValueInList(tau+:BCS_dM, dM)", "sumValueInList(tau+:BCS_dM, M)", "sumValueInList(tau+:BCS_dM, deltaE)", "sumValueInList(tau+:BCS_dM, p)", "sumValueInList(tau+:BCS_dM, Mbc)"]
-    variable_list = variable_list + ["sumValueInList(tau+:BCS_deltaE,R2)", "sumValueInList(tau+:BCS_deltaE,cosTBTO)", "sumValueInList(tau+:BCS_deltaE,cosTBz)", "sumValueInList(tau+:BCS_deltaE,thrustBm)", "sumValueInList(tau+:BCS_deltaE,thrustOm)"]
-    variable_list = variable_list + ["sumValueInList(tau+:BCS_deltaE,daughterHighest(p))", "sumValueInList(tau+:BCS_deltaE,daughterLowest(p))", "sumValueInList(tau+:BCS_deltaE,daughterHighest(E))", "sumValueInList(tau+:BCS_deltaE,daughterLowest(E))"]
-    variable_list = variable_list + ["sumValueInList(tau+:BCS_dM,R2)", "sumValueInList(tau+:BCS_dM,cosTBTO)", "sumValueInList(tau+:BCS_dM,cosTBz)", "sumValueInList(tau+:BCS_dM,thrustBm)", "sumValueInList(tau+:BCS_dM,thrustOm)"]
-    variable_list = variable_list + ["sumValueInList(tau+:BCS_dM,daughterHighest(p))", "sumValueInList(tau+:BCS_dM,daughterLowest(p))", "sumValueInList(tau+:BCS_dM,daughterHighest(E))", "sumValueInList(tau+:BCS_dM,daughterLowest(E))"]
-
     for idx, MDeltaCut in enumerate(MDeltaCuts):
         listName = "tau+:fake_strict" + str(idx)
         variable_list = variable_list + ["nParticlesInList(" + listName + ")"]
