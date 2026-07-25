@@ -730,7 +730,7 @@ if tau_list:
         ma.reconstructDecay(decayString="tau+:tau_3mu_mumumu -> mu+:taulfv mu+:all mu-:all", cut="[nParticlesInList(pi+:taulfv) < 7] and [1.3 < M < 2.2] and [-1.0 < deltaE < 0.5]", dmID=0, path=my_path)
         ma.applyCuts('tau+:tau_3mu_mumumu', '[daughter(0, muonID) > 0.1] and [daughter(1, muonID) > 0.1] and [daughter(2, muonID) > 0.1]', path=my_path)
         MDeltaCuts = ["", "[M < 3.5] and [-1.1 < deltaE < 1.0]", "[1.3 < M < 2.2] and [-1.0 < deltaE < 0.5]"]
-        AnalysisGenCut(tau_list = ["tau+:tau_3mu_mumumu", "tau+:LFV_comb"], MDeltaCuts = MDeltaCuts, Ntuple_name = output_file, path=my_path)
+        AnalysisGenCut(tau_lists = ["tau+:tau_3mu_mumumu", "tau+:LFV_comb"], MDeltaCuts = MDeltaCuts, Ntuple_name = output_file, path=my_path)
     else: # Make Ntuple and hashmap
         MakeNtupleandHashmap("tau+:LFV_comb", variable_list=var_list, Ntuple_name=output_file, hashmap_name=hashmapName, path=my_path)
              
