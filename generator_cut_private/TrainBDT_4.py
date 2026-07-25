@@ -15,6 +15,7 @@ import numpy as np
 import uproot
 
 from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.inspection import permutation_importance
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.model_selection import train_test_split
 
@@ -33,10 +34,6 @@ tree_name = "gen_info"
 # Region 정의에 사용할 branch
 # ------------------------------------------------------------
 
-fake_branch = (
-    "nParticlesInList__botau__pl__clfake__bc"
-)
-
 strict0_branch = (
     "nParticlesInList__botau__pl__clfake_strict0__bc"
 )
@@ -45,44 +42,50 @@ strict1_branch = (
     "nParticlesInList__botau__pl__clfake_strict1__bc"
 )
 
+strict2_branch = (
+    "nParticlesInList__botau__pl__clfake_strict2__bc"
+)
+
 
 # ------------------------------------------------------------
 # Region A에서 사용할 변수
 #
 # Region A:
-# tau+:fake_strict1 candidate가 존재
+# tau+:fake_strict2 candidate가 존재
 # ------------------------------------------------------------
 
 variables_a = [
-    "thrust",
+#    "thrust",
     "thrustAxisCosTheta",
     "genTotalPhotonsEnergyOfEvent",
     "pt_sum_gencut",
     "sphericity",
-    "aplanarity",
-    "Ntrack_gencut",
+#    "aplanarity",
+#    "Ntrack_gencut",
     "cosTBz",
     "foxWolframR1",
-    "foxWolframR2",
+#    "foxWolframR2",
     "foxWolframR3",
     "harmonicMomentThrust0",
-    "harmonicMomentThrust1",
-    "R2",
-    "nParticlesInList__botau__pl__clfake__bc",
-    "sumValueInList__botau__pl__clBCS_deltaE__cm__spM__bc",
-    "sumValueInList__botau__pl__clBCS_deltaE__cm__spdeltaE__bc",
-    "sumValueInList__botau__pl__clBCS_dM__cm__spM__bc",
-    "sumValueInList__botau__pl__clBCS_dM__cm__spdeltaE__bc",
-    "nParticlesInList__botau__pl__clfake_strict1__bc",
+#    "harmonicMomentThrust1",
+#    "R2",
     "nParticlesInList__botau__pl__clfake_strict0__bc",
-    "sumValueInList__botau__pl__clBCS_strict_deltaE0__cm__spM__bc",
-    "sumValueInList__botau__pl__clBCS_strict_deltaE0__cm__spdeltaE__bc",
-    "sumValueInList__botau__pl__clBCS_strict_dM0__cm__spM__bc",
-    "sumValueInList__botau__pl__clBCS_strict_dM0__cm__spdeltaE__bc",
-    "sumValueInList__botau__pl__clBCS_strict_deltaE1__cm__spM__bc",
-    "sumValueInList__botau__pl__clBCS_strict_deltaE1__cm__spdeltaE__bc",
-    "sumValueInList__botau__pl__clBCS_strict_dM1__cm__spM__bc",
-    "sumValueInList__botau__pl__clBCS_strict_dM1__cm__spdeltaE__bc",
+#    "nParticlesInList__botau__pl__clfake_strict1__bc",
+    "nParticlesInList__botau__pl__clfake_strict2__bc",
+    "sumValueInList__botau__pl__clBCS_strict_deltaE2__cm__spM__bc",
+    "sumValueInList__botau__pl__clBCS_strict_deltaE2__cm__spdeltaE__bc",
+    "sumValueInList__botau__pl__clBCS_strict_deltaE2__cm__spMbc__bc",
+    "sumValueInList__botau__pl__clBCS_strict_dM2__cm__spM__bc",
+    "sumValueInList__botau__pl__clBCS_strict_dM2__cm__spdeltaE__bc",
+    "sumValueInList__botau__pl__clBCS_strict_dM2__cm__spMbc__bc",
+#    "averageValueInList__botau__pl__clfake_strict2__cm__spM__bc",
+#    "averageValueInList__botau__pl__clfake_strict2__cm__spdeltaE__bc",
+#    "extraInfo__bostd_M2__bc",
+#    "extraInfo__bostd_deltaE2__bc",
+    "sumValueInList__botau__pl__clBCS_strict_deltaE2__cmdaughterHighest__bop__bc__bc",
+    "sumValueInList__botau__pl__clBCS_strict_deltaE2__cmdaughterLowest__bop__bc__bc",
+    "sumValueInList__botau__pl__clBCS_strict_dM2__cmdaughterHighest__bop__bc__bc",
+    "sumValueInList__botau__pl__clBCS_strict_dM2__cmdaughterLowest__bop__bc__bc",
 ]
 
 
@@ -90,36 +93,41 @@ variables_a = [
 # Region B에서 사용할 변수
 #
 # Region B:
-# tau+:fake_strict0 candidate는 존재하지만
-# tau+:fake_strict1 candidate는 존재하지 않음
+# tau+:fake_strict1 candidate는 존재하지만
+# tau+:fake_strict2 candidate는 존재하지 않음
 # ------------------------------------------------------------
 
 variables_b = [
     "thrust",
-    "thrustAxisCosTheta",
+#    "thrustAxisCosTheta",
     "genTotalPhotonsEnergyOfEvent",
     "pt_sum_gencut",
     "sphericity",
-    "aplanarity",
+#    "aplanarity",
     "Ntrack_gencut",
     "cosTBz",
     "foxWolframR1",
     "foxWolframR2",
     "foxWolframR3",
     "harmonicMomentThrust0",
-    "harmonicMomentThrust1",
+#    "harmonicMomentThrust1",
     "R2",
-    "nParticlesInList__botau__pl__clfake__bc",
-    "sumValueInList__botau__pl__clBCS_deltaE__cm__spM__bc",
-    "sumValueInList__botau__pl__clBCS_deltaE__cm__spdeltaE__bc",
-    "sumValueInList__botau__pl__clBCS_dM__cm__spM__bc",
-    "sumValueInList__botau__pl__clBCS_dM__cm__spdeltaE__bc",
-    "nParticlesInList__botau__pl__clfake_strict1__bc",
     "nParticlesInList__botau__pl__clfake_strict0__bc",
-    "sumValueInList__botau__pl__clBCS_strict_deltaE0__cm__spM__bc",
-    "sumValueInList__botau__pl__clBCS_strict_deltaE0__cm__spdeltaE__bc",
-    "sumValueInList__botau__pl__clBCS_strict_dM0__cm__spM__bc",
-    "sumValueInList__botau__pl__clBCS_strict_dM0__cm__spdeltaE__bc",
+#    "nParticlesInList__botau__pl__clfake_strict1__bc",
+#    "sumValueInList__botau__pl__clBCS_strict_deltaE1__cm__spM__bc",
+    "sumValueInList__botau__pl__clBCS_strict_deltaE1__cm__spdeltaE__bc",
+    "sumValueInList__botau__pl__clBCS_strict_deltaE1__cm__spMbc__bc",
+#    "sumValueInList__botau__pl__clBCS_strict_dM1__cm__spM__bc",
+#    "sumValueInList__botau__pl__clBCS_strict_dM1__cm__spdeltaE__bc",
+    "sumValueInList__botau__pl__clBCS_strict_dM1__cm__spMbc__bc",
+#    "averageValueInList__botau__pl__clfake_strict1__cm__spM__bc",
+    "averageValueInList__botau__pl__clfake_strict1__cm__spdeltaE__bc",
+#    "extraInfo__bostd_M1__bc",
+#    "extraInfo__bostd_deltaE1__bc",
+    "sumValueInList__botau__pl__clBCS_strict_deltaE1__cmdaughterHighest__bop__bc__bc",
+    "sumValueInList__botau__pl__clBCS_strict_deltaE1__cmdaughterLowest__bop__bc__bc",
+    "sumValueInList__botau__pl__clBCS_strict_dM1__cmdaughterHighest__bop__bc__bc",
+    "sumValueInList__botau__pl__clBCS_strict_dM1__cmdaughterLowest__bop__bc__bc",
 ]
 
 
@@ -127,32 +135,40 @@ variables_b = [
 # Region C에서 사용할 변수
 #
 # Region C:
-# tau+:fake candidate는 존재하지만 strict0/strict1은 없음
+# tau+:fake_strict0 candidate는 존재하지만
+# tau+:fake_strict1/strict2 candidate는 존재하지 않음
 # ------------------------------------------------------------
 
 variables_c = [
-    "thrust",
+#    "thrust",
     "thrustAxisCosTheta",
     "genTotalPhotonsEnergyOfEvent",
     "pt_sum_gencut",
     "sphericity",
-    "aplanarity",
+#    "aplanarity",
     "Ntrack_gencut",
     "cosTBz",
     "foxWolframR1",
     "foxWolframR2",
-    "foxWolframR3",
+#    "foxWolframR3",
     "harmonicMomentThrust0",
-    "harmonicMomentThrust1",
+#    "harmonicMomentThrust1",
     "R2",
-    "nParticlesInList__botau__pl__clfake__bc",
-    "sumValueInList__botau__pl__clBCS_deltaE__cm__spM__bc",
-    "sumValueInList__botau__pl__clBCS_deltaE__cm__spdeltaE__bc",
-    "sumValueInList__botau__pl__clBCS_dM__cm__spM__bc",
-    "sumValueInList__botau__pl__clBCS_dM__cm__spdeltaE__bc",
-    "nParticlesInList__botau__pl__clfake_strict1__bc",
-    "genMissingMass2OfEvent",
-    "cleoConeThrust0"
+    "nParticlesInList__botau__pl__clfake_strict0__bc",
+#    "sumValueInList__botau__pl__clBCS_strict_deltaE0__cm__spM__bc",
+    "sumValueInList__botau__pl__clBCS_strict_deltaE0__cm__spdeltaE__bc",
+    "sumValueInList__botau__pl__clBCS_strict_deltaE0__cm__spMbc__bc",
+#    "sumValueInList__botau__pl__clBCS_strict_dM0__cm__spM__bc",
+#    "sumValueInList__botau__pl__clBCS_strict_dM0__cm__spdeltaE__bc",
+#    "sumValueInList__botau__pl__clBCS_strict_dM0__cm__spMbc__bc",
+    "averageValueInList__botau__pl__clfake_strict0__cm__spM__bc",
+    "averageValueInList__botau__pl__clfake_strict0__cm__spdeltaE__bc",
+    "extraInfo__bostd_M0__bc",
+    "extraInfo__bostd_deltaE0__bc",
+    "sumValueInList__botau__pl__clBCS_strict_deltaE0__cmdaughterHighest__bop__bc__bc",
+    "sumValueInList__botau__pl__clBCS_strict_deltaE0__cmdaughterLowest__bop__bc__bc",
+#    "sumValueInList__botau__pl__clBCS_strict_dM0__cmdaughterHighest__bop__bc__bc",
+    "sumValueInList__botau__pl__clBCS_strict_dM0__cmdaughterLowest__bop__bc__bc",
 ]
 
 
@@ -160,7 +176,7 @@ variables_c = [
 # Region D에서 사용할 변수
 #
 # Region D:
-# tau+:fake candidate가 존재하지 않음
+# tau+:fake_strict0 candidate가 존재하지 않음
 # ------------------------------------------------------------
 
 variables_d = [
@@ -188,24 +204,24 @@ variables_d = [
 region_configs = {
     "A": {
         "variables": variables_a,
-        "description": "strict1 > 0.5",
+        "description": "strict2 > 0.5",
     },
     "B": {
         "variables": variables_b,
         "description": (
-            "strict0 > 0.5 and strict1 <= 0.5"
+            "strict1 > 0.5 and strict2 <= 0.5"
         ),
     },
     "C": {
         "variables": variables_c,
         "description": (
-            "fake > 0.5 and strict0 <= 0.5 "
-            "and strict1 <= 0.5"
+            "strict0 > 0.5 and strict1 <= 0.5 "
+            "and strict2 <= 0.5"
         ),
     },
     "D": {
         "variables": variables_d,
-        "description": "fake <= 0.5",
+        "description": "strict0 <= 0.5",
     },
 }
 
@@ -217,7 +233,7 @@ region_names = ["A", "B", "C", "D"]
 # ------------------------------------------------------------
 
 # Background는 signal event 수의 최대 몇 배까지 읽을지
-background_to_signal_ratio = 10
+background_to_signal_ratio = 15
 
 # Train/validation 분리 비율
 validation_fraction = 0.25
@@ -225,10 +241,14 @@ validation_fraction = 0.25
 random_seed = 42
 
 # 목표 signal efficiency
-efficiency_target = 0.985
+efficiency_target = 0.5
 
 # 각 Region의 threshold 후보 개수
 n_threshold_scan = 300
+
+# Permutation importance 설정
+importance_n_repeats = 5
+importance_max_events_per_class = 50_000
 
 # ROOT 파일을 한 번에 읽을 entry 수
 step_size = 100_000
@@ -281,9 +301,9 @@ all_feature_variables = unique_preserving_order(
 branches_to_read = unique_preserving_order(
     all_feature_variables
     + [
-        fake_branch,
         strict0_branch,
         strict1_branch,
+        strict2_branch,
     ]
 )
 
@@ -540,52 +560,53 @@ def get_region_mask(
     Region A/B/C/D mask를 반환한다.
 
     A:
-        strict1 > 0.5
+        strict2 > 0.5
 
     B:
-        strict1 <= 0.5 and strict0 > 0.5
+        strict2 <= 0.5 and strict1 > 0.5
 
     C:
-        strict1 <= 0.5 and strict0 <= 0.5
-        and fake > 0.5
+        strict2 <= 0.5 and strict1 <= 0.5
+        and strict0 > 0.5
 
     D:
-        fake <= 0.5
+        strict0 <= 0.5
     """
 
-    fake_values = data[fake_branch]
     strict0_values = data[strict0_branch]
     strict1_values = data[strict1_branch]
+    strict2_values = data[strict2_branch]
 
     finite_mask = (
-        np.isfinite(fake_values)
-        & np.isfinite(strict0_values)
+        np.isfinite(strict0_values)
         & np.isfinite(strict1_values)
+        & np.isfinite(strict2_values)
     )
 
+    no_strict2 = strict2_values <= 0.5
     no_strict1 = strict1_values <= 0.5
     no_strict0 = strict0_values <= 0.5
 
     if region_name == "A":
-        return finite_mask & (strict1_values > 0.5)
+        return finite_mask & (strict2_values > 0.5)
 
     if region_name == "B":
         return (
             finite_mask
-            & no_strict1
-            & (strict0_values > 0.5)
+            & no_strict2
+            & (strict1_values > 0.5)
         )
 
     if region_name == "C":
         return (
             finite_mask
+            & no_strict2
             & no_strict1
-            & no_strict0
-            & (fake_values > 0.5)
+            & (strict0_values > 0.5)
         )
 
     if region_name == "D":
-        return finite_mask & (fake_values <= 0.5)
+        return finite_mask & no_strict0
 
     raise ValueError(
         f"Unknown region name: {region_name}"
@@ -604,14 +625,14 @@ def print_region_population(
     각 Region의 event 수를 출력한다.
     """
 
-    fake_values = data[fake_branch]
     strict0_values = data[strict0_branch]
     strict1_values = data[strict1_branch]
+    strict2_values = data[strict2_branch]
 
     finite_region_values = (
-        np.isfinite(fake_values)
-        & np.isfinite(strict0_values)
+        np.isfinite(strict0_values)
         & np.isfinite(strict1_values)
+        & np.isfinite(strict2_values)
     )
 
     counts = {
@@ -626,7 +647,7 @@ def print_region_population(
         for region_name in region_names
     }
 
-    n_total = len(fake_values)
+    n_total = len(strict0_values)
 
     n_nonfinite = int(
         np.count_nonzero(
@@ -806,7 +827,7 @@ def make_bdt(
 
     return HistGradientBoostingClassifier(
         learning_rate=0.05,
-        max_iter=300,
+        max_iter=1000,
         max_leaf_nodes=31,
         max_depth=None,
         min_samples_leaf=20,
@@ -1109,6 +1130,146 @@ def evaluate_region(
             background_scores
         ),
     }
+
+
+# ============================================================
+# Region별 permutation importance
+# ============================================================
+
+def print_region_variable_importance(
+    classifier: HistGradientBoostingClassifier,
+    signal_data: dict[str, np.ndarray],
+    background_data: dict[str, np.ndarray],
+    signal_indices: np.ndarray,
+    background_indices: np.ndarray,
+    variables: list[str],
+    region_name: str,
+) -> None:
+    """
+    Validation sample에서 Region별 permutation importance를
+    ROC AUC 감소량으로 계산하여 출력한다.
+
+    계산 시간을 제한하기 위해 signal과 background에서 각각
+    최대 importance_max_events_per_class개를 사용한다.
+    """
+
+    (
+        X_signal,
+        _,
+        _,
+    ) = select_region_matrix(
+        data=signal_data,
+        indices=signal_indices,
+        variables=variables,
+        region_name=region_name,
+    )
+
+    (
+        X_background,
+        _,
+        _,
+    ) = select_region_matrix(
+        data=background_data,
+        indices=background_indices,
+        variables=variables,
+        region_name=region_name,
+    )
+
+    region_seed_offset = {
+        "A": 0,
+        "B": 1,
+        "C": 2,
+        "D": 3,
+    }[region_name]
+
+    importance_seed = (
+        random_seed
+        + 1000
+        + region_seed_offset
+    )
+
+    rng = np.random.default_rng(
+        importance_seed
+    )
+
+    if (
+        len(X_signal)
+        > importance_max_events_per_class
+    ):
+        signal_choice = rng.choice(
+            len(X_signal),
+            size=importance_max_events_per_class,
+            replace=False,
+        )
+        X_signal = X_signal[signal_choice]
+
+    if (
+        len(X_background)
+        > importance_max_events_per_class
+    ):
+        background_choice = rng.choice(
+            len(X_background),
+            size=importance_max_events_per_class,
+            replace=False,
+        )
+        X_background = X_background[
+            background_choice
+        ]
+
+    X = np.vstack([
+        X_signal,
+        X_background,
+    ])
+
+    y = np.concatenate([
+        np.ones(
+            len(X_signal),
+            dtype=np.int8,
+        ),
+        np.zeros(
+            len(X_background),
+            dtype=np.int8,
+        ),
+    ])
+
+    importance = permutation_importance(
+        estimator=classifier,
+        X=X,
+        y=y,
+        scoring="roc_auc",
+        n_repeats=importance_n_repeats,
+        random_state=importance_seed,
+        n_jobs=1,
+    )
+
+    order = np.argsort(
+        importance.importances_mean
+    )[::-1]
+
+    print()
+    print(
+        f"Region {region_name} "
+        "permutation importance"
+    )
+    print(
+        "  importance = validation ROC AUC decrease"
+    )
+    print(
+        f"  sample: signal={len(X_signal):,}, "
+        f"background={len(X_background):,}"
+    )
+
+    for rank, index in enumerate(
+        order,
+        start=1,
+    ):
+        print(
+            f"  {rank:2d}. "
+            f"{variables[index]}: "
+            f"{importance.importances_mean[index]:.8f} "
+            f"+/- "
+            f"{importance.importances_std[index]:.8f}"
+        )
 
 
 # ============================================================
@@ -1604,7 +1765,7 @@ def main() -> None:
     )
 
     n_signal = len(
-        signal_data[fake_branch]
+        signal_data[strict0_branch]
     )
 
     # --------------------------------------------------------
@@ -1632,7 +1793,7 @@ def main() -> None:
     )
 
     n_background = len(
-        background_data[fake_branch]
+        background_data[strict0_branch]
     )
 
     # --------------------------------------------------------
@@ -1805,6 +1966,31 @@ def main() -> None:
         print(
             f"  Region {region_name}: "
             f"{results[region_name]['auc']:.6f}"
+        )
+
+    # --------------------------------------------------------
+    # Region별 variable importance 출력
+    # --------------------------------------------------------
+
+    for region_name in region_names:
+        variables = region_configs[
+            region_name
+        ]["variables"]
+
+        print_region_variable_importance(
+            classifier=classifiers[
+                region_name
+            ],
+            signal_data=signal_data,
+            background_data=background_data,
+            signal_indices=(
+                signal_validation_indices
+            ),
+            background_indices=(
+                background_validation_indices
+            ),
+            variables=variables,
+            region_name=region_name,
         )
 
     # --------------------------------------------------------
@@ -2001,12 +2187,14 @@ def main() -> None:
                 "variables": region_configs[
                     region_name
                 ]["variables"],
-                "fake_branch": fake_branch,
                 "strict0_branch": (
                     strict0_branch
                 ),
                 "strict1_branch": (
                     strict1_branch
+                ),
+                "strict2_branch": (
+                    strict2_branch
                 ),
                 "region_name": region_name,
                 "region_condition": (
@@ -2047,12 +2235,14 @@ def main() -> None:
         "n_threshold_scan": (
             n_threshold_scan
         ),
-        "fake_branch": fake_branch,
         "strict0_branch": (
             strict0_branch
         ),
         "strict1_branch": (
             strict1_branch
+        ),
+        "strict2_branch": (
+            strict2_branch
         ),
         "signal_region_counts": (
             signal_region_counts
