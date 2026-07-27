@@ -31,6 +31,8 @@ int main(int argc, char* argv[]) {
     * argv[8]: output name
     * argv[9]: sample1 list (separated by colon)
     * argv[10]: sample2 list (separated by colon)
+    * argv[11]: sample1 lable
+    * argv[12]: sample2 lable
     */
 
     std::string variable_name(argv[1]);
@@ -93,8 +95,8 @@ int main(int argc, char* argv[]) {
     sample2_test_th->Draw("Hist"); sample1_test_th->Draw("HistSAME");
 
     TLegend* legend = new TLegend(0.9, 0.9, 0.6, 0.6);
-    legend->AddEntry(sample1_test_th, "sample1 test", "f");
-    legend->AddEntry(sample2_test_th, "sample2 test", "f");
+    legend->AddEntry(sample1_test_th, argv[11], "f");
+    legend->AddEntry(sample2_test_th, argv[12], "f");
     legend->SetFillStyle(0); legend->SetLineWidth(0);
     legend->Draw();
 
