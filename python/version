@@ -35,3 +35,5 @@ gbasf2_Kyouko.py
 gbasf2_Kanako.py
 - (fine tuning on gen level cut) ->
 gbasf2_Youmu.py
+- (final fine tuning on gen level cut) ->
+gbasf2_Hakurei.py
