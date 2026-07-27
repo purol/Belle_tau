@@ -17,7 +17,24 @@ submit_Plotter() {
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
 
-  bsub -q l -J Compare -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/compare_${VarName}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/compare_${VarName}_${OutputName}.err" ${Code} "${VarName}" 50 "${VarMin}" "${VarMax}" "./${VerName}/${Analysis_VerName}/${Signal_Type}/${InputDir1}/" "${FBDT_weight_DIR}/SIGNAL/${InputDir2}/" "./${VerName}/${Analysis_VerName}/${OutputPath}/" "${OutputName}.png" "${Type1}" "${Type2}" "${Signal_Legends}" "#tau#rightarrow#mu#mu#mu" "${FBDT_weight_DIR}"
+  bsub -q l \
+  -J Compare \
+  -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/compare_${VarName}_${OutputName}.log" \
+  -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/compare_${VarName}_${OutputName}.err" \
+  ${Code} \
+  "${VarName}" \
+  50 \
+  "${VarMin}" \
+  "${VarMax}" \
+  "./${VerName}/${Analysis_VerName}/${Signal_Type}/${InputDir1}/" \
+  "${FBDT_weight_DIR}/SIGNAL/${InputDir2}/" \
+  "./${VerName}/${Analysis_VerName}/${OutputPath}/" \
+  "${OutputName}.png" \
+  "${Type1}" \
+  "${Type2}" \
+  "${Signal_Legends}" \
+  "#tau#rightarrow#mu#mu#mu" \
+  "${FBDT_weight_DIR}"
 }
  
 code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_one"

@@ -33,16 +33,17 @@ int main(int argc, char* argv[]) {
     * argv[10]: sample2 list (separated by colon)
     * argv[11]: sample1 lable
     * argv[12]: sample2 lable
-    * argv[13]: mass
-    * argv[14]: lifetime
-    * argv[15]: A constant
-    * argv[16]: B constant
+    * argv[13]: M_deltaE path for tau -> a mu decay
+    * argv[14]: mass
+    * argv[15]: lifetime
+    * argv[16]: A constant
+    * argv[17]: B constant
     */
 
-    double mass = std::stod(argv[13]);
-    double life = std::stod(argv[14]);
-    int A = std::stoi(argv[15]);
-    int B = std::stoi(argv[16]);
+    double mass = std::stod(argv[14]);
+    double life = std::stod(argv[15]);
+    int A = std::stoi(argv[16]);
+    int B = std::stoi(argv[17]);
 
     double M_left_cut_value = 0;
     double M_right_cut_value = 0;
@@ -64,6 +65,16 @@ int main(int argc, char* argv[]) {
         M_right_cut_value = 0.075;
 
     }
+
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double theta;
+
+    ReadResolution((std::string(argv[13]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
     std::string variable_name(argv[1]);
 
@@ -88,6 +99,8 @@ int main(int argc, char* argv[]) {
     // sample2 test (Here, we assume it is tau -> a mu)
     Loader loader_sample2_test("tau_lfv");
     for (int i = 0; i < sample2_list.size(); i++) loader_sample2_test.Load(argv[6], "root", sample2_list.at(i).c_str());
+    loader_sample2_test.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
+    loader_sample2_test.Cut(("(" + std::to_string(M_peak - 20 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + ")").c_str());
     loader_sample2_test.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
     loader_sample2_test.FillTH1D(sample2_test_th, variable_name);
     loader_sample2_test.FillTH1D(sample2_test_th_KS, variable_name);
