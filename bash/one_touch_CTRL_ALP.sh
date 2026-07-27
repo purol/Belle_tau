@@ -218,3 +218,5 @@ if [[ $? -ne 0 ]]; then
 fi
 
 bash ${shell_DIR}/submitter_Plotter_secondary_CTRL_ALP.sh
+
+bash ${shell_DIR}/submitter_FBDT_comparison_CTRL_ALP.sh
