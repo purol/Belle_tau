@@ -8,9 +8,9 @@ submit_Plotter() {
   local VarMin=$4
   local VarMax=$5
   local InputDir=$6 # ex. before_M_deltaE_selection
-  local OutputName=$8 # ex. deltaE
-  local OutputPath=$9 # ex. plot
-  local Type=${10}
+  local OutputName=$7 # ex. deltaE
+  local OutputPath=$8 # ex. plot
+  local Type=${9}
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
