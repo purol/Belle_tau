@@ -1,6 +1,7 @@
 #!/bin/bash
 
 submit_Plotter() {
+  local command
 
   local Code=$1 # ex. ./bin/Plotter
   local VerName=$2 # ex. Alice
@@ -17,24 +18,27 @@ submit_Plotter() {
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
 
+  printf -v command '%q ' \
+    "${Code}" \
+    "${VarName}" \
+    "50" \
+    "${VarMin}" \
+    "${VarMax}" \
+    "./${VerName}/${Analysis_VerName}/${Type1}/${InputDir1}/" \
+    "${FBDT_weight_DIR}/${Type2}/${InputDir2}/" \
+    "./${VerName}/${Analysis_VerName}/${OutputPath}/" \
+    "${OutputName}.png" \
+    "${Type1}" \
+    "${Type2}" \
+    "${Signal_Legends}" \
+    "#tau#rightarrow#mu#mu#mu" \
+    "${FBDT_weight_DIR}"
+
   bsub -q l \
   -J Compare \
   -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/compare_${VarName}_${OutputName}.log" \
   -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/compare_${VarName}_${OutputName}.err" \
-  ${Code} \
-  "${VarName}" \
-  50 \
-  "${VarMin}" \
-  "${VarMax}" \
-  "./${VerName}/${Analysis_VerName}/${Type1}/${InputDir1}/" \
-  "${FBDT_weight_DIR}/${Type2}/${InputDir2}/" \
-  "./${VerName}/${Analysis_VerName}/${OutputPath}/" \
-  "${OutputName}.png" \
-  "${Type1}" \
-  "${Type2}" \
-  "${Signal_Legends}" \
-  "#tau#rightarrow#mu#mu#mu" \
-  "${FBDT_weight_DIR}"
+  "${command}"
 }
  
 code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_one"

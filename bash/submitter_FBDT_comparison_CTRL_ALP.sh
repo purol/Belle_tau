@@ -9,6 +9,7 @@ get_params() {
 }
 
 submit_Plotter() {
+  local command
 
   local Code=$1 # ex. ./bin/Plotter
   local VerName=$2 # ex. Alice
@@ -29,28 +30,31 @@ submit_Plotter() {
     BDTName_ALP=${VarName}_${mass}_${life}_${A}_${B}
     BDTName_ALP=${BDTName_ALP//-/m}
 
+    printf -v command '%q ' \
+      ${Code} \
+      "${BDTName_ALP}" \
+      50 \
+      "${VarMin}" \
+      "${VarMax}" \
+      "./${VerName}/${Analysis_VerName}/${Type1}/${InputDir1}/" \
+      "${FBDT_weight_DIR}/${Type2}/${InputDir2}/" \
+      "./${VerName}/${Analysis_VerName}/${OutputPath}/" \
+      "${OutputName}_${BDTName_ALP}.png" \
+      "${Type1}" \
+      "${Type2}" \
+      "${Signal_Legends}" \
+      "#tau#rightarrow#alpha#mu" \
+      "${FBDT_weight_DIR}" \
+      "${mass}" \
+      "${life}" \
+      "${A}" \
+      "${B}"
+
     bsub -q l \
     -J Compare \
     -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/compare_${BDTName_ALP}_${OutputName}.log" \
     -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/compare_${BDTName_ALP}_${OutputName}.err" \
-    ${Code} \
-    "${BDTName_ALP}" \
-    50 \
-    "${VarMin}" \
-    "${VarMax}" \
-    "./${VerName}/${Analysis_VerName}/${Type1}/${InputDir1}/" \
-    "${FBDT_weight_DIR}/${Type2}/${InputDir2}/" \
-    "./${VerName}/${Analysis_VerName}/${OutputPath}/" \
-    "${OutputName}_${BDTName_ALP}.png" \
-    "${Type1}" \
-    "${Type2}" \
-    "${Signal_Legends}" \
-    "#tau#rightarrow#alpha#mu" \
-    "${FBDT_weight_DIR}" \
-    "${mass}" \
-    "${life}" \
-    "${A}" \
-    "${B}"
+    "${command}"
   done
 
 }
