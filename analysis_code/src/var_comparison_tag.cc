@@ -58,8 +58,8 @@ int main(int argc, char* argv[]) {
     loader_sample2_test.Cut("(extraInfo__bonROE_RemainingTracks_cleanMask__bc < 1.5) && (((extraInfo__bon_vpho_muID9__bc > 0.5) && (extraInfo__bon_vpho_muID9__bc < 1.5)) || ((extraInfo__bon_vpho_eID9__bc > 0.5) && (extraInfo__bon_vpho_eID9__bc < 1.5)))");
     loader_sample2_test.RandomBCS();
     loader_sample2_test.IsBCSValid();
-    loader_sample2_test.FillTH1D(sample1_test_th, variable_name);
-    loader_sample2_test.FillTH1D(sample1_test_th_KS, variable_name);
+    loader_sample2_test.FillTH1D(sample2_test_th, variable_name);
+    loader_sample2_test.FillTH1D(sample2_test_th_KS, variable_name);
     loader_sample2_test.end();
 
 
