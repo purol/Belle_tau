@@ -237,7 +237,7 @@ region_names = ["A", "B", "C", "D"]
 # ------------------------------------------------------------
 
 # Background는 signal event 수의 최대 몇 배까지 읽을지
-background_to_signal_ratio = 150
+background_to_signal_ratio = 15
 
 # Train/validation 분리 비율
 validation_fraction = 0.25
