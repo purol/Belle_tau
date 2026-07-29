@@ -4,7 +4,7 @@
 #  PREDEFINED VARIABLES
 #  You SHOULD change these values 
 
-export Analysis_Name="Konpaku" # name of analysis
+export Analysis_Name="Sanae" # name of analysis
 export Analysis_VerName="v000" # version of analysis
 
 export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau" # analysis code path
