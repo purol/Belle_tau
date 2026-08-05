@@ -28,10 +28,13 @@ int main(int argc, char* argv[]) {
 
     ReadResolution((std::string(argv[3]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
-    ObtainWeight = MyScaleFunction_halfsplit;
+    EventWeights::Register("MC_weight", MC_weight);
+    EventWeights::Register("double_weight", double_weight);
 
     Loader loader_one("tau_lfv");
     loader_one.Load(argv[1], argv[2], "label");
+    loader_one.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader_one.AddWeight("double_weight");
     loader_one.PrintInformation("========== initial ==========");
     loader_one.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
     loader_one.PrintInformation("========== -5 delta < deltaE < 5 delta ==========");
@@ -41,6 +44,8 @@ int main(int argc, char* argv[]) {
 
     Loader loader_two("tau_lfv");
     loader_two.Load(argv[1], argv[2], "label");
+    loader_two.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader_two.AddWeight("double_weight");
     loader_two.PrintInformation("========== initial ==========");
     loader_two.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
     loader_two.PrintInformation("========== -15 delta < deltaE < -5 delta ==========");
