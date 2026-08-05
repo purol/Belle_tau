@@ -59,12 +59,13 @@ int main(int argc, char* argv[]) {
     * argv[3]: output path
     */
 
-    ObtainWeight = MyScaleFunction;
+    EventWeights::Register("MC_weight", MC_weight);
 
     Loader loader("tau_lfv");
 
     // It is prompt decay analysis
     loader.LoadWithCut(argv[1], argv[2], "label", "(19.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 20.5)");
+    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
 
     loader.RemoveVariable({ "nParticlesInList__botau__pl__clpipipi__bc" });
     loader.RemoveVariable({ "nParticlesInList__botau__pl__cldirect__bc" });
