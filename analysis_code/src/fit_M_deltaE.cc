@@ -42,11 +42,12 @@ int main(int argc, char* argv[]) {
     * argv[2]: output path
     */
 
-    ObtainWeight = MyScaleFunction;
+    EventWeights::Register("MC_weight", MC_weight);
 
     Loader loader("tau_lfv");
 
     loader.Load(argv[1], "root", "SIGNAL");
+    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
 
     loader.Cut("(-0.3 < deltaE) && (deltaE < 0.15)");
     loader.PrintInformation("========== -0.3 < deltaE < 0.15 ==========");

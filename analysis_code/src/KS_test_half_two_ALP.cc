@@ -80,7 +80,8 @@ int main(int argc, char* argv[]) {
 
     ReadResolution((std::string(argv[5]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
-    ObtainWeight = MyScaleFunction_halfsplit;
+    EventWeights::Register("MC_weight", MC_weight);
+    EventWeights::Register("double_weight", double_weight);
 
     // define TH1D
     TH1D* signal_train_th = new TH1D("signal_train_th", ("signal train;" + variable_name + ";arbitrary unit").c_str(), atoi(argv[2]), atof(argv[3]), atof(argv[4]));
@@ -97,6 +98,8 @@ int main(int argc, char* argv[]) {
     // signal train
     Loader loader_signal_train("tau_lfv");
     for (int i = 0; i < signal_list.size(); i++) loader_signal_train.Load((argv[5] + std::string("/") + signal_list.at(i) + std::string("/final_output_train_after_application/")).c_str(), "root", signal_list.at(i).c_str());
+    loader_signal_train.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader_signal_train.AddWeight("double_weight");
     loader_signal_train.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
     loader_signal_train.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_signal_train.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
@@ -107,6 +110,8 @@ int main(int argc, char* argv[]) {
     // signal test
     Loader loader_signal_test("tau_lfv");
     for (int i = 0; i < signal_list.size(); i++) loader_signal_test.Load((argv[5] + std::string("/") + signal_list.at(i) + std::string("/final_output_test_after_application/")).c_str(), "root", signal_list.at(i).c_str());
+    loader_signal_test.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader_signal_test.AddWeight("double_weight");
     loader_signal_test.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
     loader_signal_test.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_signal_test.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
@@ -117,6 +122,8 @@ int main(int argc, char* argv[]) {
     // background train
     Loader loader_background_train("tau_lfv");
     for (int i = 0; i < background_list.size(); i++) loader_background_train.Load((argv[5] + std::string("/") + background_list.at(i) + std::string("/final_output_train_after_application/")).c_str(), "root", background_list.at(i).c_str());
+    loader_background_train.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader_background_train.AddWeight("double_weight");
     loader_background_train.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
     loader_background_train.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_background_train.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
@@ -127,6 +134,8 @@ int main(int argc, char* argv[]) {
     // background test
     Loader loader_background_test("tau_lfv");
     for (int i = 0; i < background_list.size(); i++) loader_background_test.Load((argv[5] + std::string("/") + background_list.at(i) + std::string("/final_output_test_after_application/")).c_str(), "root", background_list.at(i).c_str());
+    loader_background_test.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader_background_test.AddWeight("double_weight");
     loader_background_test.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
     loader_background_test.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_background_test.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());

@@ -46,6 +46,12 @@ std::map<std::string, std::string> momentum_theta = {
     {"extraInfo__boThreeMuon_p__bc", "extraInfo__boThreeMuon_theta__bc"}
 };
 
+std::map<std::string, std::string> momentum_charge = {
+    {"extraInfo__boOneMuon_p__bc", "extraInfo__boOneMuon_charge__bc"},
+    {"extraInfo__boTwoMuon_p__bc", "extraInfo__boTwoMuon_charge__bc"},
+    {"extraInfo__boThreeMuon_p__bc", "extraInfo__boThreeMuon_charge__bc"}
+};
+
 std::vector<std::string> cosToThrustOfEvent_CM = {
     "extraInfo__boOneMuon_cosToThrustOfEvent__bc",
     "extraInfo__boTwoMuon_cosToThrustOfEvent__bc",
@@ -59,12 +65,13 @@ int main(int argc, char* argv[]) {
     * argv[3]: output path
     */
 
-    ObtainWeight = MyScaleFunction;
+    EventWeights::Register("MC_weight", MC_weight);
 
     Loader loader("tau_lfv");
 
     // It is ALP decay analysis
     loader.LoadWithCut(argv[1], argv[2], "label", "(9.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 10.5)");
+    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
 
     loader.ConditionalPairDefineNewVariable(momentum_muonmomentum, 0, "first_muon_p");
     loader.ConditionalPairDefineNewVariable(momentum_muonmomentum, 1, "second_muon_p");
@@ -84,6 +91,9 @@ int main(int argc, char* argv[]) {
     loader.ConditionalPairDefineNewVariable(momentum_theta, 0, "first_muon_theta");
     loader.ConditionalPairDefineNewVariable(momentum_theta, 1, "second_muon_theta");
     loader.ConditionalPairDefineNewVariable(momentum_theta, 2, "third_muon_theta");
+    loader.ConditionalPairDefineNewVariable(momentum_charge, 0, "first_muon_charge");
+    loader.ConditionalPairDefineNewVariable(momentum_charge, 1, "second_muon_charge");
+    loader.ConditionalPairDefineNewVariable(momentum_charge, 2, "third_muon_charge");
     loader.DefineNewVariable("charge*roeCharge__bocleanMask__bc", "charge_times_ROEcharge");
     loader.DefineNewVariable("(flightTime/flightTimeErr)", "flightTime_dividedby_flightTimeErr");
     loader.GetAverage(cosToThrustOfEvent_CM, "avg_cosToThrustOfEvent_CM");

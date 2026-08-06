@@ -98,11 +98,14 @@ int main(int argc, char* argv[]) {
         intput_variables_two.push_back(variable_);
     }
 
-    ObtainWeight = MyScaleFunction_halfsplit;
+    EventWeights::Register("MC_weight", MC_weight);
+    EventWeights::Register("double_weight", double_weight);
 
     Loader loader("tau_lfv");
 
     loader.Load(argv[3 + variable_num_one + variable_num_two], argv[4 + variable_num_one + variable_num_two], "label");
+    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader.AddWeight("double_weight");
 
     std::set<Params> parameters = GetParameters(argv[6 + variable_num_one + variable_num_two]);
 

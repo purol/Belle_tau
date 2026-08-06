@@ -27,11 +27,12 @@ int main(int argc, char* argv[]) {
 
     ReadResolution((std::string(argv[2]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
-    ObtainWeight = MyScaleFunction;
+    EventWeights::Register("MC_weight", MC_weight);
 
     Loader loader("tau_lfv");
 
     loader.Load(argv[1], "root", "label");
+    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
 
     loader.PrintInformation("========== initial ==========");
 

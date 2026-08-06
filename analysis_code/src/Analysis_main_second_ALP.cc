@@ -57,11 +57,12 @@ int main(int argc, char* argv[]) {
         M_boundary_min.push(M_peak - 20 * M_left_sigma);
     }
 
-    ObtainWeight = MyScaleFunction;
+    EventWeights::Register("MC_weight", MC_weight);
 
     Loader loader("tau_lfv");
 
     loader.Load(argv[1], argv[2], "label");
+    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
 
     loader.PrintInformation("========== initial ==========");
 
