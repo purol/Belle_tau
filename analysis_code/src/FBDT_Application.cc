@@ -59,11 +59,14 @@ int main(int argc, char* argv[]) {
     std::string classifier_one_path = std::string(argv[6 + variable_num_one + variable_num_two]) + "/out/" + ReadSelect(argv[6 + variable_num_one + variable_num_two], "selected.txt");
     std::string classifier_two_path = std::string(argv[7 + variable_num_one + variable_num_two]) + "/out/" + ReadSelect(argv[7 + variable_num_one + variable_num_two], "selected.txt");
 
-    ObtainWeight = MyScaleFunction_halfsplit;
+    EventWeights::Register("MC_weight", MC_weight);
+    EventWeights::Register("double_weight", double_weight);
 
     Loader loader("tau_lfv");
 
     loader.Load(argv[3 + variable_num_one + variable_num_two], argv[4 + variable_num_one + variable_num_two], "label");
+    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader.AddWeight("double_weight");
 
     loader.FastBDTApplication(intput_variables_one, classifier_one_path.c_str(), "BDT_output_1");
     loader.FastBDTApplication(intput_variables_two, classifier_two_path.c_str(), "BDT_output_2");
