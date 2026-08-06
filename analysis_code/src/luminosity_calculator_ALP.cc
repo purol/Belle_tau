@@ -15,7 +15,6 @@
 #include "MyObtainWeight.h"
 #include "functions.h"
 #include "MyModule.h"
-#include "correctors.h"
 #include "data.h"
 
 double mass;

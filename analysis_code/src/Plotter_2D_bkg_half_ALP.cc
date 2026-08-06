@@ -41,11 +41,14 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> background_list = split(argv[7], ':');
     std::vector<std::string> background_legend_list = split(argv[8], ':');
 
-    ObtainWeight = MyScaleFunction_halfsplit;
+    EventWeights::Register("MC_weight", MC_weight);
+    EventWeights::Register("double_weight", double_weight);
 
     Loader loader("tau_lfv");
 
     for (int i = 0; i < background_list.size(); i++) loader.Load((argv[3] + std::string("/") + background_list.at(i) + std::string("/") + std::string(argv[4])).c_str(), "root", background_legend_list.at(i).c_str());
+    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader.AddWeight("double_weight");
 
     // Create a new vector to hold the combined elements
     std::vector<std::string> all_label;

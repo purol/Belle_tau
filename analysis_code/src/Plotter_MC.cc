@@ -27,11 +27,12 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> MC_list = split(argv[6], ':');
     std::vector<std::string> MC_legend_list = split(argv[7], ':');
 
-    ObtainWeight = MyScaleFunction;
+    EventWeights::Register("MC_weight", MC_weight);
 
     Loader loader("tau_lfv");
 
     for (int i = 0; i < MC_list.size(); i++) loader.Load((argv[2] + std::string("/") + MC_list.at(i) + std::string("/") + std::string(argv[3])).c_str(), "root", MC_legend_list.at(i).c_str());
+    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
 
     loader.SetMC(MC_legend_list);
     loader.SetData({});
