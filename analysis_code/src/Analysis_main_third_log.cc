@@ -63,13 +63,8 @@ int main(int argc, char* argv[]) {
     std::string cut_region = cut_M_deltaE_1 + "||" + cut_M_deltaE_2;
     std::string cut_total = cut_total_1 + "||" + cut_total_2;
 
-    std::string cut_muonID = "0.5 < third_muon_muonID";
-
     loader.Cut(cut_region.c_str());
     loader.PrintInformation("========== (-20 delta < M < 20 delta) && (-15 delta < deltaE < 6 delta) ==========");
-
-    loader.Cut(cut_muonID.c_str());
-    loader.PrintInformation("========== 0.5 < muonID for third muon ==========");
 
     loader.RandomBCS();
     loader.IsBCSValid();

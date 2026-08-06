@@ -52,8 +52,6 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
 
     std::string cut_region = cut_M_deltaE_1 + "||" + cut_M_deltaE_2;
     std::string cut_total = cut_total_1 + "||" + cut_total_2;
-
-    std::string cut_muonID = "0.5 < third_muon_muonID";
     
     // data
     Loader loader_data("tau_lfv");
@@ -64,7 +62,6 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_data.AddWeight("double_weight"); /* After box open, it should be removed! */
     loader_data.AddWeight("luminosity_scale"); /* After box open, it should be removed! */
     loader_data.Cut(cut_region.c_str());
-    loader_data.Cut(cut_muonID.c_str());
     loader_data.RandomBCS();
     loader_data.IsBCSValid();
     loader_data.Cut(cut_total.c_str());
@@ -80,7 +77,6 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_signal.AddWeight("double_weight");
     loader_signal.AddWeight("luminosity_scale");
     loader_signal.Cut(cut_region.c_str());
-    loader_signal.Cut(cut_muonID.c_str());
     loader_signal.RandomBCS();
     loader_signal.IsBCSValid();
     loader_signal.Cut(cut_total.c_str());
@@ -96,7 +92,6 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_bkg.AddWeight("double_weight");
     loader_bkg.AddWeight("luminosity_scale");
     loader_bkg.Cut(cut_region.c_str());
-    loader_bkg.Cut(cut_muonID.c_str());
     loader_bkg.RandomBCS();
     loader_bkg.IsBCSValid();
     loader_bkg.Cut(cut_total.c_str());
