@@ -18,15 +18,6 @@
 #include "correctors.h"
 #include "data.h"
 
-// for the random fluctuation
-std::random_device rd_lumi;
-std::mt19937 gen_lumi(rd_lumi());
-std::normal_distribution<double> Normal_distribution(0.0, 1.0);
-
-double lumi_BelleII_4S_fluc = lumi_BelleII_4S;
-double lumi_BelleII_off_fluc = lumi_BelleII_off;
-double lumi_BelleII_10810_fluc = lumi_BelleII_10810;
-
 double mass;
 double life;
 int A;
@@ -40,278 +31,6 @@ double BDT_cut_2;
 
 std::string BDT_output_1_name;
 std::string BDT_output_2_name;
-
-Corrector_PID muonID_corrector_05("/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC15ri/mu_efficiency_table.csv");
-
-double MyScaleFunction_correction_halfsplit(std::deque<Data>::iterator data_, std::vector<std::string> variable_names_) {
-
-    std::vector<std::string>::iterator it;
-
-    // first muonID correction
-    double first_muon_p;
-    double first_muon_theta;
-    double first_muon_correction;
-    it = std::find(variable_names_.begin(), variable_names_.end(), "first_muon_p");
-    if (it != variable_names_.end()) {
-        int index = std::distance(variable_names_.begin(), it);
-        first_muon_p = std::get<double>((*data_).variable.at(index));
-    }
-    it = std::find(variable_names_.begin(), variable_names_.end(), "first_muon_theta");
-    if (it != variable_names_.end()) {
-        int index = std::distance(variable_names_.begin(), it);
-        first_muon_theta = std::get<double>((*data_).variable.at(index));
-    }
-    first_muon_correction = muonID_corrector_05.GetCorrectionFactor(first_muon_p, first_muon_theta, "+");
-
-    double total_correction = first_muon_correction;
-
-    // several index
-    double SampleType;
-    double EventType;
-    double EnergyType;
-
-    it = std::find(variable_names_.begin(), variable_names_.end(), "MySampleType");
-    if (it != variable_names_.end()) {
-        int index = std::distance(variable_names_.begin(), it);
-        SampleType = std::get<double>((*data_).variable.at(index));
-    }
-
-    it = std::find(variable_names_.begin(), variable_names_.end(), "MyEventType");
-    if (it != variable_names_.end()) {
-        int index = std::distance(variable_names_.begin(), it);
-        EventType = std::get<double>((*data_).variable.at(index));
-    }
-
-    it = std::find(variable_names_.begin(), variable_names_.end(), "MyEnergyType");
-    if (it != variable_names_.end()) {
-        int index = std::distance(variable_names_.begin(), it);
-        EnergyType = std::get<double>((*data_).variable.at(index));
-    }
-
-    if ((-1.5 < SampleType) && (SampleType < -0.5)) { // data
-        printf("why do you try to split data?\n");
-        exit(1);
-        return 0.0;
-    }
-    else if ((0.5 < SampleType) && (SampleType < 1.5)) { // MC15ri
-        if ((0.5 < EnergyType) && (EnergyType < 1.5)) { // 4S
-            if ((-0.5 < EventType) && (EventType < 0.5)) return 2.0 * Scale_SIGNAL_BelleII_4S_MC15ri * total_correction; // signal
-            else if ((0.5 < EventType) && (EventType < 1.5)) return 2.0 * Scale_BelleII_4S_CHG_MC15ri * total_correction; // CHG
-            else if ((1.5 < EventType) && (EventType < 2.5)) return 2.0 * Scale_BelleII_4S_MIX_MC15ri * total_correction; // MIX
-            else if ((2.5 < EventType) && (EventType < 3.5)) return 2.0 * Scale_BelleII_4S_UUBAR_MC15ri * total_correction; // UUBAR
-            else if ((3.5 < EventType) && (EventType < 4.5)) return 2.0 * Scale_BelleII_4S_DDBAR_MC15ri * total_correction; // DDBAR
-            else if ((4.5 < EventType) && (EventType < 5.5)) return 2.0 * Scale_BelleII_4S_SSBAR_MC15ri * total_correction; // SSBAR
-            else if ((5.5 < EventType) && (EventType < 6.5)) return 2.0 * Scale_BelleII_4S_CHARM_MC15ri * total_correction; // CHARM
-            else if ((6.5 < EventType) && (EventType < 7.5)) return 2.0 * Scale_BelleII_4S_MUMU_MC15ri * total_correction; // MUMU
-            else if ((7.5 < EventType) && (EventType < 8.5)) return 2.0 * Scale_BelleII_4S_EE_MC15ri * total_correction; // EE
-            else if ((8.5 < EventType) && (EventType < 9.5)) return 2.0 * Scale_BelleII_4S_EEEE_MC15ri * total_correction; // EEEE
-            else if ((9.5 < EventType) && (EventType < 10.5)) return 2.0 * Scale_BelleII_4S_EEMUMU_MC15ri * total_correction; // EEMUMU
-            else if ((10.5 < EventType) && (EventType < 11.5)) return 2.0 * Scale_BelleII_4S_EEPIPI_MC15ri * total_correction; // EEPIPI
-            else if ((11.5 < EventType) && (EventType < 12.5)) return 2.0 * Scale_BelleII_4S_EEKK_MC15ri * total_correction; // EEKK
-            else if ((12.5 < EventType) && (EventType < 13.5)) return 2.0 * Scale_BelleII_4S_EEPP_MC15ri * total_correction; // EEPP
-            else if ((13.5 < EventType) && (EventType < 14.5)) return 2.0 * Scale_BelleII_4S_PIPIISR_MC15ri * total_correction; // PIPIISR
-            else if ((14.5 < EventType) && (EventType < 15.5)) return 2.0 * Scale_BelleII_4S_KKISR_MC15ri * total_correction; // KKISR
-            else if ((15.5 < EventType) && (EventType < 16.5)) return 2.0 * Scale_BelleII_4S_GG_MC15ri * total_correction; // GG
-            else if ((16.5 < EventType) && (EventType < 17.5)) return 2.0 * Scale_BelleII_4S_EETAUTAU_MC15ri * total_correction; // EETAUTAU
-            else if ((17.5 < EventType) && (EventType < 18.5)) return 2.0 * Scale_BelleII_4S_K0K0BARISR_MC15ri * total_correction; // K0K0BARISR
-            else if ((18.5 < EventType) && (EventType < 19.5)) return 2.0 * Scale_BelleII_4S_MUMUMUMU_MC15ri * total_correction; // MUMUMUMU
-            else if ((19.5 < EventType) && (EventType < 20.5)) return 2.0 * Scale_BelleII_4S_MUMUTAUTAU_MC15ri * total_correction; // MUMUTAUTAU
-            else if ((20.5 < EventType) && (EventType < 21.5)) return 2.0 * Scale_BelleII_4S_TAUTAUTAUTAU_MC15ri * total_correction; // TAUTAUTAUTAU
-            else if ((21.5 < EventType) && (EventType < 22.5)) return 2.0 * Scale_BelleII_4S_TAUPAIR_MC15ri * total_correction; // TAUPAIR
-            else if ((22.5 < EventType) && (EventType < 23.5)) return 2.0 * Scale_BelleII_4S_PIPIPI0ISR_MC15ri * total_correction; // PIPIPI0ISR
-            else if ((31.5 < EventType) && (EventType < 32.5)) return 2.0 * Scale_ALP_BelleII_4S_MC15ri * total_correction; // ALP
-        }
-        else if ((1.5 < EnergyType) && (EnergyType < 2.5)) { // off-resonance
-            if ((-0.5 < EventType) && (EventType < 0.5)) return 2.0 * Scale_SIGNAL_BelleII_off_MC15ri * total_correction; // signal
-            else if ((2.5 < EventType) && (EventType < 3.5)) return 2.0 * Scale_BelleII_off_UUBAR_MC15ri * total_correction; // UUBAR
-            else if ((3.5 < EventType) && (EventType < 4.5)) return 2.0 * Scale_BelleII_off_DDBAR_MC15ri * total_correction; // DDBAR
-            else if ((4.5 < EventType) && (EventType < 5.5)) return 2.0 * Scale_BelleII_off_SSBAR_MC15ri * total_correction; // SSBAR
-            else if ((5.5 < EventType) && (EventType < 6.5)) return 2.0 * Scale_BelleII_off_CHARM_MC15ri * total_correction; // CHARM
-            else if ((6.5 < EventType) && (EventType < 7.5)) return 2.0 * Scale_BelleII_off_MUMU_MC15ri * total_correction; // MUMU
-            else if ((7.5 < EventType) && (EventType < 8.5)) return 2.0 * Scale_BelleII_off_EE_MC15ri * total_correction; // EE
-            else if ((8.5 < EventType) && (EventType < 9.5)) return 2.0 * Scale_BelleII_off_EEEE_MC15ri * total_correction; // EEEE
-            else if ((9.5 < EventType) && (EventType < 10.5)) return 2.0 * Scale_BelleII_off_EEMUMU_MC15ri * total_correction; // EEMUMU
-            else if ((10.5 < EventType) && (EventType < 11.5)) return 2.0 * Scale_BelleII_off_EEPIPI_MC15ri * total_correction; // EEPIPI
-            else if ((11.5 < EventType) && (EventType < 12.5)) return 2.0 * Scale_BelleII_off_EEKK_MC15ri * total_correction; // EEKK
-            else if ((12.5 < EventType) && (EventType < 13.5)) return 2.0 * Scale_BelleII_off_EEPP_MC15ri * total_correction; // EEPP
-            else if ((15.5 < EventType) && (EventType < 16.5)) return 2.0 * Scale_BelleII_off_GG_MC15ri * total_correction; // GG
-            else if ((16.5 < EventType) && (EventType < 17.5)) return 2.0 * Scale_BelleII_off_EETAUTAU_MC15ri * total_correction; // EETAUTAU
-            else if ((18.5 < EventType) && (EventType < 19.5)) return 2.0 * Scale_BelleII_off_MUMUMUMU_MC15ri * total_correction; // MUMUMUMU
-            else if ((21.5 < EventType) && (EventType < 22.5)) return 2.0 * Scale_BelleII_off_TAUPAIR_MC15ri * total_correction; // TAUPAIR
-        }
-        else if ((2.5 < EnergyType) && (EnergyType < 3.5)) {} // 10657
-        else if ((3.5 < EnergyType) && (EnergyType < 4.5)) {} // 10706
-        else if ((4.5 < EnergyType) && (EnergyType < 5.5)) {} // 10751
-        else if ((5.5 < EnergyType) && (EnergyType < 6.5)) { // 10810
-            if ((-0.5 < EventType) && (EventType < 0.5)) return 2.0 * Scale_SIGNAL_BelleII_10810_MC15ri * total_correction; // signal
-            else if ((0.5 < EventType) && (EventType < 1.5)) return 2.0 * Scale_BelleII_10810_CHG_MC15ri * total_correction; // CHG
-            else if ((1.5 < EventType) && (EventType < 2.5)) return 2.0 * Scale_BelleII_10810_MIX_MC15ri * total_correction; // MIX
-            else if ((2.5 < EventType) && (EventType < 3.5)) return 2.0 * Scale_BelleII_10810_UUBAR_MC15ri * total_correction; // UUBAR
-            else if ((3.5 < EventType) && (EventType < 4.5)) return 2.0 * Scale_BelleII_10810_DDBAR_MC15ri * total_correction; // DDBAR
-            else if ((4.5 < EventType) && (EventType < 5.5)) return 2.0 * Scale_BelleII_10810_SSBAR_MC15ri * total_correction; // SSBAR
-            else if ((5.5 < EventType) && (EventType < 6.5)) return 2.0 * Scale_BelleII_10810_CHARM_MC15ri * total_correction; // CHARM
-            else if ((6.5 < EventType) && (EventType < 7.5)) return 2.0 * Scale_BelleII_10810_MUMU_MC15ri * total_correction; // MUMU
-            else if ((21.5 < EventType) && (EventType < 22.5)) return 2.0 * Scale_BelleII_10810_TAUPAIR_MC15ri * total_correction; // TAUPAIR
-            else if ((23.5 < EventType) && (EventType < 24.5)) return 2.0 * Scale_BelleII_10810_BBs_MC15ri * total_correction; // BBs
-            else if ((24.5 < EventType) && (EventType < 25.5)) return 2.0 * Scale_BelleII_10810_BsBs_MC15ri * total_correction; // BsBs
-        }
-    }
-    else if ((1.5 < SampleType) && (SampleType < 2.5)) {} // MC15rd
-    else if ((2.5 < SampleType) && (SampleType < 3.5)) {} // MC16ri
-    else if ((3.5 < SampleType) && (SampleType < 4.5)) {} // MC16rd
-    else if ((4.5 < SampleType) && (SampleType < 5.5)) { // Belle data
-        printf("why do you try to split data?\n");
-        exit(1);
-        return 0.0;
-    }
-    else if ((5.5 < SampleType) && (SampleType < 6.5)) {} // Belle MC
-
-    printf("unexpected sample type\n");
-    exit(1);
-    return 0.0;
-}
-
-double MyScaleFunction_correction_fluctuation_halfsplit(std::deque<Data>::iterator data_, std::vector<std::string> variable_names_) {
-
-    std::vector<std::string>::iterator it;
-
-    // first muonID correction
-    double first_muon_p;
-    double first_muon_theta;
-    double first_muon_correction;
-    it = std::find(variable_names_.begin(), variable_names_.end(), "first_muon_p");
-    if (it != variable_names_.end()) {
-        int index = std::distance(variable_names_.begin(), it);
-        first_muon_p = std::get<double>((*data_).variable.at(index));
-    }
-    it = std::find(variable_names_.begin(), variable_names_.end(), "first_muon_theta");
-    if (it != variable_names_.end()) {
-        int index = std::distance(variable_names_.begin(), it);
-        first_muon_theta = std::get<double>((*data_).variable.at(index));
-    }
-    first_muon_correction = muonID_corrector_05.GetCorrectionFactor(first_muon_p, first_muon_theta, "+");
-
-    double total_correction = first_muon_correction;
-
-    // several index
-    double SampleType;
-    double EventType;
-    double EnergyType;
-
-    it = std::find(variable_names_.begin(), variable_names_.end(), "MySampleType");
-    if (it != variable_names_.end()) {
-        int index = std::distance(variable_names_.begin(), it);
-        SampleType = std::get<double>((*data_).variable.at(index));
-    }
-
-    it = std::find(variable_names_.begin(), variable_names_.end(), "MyEventType");
-    if (it != variable_names_.end()) {
-        int index = std::distance(variable_names_.begin(), it);
-        EventType = std::get<double>((*data_).variable.at(index));
-    }
-
-    it = std::find(variable_names_.begin(), variable_names_.end(), "MyEnergyType");
-    if (it != variable_names_.end()) {
-        int index = std::distance(variable_names_.begin(), it);
-        EnergyType = std::get<double>((*data_).variable.at(index));
-    }
-
-    // fluctuate luminosity
-    if ((0.5 < EnergyType) && (EnergyType < 1.5)) { // 4S
-        total_correction = total_correction * (lumi_BelleII_4S_fluc / lumi_BelleII_4S);
-    }
-    else if ((1.5 < EnergyType) && (EnergyType < 2.5)) { // off-resonance
-        total_correction = total_correction * (lumi_BelleII_off_fluc / lumi_BelleII_off);
-    }
-    else if ((2.5 < EnergyType) && (EnergyType < 3.5)) {} // 10657
-    else if ((3.5 < EnergyType) && (EnergyType < 4.5)) {} // 10706
-    else if ((4.5 < EnergyType) && (EnergyType < 5.5)) {} // 10751
-    else if ((5.5 < EnergyType) && (EnergyType < 6.5)) { // 10810
-        total_correction = total_correction * (lumi_BelleII_10810_fluc / lumi_BelleII_10810);
-    }
-
-    if ((-1.5 < SampleType) && (SampleType < -0.5)) { // data
-        printf("why do you try to split data?\n");
-        exit(1);
-        return 0.0;
-    }
-    else if ((0.5 < SampleType) && (SampleType < 1.5)) { // MC15ri
-        if ((0.5 < EnergyType) && (EnergyType < 1.5)) { // 4S
-            if ((-0.5 < EventType) && (EventType < 0.5)) return 2.0 * Scale_SIGNAL_BelleII_4S_MC15ri * total_correction; // signal
-            else if ((0.5 < EventType) && (EventType < 1.5)) return 2.0 * Scale_BelleII_4S_CHG_MC15ri * total_correction; // CHG
-            else if ((1.5 < EventType) && (EventType < 2.5)) return 2.0 * Scale_BelleII_4S_MIX_MC15ri * total_correction; // MIX
-            else if ((2.5 < EventType) && (EventType < 3.5)) return 2.0 * Scale_BelleII_4S_UUBAR_MC15ri * total_correction; // UUBAR
-            else if ((3.5 < EventType) && (EventType < 4.5)) return 2.0 * Scale_BelleII_4S_DDBAR_MC15ri * total_correction; // DDBAR
-            else if ((4.5 < EventType) && (EventType < 5.5)) return 2.0 * Scale_BelleII_4S_SSBAR_MC15ri * total_correction; // SSBAR
-            else if ((5.5 < EventType) && (EventType < 6.5)) return 2.0 * Scale_BelleII_4S_CHARM_MC15ri * total_correction; // CHARM
-            else if ((6.5 < EventType) && (EventType < 7.5)) return 2.0 * Scale_BelleII_4S_MUMU_MC15ri * total_correction; // MUMU
-            else if ((7.5 < EventType) && (EventType < 8.5)) return 2.0 * Scale_BelleII_4S_EE_MC15ri * total_correction; // EE
-            else if ((8.5 < EventType) && (EventType < 9.5)) return 2.0 * Scale_BelleII_4S_EEEE_MC15ri * total_correction; // EEEE
-            else if ((9.5 < EventType) && (EventType < 10.5)) return 2.0 * Scale_BelleII_4S_EEMUMU_MC15ri * total_correction; // EEMUMU
-            else if ((10.5 < EventType) && (EventType < 11.5)) return 2.0 * Scale_BelleII_4S_EEPIPI_MC15ri * total_correction; // EEPIPI
-            else if ((11.5 < EventType) && (EventType < 12.5)) return 2.0 * Scale_BelleII_4S_EEKK_MC15ri * total_correction; // EEKK
-            else if ((12.5 < EventType) && (EventType < 13.5)) return 2.0 * Scale_BelleII_4S_EEPP_MC15ri * total_correction; // EEPP
-            else if ((13.5 < EventType) && (EventType < 14.5)) return 2.0 * Scale_BelleII_4S_PIPIISR_MC15ri * total_correction; // PIPIISR
-            else if ((14.5 < EventType) && (EventType < 15.5)) return 2.0 * Scale_BelleII_4S_KKISR_MC15ri * total_correction; // KKISR
-            else if ((15.5 < EventType) && (EventType < 16.5)) return 2.0 * Scale_BelleII_4S_GG_MC15ri * total_correction; // GG
-            else if ((16.5 < EventType) && (EventType < 17.5)) return 2.0 * Scale_BelleII_4S_EETAUTAU_MC15ri * total_correction; // EETAUTAU
-            else if ((17.5 < EventType) && (EventType < 18.5)) return 2.0 * Scale_BelleII_4S_K0K0BARISR_MC15ri * total_correction; // K0K0BARISR
-            else if ((18.5 < EventType) && (EventType < 19.5)) return 2.0 * Scale_BelleII_4S_MUMUMUMU_MC15ri * total_correction; // MUMUMUMU
-            else if ((19.5 < EventType) && (EventType < 20.5)) return 2.0 * Scale_BelleII_4S_MUMUTAUTAU_MC15ri * total_correction; // MUMUTAUTAU
-            else if ((20.5 < EventType) && (EventType < 21.5)) return 2.0 * Scale_BelleII_4S_TAUTAUTAUTAU_MC15ri * total_correction; // TAUTAUTAUTAU
-            else if ((21.5 < EventType) && (EventType < 22.5)) return 2.0 * Scale_BelleII_4S_TAUPAIR_MC15ri * total_correction; // TAUPAIR
-            else if ((22.5 < EventType) && (EventType < 23.5)) return 2.0 * Scale_BelleII_4S_PIPIPI0ISR_MC15ri * total_correction; // PIPIPI0ISR
-            else if ((31.5 < EventType) && (EventType < 32.5)) return 2.0 * Scale_ALP_BelleII_4S_MC15ri * total_correction; // ALP
-        }
-        else if ((1.5 < EnergyType) && (EnergyType < 2.5)) { // off-resonance
-            if ((-0.5 < EventType) && (EventType < 0.5)) return 2.0 * Scale_SIGNAL_BelleII_off_MC15ri * total_correction; // signal
-            else if ((2.5 < EventType) && (EventType < 3.5)) return 2.0 * Scale_BelleII_off_UUBAR_MC15ri * total_correction; // UUBAR
-            else if ((3.5 < EventType) && (EventType < 4.5)) return 2.0 * Scale_BelleII_off_DDBAR_MC15ri * total_correction; // DDBAR
-            else if ((4.5 < EventType) && (EventType < 5.5)) return 2.0 * Scale_BelleII_off_SSBAR_MC15ri * total_correction; // SSBAR
-            else if ((5.5 < EventType) && (EventType < 6.5)) return 2.0 * Scale_BelleII_off_CHARM_MC15ri * total_correction; // CHARM
-            else if ((6.5 < EventType) && (EventType < 7.5)) return 2.0 * Scale_BelleII_off_MUMU_MC15ri * total_correction; // MUMU
-            else if ((7.5 < EventType) && (EventType < 8.5)) return 2.0 * Scale_BelleII_off_EE_MC15ri * total_correction; // EE
-            else if ((8.5 < EventType) && (EventType < 9.5)) return 2.0 * Scale_BelleII_off_EEEE_MC15ri * total_correction; // EEEE
-            else if ((9.5 < EventType) && (EventType < 10.5)) return 2.0 * Scale_BelleII_off_EEMUMU_MC15ri * total_correction; // EEMUMU
-            else if ((10.5 < EventType) && (EventType < 11.5)) return 2.0 * Scale_BelleII_off_EEPIPI_MC15ri * total_correction; // EEPIPI
-            else if ((11.5 < EventType) && (EventType < 12.5)) return 2.0 * Scale_BelleII_off_EEKK_MC15ri * total_correction; // EEKK
-            else if ((12.5 < EventType) && (EventType < 13.5)) return 2.0 * Scale_BelleII_off_EEPP_MC15ri * total_correction; // EEPP
-            else if ((15.5 < EventType) && (EventType < 16.5)) return 2.0 * Scale_BelleII_off_GG_MC15ri * total_correction; // GG
-            else if ((16.5 < EventType) && (EventType < 17.5)) return 2.0 * Scale_BelleII_off_EETAUTAU_MC15ri * total_correction; // EETAUTAU
-            else if ((18.5 < EventType) && (EventType < 19.5)) return 2.0 * Scale_BelleII_off_MUMUMUMU_MC15ri * total_correction; // MUMUMUMU
-            else if ((21.5 < EventType) && (EventType < 22.5)) return 2.0 * Scale_BelleII_off_TAUPAIR_MC15ri * total_correction; // TAUPAIR
-        }
-        else if ((2.5 < EnergyType) && (EnergyType < 3.5)) {} // 10657
-        else if ((3.5 < EnergyType) && (EnergyType < 4.5)) {} // 10706
-        else if ((4.5 < EnergyType) && (EnergyType < 5.5)) {} // 10751
-        else if ((5.5 < EnergyType) && (EnergyType < 6.5)) { // 10810
-            if ((-0.5 < EventType) && (EventType < 0.5)) return 2.0 * Scale_SIGNAL_BelleII_10810_MC15ri * total_correction; // signal
-            else if ((0.5 < EventType) && (EventType < 1.5)) return 2.0 * Scale_BelleII_10810_CHG_MC15ri * total_correction; // CHG
-            else if ((1.5 < EventType) && (EventType < 2.5)) return 2.0 * Scale_BelleII_10810_MIX_MC15ri * total_correction; // MIX
-            else if ((2.5 < EventType) && (EventType < 3.5)) return 2.0 * Scale_BelleII_10810_UUBAR_MC15ri * total_correction; // UUBAR
-            else if ((3.5 < EventType) && (EventType < 4.5)) return 2.0 * Scale_BelleII_10810_DDBAR_MC15ri * total_correction; // DDBAR
-            else if ((4.5 < EventType) && (EventType < 5.5)) return 2.0 * Scale_BelleII_10810_SSBAR_MC15ri * total_correction; // SSBAR
-            else if ((5.5 < EventType) && (EventType < 6.5)) return 2.0 * Scale_BelleII_10810_CHARM_MC15ri * total_correction; // CHARM
-            else if ((6.5 < EventType) && (EventType < 7.5)) return 2.0 * Scale_BelleII_10810_MUMU_MC15ri * total_correction; // MUMU
-            else if ((21.5 < EventType) && (EventType < 22.5)) return 2.0 * Scale_BelleII_10810_TAUPAIR_MC15ri * total_correction; // TAUPAIR
-            else if ((23.5 < EventType) && (EventType < 24.5)) return 2.0 * Scale_BelleII_10810_BBs_MC15ri * total_correction; // BBs
-            else if ((24.5 < EventType) && (EventType < 25.5)) return 2.0 * Scale_BelleII_10810_BsBs_MC15ri * total_correction; // BsBs
-        }
-    }
-    else if ((1.5 < SampleType) && (SampleType < 2.5)) {} // MC15rd
-    else if ((2.5 < SampleType) && (SampleType < 3.5)) {} // MC16ri
-    else if ((3.5 < SampleType) && (SampleType < 4.5)) {} // MC16rd
-    else if ((4.5 < SampleType) && (SampleType < 5.5)) { // Belle data
-        printf("why do you try to split data?\n");
-        exit(1);
-        return 0.0;
-    }
-    else if ((5.5 < SampleType) && (SampleType < 6.5)) {} // Belle MC
-
-    printf("unexpected sample type\n");
-    exit(1);
-    return 0.0;
-}
 
 double deltaE_peak_g;
 double deltaE_left_sigma_g;
@@ -352,6 +71,11 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     // data
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
+    loader_data.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("double_weight"); /* After box open, it should be removed! */
+    loader_data.AddWeight("luminosity_scale"); /* After box open, it should be removed! */
     loader_data.Cut(cut_region.c_str());
     loader_data.Cut(cut_m_alpha.c_str());
     loader_data.RandomBCS();
@@ -363,6 +87,11 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     // signal MC
     Loader loader_signal("tau_lfv");
     for (int i = 0; i < signal_list_.size(); i++) loader_signal.Load((input_path_1_ + std::string("/") + signal_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), ("alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_").c_str(), signal_list_.at(i).c_str());
+    loader_signal.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader_signal.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} });
+    loader_signal.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} });
+    loader_signal.AddWeight("double_weight");
+    loader_signal.AddWeight("luminosity_scale");
     loader_signal.Cut(cut_region.c_str());
     loader_signal.Cut(cut_m_alpha.c_str());
     loader_signal.RandomBCS();
@@ -374,6 +103,11 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     // background MC
     Loader loader_bkg("tau_lfv");
     for (int i = 0; i < background_list_.size(); i++) loader_bkg.Load((input_path_1_ + std::string("/") + background_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", background_list_.at(i).c_str());
+    loader_bkg.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader_bkg.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} });
+    loader_bkg.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} });
+    loader_bkg.AddWeight("double_weight");
+    loader_bkg.AddWeight("luminosity_scale");
     loader_bkg.Cut(cut_region.c_str());
     loader_bkg.Cut(cut_m_alpha.c_str());
     loader_bkg.RandomBCS();
@@ -395,12 +129,6 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     // We do not open the box, So data_th1d is MC. We use the proper uncertainty
     data_th1d_->SetBinError(1, std::sqrt(data_th1d_->GetBinContent(1)));
     data_th1d_->SetBinError(2, std::sqrt(data_th1d_->GetBinContent(2)));
-}
-
-void FluctuateLuminosity() {
-    lumi_BelleII_4S_fluc = lumi_BelleII_4S + lumi_BelleII_4S_uncertainty * Normal_distribution(gen_lumi);
-    lumi_BelleII_off_fluc = lumi_BelleII_off + lumi_BelleII_off_uncertainty * Normal_distribution(gen_lumi);
-    lumi_BelleII_10810_fluc = lumi_BelleII_10810 + lumi_BelleII_10810_uncertainty * Normal_distribution(gen_lumi);
 }
 
 int main(int argc, char* argv[]) {
@@ -503,9 +231,13 @@ int main(int argc, char* argv[]) {
     M_right_sigma_g = M_right_sigma;
     theta_g = theta;
 
+    EventWeights::Register("MC_weight", MC_weight);
+    EventWeights::Register("muonID_05", muonID_05);
+    EventWeights::Register("double_weight", double_weight);
+    EventWeights::Register("luminosity_scale", luminosity_scale);
+
     // get nominal value
     std::vector<double> MC_th1d_nominal;
-    ObtainWeight = MyScaleFunction_correction_halfsplit;
    
     // reset histograms
     data_th1d->Reset();
@@ -520,9 +252,6 @@ int main(int argc, char* argv[]) {
     MC_th1d_nominal.push_back(bkg_MC_th1d->GetBinContent(1));
     MC_th1d_nominal.push_back(bkg_MC_th1d->GetBinContent(2));
 
-    // get fluctuated value
-    ObtainWeight = MyScaleFunction_correction_fluctuation_halfsplit;
-
     // print output
     FILE* fp;
     fp = fopen((std::string(argv[3]) + "/luminosity_toys_" + std::string(argv[5]) + ".csv").c_str(), "w");
@@ -535,7 +264,7 @@ int main(int argc, char* argv[]) {
         bkg_MC_th1d->Reset();
 
         // fluctuate luminosity
-        FluctuateLuminosity();
+        EventWeights::Fluctuate("luminosity_scale");
 
         // we do not open the box, so I just use background MC
         FillHistogram(argv[1], argv[2], data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err, background_list, signal_list, background_list);

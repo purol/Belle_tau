@@ -196,6 +196,35 @@ EventWeight muonID_05 = EventWeight(
     true
 );
 
+EventWeight luminosity_scale = EventWeight(
+    { "MyEnergyType" },
+    {
+        { 0.5 },
+        { 1.5 },
+        { 5.5 }
+    },
+    {
+        { 1.5 },
+        { 2.5 },
+        { 6.5 }
+    },
+    {
+        1.0,
+        1.0,
+        1.0
+    },
+    {
+        { (lumi_BelleII_4S_uncertainty / lumi_BelleII_4S), (lumi_BelleII_off_uncertainty / lumi_BelleII_off), (lumi_BelleII_10810_uncertainty / lumi_BelleII_10810) }
+    },
+    {
+        { (lumi_BelleII_4S_uncertainty / lumi_BelleII_4S), (lumi_BelleII_off_uncertainty / lumi_BelleII_off), (lumi_BelleII_10810_uncertainty / lumi_BelleII_10810) }
+    },
+    {
+        false
+    },
+    false
+);
+
 /* legacy code
 double MyScaleFunction(std::deque<Data>::iterator data_, std::vector<std::string> variable_names_) {
 
