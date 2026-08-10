@@ -88,6 +88,9 @@ int main(int argc, char* argv[]) {
     loader.ConditionalPairDefineNewVariable(momentum_theta, 0, "first_muon_theta");
     loader.ConditionalPairDefineNewVariable(momentum_theta, 1, "second_muon_theta");
     loader.ConditionalPairDefineNewVariable(momentum_theta, 2, "third_muon_theta");
+    loader.ConditionalPairDefineNewVariable(momentum_charge, 0, "first_muon_charge");
+    loader.ConditionalPairDefineNewVariable(momentum_charge, 1, "second_muon_charge");
+    loader.ConditionalPairDefineNewVariable(momentum_charge, 2, "third_muon_charge");
     loader.DefineNewVariable("charge*roeCharge__bocleanMask__bc", "charge_times_ROEcharge");
     loader.DefineNewVariable("(flightTime/flightTimeErr)", "flightTime_dividedby_flightTimeErr");
     loader.GetAverage(cosToThrustOfEvent_CM, "avg_cosToThrustOfEvent_CM");

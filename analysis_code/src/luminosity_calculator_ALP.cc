@@ -74,6 +74,7 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_data.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} }); /* After box open, it should be removed! */
     loader_data.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} }); /* After box open, it should be removed! */
     loader_data.AddWeight("double_weight"); /* After box open, it should be removed! */
+    loader_data.AddWeight("KS0_tracking", { {"theta", "extraInfo__boALP_theta__bc"}, {"momentum", "p_ALP"}, {"distance", "extraInfo__boALP_distance__bc"} }); /* After box open, it should be removed! */
     loader_data.AddWeight("luminosity_scale", { {"MyEnergyType", "MyEnergyType"} }); /* After box open, it should be removed! */
     loader_data.Cut(cut_region.c_str());
     loader_data.Cut(cut_m_alpha.c_str());
@@ -90,6 +91,7 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_signal.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} });
     loader_signal.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} });
     loader_signal.AddWeight("double_weight");
+    loader_signal.AddWeight("KS0_tracking", { {"theta", "extraInfo__boALP_theta__bc"}, {"momentum", "p_ALP"}, {"distance", "extraInfo__boALP_distance__bc"} });
     loader_signal.AddWeight("luminosity_scale", { {"MyEnergyType", "MyEnergyType"} });
     loader_signal.Cut(cut_region.c_str());
     loader_signal.Cut(cut_m_alpha.c_str());
@@ -106,6 +108,8 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_bkg.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} });
     loader_bkg.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} });
     loader_bkg.AddWeight("double_weight");
+    loader_bkg.AddWeight("KS0_tracking", { {"theta", "extraInfo__boALP_theta__bc"}, {"momentum", "p_ALP"}, {"distance", "extraInfo__boALP_distance__bc"} });
+    loader_bkg.AddWeight("luminosity_scale");
     loader_bkg.AddWeight("luminosity_scale", { {"MyEnergyType", "MyEnergyType"} });
     loader_bkg.Cut(cut_region.c_str());
     loader_bkg.Cut(cut_m_alpha.c_str());
@@ -233,6 +237,7 @@ int main(int argc, char* argv[]) {
     EventWeights::Register("MC_weight", MC_weight);
     EventWeights::Register("muonID_05", muonID_05);
     EventWeights::Register("double_weight", double_weight);
+    EventWeights::Register("KS0_tracking", KS0_tracking);
     EventWeights::Register("luminosity_scale", luminosity_scale);
 
     // get nominal value

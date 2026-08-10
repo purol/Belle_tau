@@ -83,11 +83,15 @@ int main(int argc, char* argv[]) {
     loader.ConditionalPairDefineNewVariable(momentum_theta, 0, "first_muon_theta");
     loader.ConditionalPairDefineNewVariable(momentum_theta, 1, "second_muon_theta");
     loader.ConditionalPairDefineNewVariable(momentum_theta, 2, "third_muon_theta");
+    loader.ConditionalPairDefineNewVariable(momentum_charge, 0, "first_muon_charge");
+    loader.ConditionalPairDefineNewVariable(momentum_charge, 1, "second_muon_charge");
+    loader.ConditionalPairDefineNewVariable(momentum_charge, 2, "third_muon_charge");
     loader.DefineNewVariable("charge*roeCharge__bocleanMask__bc", "charge_times_ROEcharge");
     loader.DefineNewVariable("(flightTime/flightTimeErr)", "flightTime_dividedby_flightTimeErr");
     loader.GetAverage(cosToThrustOfEvent_CM, "avg_cosToThrustOfEvent_CM");
     loader.GetStdDev(cosToThrustOfEvent_CM, "stddev_cosToThrustOfEvent_CM");
     loader.GetDiff(cosToThrustOfEvent_CM, 0, "diff_cosToThrustOfEvent_CM");
+    loader.DefineNewVariable("(extraInfo__boALP_px__bc*extraInfo__boALP_px__bc + extraInfo__boALP_py__bc*extraInfo__boALP_py__bc + extraInfo__boALP_pz__bc*extraInfo__boALP_pz__bc)^(0.5)", "p_ALP");
 
     loader.PrintInformation("========== initial ==========");
 

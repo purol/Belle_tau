@@ -225,6 +225,14 @@ EventWeight luminosity_scale = EventWeight(
     false
 );
 
+EventWeight KS0_tracking = EventWeight(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/KS0_tracking_csv/MC15rd/KS0_tracking_correction_MC15rd_converted.csv",
+    { {"theta", "thetamin", "thetamax"},  {"momentum", "pmin","pmax"}, {"distance", "dmin","dmax"} },
+    "w",
+    { {"w_e_stat", "w_e_stat", false}, {"w_e_syst", "w_e_syst", false} },
+    true
+);
+
 /* legacy code
 double MyScaleFunction(std::deque<Data>::iterator data_, std::vector<std::string> variable_names_) {
 
