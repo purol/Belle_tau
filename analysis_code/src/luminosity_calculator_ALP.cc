@@ -109,7 +109,6 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_bkg.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} });
     loader_bkg.AddWeight("double_weight");
     loader_bkg.AddWeight("KS0_tracking", { {"theta", "extraInfo__boALP_theta__bc"}, {"momentum", "p_ALP"}, {"distance", "extraInfo__boALP_distance__bc"} });
-    loader_bkg.AddWeight("luminosity_scale");
     loader_bkg.AddWeight("luminosity_scale", { {"MyEnergyType", "MyEnergyType"} });
     loader_bkg.Cut(cut_region.c_str());
     loader_bkg.Cut(cut_m_alpha.c_str());
