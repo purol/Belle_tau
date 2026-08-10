@@ -14,6 +14,7 @@
 #include "TSystemFile.h"
 #include "TString.h"
 #include "TCollection.h"
+#include "TH1.h"
 
 
 void ReadResolution(const char* filename_, double* deltaE_peak_, double* deltaE_left_sigma_, double* deltaE_right_sigma_, double* M_peak_, double* M_left_sigma_, double* M_right_sigma_, double* theta_) {
@@ -196,6 +197,121 @@ std::vector<std::string> split(const std::string& s, char delimiter) {
     }
 
     return result;
+}
+
+void ReadPCA(const char* filename, TH1D* signal_MC_th1d_nominal, TH1D* bkg_MC_th1d_nominal, const char* syst_name, std::vector<TH1D*>* signal_MC_th1d_syst, std::vector<TH1D*>* bkg_MC_th1d_syst) {
+    FILE* fp = fopen(filename, "r");
+
+    int Nbin = -1;
+    int NComponent = -1;
+    std::vector<double> eigen_values;
+    std::vector<std::vector<double>> eigen_vectors;
+
+    fscanf(fp, "%d,%d\n", &Nbin, &NComponent);
+    for (int i = 0; i < NComponent; i++) {
+        double eigen_value = -1;
+        fscanf(fp, "%lf\n", &eigen_value);
+        eigen_values.push_back(eigen_value);
+
+        std::vector<double> eigen_vector;
+        for (int j = 0; j < Nbin; j++) {
+            double element = -1;
+            fscanf(fp, "%lf\n", &element);
+            eigen_vector.push_back(element);
+        }
+        eigen_vectors.push_back(eigen_vector);
+    }
+    fclose(fp);
+
+    if (Nbin != (signal_MC_th1d_nominal->GetNbinsX() + bkg_MC_th1d_nominal->GetNbinsX())) {
+        throw std::runtime_error("[ReadToys] Unexpected Nbin value");
+    }
+
+    for (int i = 0; i < NComponent; i++) {
+
+        std::string hist_name_signal = std::string("signal_hist_") + syst_name;
+        std::string hist_name_bkg = std::string("bkg_hist_") + syst_name;
+
+        TH1D* temp_signal_p = new TH1D((hist_name_signal + "_p_" + std::to_string(i)).c_str(), ";;", signal_MC_th1d_nominal->GetNbinsX(), signal_MC_th1d_nominal->GetXaxis()->GetXmin(), signal_MC_th1d_nominal->GetXaxis()->GetXmax());
+        for (int j = 0; j < signal_MC_th1d_nominal->GetNbinsX(); j++) {
+            temp_signal_p->SetBinContent(j + 1, (1.0 + eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinContent(j + 1));
+            temp_signal_p->SetBinError(j + 1, (1.0 + eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinError(j + 1));
+        }
+        signal_MC_th1d_syst->push_back(temp_signal_p);
+
+        TH1D* temp_signal_n = new TH1D((hist_name_signal + "_n_" + std::to_string(i)).c_str(), ";;", signal_MC_th1d_nominal->GetNbinsX(), signal_MC_th1d_nominal->GetXaxis()->GetXmin(), signal_MC_th1d_nominal->GetXaxis()->GetXmax());
+        for (int j = 0; j < signal_MC_th1d_nominal->GetNbinsX(); j++) {
+            temp_signal_n->SetBinContent(j + 1, (1.0 - eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinContent(j + 1));
+            temp_signal_n->SetBinError(j + 1, (1.0 - eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinError(j + 1));
+        }
+        signal_MC_th1d_syst->push_back(temp_signal_n);
+
+        TH1D* temp_bkg_p = new TH1D((hist_name_bkg + "_p_" + std::to_string(i)).c_str(), ";;", bkg_MC_th1d_nominal->GetNbinsX(), bkg_MC_th1d_nominal->GetXaxis()->GetXmin(), bkg_MC_th1d_nominal->GetXaxis()->GetXmax());
+        for (int j = 0; j < bkg_MC_th1d_nominal->GetNbinsX(); j++) {
+            temp_bkg_p->SetBinContent(j + 1, (1.0 + eigen_values.at(i) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX())) * bkg_MC_th1d_nominal->GetBinContent(j + 1));
+            temp_bkg_p->SetBinError(j + 1, (1.0 + eigen_values.at(i) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX())) * bkg_MC_th1d_nominal->GetBinError(j + 1));
+        }
+        bkg_MC_th1d_syst->push_back(temp_bkg_p);
+
+        TH1D* temp_bkg_n = new TH1D((hist_name_bkg + "_n_" + std::to_string(i)).c_str(), ";;", bkg_MC_th1d_nominal->GetNbinsX(), bkg_MC_th1d_nominal->GetXaxis()->GetXmin(), bkg_MC_th1d_nominal->GetXaxis()->GetXmax());
+        for (int j = 0; j < bkg_MC_th1d_nominal->GetNbinsX(); j++) {
+            temp_bkg_n->SetBinContent(j + 1, (1.0 - eigen_values.at(i) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX())) * bkg_MC_th1d_nominal->GetBinContent(j + 1));
+            temp_bkg_n->SetBinError(j + 1, (1.0 - eigen_values.at(i) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX())) * bkg_MC_th1d_nominal->GetBinError(j + 1));
+        }
+        bkg_MC_th1d_syst->push_back(temp_bkg_n);
+
+    }
+
+}
+
+void ReadPCA(const char* filename, TH1D* signal_MC_th1d_nominal, const char* syst_name, std::vector<TH1D*>* signal_MC_th1d_syst) {
+    FILE* fp = fopen(filename, "r");
+
+    int Nbin = -1;
+    int NComponent = -1;
+    std::vector<double> eigen_values;
+    std::vector<std::vector<double>> eigen_vectors;
+
+    fscanf(fp, "%d,%d\n", &Nbin, &NComponent);
+    for (int i = 0; i < NComponent; i++) {
+        double eigen_value = -1;
+        fscanf(fp, "%lf\n", &eigen_value);
+        eigen_values.push_back(eigen_value);
+
+        std::vector<double> eigen_vector;
+        for (int j = 0; j < Nbin; j++) {
+            double element = -1;
+            fscanf(fp, "%lf\n", &element);
+            eigen_vector.push_back(element);
+        }
+        eigen_vectors.push_back(eigen_vector);
+    }
+    fclose(fp);
+
+    if (Nbin != signal_MC_th1d_nominal->GetNbinsX()) {
+        throw std::runtime_error("[ReadToys] Unexpected Nbin value");
+    }
+
+    for (int i = 0; i < NComponent; i++) {
+
+        std::string hist_name_signal = std::string("signal_hist_") + syst_name;
+
+        TH1D* temp_signal_p = new TH1D((hist_name_signal + "_p_" + std::to_string(i)).c_str(), ";;", signal_MC_th1d_nominal->GetNbinsX(), signal_MC_th1d_nominal->GetXaxis()->GetXmin(), signal_MC_th1d_nominal->GetXaxis()->GetXmax());
+        for (int j = 0; j < signal_MC_th1d_nominal->GetNbinsX(); j++) {
+            temp_signal_p->SetBinContent(j + 1, (1.0 + eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinContent(j + 1));
+            temp_signal_p->SetBinError(j + 1, (1.0 + eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinError(j + 1));
+        }
+        signal_MC_th1d_syst->push_back(temp_signal_p);
+
+        TH1D* temp_signal_n = new TH1D((hist_name_signal + "_n_" + std::to_string(i)).c_str(), ";;", signal_MC_th1d_nominal->GetNbinsX(), signal_MC_th1d_nominal->GetXaxis()->GetXmin(), signal_MC_th1d_nominal->GetXaxis()->GetXmax());
+        for (int j = 0; j < signal_MC_th1d_nominal->GetNbinsX(); j++) {
+            temp_signal_n->SetBinContent(j + 1, (1.0 - eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinContent(j + 1));
+            temp_signal_n->SetBinError(j + 1, (1.0 - eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinError(j + 1));
+        }
+        signal_MC_th1d_syst->push_back(temp_signal_n);
+
+    }
+
 }
 
 #endif 

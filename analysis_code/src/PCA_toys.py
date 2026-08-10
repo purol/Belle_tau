@@ -24,11 +24,17 @@ def covariance_to_correlation(cov_matrix):
 parser = argparse.ArgumentParser()
 parser.add_argument('--input_file', required=True, type=str, help='input path + input file name')
 parser.add_argument('--output_file', required=True, type=str, help='output path + output file name')
+parser.add_argument("--half_only", action="store_true", help="Analyze half of the first columns")
 args = parser.parse_args()
 
 # Load CSV file
 df = pd.read_csv(args.input_file, header=None)  # No header in your data
 num_samples, num_features = df.shape
+
+# If there is half only flag, analyze half of them only
+if args.half_only:
+    num_features = num_features // 2
+    df = df.iloc[:, :num_features]
 
 # Compute correlation matrix before PCA
 corr_before = df.corr()
@@ -80,15 +86,15 @@ print("cov diff:", cov_diff)
 with open(args.output_file, "w") as file:
     file.write("%d,%d\n" % (num_features, dim))
     for i in range(dim):
-        file.write("%f\n" % np.sqrt(eigenvalues_selected[i]))
+        file.write("%.17g\n" % np.sqrt(eigenvalues_selected[i]))
         for j in range(num_features):
-            file.write("%f\n" % eigenvectors_selected[i][j])
+            file.write("%.17g\n" % eigenvectors_selected[i][j])
 
 with open(args.output_file + "_remain", "w") as file:
     file.write("%d\n" % (num_features))
     for i in range(num_features):
         if (cov_diff[i][i] > 0):
-            file.write("%f\n" % np.sqrt(cov_diff[i][i]))
+            file.write("%.17g\n" % np.sqrt(cov_diff[i][i]))
         else:
             file.write("0.0\n")
         

@@ -276,71 +276,6 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
     data_th1d_->SetBinError(2, std::sqrt(data_th1d_->GetBinContent(2)));
 }
 
-void ReadPCA(const char* filename, TH1D* signal_MC_th1d_nominal, TH1D* bkg_MC_th1d_nominal, const char* syst_name, std::vector<TH1D*>* signal_MC_th1d_syst, std::vector<TH1D*>* bkg_MC_th1d_syst) {
-    FILE* fp = fopen(filename, "r");
-
-    int Nbin = -1;
-    int NComponent = -1;
-    std::vector<double> eigen_values;
-    std::vector<std::vector<double>> eigen_vectors;
-
-    fscanf(fp, "%d,%d\n", &Nbin, &NComponent);
-    for (int i = 0; i < NComponent; i++) {
-        double eigen_value = -1;
-        fscanf(fp, "%lf\n", &eigen_value);
-        eigen_values.push_back(eigen_value);
-
-        std::vector<double> eigen_vector;
-        for (int j = 0; j < Nbin; j++) {
-            double element = -1;
-            fscanf(fp, "%lf\n", &element);
-            eigen_vector.push_back(element);
-        }
-        eigen_vectors.push_back(eigen_vector);
-    }
-    fclose(fp);
-
-    if (Nbin != (signal_MC_th1d_nominal->GetNbinsX() + bkg_MC_th1d_nominal->GetNbinsX())) {
-        throw std::runtime_error("[ReadToys] Unexpected Nbin value");
-    }
-
-    for (int i = 0; i < NComponent; i++) {
-
-        std::string hist_name_signal = std::string("signal_hist_") + syst_name;
-        std::string hist_name_bkg = std::string("bkg_hist_") + syst_name;
-
-        TH1D* temp_signal_p = new TH1D((hist_name_signal + "_p_" + std::to_string(i)).c_str(), ";;", signal_MC_th1d_nominal->GetNbinsX(), signal_MC_th1d_nominal->GetXaxis()->GetXmin(), signal_MC_th1d_nominal->GetXaxis()->GetXmax());
-        for (int j = 0; j < signal_MC_th1d_nominal->GetNbinsX(); j++) {
-            temp_signal_p->SetBinContent(j + 1, (1.0 + eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinContent(j + 1));
-            temp_signal_p->SetBinError(j + 1, (1.0 + eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinError(j + 1));
-        }
-        signal_MC_th1d_syst->push_back(temp_signal_p);
-
-        TH1D* temp_signal_n = new TH1D((hist_name_signal + "_n_" + std::to_string(i)).c_str(), ";;", signal_MC_th1d_nominal->GetNbinsX(), signal_MC_th1d_nominal->GetXaxis()->GetXmin(), signal_MC_th1d_nominal->GetXaxis()->GetXmax());
-        for (int j = 0; j < signal_MC_th1d_nominal->GetNbinsX(); j++) {
-            temp_signal_n->SetBinContent(j + 1, (1.0 - eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinContent(j + 1));
-            temp_signal_n->SetBinError(j + 1, (1.0 - eigen_values.at(i) * eigen_vectors.at(i).at(j)) * signal_MC_th1d_nominal->GetBinError(j + 1));
-        }
-        signal_MC_th1d_syst->push_back(temp_signal_n);
-
-        TH1D* temp_bkg_p = new TH1D((hist_name_bkg + "_p_" + std::to_string(i)).c_str(), ";;", bkg_MC_th1d_nominal->GetNbinsX(), bkg_MC_th1d_nominal->GetXaxis()->GetXmin(), bkg_MC_th1d_nominal->GetXaxis()->GetXmax());
-        for (int j = 0; j < bkg_MC_th1d_nominal->GetNbinsX(); j++) {
-            temp_bkg_p->SetBinContent(j + 1, (1.0 + eigen_values.at(i) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX())) * bkg_MC_th1d_nominal->GetBinContent(j + 1));
-            temp_bkg_p->SetBinError(j + 1, (1.0 + eigen_values.at(i) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX())) * bkg_MC_th1d_nominal->GetBinError(j + 1));
-        }
-        bkg_MC_th1d_syst->push_back(temp_bkg_p);
-
-        TH1D* temp_bkg_n = new TH1D((hist_name_bkg + "_n_" + std::to_string(i)).c_str(), ";;", bkg_MC_th1d_nominal->GetNbinsX(), bkg_MC_th1d_nominal->GetXaxis()->GetXmin(), bkg_MC_th1d_nominal->GetXaxis()->GetXmax());
-        for (int j = 0; j < bkg_MC_th1d_nominal->GetNbinsX(); j++) {
-            temp_bkg_n->SetBinContent(j + 1, (1.0 - eigen_values.at(i) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX())) * bkg_MC_th1d_nominal->GetBinContent(j + 1));
-            temp_bkg_n->SetBinError(j + 1, (1.0 - eigen_values.at(i) * eigen_vectors.at(i).at(j + signal_MC_th1d_nominal->GetNbinsX())) * bkg_MC_th1d_nominal->GetBinError(j + 1));
-        }
-        bkg_MC_th1d_syst->push_back(temp_bkg_n);
-
-    }
-
-}
-
 double BDT_cut_1_g = -1;
 double BDT_cut_2_g = -1;
 
@@ -717,13 +652,13 @@ int main(int argc, char* argv[]) {
     FillHistogram(argv[1], argv[2], data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err, background_list, signal_list, background_list);
 
     // muonID histogram
-    ReadPCA((std::string(argv[1]) + "/muonID_PCA_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B)).c_str(), signal_MC_th1d, bkg_MC_th1d, "muonID", &signal_MC_th1d_muonID, &bkg_MC_th1d_muonID);
+    ReadPCA((std::string(argv[1]) + "/muonID_PCA_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B)).c_str(), signal_MC_th1d, "muonID", &signal_MC_th1d_muonID);
 
     // luminosity histogram
-    ReadPCA((std::string(argv[1]) + "/luminosity_PCA_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B)).c_str(), signal_MC_th1d, bkg_MC_th1d, "luminosity", &signal_MC_th1d_luminosity, &bkg_MC_th1d_luminosity);
+    ReadPCA((std::string(argv[1]) + "/luminosity_PCA_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B)).c_str(), signal_MC_th1d, "luminosity", &signal_MC_th1d_luminosity);
 
     // KS0 tracking histogram
-    ReadPCA((std::string(argv[1]) + "/KS0_PCA_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B)).c_str(), signal_MC_th1d, bkg_MC_th1d, "KS0_PCA", &signal_MC_th1d_KS0_PCA, &bkg_MC_th1d_KS0_PCA);
+    ReadPCA((std::string(argv[1]) + "/KS0_PCA_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B)).c_str(), signal_MC_th1d, "KS0_PCA", &signal_MC_th1d_KS0_PCA);
 
     // SR fluctuation
     FillHistogram_fluc_SR(argv[1], argv[2], data_pos_M_th1d, signal_pos_M_MC_th1d, bkg_pos_M_MC_th1d, background_list, signal_list, background_list, 0);

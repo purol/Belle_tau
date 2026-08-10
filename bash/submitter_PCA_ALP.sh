@@ -18,7 +18,7 @@ submit_code() {
 
     cat "./${VerName}/${Analysis_VerName}/cal_out_${mass}_${life}_${A}_${B}/${toys_name}"*csv > "./${VerName}/${Analysis_VerName}/${toys_name}_${mass}_${life}_${A}_${B}.csv"
 
-    bsub -q s -J PCA -o "./${VerName}/${Analysis_VerName}/${toys_name}_cal_${mass}_${life}_${A}_${B}.log" ${Code} --input_file "./${VerName}/${Analysis_VerName}/${toys_name}_${mass}_${life}_${A}_${B}.csv" --output_file "./${VerName}/${Analysis_VerName}/${output_name}_${mass}_${life}_${A}_${B}"
+    bsub -q s -J PCA -o "./${VerName}/${Analysis_VerName}/${toys_name}_cal_${mass}_${life}_${A}_${B}.log" ${Code} --half_only --input_file "./${VerName}/${Analysis_VerName}/${toys_name}_${mass}_${life}_${A}_${B}.csv" --output_file "./${VerName}/${Analysis_VerName}/${output_name}_${mass}_${life}_${A}_${B}"
 
   done
 }
