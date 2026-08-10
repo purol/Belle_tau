@@ -314,4 +314,30 @@ void ReadPCA(const char* filename, TH1D* signal_MC_th1d_nominal, const char* sys
 
 }
 
+void ReadPCA_remain(const char* filename, TH1D* signal_MC_th1d_nominal, TH1D* signal_MC_th1d_relative_syst) {
+    FILE* fp = fopen(filename, "r");
+
+    int Nbin = -1;
+
+    std::vector<double> relative_uncertainties;
+
+    fscanf(fp, "%d\n", &Nbin);
+    for(int i = 0; i < Nbin; i++) {
+        double element = -1;
+        fscanf("%lf\n", &element);
+        relative_uncertainties.push_back(element);
+    }
+    fclose(fp);
+
+    if (Nbin != signal_MC_th1d_nominal->GetNbinsX()) {
+        throw std::runtime_error("[ReadPCA_remain] Unexpected Nbin value");
+    }
+
+    for(int i = 0; i < Nbin; i++) {
+        double previous_relative_error = signal_MC_th1d_relative_syst->GetBinContent(i + 1);
+        signal_MC_th1d_relative_syst->SetBinContent(i + 1, std::sqrt(previous_relative_error * previous_relative_error + relative_uncertainties.at(i) * relative_uncertainties.at(i)));
+    }
+
+}
+
 #endif 
