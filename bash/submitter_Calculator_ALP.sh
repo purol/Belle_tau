@@ -38,3 +38,9 @@ for i in {0..99}; do
     submit_code ${code} ${Analysis_Name} ${NToys} ${i} "L_calculator"
 done
 
+code="${Belle_tau_DIR}/analysis_code/bin/KS0_calculator_ALP"
+NToys=1
+for i in {0..99}; do
+    submit_code ${code} ${Analysis_Name} ${NToys} ${i} "KS0_calculator"
+done
+

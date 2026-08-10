@@ -35,3 +35,8 @@ toys="luminosity_toys"
 output_name="luminosity_PCA"
 submit_code ${code} ${Analysis_Name} ${toys} ${output_name}
 
+code="${Belle_tau_DIR}/analysis_code/src/PCA_toys.py"
+toys="KS0_toys"
+output_name="KS0_PCA"
+submit_code ${code} ${Analysis_Name} ${toys} ${output_name}
+

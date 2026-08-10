@@ -684,6 +684,9 @@ int main(int argc, char* argv[]) {
     std::vector<TH1D*> signal_MC_th1d_luminosity;
     std::vector<TH1D*> bkg_MC_th1d_luminosity;
 
+    std::vector<TH1D*> signal_MC_th1d_KS0;
+    std::vector<TH1D*> bkg_MC_th1d_KS0;
+
     std::vector<std::string> signal_list = split(argv[7], ':');
     std::vector<std::string> background_list = split(argv[8], ':');
 
@@ -718,6 +721,9 @@ int main(int argc, char* argv[]) {
 
     // luminosity histogram
     ReadPCA((std::string(argv[1]) + "/luminosity_PCA_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B)).c_str(), signal_MC_th1d, bkg_MC_th1d, "luminosity", &signal_MC_th1d_luminosity, &bkg_MC_th1d_luminosity);
+
+    // KS0 tracking histogram
+    ReadPCA((std::string(argv[1]) + "/KS0_PCA_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B)).c_str(), signal_MC_th1d, bkg_MC_th1d, "KS0_PCA", &signal_MC_th1d_KS0_PCA, &bkg_MC_th1d_KS0_PCA);
 
     // SR fluctuation
     FillHistogram_fluc_SR(argv[1], argv[2], data_pos_M_th1d, signal_pos_M_MC_th1d, bkg_pos_M_MC_th1d, background_list, signal_list, background_list, 0);
@@ -784,6 +790,9 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < signal_MC_th1d_luminosity.size(); i++) signal_MC_th1d_luminosity.at(i)->Write();
     for (int i = 0; i < bkg_MC_th1d_luminosity.size(); i++) bkg_MC_th1d_luminosity.at(i)->Write();
 
+    for (int i = 0; i < signal_MC_th1d_KS0.size(); i++) signal_MC_th1d_KS0.at(i)->Write();
+    for (int i = 0; i < bkg_MC_th1d_KS0.size(); i++) bkg_MC_th1d_KS0.at(i)->Write();
+
     file->Close();
 
 
@@ -812,6 +821,7 @@ int main(int argc, char* argv[]) {
     signal_Belle_II.AddOverallSys("cross_section", 1.0 - tau_crosssection_4S_reluncertainty, 1.0 + tau_crosssection_4S_reluncertainty);
     for (int i = 0; i < signal_MC_th1d_muonID.size() / 2; i++) signal_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("signal_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".root").c_str(), "", ("signal_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".root").c_str(), "");
     for (int i = 0; i < signal_MC_th1d_luminosity.size() / 2; i++) signal_Belle_II.AddHistoSys(("luminosity_" + std::to_string(i)).c_str(), ("signal_hist_luminosity_n_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".root").c_str(), "", ("signal_hist_luminosity_p_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".root").c_str(), "");
+    for (int i = 0; i < signal_MC_th1d_KS0.size() / 2; i++) signal_Belle_II.AddHistoSys(("KS0_" + std::to_string(i)).c_str(), ("signal_hist_KS0_n_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".root").c_str(), "", ("signal_hist_KS0_p_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".root").c_str(), "");
     signal_Belle_II.SetNormalizeByTheory(false);
 
     RooStats::HistFactory::Sample bkg_Belle_II("bkg_Belle_II", "bkg_ABCD_th1d", (std::string(argv[6]) + "/histogram_output_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".root").c_str());
