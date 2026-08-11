@@ -324,7 +324,7 @@ void ReadPCA_remain(const char* filename, TH1D* signal_MC_th1d_nominal, TH1D* si
     fscanf(fp, "%d\n", &Nbin);
     for(int i = 0; i < Nbin; i++) {
         double element = -1;
-        fscanf("%lf\n", &element);
+        fscanf(fp, "%lf\n", &element);
         relative_uncertainties.push_back(element);
     }
     fclose(fp);
