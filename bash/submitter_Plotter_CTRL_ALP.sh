@@ -154,9 +154,6 @@ Directories=(
     "before_diffthrust_cut"
     "before_avgthrust_cut"
     "before_missingEnergy_cut"
-    "before_flighttime_cut"
-    "before_significance_distance_cut"
-    "before_KS0_M_cut"
     "before_strict_M_deltaE_selection"
     "final_output"
 )
