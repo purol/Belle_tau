@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
     Loader loader("tau_lfv");
 
     // It is prompt decay analysis
-    loader.LoadWithCut(argv[1], argv[2], "label", "(29.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 30.5)");
+    loader.LoadWithCut(argv[1], argv[2], "label", "(19.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 20.5)");
     loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
 
     loader.RemoveVariable({ "nParticlesInList__botau__pl__clpipipi__bc" });
@@ -116,16 +116,16 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== trigger ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_PrimarypionID_selection").c_str(), "", "");
-    loader.Cut("0.1 < first_muon_pionID");
-    loader.PrintInformation("========== 0.1 < pionID for leading muon ==========");
+    loader.Cut("0.9 < first_muon_pionID");
+    loader.PrintInformation("========== 0.9 < pionID for leading muon ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_SecondarypionID_selection").c_str(), "", "");
-    loader.Cut("0.1 < second_muon_pionID");
-    loader.PrintInformation("========== 0.1 < pionID for secondary muon ==========");
+    loader.Cut("0.9 < second_muon_pionID");
+    loader.PrintInformation("========== 0.9 < pionID for secondary muon ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_ThirdpionID_selection").c_str(), "", "");
-    loader.Cut("0.1 < third_muon_pionID");
-    loader.PrintInformation("========== 0.1 < pionID for third muon ==========");
+    loader.Cut("0.9 < third_muon_pionID");
+    loader.PrintInformation("========== 0.9 < pionID for third muon ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_SecondarymuonP_selection").c_str(), "", "");
     loader.Cut("0.3 < second_muon_p");
@@ -157,27 +157,12 @@ int main(int argc, char* argv[]) {
     loader.Cut("missingEnergyOfEventCMS > 0.0");
     loader.PrintInformation("========== missing Energy CMS > 0.0 GeV ==========");
 
-    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_flighttime_cut").c_str(), "", "");
-    loader.Cut("extraInfo__boALP_flightTime__bc > 0.0");
-    loader.PrintInformation("========== flighttime of KS0 > 0 ==========");
-
-    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_significance_distance_cut").c_str(), "", "");
-    loader.Cut("extraInfo__boALP_significanceOfDistance__bc > 10.0");
-    loader.PrintInformation("========== significance of distance of KS0 > 10 ==========");
-
-    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_KS0_M_cut").c_str(), "", "");
-    loader.Cut("(extraInfo__boALP_M__bc > 0.487611) && (extraInfo__boALP_M__bc < 0.507611)");
-    loader.PrintInformation("========== deltaM of KS0 < 0.01 GeV ==========");
-
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_strict_M_deltaE_selection").c_str(), "", "");
-    loader.Cut("(M > 0.8) && (M < 1.0) && (deltaE > -0.3)");
-    loader.PrintInformation("========== (0.8 < M < 1.0) and (deltaE > -0.3) ==========");
+    loader.Cut("(M > 0.9) && (deltaE > -0.3)");
+    loader.PrintInformation("========== (M > 0.9) and (deltaE > -0.3) ==========");
 
-    loader.Cut("missingEnergyOfEventCMS > 2.0");
-    loader.PrintInformation("========== missing Energy CMS > 2.0 GeV ==========");
-
-    loader.Cut("roeDeltae__bocleanMask__bc < -1.5");
-    loader.PrintInformation("========== roe Delta E < -1.5 GeV ==========");
+    loader.Cut("missingEnergyOfEventCMS > 0.5");
+    loader.PrintInformation("========== missing Energy CMS > 0.5 GeV ==========");
 
     loader.RandomBCS();
     loader.IsBCSValid();
