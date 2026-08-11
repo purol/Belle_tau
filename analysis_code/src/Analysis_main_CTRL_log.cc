@@ -153,10 +153,6 @@ int main(int argc, char* argv[]) {
     loader.Cut("missingEnergyOfEventCMS > 0.5");
     loader.PrintInformation("========== missing Energy CMS > 0.5 GeV ==========");
 
-    //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_leptonic_tag").c_str(), "", "");
-    loader.Cut("(extraInfo__bonROE_RemainingTracks_cleanMask__bc < 1.5) && (((extraInfo__bon_vpho_muID9__bc > 0.5) && (extraInfo__bon_vpho_muID9__bc < 1.5)) || ((extraInfo__bon_vpho_eID9__bc > 0.5) && (extraInfo__bon_vpho_eID9__bc < 1.5)))");
-    loader.PrintInformation("========== leptonic tag ==========");
-
     loader.RandomBCS();
     loader.IsBCSValid();
     loader.PrintInformation("========== Random BCS ==========");

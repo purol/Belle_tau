@@ -31,28 +31,6 @@ submit_Application() {
     done
   fi
 
-  mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/before_leptonic_tag_after_application"
-
-  if compgen -G "./${VerName}/${Analysis_VerName}/${SampleName}/before_leptonic_tag/*.root" > /dev/null; then
-    for file in "./${VerName}/${Analysis_VerName}/${SampleName}/before_leptonic_tag"/*.root; do
-      filename=$(basename "$file" .root) # without path, without extension
-      bsub -q l \
-      -J FBDTAPP \
-      -o "./${VerName}/${Analysis_VerName}/${SampleName}/before_leptonic_tag_after_application/${filename}_${SampleName}_${VerName}_${Analysis_VerName}.log" \
-      -e "./${VerName}/${Analysis_VerName}/${SampleName}/before_leptonic_tag_after_application/${filename}_${SampleName}_${VerName}_${Analysis_VerName}.err" \
-      ${Code} \
-      "${#input_variables_one[@]}" \
-      "${input_variables_one[@]}" \
-      "${#input_variables_two[@]}" \
-      "${input_variables_two[@]}" \
-      "./${VerName}/${Analysis_VerName}/${SampleName}/before_leptonic_tag" \
-      ${filename} \
-      "./${VerName}/${Analysis_VerName}/${SampleName}/before_leptonic_tag_after_application" \
-      "${FBDT_weight_DIR}/GridSearch_one" \
-      "${FBDT_weight_DIR}/GridSearch_two"
-    done
-  fi
-
 }
 
 IFS=':' read -r -a Types <<< "$Types_STR_WITH_SIGNAL"
