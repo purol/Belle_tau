@@ -220,5 +220,3 @@ fi
 bash ${shell_DIR}/submitter_Plotter_secondary_CTRL.sh
 
 bash ${shell_DIR}/submitter_FBDT_comparison_CTRL.sh
-
-bash ${shell_DIR}/submitter_FBDT_comparison_tagging_CTRL.sh
