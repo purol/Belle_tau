@@ -147,8 +147,8 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== missing Energy CMS > 0.0 GeV ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_strict_M_deltaE_selection").c_str(), "", "");
-    loader.Cut("deltaE > -0.3");
-    loader.PrintInformation("========== deltaE > -0.3 ==========");
+    loader.Cut("(M > 0.9) && (deltaE > -0.3)");
+    loader.PrintInformation("========== (M > 0.9) and (deltaE > -0.3) ==========");
 
     loader.Cut("missingEnergyOfEventCMS > 0.5");
     loader.PrintInformation("========== missing Energy CMS > 0.5 GeV ==========");
