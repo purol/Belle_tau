@@ -61,8 +61,6 @@ std::vector<std::string> cosToThrustOfEvent_CM = {
 int main(int argc, char* argv[]) {
     /*
     * argv[1]: dirname
-    * argv[2]: including string
-    * argv[3]: output path
     */
 
     EventWeights::Register("MC_weight", MC_weight);
@@ -70,8 +68,8 @@ int main(int argc, char* argv[]) {
     Loader loader("tau_lfv");
 
     // It is prompt decay analysis
-    loader.LoadWithCut(argv[1], argv[2], "label", "(0.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 1.5)");
-    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}});
+    loader.LoadWithCut(argv[1], "root", "label", "(0.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 1.5)");
+    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
 
     loader.ConditionalPairDefineNewVariable(momentum_muonmomentum, 0, "first_muon_p");
     loader.ConditionalPairDefineNewVariable(momentum_muonmomentum, 1, "second_muon_p");
@@ -112,9 +110,9 @@ int main(int argc, char* argv[]) {
     loader.Cut("(0.5 < L1PSNM__boffy__bc) || (0.5 < L1PSNM__bofyo__bc) || (0.5 < L1PSNM__bostt__bc) || (0.5 < L1PSNM__bohie__bc) || (0.5 < L1PSNM__bolml6__bc) || (0.5 < L1PSNM__bolml7__bc) || (0.5 < L1PSNM__bolml8__bc) || (0.5 < L1PSNM__bolml9__bc) || (0.5 < L1PSNM__bolml10__bc) || (0.5 < L1PSNM__bolml12__bc)");
     loader.PrintInformation("========== trigger ==========");
 
-    //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_PrimarymuonID_selection").c_str(), "", "");
-    loader.Cut("0.5 < first_muon_muonID");
-    loader.PrintInformation("========== 0.5 < muonID for leading muon ==========");
+    //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_SecondarymuonP_selection").c_str(), "", "");
+    loader.Cut("0.3 < second_muon_p");
+    loader.PrintInformation("========== 0.3 < muon momentum for secondary muon ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_theta_miss_cut").c_str(), "", "");
     //loader.DrawTH1D("missingMomentumOfEventCMS_theta", "theta_miss", "theta_miss.png");

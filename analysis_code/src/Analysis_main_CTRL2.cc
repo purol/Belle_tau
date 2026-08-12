@@ -112,9 +112,9 @@ int main(int argc, char* argv[]) {
     loader.Cut("(0.5 < L1PSNM__boffy__bc) || (0.5 < L1PSNM__bofyo__bc) || (0.5 < L1PSNM__bostt__bc) || (0.5 < L1PSNM__bohie__bc) || (0.5 < L1PSNM__bolml6__bc) || (0.5 < L1PSNM__bolml7__bc) || (0.5 < L1PSNM__bolml8__bc) || (0.5 < L1PSNM__bolml9__bc) || (0.5 < L1PSNM__bolml10__bc) || (0.5 < L1PSNM__bolml12__bc)");
     loader.PrintInformation("========== trigger ==========");
 
-    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_PrimarymuonID_selection").c_str(), "", "");
-    loader.Cut("0.5 < first_muon_muonID");
-    loader.PrintInformation("========== 0.5 < muonID for leading muon ==========");
+    loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_SecondarymuonP_selection").c_str(), "", "");
+    loader.Cut("0.3 < second_muon_p");
+    loader.PrintInformation("========== 0.3 < muon momentum for secondary muon ==========");
 
     loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_theta_miss_cut").c_str(), "", "");
     //loader.DrawTH1D("missingMomentumOfEventCMS_theta", "theta_miss", "theta_miss.png");

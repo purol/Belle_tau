@@ -7,7 +7,7 @@ submit_analysis() {
 
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}"
   #mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/before_M_deltaE_selection"
-  mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/before_PrimarypionID_selection"
+  mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/before_SecondarymuonP_selection"
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/before_theta_miss_cut"
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/before_thrust_cut"
   mkdir -p "./${VerName}/${Analysis_VerName}/${SampleName}/before_Eecl_cut"

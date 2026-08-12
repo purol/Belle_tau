@@ -33,8 +33,14 @@ int main(int argc, char* argv[]) {
     * argv[10]: sample2 list (separated by colon)
     * argv[11]: sample1 lable
     * argv[12]: sample2 lable
-    * argv[13]: M_deltaE path for tau -> mu mu mu decay
+    * argv[13]: {none|ratio}
+    * argv[14]: M_deltaE path for tau -> mu mu mu decay
     */
+
+    bool ThereIsRatio = false;
+    if(std::string(argv[13]) == "") ThereIsRatio = false;
+    else if(std::string(argv[13]) == "none") ThereIsRatio = false;
+    if(std::string(argv[13]) == "ratio") ThereIsRatio = true;
 
     double deltaE_peak;
     double deltaE_left_sigma;
@@ -44,7 +50,7 @@ int main(int argc, char* argv[]) {
     double M_right_sigma;
     double theta;
 
-    ReadResolution((std::string(argv[13]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+    ReadResolution((std::string(argv[14]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
     std::string variable_name(argv[1]);
 
@@ -95,30 +101,71 @@ int main(int argc, char* argv[]) {
 
     gStyle->SetOptStat(0);
 
-    TCanvas* c_temp = new TCanvas("c", "", 600, 600); c_temp->cd();
+    // draw plot
+    if(ThereIsRatio){
+        TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
-    double sample1_th_max = sample1_test_th->GetMaximum();
-    double sample2_th_max = sample2_test_th->GetMaximum();
+        TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.3, 1.0, 1.0);
+        pad1->SetBottomMargin(0.05); pad1->SetLeftMargin(0.15); pad1->SetGridx(); pad1->Draw(); pad1->cd();
 
-    if (sample1_th_max > sample2_th_max) sample2_test_th->SetMaximum(1.40 * sample1_th_max);
-    else sample2_test_th->SetMaximum(1.40 * sample2_th_max);
+        double sample1_th_max = sample1_test_th->GetMaximum();
+        double sample2_th_max = sample2_test_th->GetMaximum();
 
-    sample2_test_th->SetTitle(""); sample1_test_th->SetTitle("");
+        if (sample1_th_max > sample2_th_max) sample2_test_th->SetMaximum(1.40 * sample1_th_max);
+        else sample2_test_th->SetMaximum(1.40 * sample2_th_max);
 
-    sample2_test_th->Draw("Hist"); sample1_test_th->Draw("HistSAME");
+        sample2_test_th->SetTitle(""); sample1_test_th->SetTitle("");
 
-    TLegend* legend = new TLegend(0.9, 0.9, 0.6, 0.6);
-    legend->AddEntry(sample1_test_th, argv[11], "f");
-    legend->AddEntry(sample2_test_th, argv[12], "f");
-    legend->SetFillStyle(0); legend->SetLineWidth(0);
-    legend->Draw();
+        sample2_test_th->Draw("Hist"); sample1_test_th->Draw("HistSAME");
 
-    TLatex latex_pvalue;
-    latex_pvalue.SetNDC();
-    latex_pvalue.SetTextSize(0.04);
-    latex_pvalue.DrawLatex(0.15, 0.85, ("p-value = " + toStringWithPrecision(p_value, 3)).c_str());
+        TLegend* legend = new TLegend(0.9, 0.9, 0.6, 0.6);
+        legend->AddEntry(sample1_test_th, argv[11], "f");
+        legend->AddEntry(sample2_test_th, argv[12], "f");
+        legend->SetFillStyle(0); legend->SetLineWidth(0);
+        legend->Draw();
 
-    c_temp->SaveAs((std::string(argv[7]) + "/" + std::string(argv[8])).c_str());
+        TLatex latex_pvalue;
+        latex_pvalue.SetNDC();
+        latex_pvalue.SetTextSize(0.04);
+        latex_pvalue.DrawLatex(0.15, 0.85, ("p-value = " + toStringWithPrecision(p_value, 3)).c_str());
+
+        c_temp->cd();
+        TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3);
+        pad2->SetTopMargin(0.05); pad2->SetBottomMargin(0.3); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+
+        TH1D* ratio_th = new TH1D("ratio", (";" + variable_name + ";ratio").c_str(), atoi(argv[2]), atof(argv[3]), atof(argv[4]));
+        ratio_th->Divide(sample1_test_th, sample2_test_th);
+        ratio_th->Draw();
+
+        c_temp->SetBottomMargin(0.0);
+        c_temp->SaveAs((std::string(argv[7]) + "/" + std::string(argv[8])).c_str());
+    }
+    else{
+        TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
+
+        double sample1_th_max = sample1_test_th->GetMaximum();
+        double sample2_th_max = sample2_test_th->GetMaximum();
+
+        if (sample1_th_max > sample2_th_max) sample2_test_th->SetMaximum(1.40 * sample1_th_max);
+        else sample2_test_th->SetMaximum(1.40 * sample2_th_max);
+
+        sample2_test_th->SetTitle(""); sample1_test_th->SetTitle("");
+
+        sample2_test_th->Draw("Hist"); sample1_test_th->Draw("HistSAME");
+
+        TLegend* legend = new TLegend(0.9, 0.9, 0.6, 0.6);
+        legend->AddEntry(sample1_test_th, argv[11], "f");
+        legend->AddEntry(sample2_test_th, argv[12], "f");
+        legend->SetFillStyle(0); legend->SetLineWidth(0);
+        legend->Draw();
+
+        TLatex latex_pvalue;
+        latex_pvalue.SetNDC();
+        latex_pvalue.SetTextSize(0.04);
+        latex_pvalue.DrawLatex(0.15, 0.85, ("p-value = " + toStringWithPrecision(p_value, 3)).c_str());
+
+        c_temp->SaveAs((std::string(argv[7]) + "/" + std::string(argv[8])).c_str());
+    }
 
     return 0;
 }

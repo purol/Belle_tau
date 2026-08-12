@@ -98,6 +98,7 @@ input_variables_two=(
 
 export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Sanae/v000" # FBDT weight file path
 export FBDT_cut_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Sanae/v000" # FBDT cut file path
+export resolution_file_path="/home/belle2/junewoo/storage_ghi/tau_Analysis/Sanae/v000" # resolution file path
 # =================================================================================== #
 
 export shell_DIR="${Belle_tau_DIR}/bash"
@@ -207,3 +208,26 @@ if [[ $? -ne 0 ]]; then
   echo "Unsuccessful logs found. Stopping the one touch analysis."
   exit 1
 fi
+
+bash ${shell_DIR}/submitter_Analysis_second_CTRL2.sh
+wait_job "Analyze"
+
+bash ${shell_DIR}/checker_Analysis_second.sh
+if [[ $? -ne 0 ]]; then
+  echo "Unsuccessful logs found. Stopping the one touch analysis."
+  exit 1
+fi
+
+bash ${shell_DIR}/submitter_Plotter_CTRL2.sh
+
+bash ${shell_DIR}/submitter_FBDT_Application_CTRL.sh
+wait_job "FBDTAPP"
+bash ${shell_DIR}/checker_FBDT_Application_CTRL.sh
+if [[ $? -ne 0 ]]; then
+  echo "Unsuccessful logs found. Stopping the one touch analysis."
+  exit 1
+fi
+
+bash ${shell_DIR}/submitter_Plotter_secondary_CTRL.sh
+
+bash ${shell_DIR}/submitter_FBDT_comparison_CTRL2.sh

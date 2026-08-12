@@ -44,6 +44,7 @@ submit_Plotter() {
       "${Type2}" \
       "${Signal_Legends}" \
       "#tau#rightarrow#alpha#mu" \
+      "none" \
       "${FBDT_weight_DIR}" \
       "${mass}" \
       "${life}" \
