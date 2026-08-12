@@ -30,8 +30,8 @@ submit_Plotter() {
     "${OutputName}.png" \
     "${Type1}" \
     "${Type2}" \
-    "#piID sideband" \
-    "#tau#rightarrow#mu#mu#mu" \
+    "#piID sideband bkgs" \
+    "#tau#rightarrow#mu#mu#mu bkgs" \
     "ratio" \
     "${FBDT_weight_DIR}"
 
