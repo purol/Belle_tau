@@ -47,10 +47,10 @@ int main(int argc, char* argv[]) {
     else if(std::string(argv[13]) == "none") ThereIsRatio = false;
     if(std::string(argv[13]) == "ratio") ThereIsRatio = true;
 
-    double mass = std::stod(argv[15]);
-    double life = std::stod(argv[16]);
-    int A = std::stoi(argv[17]);
-    int B = std::stoi(argv[18]);
+    double mass = std::stod(argv[14]);
+    double life = std::stod(argv[15]);
+    int A = std::stoi(argv[16]);
+    int B = std::stoi(argv[17]);
 
     double M_left_cut_value = 0;
     double M_right_cut_value = 0;
@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
     double M_right_sigma;
     double theta;
 
-    ReadResolution((std::string(argv[14]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+    ReadResolution((std::string(argv[13]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
     std::string variable_name(argv[1]);
 
@@ -96,9 +96,16 @@ int main(int argc, char* argv[]) {
     TH1D* sample1_test_th_KS = new TH1D("sample1_test_th_KS", ("sample1 test;" + variable_name + ";arbitrary unit").c_str(), 100 * atoi(argv[2]), atof(argv[3]), atof(argv[4]));
     TH1D* sample2_test_th_KS = new TH1D("sample2_test_th_KS", ("sample2 test;" + variable_name + ";arbitrary unit").c_str(), 100 * atoi(argv[2]), atof(argv[3]), atof(argv[4]));
 
-    // sample1 test
+    // sample1 test (Here, we assume it is tau -> pi pi pi nu with background populated region)
     Loader loader_sample1_test("tau_lfv");
     for (int i = 0; i < sample1_list.size(); i++) loader_sample1_test.Load(argv[5], "root", sample1_list.at(i).c_str());
+    loader_sample1_test.Cut(("(" + std::to_string(deltaE_peak - 16 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 6 * deltaE_right_sigma) + ")").c_str());
+    loader_sample1_test.Cut(("(" + std::to_string(M_peak - 20 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + ")").c_str());
+    // loader_sample1_test.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< myM_ALP) && (myM_ALP <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
+    loader_sample1_test.RandomBCS();
+    loader_sample1_test.IsBCSValid();
+    loader_sample1_test.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
+    loader_sample1_test.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_sample1_test.FillTH1D(sample1_test_th, variable_name);
     loader_sample1_test.FillTH1D(sample1_test_th_KS, variable_name);
     loader_sample1_test.end();
@@ -111,7 +118,7 @@ int main(int argc, char* argv[]) {
     loader_sample2_test.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
     loader_sample2_test.RandomBCS();
     loader_sample2_test.IsBCSValid();
-    loader_sample2_test.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
+    loader_sample2_test.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
     loader_sample2_test.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_sample2_test.FillTH1D(sample2_test_th, variable_name);
     loader_sample2_test.FillTH1D(sample2_test_th_KS, variable_name);

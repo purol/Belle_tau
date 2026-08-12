@@ -75,8 +75,12 @@ int main(int argc, char* argv[]) {
     // sample2 test (Here, we assume it is tau -> mu mu mu)
     Loader loader_sample2_test("tau_lfv");
     for (int i = 0; i < sample2_list.size(); i++) loader_sample2_test.Load(argv[6], "root", sample2_list.at(i).c_str());
-    loader_sample2_test.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
+    loader_sample2_test.Cut(("(" + std::to_string(deltaE_peak - 16 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 6 * deltaE_right_sigma) + ")").c_str());
     loader_sample2_test.Cut(("(" + std::to_string(M_peak - 20 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + ")").c_str());
+    loader_sample2_test.RandomBCS();
+    loader_sample2_test.IsBCSValid();
+    loader_sample2_test.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
+    loader_sample2_test.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_sample2_test.FillTH1D(sample2_test_th, variable_name);
     loader_sample2_test.FillTH1D(sample2_test_th_KS, variable_name);
     loader_sample2_test.end();

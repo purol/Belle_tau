@@ -96,9 +96,16 @@ int main(int argc, char* argv[]) {
     TH1D* sample1_test_th_KS = new TH1D("sample1_test_th_KS", ("sample1 test;" + variable_name + ";arbitrary unit").c_str(), 100 * atoi(argv[2]), atof(argv[3]), atof(argv[4]));
     TH1D* sample2_test_th_KS = new TH1D("sample2_test_th_KS", ("sample2 test;" + variable_name + ";arbitrary unit").c_str(), 100 * atoi(argv[2]), atof(argv[3]), atof(argv[4]));
 
-    // sample1 test
+    // sample1 test (Here, we assume it is tau -> pi pi pi nu with background populated region)
     Loader loader_sample1_test("tau_lfv");
     for (int i = 0; i < sample1_list.size(); i++) loader_sample1_test.Load(argv[5], "root", sample1_list.at(i).c_str());
+    loader_sample1_test.Cut(("(" + std::to_string(deltaE_peak - 16 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 6 * deltaE_right_sigma) + ")").c_str());
+    loader_sample1_test.Cut(("(" + std::to_string(M_peak - 20 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + ")").c_str());
+    // loader_sample1_test.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< myM_ALP) && (myM_ALP <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
+    loader_sample1_test.RandomBCS();
+    loader_sample1_test.IsBCSValid();
+    loader_sample1_test.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
+    loader_sample1_test.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
     loader_sample1_test.FillTH1D(sample1_test_th, variable_name);
     loader_sample1_test.FillTH1D(sample1_test_th_KS, variable_name);
     loader_sample1_test.end();
