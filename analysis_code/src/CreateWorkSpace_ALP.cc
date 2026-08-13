@@ -664,7 +664,7 @@ int main(int argc, char* argv[]) {
     ReadPCA_remain((std::string(argv[1]) + "/luminosity_PCA_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + "_remain").c_str(), signal_MC_th1d, signal_MC_th1d_uncorr);
 
     // KS0 tracking histogram
-    ReadPCA((std::string(argv[1]) + "/KS0_PCA_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B)).c_str(), signal_MC_th1d, "KS0_PCA", &signal_MC_th1d_KS0);
+    ReadPCA((std::string(argv[1]) + "/KS0_PCA_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B)).c_str(), signal_MC_th1d, "KS0", &signal_MC_th1d_KS0);
     ReadPCA_remain((std::string(argv[1]) + "/KS0_PCA_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + "_remain").c_str(), signal_MC_th1d, signal_MC_th1d_uncorr);
 
     // SR fluctuation
