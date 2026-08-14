@@ -237,7 +237,7 @@ region_names = ["A", "B", "C", "D"]
 # ------------------------------------------------------------
 
 # Background는 signal event 수의 최대 몇 배까지 읽을지
-background_to_signal_ratio = 15
+background_to_signal_ratio = 30
 
 # Train/validation 분리 비율
 validation_fraction = 0.25
@@ -492,7 +492,7 @@ def read_events_from_directory(
                             chunk_arrays[branch][
                                 selected_indices
                             ].astype(
-                                np.float64,
+                                np.float32,
                                 copy=False,
                             )
                         )
@@ -777,7 +777,7 @@ def select_region_matrix(
     if len(selected_indices) == 0:
         empty_matrix = np.empty(
             (0, len(variables)),
-            dtype=np.float64,
+            dtype=np.float32,
         )
 
         return (
@@ -954,12 +954,12 @@ def train_region_bdt(
         np.full(
             len(X_signal),
             signal_weight,
-            dtype=np.float64,
+            dtype=np.float32,
         ),
         np.full(
             len(X_background),
             background_weight,
-            dtype=np.float64,
+            dtype=np.float32,
         ),
     ])
 
@@ -1659,7 +1659,7 @@ def calculate_combined_roc(
             state["signal"] / n_signal_total
             for state in ordered
         ],
-        dtype=np.float64,
+        dtype=np.float32,
     )
 
     rejections = np.array(
@@ -1669,7 +1669,7 @@ def calculate_combined_roc(
             / n_background_total
             for state in ordered
         ],
-        dtype=np.float64,
+        dtype=np.float32,
     )
 
     return efficiencies, rejections
