@@ -45,11 +45,11 @@ def AnalysisGenCut(path):
     ma.fillParticleListFromMC('Z0:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
     ma.fillParticleListFromMC('D0:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
     ma.fillParticleListFromMC('D+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
-    ma.fillParticleListFromMC('pi+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
-    ma.fillParticleListFromMC('K+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
-    ma.fillParticleListFromMC('e+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
-    ma.fillParticleListFromMC('mu+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
-    ma.fillParticleListFromMC('p+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+    ma.fillParticleListFromMC('pi+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('K+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('e+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('mu+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('p+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
 
     # convert mass hypothesis
     ma.copyList(outputListName="pi+:PrimaryMC_muMass", inputListName="pi+:PrimaryMC", path=path)
