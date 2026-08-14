@@ -28,6 +28,7 @@ def AnalysisGenCut(path):
     # copy from Doremy
     import modularAnalysis as ma
     import variables as va
+    import variables.collections as vc
 
     MDeltaCuts = ["", "[1.0 < M < 4.0] and [-1.0 < deltaE < 1.0]", "[1.0 < M < 2.5] and [-1.0 < deltaE < 1.0]"]
 
