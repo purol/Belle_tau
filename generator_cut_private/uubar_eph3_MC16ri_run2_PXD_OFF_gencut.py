@@ -154,20 +154,20 @@ def AnalysisGenCut(path):
     va.variables.addAlias("Ntau_fake_strict0","nParticlesInList(tau+:fake_strict0)")
     va.variables.addAlias("Ntau_fake_strict1","nParticlesInList(tau+:fake_strict1)")
     va.variables.addAlias("Ntau_fake_strict2","nParticlesInList(tau+:fake_strict2)")
-    va.variables.addAlias("sumValueInList_BCS_strict_deltaE2_M","sumValueInList(tau+:BCS_strict_deltaE2,M)")
-    va.variables.addAlias("sumValueInList_BCS_strict_deltaE2_deltaE","sumValueInList(tau+:BCS_strict_deltaE2, deltaE)")
-    va.variables.addAlias("sumValueInList_BCS_strict_deltaE2_Mbc","sumValueInList(tau+:BCS_strict_deltaE2,Mbc)")
-    va.variables.addAlias("sumValueInList_BCS_strict_dM2_M","sumValueInList(tau+:BCS_strict_dM2,M)")
-    va.variables.addAlias("sumValueInList_BCS_strict_dM2_deltaE","sumValueInList(tau+:BCS_strict_dM2,deltaE)")
-    va.variables.addAlias("sumValueInList_BCS_strict_dM2_Mbc","sumValueInList(tau+:BCS_strict_dM2,Mbc)")
+    va.variables.addAlias("sumValueInList_BCS_strict_deltaE2_M","averageValueInList(tau+:BCS_strict_deltaE2,M)")
+    va.variables.addAlias("sumValueInList_BCS_strict_deltaE2_deltaE","averageValueInList(tau+:BCS_strict_deltaE2, deltaE)")
+    va.variables.addAlias("sumValueInList_BCS_strict_deltaE2_Mbc","averageValueInList(tau+:BCS_strict_deltaE2,Mbc)")
+    va.variables.addAlias("sumValueInList_BCS_strict_dM2_M","averageValueInList(tau+:BCS_strict_dM2,M)")
+    va.variables.addAlias("sumValueInList_BCS_strict_dM2_deltaE","averageValueInList(tau+:BCS_strict_dM2,deltaE)")
+    va.variables.addAlias("sumValueInList_BCS_strict_dM2_Mbc","averageValueInList(tau+:BCS_strict_dM2,Mbc)")
     va.variables.addAlias("averageValueInList_fake_strict2_M","averageValueInList(tau+:fake_strict2,M)")
     va.variables.addAlias("averageValueInList_fake_strict2_deltaE","averageValueInList(tau+:fake_strict2,deltaE)")
     va.variables.addAlias("std_M2","extraInfo(std_M2)")
     va.variables.addAlias("std_deltaE2","extraInfo(std_deltaE2)")
-    va.variables.addAlias("sumValueInList_BCS_strict_deltaE2_daughterHighest_p","sumValueInList(tau+:BCS_strict_deltaE2,daughterHighest(p))")
-    va.variables.addAlias("sumValueInList_BCS_strict_deltaE2_daughterLowest_p","sumValueInList(tau+:BCS_strict_deltaE2,daughterLowest(p))")
-    va.variables.addAlias("sumValueInList_BCS_strict_dM2_daughterHighest_p","sumValueInList(tau+:BCS_strict_dM2,daughterHighest(p))")
-    va.variables.addAlias("sumValueInList_BCS_strict_dM2_daughterLowest_p","sumValueInList(tau+:BCS_strict_dM2,daughterLowest(p))")
+    va.variables.addAlias("sumValueInList_BCS_strict_deltaE2_daughterHighest_p","averageValueInList(tau+:BCS_strict_deltaE2,daughterHighest(p))")
+    va.variables.addAlias("sumValueInList_BCS_strict_deltaE2_daughterLowest_p","averageValueInList(tau+:BCS_strict_deltaE2,daughterLowest(p))")
+    va.variables.addAlias("sumValueInList_BCS_strict_dM2_daughterHighest_p","averageValueInList(tau+:BCS_strict_dM2,daughterHighest(p))")
+    va.variables.addAlias("sumValueInList_BCS_strict_dM2_daughterLowest_p","averageValueInList(tau+:BCS_strict_dM2,daughterLowest(p))")
 
     variable_list = []
     variable_list = variable_list + ["formula(nParticlesInList(pi+:PrimaryMC) + nParticlesInList(K+:PrimaryMC) + nParticlesInList(e+:PrimaryMC) + nParticlesInList(mu+:PrimaryMC) + nParticlesInList(p+:PrimaryMC))"]
@@ -204,20 +204,7 @@ def AnalysisGenCut(path):
     )
 
     # event cut
-    event_cut = (
-    "[nParticlesInList(tau+:fake_strict2) > 0.5] and "
-    "[LR_score_A_quad > 2.398015901795199]"
-    )
-
-    eselect = b2.register_module("VariableToReturnValue")
-    eselect.param(
-        "variable",
-        f"passesEventCut({event_cut})"
-    )
-    path.add_module(eselect)
-
-    reject_path = b2.create_path()
-    eselect.if_value("<1", reject_path)
+    ma.applyEventCuts("[nParticlesInList(tau+:fake_strict2) > 0.5] and [LR_score_A_quad > 2.398015901795199]", path=path)
 
 # setting
 parser = argparse.ArgumentParser(description='setting')
