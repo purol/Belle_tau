@@ -127,21 +127,21 @@ def AnalysisGenCut(path):
     ma.buildContinuumSuppression(list_name="Z0:PrimaryMC", roe_mask="cleanMask_gencut", path=path)
 
     # define roe path for Z0 and variables
-    roe_path_Z = basf2.Path()
-    deadEndPath_Z = basf2.Path()
+    roe_path_Z = b2.Path()
+    deadEndPath_Z = b2.Path()
     ma.signalSideParticleFilter("Z0:PrimaryMC", '', roe_path_Z, deadEndPath_Z)
     ma.fillSignalSideParticleList("Z0:PrimaryMC_ROE", "^Z0:PrimaryMC", roe_path_Z)
 
     for idx, MDeltaCut in enumerate(MDeltaCuts):
-        tau_exist_path = basf2.create_path()
-        tau_nonexist_path = basf2.create_path()
+        tau_exist_path = b2.create_path()
+        tau_nonexist_path = b2.create_path()
         ma.variableToSignalSideExtraInfo("Z0:PrimaryMC_ROE", {'formula(averageValueInList(tau+:fake_strict' + str(idx) + ', formula((M-averageValueInList(tau+:fake_strict' + str(idx) + ',M))**2))**0.5)': 'std_M' + str(idx)}, path=tau_exist_path)
         ma.variableToSignalSideExtraInfo("Z0:PrimaryMC_ROE", {'formula(averageValueInList(tau+:fake_strict' + str(idx) + ', formula((deltaE-averageValueInList(tau+:fake_strict' + str(idx) + ',deltaE))**2))**0.5)': 'std_deltaE' + str(idx)}, path=tau_exist_path)
         ma.variableToSignalSideExtraInfo('Z0:PrimaryMC_ROE', {'constant(-1)': 'std_M' + str(idx)}, path=tau_nonexist_path)
         ma.variableToSignalSideExtraInfo('Z0:PrimaryMC_ROE', {'constant(-1)': 'std_deltaE' + str(idx)}, path=tau_nonexist_path)
         tau_gencut_module = roe_path_Z.add_module("VariableToReturnValue", variable="nParticlesInList(tau+:fake_strict" + str(idx) + ")")
-        tau_gencut_module.if_value(">=1", tau_exist_path, basf2.AfterConditionPath.CONTINUE)
-        tau_gencut_module.if_value("<1", tau_nonexist_path, basf2.AfterConditionPath.CONTINUE)
+        tau_gencut_module.if_value(">=1", tau_exist_path, b2.AfterConditionPath.CONTINUE)
+        tau_gencut_module.if_value("<1", tau_nonexist_path, b2.AfterConditionPath.CONTINUE)
 
     path.for_each('RestOfEvent', 'RestOfEvents', roe_path_Z)
 
