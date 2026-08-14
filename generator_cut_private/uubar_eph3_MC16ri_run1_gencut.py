@@ -204,7 +204,20 @@ def AnalysisGenCut(path):
     )
 
     # event cut
-    ma.applyEventCuts("[nParticlesInList(tau+:fake_strict2) > 0.5] and [LR_score_A_quad > 2.398015901795199]", path=path)
+    event_cut = (
+    "[nParticlesInList(tau+:fake_strict2) > 0.5] and "
+    "[LR_score_A_quad > 2.398015901795199]"
+    )
+
+    eselect = b2.register_module("VariableToReturnValue")
+    eselect.param(
+        "variable",
+        f"passesEventCut({event_cut})"
+    )
+    path.add_module(eselect)
+
+    reject_path = b2.create_path()
+    eselect.if_value("<1", reject_path)
 
 # setting
 parser = argparse.ArgumentParser(description='setting')
