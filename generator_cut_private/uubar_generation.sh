@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PYTHONNOUSERSITE=1
+
 output_path="/home/belle2/junewoo/storage_ghi/tau_gen_cut/MC16ri/MC16ri_private_gencut/UUBAR"
 
 
