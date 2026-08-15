@@ -5,12 +5,8 @@ export PYTHONNOUSERSITE=1
 output_path="/home/belle2/junewoo/storage_ghi/tau_gen_cut/MC16ri/MC16ri_private_gencut/UUBAR"
 
 
-for i in {0..5947}; do
-    if (( i % 5 < 2 )); then
-        queue="s"
-    else
-        queue="l"
-    fi
+for i in {0..2378}; do
+    queue="l"
 
     bsub -q "$queue" \
         -o "${output_path}/run1_${i}.log" \
@@ -22,12 +18,8 @@ for i in {0..5947}; do
 done
 
 
-for i in {0..3568}; do
-    if (( i % 5 < 2 )); then
-        queue="s"
-    else
-        queue="l"
-    fi
+for i in {0..1427}; do
+    queue="l"
 
     bsub -q "$queue" \
         -o "${output_path}/run2_PXDOFF_${i}.log" \
@@ -39,12 +31,8 @@ for i in {0..3568}; do
 done
 
 
-for i in {0..3568}; do
-    if (( i % 5 < 2 )); then
-        queue="s"
-    else
-        queue="l"
-    fi
+for i in {0..1427}; do
+    queue="l"
 
     bsub -q "$queue" \
         -o "${output_path}/run2_PXDON_${i}.log" \
