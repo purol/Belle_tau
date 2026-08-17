@@ -234,7 +234,7 @@ b2.conditions.metadata_providers = ['/cvmfs/belle.cern.ch/conditions/database.sq
 main = b2.Path()
 
 # default to early phase 3 (exp=1003), run 0
-main.add_module("EventInfoSetter", expList=1004, runList=0, evtNumList=10000000)
+main.add_module("EventInfoSetter", expList=1004, runList=0, evtNumList=2500000)
 
 # generate uubar events
 ge.add_continuum_generator(path=main, finalstate='uubar', eventType='uubar')
