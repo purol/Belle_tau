@@ -212,7 +212,7 @@ def AnalysisGenCut(path):
     )
 
     # event cut
-    ma.applyEventCuts("[nParticlesInList__botau__pl__clfake_strict2__bc > 0.5] and [LR_score_A_stage1_quad > -2.941749572753907] and [LR_score_A_stage2_quad > -2.248604536056519] and [LR_score_A_stage3_quad > 1.348514929662979]", path=path)
+    ma.applyEventCuts("[Ntau_fake_strict2 > 0.5] and [LR_score_A_stage1_quad > -2.941749572753907] and [LR_score_A_stage2_quad > -2.248604536056519] and [LR_score_A_stage3_quad > 1.348514929662979]", path=path)
 
 # setting
 parser = argparse.ArgumentParser(description='setting')
