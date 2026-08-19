@@ -159,6 +159,8 @@ def AssignIndex(sample_name, event_name, energy_name):
         energy_index = 5
     elif(energy_name=="10810"):
         energy_index = 6
+    elif(energy_name=="5Sscan"):
+        energy_index = 7
 
     return sample_index, type_index, energy_index
 
@@ -570,7 +572,7 @@ parser = argparse.ArgumentParser(description='Sample type')
 # data or MC
 parser.add_argument('--sample', required=True, type=str, help='type of sample. list) data, MC15ri, MC15rd, MC16ri, MC16rd, Belle_data, Belle_MC')
 parser.add_argument('--type', required=True, type=str, help='type of event. list) data, signal, charged, mixed, uubar, ddbar, ssbar, ccbar, mumu, ee, eeee, eemumu, eepipi, eeKK, eepp, pipiISR, KKISR, gg, eetautau, K0K0barISR, mumumumu, mumutautau, tautautautau, taupair, pipipi0ISR, BBs, BsBs, uds, bsbs, nonbsbs, eecc, eess, eeuu')
-parser.add_argument('--energy', required=True, type=str, help='energy of sample. list) 4S, off, 10657, 10706, 10751, 10810')
+parser.add_argument('--energy', required=True, type=str, help='energy of sample. list) 4S, off, 10657, 10706, 10751, 10810, 5Sscan')
 parser.add_argument('--prompt', action='store_true', help='If you want to reconstruct the prompt tau-> mu mu mu, use this flag')
 parser.add_argument('--vertex', action='store_true', help='If you want to reconstruct the tau->(alpha -> mu mu) mu, use this flag')
 parser.add_argument('--control', action='store_true', help='If you want to reconstruct the tau-> pi pi pi, use this flag')
