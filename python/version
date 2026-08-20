@@ -45,3 +45,5 @@ gbasf2_Doremy.py
 gbasf2_Cirno.py
 - (add ALP costheta and p, argparse for ALP parameter) ->
 gbasf2_Larva.py
+- (add MC Dalitz information) ->
+gbasf2_Ibaraki.py
