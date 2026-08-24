@@ -67,6 +67,36 @@
 # define Scale_BelleII_10810_MUMU_MC15ri (lumi_BelleII_10810/0.046)
 # define Scale_BelleII_10810_TAUPAIR_MC15ri (lumi_BelleII_10810/0.046)
 
+# define Scale_BelleII_4S_CHG_MC16ri (lumi_BelleII_4S/1.1)
+# define Scale_BelleII_4S_MIX_MC16ri (lumi_BelleII_4S/1.1)
+# define Scale_BelleII_4S_UUBAR_MC16ri (lumi_BelleII_4S/1.1)
+# define Scale_BelleII_4S_DDBAR_MC16ri (lumi_BelleII_4S/1.1)
+# define Scale_BelleII_4S_SSBAR_MC16ri (lumi_BelleII_4S/1.1)
+# define Scale_BelleII_4S_CHARM_MC16ri (lumi_BelleII_4S/1.1)
+# define Scale_BelleII_4S_MUMU_MC16ri (lumi_BelleII_4S/1.1)
+# define Scale_BelleII_4S_EE_MC16ri (lumi_BelleII_4S/0.175)
+# define Scale_BelleII_4S_EEEE_MC16ri (lumi_BelleII_4S/1.1)
+# define Scale_BelleII_4S_EEMUMU_MC16ri (lumi_BelleII_4S/1.1)
+# define Scale_BelleII_4S_hhISR_MC16ri (lumi_BelleII_4S/1.1)
+# define Scale_BelleII_4S_GG_MC16ri (lumi_BelleII_4S/1.35)
+# define Scale_BelleII_4S_llXX_MC16ri (lumi_BelleII_4S/1.1)
+# define Scale_BelleII_4S_TAUPAIR_MC16ri (lumi_BelleII_4S/1.1)
+
+# define Scale_BelleII_4S_CHG_MC16rd (lumi_BelleII_4S/1.94633937621)
+# define Scale_BelleII_4S_MIX_MC16rd (lumi_BelleII_4S/1.94563145615) /* to do */
+# define Scale_BelleII_4S_UUBAR_MC16rd (lumi_BelleII_4S/XXX)
+# define Scale_BelleII_4S_DDBAR_MC16rd (lumi_BelleII_4S/XXX)
+# define Scale_BelleII_4S_SSBAR_MC16rd (lumi_BelleII_4S/XXX)
+# define Scale_BelleII_4S_CHARM_MC16rd (lumi_BelleII_4S/XXX)
+# define Scale_BelleII_4S_MUMU_MC16rd (lumi_BelleII_4S/XXX)
+# define Scale_BelleII_4S_EE_MC16rd (lumi_BelleII_4S/0.175)
+# define Scale_BelleII_4S_EEEE_MC16rd (lumi_BelleII_4S/XXX)
+# define Scale_BelleII_4S_EEMUMU_MC16rd (lumi_BelleII_4S/XXX)
+# define Scale_BelleII_4S_hhISR_MC16rd (lumi_BelleII_4S/XXX)
+# define Scale_BelleII_4S_GG_MC16rd (lumi_BelleII_4S/XXX)
+# define Scale_BelleII_4S_llXX_MC16rd (lumi_BelleII_4S/XXX)
+# define Scale_BelleII_4S_TAUPAIR_MC16rd (lumi_BelleII_4S/XXX)
+
 
 // for signal
 # define tau_crosssection_4S 0.919 // cross section in 4S (nb)
