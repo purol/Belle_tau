@@ -11,6 +11,124 @@
 
 EventWeight double_weight = EventWeight(2.0);
 
+EventWeight MC_weight(
+    {
+        "MySampleType",
+        "MyEventType",
+        "MyEnergyType"
+    },
+    {
+        { { { -1.5, -0.5 }, { -10000.0, 10000.0 }, { -10000.0, 10000.0 } }, 1.0 },  // Belle II data
+        { { { 0.5, 1.5 }, { -0.5, 0.5 }, { 0.5, 1.5 } }, Scale_SIGNAL_BelleII_4S_MC15ri },  // MC15ri, 4S, signal
+        { { { 0.5, 1.5 }, { 0.5, 1.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_CHG_MC15ri },  // MC15ri, 4S, CHG
+        { { { 0.5, 1.5 }, { 1.5, 2.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_MIX_MC15ri },  // MC15ri, 4S, MIX
+        { { { 0.5, 1.5 }, { 2.5, 3.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_UUBAR_MC15ri },  // MC15ri, 4S, UUBAR
+        { { { 0.5, 1.5 }, { 3.5, 4.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_DDBAR_MC15ri },  // MC15ri, 4S, DDBAR
+        { { { 0.5, 1.5 }, { 4.5, 5.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_SSBAR_MC15ri },  // MC15ri, 4S, SSBAR
+        { { { 0.5, 1.5 }, { 5.5, 6.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_CHARM_MC15ri },  // MC15ri, 4S, CHARM
+        { { { 0.5, 1.5 }, { 6.5, 7.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_MUMU_MC15ri },  // MC15ri, 4S, MUMU
+        { { { 0.5, 1.5 }, { 7.5, 8.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_EE_MC15ri },  // MC15ri, 4S, EE
+        { { { 0.5, 1.5 }, { 8.5, 9.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_EEEE_MC15ri },  // MC15ri, 4S, EEEE
+        { { { 0.5, 1.5 }, { 9.5, 10.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_EEMUMU_MC15ri },  // MC15ri, 4S, EEMUMU
+        { { { 0.5, 1.5 }, { 10.5, 11.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_EEPIPI_MC15ri },  // MC15ri, 4S, EEPIPI
+        { { { 0.5, 1.5 }, { 11.5, 12.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_EEKK_MC15ri },  // MC15ri, 4S, EEKK
+        { { { 0.5, 1.5 }, { 12.5, 13.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_EEPP_MC15ri },  // MC15ri, 4S, EEPP
+        { { { 0.5, 1.5 }, { 13.5, 14.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_PIPIISR_MC15ri },  // MC15ri, 4S, PIPIISR
+        { { { 0.5, 1.5 }, { 14.5, 15.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_KKISR_MC15ri },  // MC15ri, 4S, KKISR
+        { { { 0.5, 1.5 }, { 15.5, 16.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_GG_MC15ri },  // MC15ri, 4S, GG
+        { { { 0.5, 1.5 }, { 16.5, 17.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_EETAUTAU_MC15ri },  // MC15ri, 4S, EETAUTAU
+        { { { 0.5, 1.5 }, { 17.5, 18.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_K0K0BARISR_MC15ri },  // MC15ri, 4S, K0K0BARISR
+        { { { 0.5, 1.5 }, { 18.5, 19.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_MUMUMUMU_MC15ri },  // MC15ri, 4S, MUMUMUMU
+        { { { 0.5, 1.5 }, { 19.5, 20.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_MUMUTAUTAU_MC15ri },  // MC15ri, 4S, MUMUTAUTAU
+        { { { 0.5, 1.5 }, { 20.5, 21.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_TAUTAUTAUTAU_MC15ri },  // MC15ri, 4S, TAUTAUTAUTAU
+        { { { 0.5, 1.5 }, { 21.5, 22.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_TAUPAIR_MC15ri },  // MC15ri, 4S, TAUPAIR
+        { { { 0.5, 1.5 }, { 22.5, 23.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_PIPIPI0ISR_MC15ri },  // MC15ri, 4S, PIPIPI0ISR
+        { { { 0.5, 1.5 }, { 31.5, 32.5 }, { 0.5, 1.5 } }, Scale_ALP_BelleII_4S_MC15ri },  // MC15ri, 4S, ALP
+        { { { 0.5, 1.5 }, { -0.5, 0.5 }, { 1.5, 2.5 } }, Scale_SIGNAL_BelleII_off_MC15ri },  // MC15ri, off-resonance, signal
+        { { { 0.5, 1.5 }, { 2.5, 3.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_UUBAR_MC15ri },  // MC15ri, off-resonance, UUBAR
+        { { { 0.5, 1.5 }, { 3.5, 4.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_DDBAR_MC15ri },  // MC15ri, off-resonance, DDBAR
+        { { { 0.5, 1.5 }, { 4.5, 5.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_SSBAR_MC15ri },  // MC15ri, off-resonance, SSBAR
+        { { { 0.5, 1.5 }, { 5.5, 6.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_CHARM_MC15ri },  // MC15ri, off-resonance, CHARM
+        { { { 0.5, 1.5 }, { 6.5, 7.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_MUMU_MC15ri },  // MC15ri, off-resonance, MUMU
+        { { { 0.5, 1.5 }, { 7.5, 8.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_EE_MC15ri },  // MC15ri, off-resonance, EE
+        { { { 0.5, 1.5 }, { 8.5, 9.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_EEEE_MC15ri },  // MC15ri, off-resonance, EEEE
+        { { { 0.5, 1.5 }, { 9.5, 10.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_EEMUMU_MC15ri },  // MC15ri, off-resonance, EEMUMU
+        { { { 0.5, 1.5 }, { 10.5, 11.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_EEPIPI_MC15ri },  // MC15ri, off-resonance, EEPIPI
+        { { { 0.5, 1.5 }, { 11.5, 12.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_EEKK_MC15ri },  // MC15ri, off-resonance, EEKK
+        { { { 0.5, 1.5 }, { 12.5, 13.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_EEPP_MC15ri },  // MC15ri, off-resonance, EEPP
+        { { { 0.5, 1.5 }, { 15.5, 16.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_GG_MC15ri },  // MC15ri, off-resonance, GG
+        { { { 0.5, 1.5 }, { 16.5, 17.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_EETAUTAU_MC15ri },  // MC15ri, off-resonance, EETAUTAU
+        { { { 0.5, 1.5 }, { 18.5, 19.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_MUMUMUMU_MC15ri },  // MC15ri, off-resonance, MUMUMUMU
+        { { { 0.5, 1.5 }, { 21.5, 22.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_TAUPAIR_MC15ri },  // MC15ri, off-resonance, TAUPAIR
+        { { { 0.5, 1.5 }, { -0.5, 0.5 }, { 5.5, 6.5 } }, Scale_SIGNAL_BelleII_10810_MC15ri },  // MC15ri, 10810, signal
+        { { { 0.5, 1.5 }, { 0.5, 1.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_CHG_MC15ri },  // MC15ri, 10810, CHG
+        { { { 0.5, 1.5 }, { 1.5, 2.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_MIX_MC15ri },  // MC15ri, 10810, MIX
+        { { { 0.5, 1.5 }, { 2.5, 3.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_UUBAR_MC15ri },  // MC15ri, 10810, UUBAR
+        { { { 0.5, 1.5 }, { 3.5, 4.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_DDBAR_MC15ri },  // MC15ri, 10810, DDBAR
+        { { { 0.5, 1.5 }, { 4.5, 5.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_SSBAR_MC15ri },  // MC15ri, 10810, SSBAR
+        { { { 0.5, 1.5 }, { 5.5, 6.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_CHARM_MC15ri },  // MC15ri, 10810, CHARM
+        { { { 0.5, 1.5 }, { 6.5, 7.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_MUMU_MC15ri },  // MC15ri, 10810, MUMU
+        { { { 0.5, 1.5 }, { 21.5, 22.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_TAUPAIR_MC15ri },  // MC15ri, 10810, TAUPAIR
+        { { { 0.5, 1.5 }, { 23.5, 24.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_BBs_MC15ri },  // MC15ri, 10810, BBs
+        { { { 0.5, 1.5 }, { 24.5, 25.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_BsBs_MC15ri },  // MC15ri, 10810, BsBs
+        { { { 4.5, 5.5 }, { -10000.0, 10000.0 }, { -10000.0, 10000.0 } }, 1.0 }  // Belle data
+    },
+    false
+);
+
+EventWeight muonID_05(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC15ri/my_mu_efficiency_table_05.csv",
+    {
+        {"charge",   "charge_min", "charge_max"},
+        {"momentum", "p_min",      "p_max"},
+        {"theta",    "theta_min",  "theta_max"}
+    },
+    "data_MC_ratio",
+    {
+        {"stat", "data_MC_uncertainty_stat_up", "data_MC_uncertainty_stat_dn", false},
+        {"syst", "data_MC_uncertainty_sys_up",  "data_MC_uncertainty_sys_dn",  false}
+    },
+    true
+);
+
+EventWeight luminosity_scale(
+    { "MyEnergyType" },
+    {
+        {
+            { {0.5, 1.5} }, 1.0,
+            { { "luminosity", (lumi_BelleII_4S_uncertainty / lumi_BelleII_4S), (lumi_BelleII_4S_uncertainty / lumi_BelleII_4S) } }
+        },
+        {
+            { {1.5, 2.5} }, 1.0,
+            { { "luminosity", (lumi_BelleII_off_uncertainty / lumi_BelleII_off), (lumi_BelleII_off_uncertainty / lumi_BelleII_off) } }
+        },
+        {
+            { {5.5, 6.5} }, 1.0,
+            { { "luminosity", (lumi_BelleII_10810_uncertainty / lumi_BelleII_10810), (lumi_BelleII_10810_uncertainty / lumi_BelleII_10810) } }
+        }
+    },
+    {
+        {"luminosity", false}
+    },
+    false
+);
+
+EventWeight KS0_tracking(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/KS0_tracking_csv/MC15rd/KS0_tracking_correction_MC15rd_converted.csv",
+    {
+        {"theta",    "thetamin", "thetamax"},
+        {"momentum", "pmin",     "pmax"},
+        {"distance", "dmin",     "dmax"}
+    },
+    "w",
+    {
+        {"stat", "w_e_stat", "w_e_stat", false},
+        {"syst", "w_e_syst", "w_e_syst", false}
+    },
+    true
+);
+
+/* legacy code
 EventWeight MC_weight = EventWeight(
     {
         "MySampleType",
@@ -233,7 +351,6 @@ EventWeight KS0_tracking = EventWeight(
     true
 );
 
-/* legacy code
 double MyScaleFunction(std::deque<Data>::iterator data_, std::vector<std::string> variable_names_) {
 
     std::vector<std::string>::iterator it;
