@@ -230,7 +230,7 @@ bash ${shell_DIR}/submitter_Plotter_secondary.sh
 
 bash ${shell_DIR}/submitter_PunziFOM.sh
 wait_job "FBDTFOM"
-# to do
+
 bash ${shell_DIR}/submitter_Analysis_third.sh
 wait_job "Analyze"
 bash ${shell_DIR}/checker_Analysis_third.sh
