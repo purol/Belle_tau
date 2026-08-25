@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
     Loader loader("tau_lfv");
 
     for (int i = 0; i < MC_list.size(); i++) loader.Load((argv[3] + std::string("/") + MC_list.at(i) + std::string("/") + std::string(argv[4])).c_str(), "root", MC_legend_list.at(i).c_str());
-    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
 
     // Create a new vector to hold the combined elements
     std::vector<std::string> all_label;

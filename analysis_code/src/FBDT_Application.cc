@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
     Loader loader("tau_lfv");
 
     loader.Load(argv[3 + variable_num_one + variable_num_two], argv[4 + variable_num_one + variable_num_two], "label");
-    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader.AddWeight("double_weight");
 
     loader.FastBDTApplication(intput_variables_one, classifier_one_path.c_str(), "BDT_output_1");

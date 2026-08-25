@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
 
     // It is prompt decay analysis
     loader.LoadWithCut(argv[1], argv[2], "label", "(0.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 1.5)");
-    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}});
+    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"}});
 
     loader.ConditionalPairDefineNewVariable(momentum_muonmomentum, 0, "first_muon_p");
     loader.ConditionalPairDefineNewVariable(momentum_muonmomentum, 1, "second_muon_p");

@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 
     Loader loader_one("tau_lfv");
     loader_one.Load(argv[1], argv[2], "label");
-    loader_one.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader_one.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader_one.AddWeight("double_weight");
     loader_one.PrintInformation("========== initial ==========");
     loader_one.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
 
     Loader loader_two("tau_lfv");
     loader_two.Load(argv[1], argv[2], "label");
-    loader_two.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader_two.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader_two.AddWeight("double_weight");
     loader_two.PrintInformation("========== initial ==========");
     loader_two.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());

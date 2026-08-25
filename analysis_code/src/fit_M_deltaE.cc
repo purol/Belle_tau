@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
     Loader loader("tau_lfv");
 
     loader.Load(argv[1], "root", "SIGNAL");
-    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
 
     loader.Cut("(-0.3 < deltaE) && (deltaE < 0.15)");
     loader.PrintInformation("========== -0.3 < deltaE < 0.15 ==========");

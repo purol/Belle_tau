@@ -15,63 +15,132 @@ EventWeight MC_weight(
     {
         "MySampleType",
         "MyEventType",
-        "MyEnergyType"
+        "MyEnergyType",
+        "MyALPLife"
     },
     {
-        { { { -1.5, -0.5 }, { -10000.0, 10000.0 }, { -10000.0, 10000.0 } }, 1.0 },  // Belle II data
-        { { { 0.5, 1.5 }, { -0.5, 0.5 }, { 0.5, 1.5 } }, Scale_SIGNAL_BelleII_4S_MC15ri },  // MC15ri, 4S, signal
-        { { { 0.5, 1.5 }, { 0.5, 1.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_CHG_MC15ri },  // MC15ri, 4S, CHG
-        { { { 0.5, 1.5 }, { 1.5, 2.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_MIX_MC15ri },  // MC15ri, 4S, MIX
-        { { { 0.5, 1.5 }, { 2.5, 3.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_UUBAR_MC15ri },  // MC15ri, 4S, UUBAR
-        { { { 0.5, 1.5 }, { 3.5, 4.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_DDBAR_MC15ri },  // MC15ri, 4S, DDBAR
-        { { { 0.5, 1.5 }, { 4.5, 5.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_SSBAR_MC15ri },  // MC15ri, 4S, SSBAR
-        { { { 0.5, 1.5 }, { 5.5, 6.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_CHARM_MC15ri },  // MC15ri, 4S, CHARM
-        { { { 0.5, 1.5 }, { 6.5, 7.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_MUMU_MC15ri },  // MC15ri, 4S, MUMU
-        { { { 0.5, 1.5 }, { 7.5, 8.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_EE_MC15ri },  // MC15ri, 4S, EE
-        { { { 0.5, 1.5 }, { 8.5, 9.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_EEEE_MC15ri },  // MC15ri, 4S, EEEE
-        { { { 0.5, 1.5 }, { 9.5, 10.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_EEMUMU_MC15ri },  // MC15ri, 4S, EEMUMU
-        { { { 0.5, 1.5 }, { 10.5, 11.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_EEPIPI_MC15ri },  // MC15ri, 4S, EEPIPI
-        { { { 0.5, 1.5 }, { 11.5, 12.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_EEKK_MC15ri },  // MC15ri, 4S, EEKK
-        { { { 0.5, 1.5 }, { 12.5, 13.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_EEPP_MC15ri },  // MC15ri, 4S, EEPP
-        { { { 0.5, 1.5 }, { 13.5, 14.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_PIPIISR_MC15ri },  // MC15ri, 4S, PIPIISR
-        { { { 0.5, 1.5 }, { 14.5, 15.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_KKISR_MC15ri },  // MC15ri, 4S, KKISR
-        { { { 0.5, 1.5 }, { 15.5, 16.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_GG_MC15ri },  // MC15ri, 4S, GG
-        { { { 0.5, 1.5 }, { 16.5, 17.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_EETAUTAU_MC15ri },  // MC15ri, 4S, EETAUTAU
-        { { { 0.5, 1.5 }, { 17.5, 18.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_K0K0BARISR_MC15ri },  // MC15ri, 4S, K0K0BARISR
-        { { { 0.5, 1.5 }, { 18.5, 19.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_MUMUMUMU_MC15ri },  // MC15ri, 4S, MUMUMUMU
-        { { { 0.5, 1.5 }, { 19.5, 20.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_MUMUTAUTAU_MC15ri },  // MC15ri, 4S, MUMUTAUTAU
-        { { { 0.5, 1.5 }, { 20.5, 21.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_TAUTAUTAUTAU_MC15ri },  // MC15ri, 4S, TAUTAUTAUTAU
-        { { { 0.5, 1.5 }, { 21.5, 22.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_TAUPAIR_MC15ri },  // MC15ri, 4S, TAUPAIR
-        { { { 0.5, 1.5 }, { 22.5, 23.5 }, { 0.5, 1.5 } }, Scale_BelleII_4S_PIPIPI0ISR_MC15ri },  // MC15ri, 4S, PIPIPI0ISR
-        { { { 0.5, 1.5 }, { 31.5, 32.5 }, { 0.5, 1.5 } }, Scale_ALP_BelleII_4S_MC15ri },  // MC15ri, 4S, ALP
-        { { { 0.5, 1.5 }, { -0.5, 0.5 }, { 1.5, 2.5 } }, Scale_SIGNAL_BelleII_off_MC15ri },  // MC15ri, off-resonance, signal
-        { { { 0.5, 1.5 }, { 2.5, 3.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_UUBAR_MC15ri },  // MC15ri, off-resonance, UUBAR
-        { { { 0.5, 1.5 }, { 3.5, 4.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_DDBAR_MC15ri },  // MC15ri, off-resonance, DDBAR
-        { { { 0.5, 1.5 }, { 4.5, 5.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_SSBAR_MC15ri },  // MC15ri, off-resonance, SSBAR
-        { { { 0.5, 1.5 }, { 5.5, 6.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_CHARM_MC15ri },  // MC15ri, off-resonance, CHARM
-        { { { 0.5, 1.5 }, { 6.5, 7.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_MUMU_MC15ri },  // MC15ri, off-resonance, MUMU
-        { { { 0.5, 1.5 }, { 7.5, 8.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_EE_MC15ri },  // MC15ri, off-resonance, EE
-        { { { 0.5, 1.5 }, { 8.5, 9.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_EEEE_MC15ri },  // MC15ri, off-resonance, EEEE
-        { { { 0.5, 1.5 }, { 9.5, 10.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_EEMUMU_MC15ri },  // MC15ri, off-resonance, EEMUMU
-        { { { 0.5, 1.5 }, { 10.5, 11.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_EEPIPI_MC15ri },  // MC15ri, off-resonance, EEPIPI
-        { { { 0.5, 1.5 }, { 11.5, 12.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_EEKK_MC15ri },  // MC15ri, off-resonance, EEKK
-        { { { 0.5, 1.5 }, { 12.5, 13.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_EEPP_MC15ri },  // MC15ri, off-resonance, EEPP
-        { { { 0.5, 1.5 }, { 15.5, 16.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_GG_MC15ri },  // MC15ri, off-resonance, GG
-        { { { 0.5, 1.5 }, { 16.5, 17.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_EETAUTAU_MC15ri },  // MC15ri, off-resonance, EETAUTAU
-        { { { 0.5, 1.5 }, { 18.5, 19.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_MUMUMUMU_MC15ri },  // MC15ri, off-resonance, MUMUMUMU
-        { { { 0.5, 1.5 }, { 21.5, 22.5 }, { 1.5, 2.5 } }, Scale_BelleII_off_TAUPAIR_MC15ri },  // MC15ri, off-resonance, TAUPAIR
-        { { { 0.5, 1.5 }, { -0.5, 0.5 }, { 5.5, 6.5 } }, Scale_SIGNAL_BelleII_10810_MC15ri },  // MC15ri, 10810, signal
-        { { { 0.5, 1.5 }, { 0.5, 1.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_CHG_MC15ri },  // MC15ri, 10810, CHG
-        { { { 0.5, 1.5 }, { 1.5, 2.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_MIX_MC15ri },  // MC15ri, 10810, MIX
-        { { { 0.5, 1.5 }, { 2.5, 3.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_UUBAR_MC15ri },  // MC15ri, 10810, UUBAR
-        { { { 0.5, 1.5 }, { 3.5, 4.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_DDBAR_MC15ri },  // MC15ri, 10810, DDBAR
-        { { { 0.5, 1.5 }, { 4.5, 5.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_SSBAR_MC15ri },  // MC15ri, 10810, SSBAR
-        { { { 0.5, 1.5 }, { 5.5, 6.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_CHARM_MC15ri },  // MC15ri, 10810, CHARM
-        { { { 0.5, 1.5 }, { 6.5, 7.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_MUMU_MC15ri },  // MC15ri, 10810, MUMU
-        { { { 0.5, 1.5 }, { 21.5, 22.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_TAUPAIR_MC15ri },  // MC15ri, 10810, TAUPAIR
-        { { { 0.5, 1.5 }, { 23.5, 24.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_BBs_MC15ri },  // MC15ri, 10810, BBs
-        { { { 0.5, 1.5 }, { 24.5, 25.5 }, { 5.5, 6.5 } }, Scale_BelleII_10810_BsBs_MC15ri },  // MC15ri, 10810, BsBs
-        { { { 4.5, 5.5 }, { -10000.0, 10000.0 }, { -10000.0, 10000.0 } }, 1.0 }  // Belle data
+        { { { -1.5, -0.5 }, { -10000.0, 10000.0 }, { -10000.0, 10000.0 }, { -10000.0, 10000.0 } }, 1.0 },  // Belle II data
+        { { { 0.5, 1.5 }, { -0.5, 0.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_SIGNAL_BelleII_4S_MC15ri },  // MC15ri, 4S, signal
+        { { { 0.5, 1.5 }, { 0.5, 1.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_CHG_MC15ri },  // MC15ri, 4S, CHG
+        { { { 0.5, 1.5 }, { 1.5, 2.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_MIX_MC15ri },  // MC15ri, 4S, MIX
+        { { { 0.5, 1.5 }, { 2.5, 3.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_UUBAR_MC15ri },  // MC15ri, 4S, UUBAR
+        { { { 0.5, 1.5 }, { 3.5, 4.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_DDBAR_MC15ri },  // MC15ri, 4S, DDBAR
+        { { { 0.5, 1.5 }, { 4.5, 5.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_SSBAR_MC15ri },  // MC15ri, 4S, SSBAR
+        { { { 0.5, 1.5 }, { 5.5, 6.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_CHARM_MC15ri },  // MC15ri, 4S, CHARM
+        { { { 0.5, 1.5 }, { 6.5, 7.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_MUMU_MC15ri },  // MC15ri, 4S, MUMU
+        { { { 0.5, 1.5 }, { 7.5, 8.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_EE_MC15ri },  // MC15ri, 4S, EE
+        { { { 0.5, 1.5 }, { 8.5, 9.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_EEEE_MC15ri },  // MC15ri, 4S, EEEE
+        { { { 0.5, 1.5 }, { 9.5, 10.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_EEMUMU_MC15ri },  // MC15ri, 4S, EEMUMU
+        { { { 0.5, 1.5 }, { 10.5, 11.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_EEPIPI_MC15ri },  // MC15ri, 4S, EEPIPI
+        { { { 0.5, 1.5 }, { 11.5, 12.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_EEKK_MC15ri },  // MC15ri, 4S, EEKK
+        { { { 0.5, 1.5 }, { 12.5, 13.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_EEPP_MC15ri },  // MC15ri, 4S, EEPP
+        { { { 0.5, 1.5 }, { 13.5, 14.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_PIPIISR_MC15ri },  // MC15ri, 4S, PIPIISR
+        { { { 0.5, 1.5 }, { 14.5, 15.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_KKISR_MC15ri },  // MC15ri, 4S, KKISR
+        { { { 0.5, 1.5 }, { 15.5, 16.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_GG_MC15ri },  // MC15ri, 4S, GG
+        { { { 0.5, 1.5 }, { 16.5, 17.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_EETAUTAU_MC15ri },  // MC15ri, 4S, EETAUTAU
+        { { { 0.5, 1.5 }, { 17.5, 18.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_K0K0BARISR_MC15ri },  // MC15ri, 4S, K0K0BARISR
+        { { { 0.5, 1.5 }, { 18.5, 19.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_MUMUMUMU_MC15ri },  // MC15ri, 4S, MUMUMUMU
+        { { { 0.5, 1.5 }, { 19.5, 20.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_MUMUTAUTAU_MC15ri },  // MC15ri, 4S, MUMUTAUTAU
+        { { { 0.5, 1.5 }, { 20.5, 21.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_TAUTAUTAUTAU_MC15ri },  // MC15ri, 4S, TAUTAUTAUTAU
+        { { { 0.5, 1.5 }, { 21.5, 22.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_TAUPAIR_MC15ri },  // MC15ri, 4S, TAUPAIR
+        { { { 0.5, 1.5 }, { 22.5, 23.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_PIPIPI0ISR_MC15ri },  // MC15ri, 4S, PIPIPI0ISR
+        { { { 0.5, 1.5 }, { 31.5, 32.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_ALP_BelleII_4S_MC15ri },  // MC15ri, 4S, ALP
+        { { { 0.5, 1.5 }, { -0.5, 0.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_SIGNAL_BelleII_off_MC15ri },  // MC15ri, off-resonance, signal
+        { { { 0.5, 1.5 }, { 2.5, 3.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_UUBAR_MC15ri },  // MC15ri, off-resonance, UUBAR
+        { { { 0.5, 1.5 }, { 3.5, 4.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_DDBAR_MC15ri },  // MC15ri, off-resonance, DDBAR
+        { { { 0.5, 1.5 }, { 4.5, 5.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_SSBAR_MC15ri },  // MC15ri, off-resonance, SSBAR
+        { { { 0.5, 1.5 }, { 5.5, 6.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_CHARM_MC15ri },  // MC15ri, off-resonance, CHARM
+        { { { 0.5, 1.5 }, { 6.5, 7.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_MUMU_MC15ri },  // MC15ri, off-resonance, MUMU
+        { { { 0.5, 1.5 }, { 7.5, 8.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_EE_MC15ri },  // MC15ri, off-resonance, EE
+        { { { 0.5, 1.5 }, { 8.5, 9.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_EEEE_MC15ri },  // MC15ri, off-resonance, EEEE
+        { { { 0.5, 1.5 }, { 9.5, 10.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_EEMUMU_MC15ri },  // MC15ri, off-resonance, EEMUMU
+        { { { 0.5, 1.5 }, { 10.5, 11.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_EEPIPI_MC15ri },  // MC15ri, off-resonance, EEPIPI
+        { { { 0.5, 1.5 }, { 11.5, 12.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_EEKK_MC15ri },  // MC15ri, off-resonance, EEKK
+        { { { 0.5, 1.5 }, { 12.5, 13.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_EEPP_MC15ri },  // MC15ri, off-resonance, EEPP
+        { { { 0.5, 1.5 }, { 15.5, 16.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_GG_MC15ri },  // MC15ri, off-resonance, GG
+        { { { 0.5, 1.5 }, { 16.5, 17.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_EETAUTAU_MC15ri },  // MC15ri, off-resonance, EETAUTAU
+        { { { 0.5, 1.5 }, { 18.5, 19.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_MUMUMUMU_MC15ri },  // MC15ri, off-resonance, MUMUMUMU
+        { { { 0.5, 1.5 }, { 21.5, 22.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_TAUPAIR_MC15ri },  // MC15ri, off-resonance, TAUPAIR
+        { { { 0.5, 1.5 }, { -0.5, 0.5 }, { 5.5, 6.5 }, { -10000.0, 10000.0 } }, Scale_SIGNAL_BelleII_10810_MC15ri },  // MC15ri, 10810, signal
+        { { { 0.5, 1.5 }, { 0.5, 1.5 }, { 5.5, 6.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_10810_CHG_MC15ri },  // MC15ri, 10810, CHG
+        { { { 0.5, 1.5 }, { 1.5, 2.5 }, { 5.5, 6.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_10810_MIX_MC15ri },  // MC15ri, 10810, MIX
+        { { { 0.5, 1.5 }, { 2.5, 3.5 }, { 5.5, 6.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_10810_UUBAR_MC15ri },  // MC15ri, 10810, UUBAR
+        { { { 0.5, 1.5 }, { 3.5, 4.5 }, { 5.5, 6.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_10810_DDBAR_MC15ri },  // MC15ri, 10810, DDBAR
+        { { { 0.5, 1.5 }, { 4.5, 5.5 }, { 5.5, 6.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_10810_SSBAR_MC15ri },  // MC15ri, 10810, SSBAR
+        { { { 0.5, 1.5 }, { 5.5, 6.5 }, { 5.5, 6.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_10810_CHARM_MC15ri },  // MC15ri, 10810, CHARM
+        { { { 0.5, 1.5 }, { 6.5, 7.5 }, { 5.5, 6.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_10810_MUMU_MC15ri },  // MC15ri, 10810, MUMU
+        { { { 0.5, 1.5 }, { 21.5, 22.5 }, { 5.5, 6.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_10810_TAUPAIR_MC15ri },  // MC15ri, 10810, TAUPAIR
+        { { { 0.5, 1.5 }, { 23.5, 24.5 }, { 5.5, 6.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_10810_BBs_MC15ri },  // MC15ri, 10810, BBs
+        { { { 0.5, 1.5 }, { 24.5, 25.5 }, { 5.5, 6.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_10810_BsBs_MC15ri },  // MC15ri, 10810, BsBs
+        { { { 2.5, 3.5 }, { -0.5, 0.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_SIGNAL_BelleII_4S_MC16ri },  // MC16ri, 4S, signal
+        { { { 2.5, 3.5 }, { 0.5, 1.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_CHG_MC16ri },  // MC16ri, 4S, CHG
+        { { { 2.5, 3.5 }, { 1.5, 2.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_MIX_MC16ri },  // MC16ri, 4S, MIX
+        { { { 2.5, 3.5 }, { 2.5, 3.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_UUBAR_MC16ri },  // MC16ri, 4S, UUBAR
+        { { { 2.5, 3.5 }, { 3.5, 4.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_DDBAR_MC16ri },  // MC16ri, 4S, DDBAR
+        { { { 2.5, 3.5 }, { 4.5, 5.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_SSBAR_MC16ri },  // MC16ri, 4S, SSBAR
+        { { { 2.5, 3.5 }, { 5.5, 6.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_CHARM_MC16ri },  // MC16ri, 4S, CHARM
+        { { { 2.5, 3.5 }, { 6.5, 7.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_MUMU_MC16ri },  // MC16ri, 4S, MUMU
+        { { { 2.5, 3.5 }, { 7.5, 8.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_EE_MC16ri },  // MC16ri, 4S, EE
+        { { { 2.5, 3.5 }, { 8.5, 9.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_EEEE_MC16ri },  // MC16ri, 4S, EEEE
+        { { { 2.5, 3.5 }, { 9.5, 10.5 }, { 0.5, 1.5 } , { -10000.0, 10000.0 }}, Scale_BelleII_4S_EEMUMU_MC16ri },  // MC16ri, 4S, EEMUMU
+        { { { 2.5, 3.5 }, { 33.5, 34.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_hhISR_MC16ri },  // MC16ri, 4S, hhISR
+        { { { 2.5, 3.5 }, { 15.5, 16.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_GG_MC16ri },  // MC16ri, 4S, GG
+        { { { 2.5, 3.5 }, { 34.5, 35.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_llXX_MC16ri },  // MC16ri, 4S, llXX
+        { { { 2.5, 3.5 }, { 21.5, 22.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_TAUPAIR_MC16ri },  // MC16ri, 4S, TAUPAIR
+        { { { 2.5, 3.5 }, { 31.5, 32.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_ALP_BelleII_4S_MC16ri },  // MC16ri, 4S, ALP
+        { { { 3.5, 4.5 }, { -0.5, 0.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_SIGNAL_BelleII_4S_MC16rd },  // MC16rd, 4S, signal
+        { { { 3.5, 4.5 }, { 0.5, 1.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_CHG_MC16rd },  // MC16rd, 4S, CHG
+        { { { 3.5, 4.5 }, { 1.5, 2.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_MIX_MC16rd },  // MC16rd, 4S, MIX
+        { { { 3.5, 4.5 }, { 2.5, 3.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_UUBAR_MC16rd },  // MC16rd, 4S, UUBAR
+        { { { 3.5, 4.5 }, { 3.5, 4.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_DDBAR_MC16rd },  // MC16rd, 4S, DDBAR
+        { { { 3.5, 4.5 }, { 4.5, 5.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_SSBAR_MC16rd },  // MC16rd, 4S, SSBAR
+        { { { 3.5, 4.5 }, { 5.5, 6.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_CHARM_MC16rd },  // MC16rd, 4S, CHARM
+        { { { 3.5, 4.5 }, { 6.5, 7.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_MUMU_MC16rd },  // MC16rd, 4S, MUMU
+        { { { 3.5, 4.5 }, { 7.5, 8.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_EE_MC16rd },  // MC16rd, 4S, EE
+        { { { 3.5, 4.5 }, { 8.5, 9.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_EEEE_MC16rd },  // MC16rd, 4S, EEEE
+        { { { 3.5, 4.5 }, { 9.5, 10.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_EEMUMU_MC16rd },  // MC16rd, 4S, EEMUMU
+        { { { 3.5, 4.5 }, { 33.5, 34.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_hhISR_MC16rd },  // MC16rd, 4S, hhISR
+        { { { 3.5, 4.5 }, { 15.5, 16.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_GG_MC16rd },  // MC16rd, 4S, GG
+        { { { 3.5, 4.5 }, { 34.5, 35.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_llXX_MC16rd },  // MC16rd, 4S, llXX
+        { { { 3.5, 4.5 }, { 21.5, 22.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_TAUPAIR_MC16rd },  // MC16rd, 4S, TAUPAIR
+        { { { 3.5, 4.5 }, { 32.5, 33.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_BB_MC16rd },  // MC16rd, 4S, BB
+        { { { 3.5, 4.5 }, { 35.5, 36.5 }, { 0.5, 1.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_4S_UDSC_MC16rd },  // MC16rd, 4S, UDSC
+        { { { 3.5, 4.5 }, { 31.5, 32.5 }, { 0.5, 1.5 }, { 0.1 - 0.01, 0.1 + 0.01 } }, Scale_ALP_BelleII_4S_MC16rd_ctau_01 },  // MC16rd, 4S, ALP_ctau_0.1
+        { { { 3.5, 4.5 }, { 31.5, 32.5 }, { 0.5, 1.5 }, { 1.0 - 0.01, 1.0 + 0.01 } }, Scale_ALP_BelleII_4S_MC16rd_ctau_1 },  // MC16rd, 4S, ALP_ctau_1
+        { { { 3.5, 4.5 }, { 31.5, 32.5 }, { 0.5, 1.5 }, { 10.0 - 0.01, 10.0 + 0.01 } }, Scale_ALP_BelleII_4S_MC16rd_ctau_10 },  // MC16rd, 4S, ALP_ctau_10
+        { { { 3.5, 4.5 }, { 31.5, 32.5 }, { 0.5, 1.5 }, { 100.0 - 0.01, 100.0 + 0.01 } }, Scale_ALP_BelleII_4S_MC16rd_ctau_100 },  // MC16rd, 4S, ALP_ctau_100
+        { { { 3.5, 4.5 }, { 31.5, 32.5 }, { 0.5, 1.5 }, { 250.0 - 0.01, 250.0 + 0.01 } }, Scale_ALP_BelleII_4S_MC16rd_ctau_250 },  // MC16rd, 4S, ALP_ctau_250
+        { { { 3.5, 4.5 }, { 31.5, 32.5 }, { 0.5, 1.5 }, { 500.0 - 0.01, 500.0 + 0.01 } }, Scale_ALP_BelleII_4S_MC16rd_ctau_500 },  // MC16rd, 4S, ALP_ctau_500
+        { { { 3.5, 4.5 }, { 31.5, 32.5 }, { 0.5, 1.5 }, { 1000.0 - 0.01, 1000.0 + 0.01 } }, Scale_ALP_BelleII_4S_MC16rd_ctau_1000 },  // MC16rd, 4S, ALP_ctau_1000
+        { { { 3.5, 4.5 }, { -0.5, 0.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_SIGNAL_BelleII_off_MC16rd },  // MC16rd, off-resonance, signal
+        { { { 3.5, 4.5 }, { 2.5, 3.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_UUBAR_MC16rd },  // MC16rd, off-resonance, UUBAR
+        { { { 3.5, 4.5 }, { 3.5, 4.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_DDBAR_MC16rd },  // MC16rd, off-resonance, DDBAR
+        { { { 3.5, 4.5 }, { 4.5, 5.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_SSBAR_MC16rd },  // MC16rd, off-resonance, SSBAR
+        { { { 3.5, 4.5 }, { 5.5, 6.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_CHARM_MC16rd },  // MC16rd, off-resonance, CHARM
+        { { { 3.5, 4.5 }, { 6.5, 7.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_MUMU_MC16rd },  // MC16rd, off-resonance, MUMU
+        { { { 3.5, 4.5 }, { 7.5, 8.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_EE_MC16rd },  // MC16rd, off-resonance, EE
+        { { { 3.5, 4.5 }, { 8.5, 9.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_EEEE_MC16rd },  // MC16rd, off-resonance, EEEE
+        { { { 3.5, 4.5 }, { 9.5, 10.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_EEMUMU_MC16rd },  // MC16rd, off-resonance, EEMUMU
+        { { { 3.5, 4.5 }, { 33.5, 34.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_hhISR_MC16rd },  // MC16rd, off-resonance, hhISR
+        { { { 3.5, 4.5 }, { 15.5, 16.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_GG_MC16rd },  // MC16rd, off-resonance, GG
+        { { { 3.5, 4.5 }, { 34.5, 35.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_llXX_MC16rd },  // MC16rd, off-resonance, llXX
+        { { { 3.5, 4.5 }, { 21.5, 22.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_TAUPAIR_MC16rd },  // MC16rd, off-resonance, TAUPAIR
+        { { { 3.5, 4.5 }, { 35.5, 36.5 }, { 1.5, 2.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_off_UDSC_MC16rd },  // MC16rd, off-resonance, UDSC
+        { { { 3.5, 4.5 }, { -0.5, 0.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_SIGNAL_BelleII_5S_MC16rd },  // MC16rd, 5S, signal
+        { { { 3.5, 4.5 }, { 2.5, 3.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_UUBAR_MC16rd },  // MC16rd, 5S, UUBAR
+        { { { 3.5, 4.5 }, { 3.5, 4.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_DDBAR_MC16rd },  // MC16rd, 5S, DDBAR
+        { { { 3.5, 4.5 }, { 4.5, 5.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_SSBAR_MC16rd },  // MC16rd, 5S, SSBAR
+        { { { 3.5, 4.5 }, { 5.5, 6.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_CHARM_MC16rd },  // MC16rd, 5S, CHARM
+        { { { 3.5, 4.5 }, { 6.5, 7.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_MUMU_MC16rd },  // MC16rd, 5S, MUMU
+        { { { 3.5, 4.5 }, { 7.5, 8.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_EE_MC16rd },  // MC16rd, 5S, EE
+        { { { 3.5, 4.5 }, { 8.5, 9.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_EEEE_MC16rd },  // MC16rd, 5S, EEEE
+        { { { 3.5, 4.5 }, { 9.5, 10.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_EEMUMU_MC16rd },  // MC16rd, 5S, EEMUMU
+        { { { 3.5, 4.5 }, { 33.5, 34.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_hhISR_MC16rd },  // MC16rd, 5S, hhISR
+        { { { 3.5, 4.5 }, { 15.5, 16.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_GG_MC16rd },  // MC16rd, 5S, GG
+        { { { 3.5, 4.5 }, { 34.5, 35.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_llXX_MC16rd },  // MC16rd, 5S, llXX
+        { { { 3.5, 4.5 }, { 21.5, 22.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_TAUPAIR_MC16rd },  // MC16rd, 5S, TAUPAIR
+        { { { 3.5, 4.5 }, { 35.5, 36.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_UDSC_MC16rd },  // MC16rd, 5S, UDSC
+        { { { 4.5, 5.5 }, { -10000.0, 10000.0 }, { -10000.0, 10000.0 }, { -10000.0, 10000.0 } }, 1.0 }  // Belle data
     },
     false
 );
@@ -105,6 +174,10 @@ EventWeight luminosity_scale(
         {
             { {5.5, 6.5} }, 1.0,
             { { "luminosity", (lumi_BelleII_10810_uncertainty / lumi_BelleII_10810), (lumi_BelleII_10810_uncertainty / lumi_BelleII_10810) } }
+        },
+        {
+            { {6.5, 7.5} }, 1.0,
+            { { "luminosity", (lumi_BelleII_5S_uncertainty / lumi_BelleII_5S), (lumi_BelleII_5S_uncertainty / lumi_BelleII_5S) } }
         }
     },
     {

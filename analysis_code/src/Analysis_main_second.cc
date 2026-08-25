@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
     Loader loader("tau_lfv");
 
     loader.Load(argv[1], argv[2], "label");
-    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"} });
+    loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
 
     loader.PrintInformation("========== initial ==========");
 
