@@ -4,7 +4,7 @@ check_log_files(){
   local VerName=$1 # ex. Alice
   local SampleName=$2 # ex. MUMUTAUTAU
 
-  LogDirName="./${VerName}/${Analysis_VerName}/${SampleName}/final_output_after_application/" 
+  LogDirName="./${VerName}/${Analysis_VerName}/${SampleName}/final_output_test_after_application/" 
   if compgen -G "${LogDirName}/*.log" > /dev/null; then
     for log_file in "${LogDirName}"/*.log; do
       if ! grep -q "Successfully completed" "$log_file"; then

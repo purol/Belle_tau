@@ -10,21 +10,21 @@ export Analysis_VerName="v000" # version of analysis
 export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau" # analysis code path
 export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple" # Ntuple path
 
-Background_Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CHARM"
+Background_Types=("BB" "UDSC"
     "MUMU" "EE" "EEEE" "EEMUMU" "LLXX" "HHISR" "GG" 
     "TAUPAIR"
     ) # name of directories under ${Ntuple_DIR} for background sample. Do not include colon.
 export Signal_Type="SIGNAL" # name of directories under ${Ntuple_DIR} for prompt signal sample. Do not include colon.
 export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample. Do not include colon.
 
-Background_Legends=("B#bar{B}" "B#bar{B}" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#bar{q}"
+Background_Legends=("B#bar{B}" "q#bar{q}"
     "#mu#mu" "ee" "others" "ee#mu#mu" "others" "others" "others"
     "#tau#bar{#tau}"
     ) # legends of background sample for plots. Do not include colon.
 export Signal_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
 export ALP_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
 
-export MC_version="MC16ri" # version of MC. This should be under ${Ntuple_DIR}/${Analysis_Name}/(type name)
+export MC_version="MC16rd" # version of MC. This should be under ${Ntuple_DIR}/${Analysis_Name}/(type name)
 
 input_variables_one=(
     "missingEnergyOfEventCMS"
@@ -91,6 +91,8 @@ input_variables_two=(
     "cleoConeThrust8"
     "cleoConeThrust4"
 ) # list of input variables for the region 1
+
+export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Sanae/v000" # FBDT weight file path
 # =================================================================================== #
 
 
@@ -215,37 +217,45 @@ if [[ $? -ne 0 ]]; then
 fi
 
 bash ${shell_DIR}/submitter_Plotter.sh
-bash ${shell_DIR}/submitter_FBDT_splitter.sh
-wait_job "MVASPLIT"
-bash ${shell_DIR}/checker_FBDT_splitter.sh
-if [[ $? -ne 0 ]]; then
-  echo "Unsuccessful logs found. Stopping the one touch analysis."
-  exit 1
-fi
 
-bash ${shell_DIR}/submitter_FBDTGridSearch.sh
-wait_job "FBDTTRN"
-bash ${shell_DIR}/checker_FBDTGridSearch.sh
-if [[ $? -ne 0 ]]; then
-  echo "Unsuccessful logs found. Stopping the one touch analysis."
-  exit 1
-fi
-
-bash ${shell_DIR}/submitter_FBDT_AUC_train.sh
-wait_job "AUCTRN"
-
-bash ${shell_DIR}/submitter_FBDT_AUC_test.sh
-wait_job "AUCTST"
-
-bash ${shell_DIR}/submitter_ReadGridSearchFiles.sh
-wait_job "GRIDFILE"
-
-bash ${shell_DIR}/submitter_FBDT_Application_split.sh
+bash ${shell_DIR}/submitter_FBDT_Application.sh
 wait_job "FBDTAPP"
-bash ${shell_DIR}/checker_FBDT_Application_split.sh
+bash ${shell_DIR}/checker_FBDT_Application.sh
 if [[ $? -ne 0 ]]; then
   echo "Unsuccessful logs found. Stopping the one touch analysis."
   exit 1
 fi
 
-bash ${shell_DIR}/submitter_KStest.sh
+bash ${shell_DIR}/submitter_Plotter_secondary.sh
+
+bash ${shell_DIR}/submitter_PunziFOM.sh
+wait_job "FBDTFOM"
+# to do
+bash ${shell_DIR}/submitter_Analysis_third.sh
+wait_job "Analyze"
+bash ${shell_DIR}/checker_Analysis_third.sh
+if [[ $? -ne 0 ]]; then
+  echo "Unsuccessful logs found. Stopping the one touch analysis."
+  exit 1
+fi
+
+bash ${shell_DIR}/submitter_Plotter_third.sh
+
+bash ${shell_DIR}/submitter_Calculator.sh
+wait_job "SYSTCAL"
+
+bash ${shell_DIR}/submitter_PCA.sh
+wait_job "PCA"
+
+bash ${shell_DIR}/submitter_Create_workspace.sh
+wait_job "CRTWS"
+
+bash ${shell_DIR}/submitter_CLs.sh
+wait_job "TAUCLS"
+
+bash ${shell_DIR}/submitter_Merge.sh
+wait_job "MERGECLS"
+
+bash ${shell_DIR}/submitter_ReadCLs.sh
+wait_job "READCLS"
+
