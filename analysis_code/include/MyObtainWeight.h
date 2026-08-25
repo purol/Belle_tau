@@ -11,6 +11,9 @@
 
 EventWeight double_weight = EventWeight(2.0);
 
+EventWeight train_weight = EventWeight(4.0/3.0);
+EventWeight test_weight = EventWeight(4.0);
+
 EventWeight MC_weight(
     {
         "MySampleType",
