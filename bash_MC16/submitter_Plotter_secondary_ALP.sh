@@ -1,0 +1,206 @@
+#!/bin/bash
+
+get_params() {
+  local dir="$1"
+
+  ls "$dir" | \
+  sed -n 's/.*alpha_mass\([0-9.+-eE]\+\)_life\([0-9.+-eE]\+\)_A\([0-9+-]\+\)_B\([0-9+-]\+\).*/\1 \2 \3 \4/p' | \
+  sort -u
+}
+
+submit_Plotter() {
+  local command
+
+  if [ "$#" -eq 10 ]; then
+    local Code=$1 # ex. ./bin/Plotter
+    local VerName=$2 # ex. Alice
+    local VarName=$3 # ex. deltaE
+    local InputDir=$4 # ex. before_M_deltaE_selection
+    local OutputName=$5 # ex. deltaE
+    local OutputPath=$6 # ex. plot
+    local SignalTypes=$7
+    local BackgroundTypes=$8
+    local SignalLegends=${9}
+    local BackgroundLegends=${10}
+
+    get_params "./${VerName}/${Analysis_VerName}/ALP/${InputDir}" | while read mass life A B; do
+      VarNameLocal="${VarName}"
+      OutputNameLocal="${OutputName}"
+
+      if [[ "${VarName}" = "BDT_output_1" || "${VarName}" = "BDT_output_2" ]]; then
+        if [ "${B}" = "-1" ]; then
+          B_tag="m1"
+        elif [ "${B}" = "0" ]; then
+          B_tag="0"
+        else
+          B_tag="${B}"
+        fi
+        VarNameLocal="${VarName}_${mass}_${life}_${A}_${B_tag}"
+        OutputNameLocal="${OutputName}_${mass}_${life}_${A}_${B_tag}"
+      fi
+
+      mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}"
+      mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log"
+      mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err"
+
+      printf -v command '%q ' \
+        "${Code}" \
+        "${VarNameLocal}" \
+        "./${VerName}/${Analysis_VerName}/" \
+        "/${InputDir}/" \
+        "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" \
+        "${OutputNameLocal}" \
+        "${SignalTypes}" \
+        "${BackgroundTypes}" \
+        "${SignalLegends}" \
+        "${BackgroundLegends}" \
+        "${mass}" \
+        "${life}" \
+        "${A}" \
+        "${B}"
+
+      bsub -q l \
+      -J Plotter \
+      -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputNameLocal}.log" \
+      -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputNameLocal}.err" \
+      "${command}"
+    done
+
+  elif [ "$#" -eq 12 ]; then
+    local Code=$1 # ex. ./bin/Plotter
+    local VerName=$2 # ex. Alice
+    local VarName=$3 # ex. deltaE
+    local VarMin=$4
+    local VarMax=$5
+    local InputDir=$6 # ex. before_M_deltaE_selection
+    local OutputName=$7 # ex. deltaE
+    local OutputPath=$8 # ex. plot
+    local SignalTypes=$9
+    local BackgroundTypes=${10}
+    local SignalLegends=${11}
+    local BackgroundLegends=${12}
+
+    get_params "./${VerName}/${Analysis_VerName}/ALP/${InputDir}" | while read mass life A B; do
+      VarNameLocal="${VarName}"
+      OutputNameLocal="${OutputName}"
+
+      if [[ "${VarName}" = "BDT_output_1" || "${VarName}" = "BDT_output_2" ]]; then
+        if [ "${B}" = "-1" ]; then
+          B_tag="m1"
+        elif [ "${B}" = "0" ]; then
+          B_tag="0"
+        else
+          B_tag="${B}"
+        fi
+        VarNameLocal="${VarName}_${mass}_${life}_${A}_${B_tag}"
+        OutputNameLocal="${OutputName}_${mass}_${life}_${A}_${B_tag}"
+      fi
+
+      mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}"
+      mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log"
+      mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err"
+
+      printf -v command '%q ' \
+        "${Code}" \
+        "${VarNameLocal}" \
+        "./${VerName}/${Analysis_VerName}/" \
+        "/${InputDir}/" \
+        "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" \
+        "${OutputNameLocal}" \
+        "${SignalTypes}" \
+        "${BackgroundTypes}" \
+        "${SignalLegends}" \
+        "${BackgroundLegends}" \
+        "${VarMin}" \
+        "${VarMax}" \
+        "${mass}" \
+        "${life}" \
+        "${A}" \
+        "${B}"
+
+      bsub -q l \
+      -J Plotter \
+      -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputNameLocal}.log" \
+      -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputNameLocal}.err" \
+      "${command}"
+    done
+
+  fi
+
+}
+
+submit_Plotter_2D(){
+  local command
+  
+  local Code=$1
+  local VerName=$2 # ex. Alice
+  local VarName_1=$3
+  local VarName_2=$4
+  local InputDir=$5 # ex. before_M_deltaE_selection
+  local OutputName=$6 # ex. deltaE
+  local OutputPath=$7 # ex. plot
+  local Types=$8
+  local Legends=${9}
+
+  get_params "./${VerName}/${Analysis_VerName}/ALP/${InputDir}" | while read mass life A B; do
+    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log"
+    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err"
+
+    printf -v command '%q ' \
+      "${Code}" \
+      "${VarName_1}" \
+      "${VarName_2}" \
+      "./${VerName}/${Analysis_VerName}/" \
+      "/${InputDir}/" \
+      "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}" \
+      "${OutputName}" \
+      "${Types}" \
+      "${Legends}" \
+      "${mass}" \
+      "${life}" \
+      "${A}" \
+      "${B}"
+
+    bsub -q l \
+    -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/log/${InputDir}_${OutputName}.log" \
+    -e "./${VerName}/${Analysis_VerName}/${OutputPath}_${mass}_${life}_${A}_${B}/err/${InputDir}_${OutputName}.err" \
+    "${command}"
+  done
+}
+ 
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_ALP"
+VarName="BDT_output_1"
+submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_1" "plot" "${ALP_Type}" "${Background_Types_STR}" "${ALP_Legends}" "${Background_Legends_STR}"
+
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_ALP"
+VarName="BDT_output_2"
+submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_2" "plot" "${ALP_Type}" "${Background_Types_STR}" "${ALP_Legends}" "${Background_Legends_STR}"
+
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_one_ALP"
+VarName="BDT_output_1"
+submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_1_one" "plot" "${ALP_Type}" "${Background_Types_STR}" "${ALP_Legends}" "${Background_Legends_STR}"
+
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_two_ALP"
+VarName="BDT_output_2"
+submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_2_two" "plot" "${ALP_Type}" "${Background_Types_STR}" "${ALP_Legends}" "${Background_Legends_STR}"
+
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_signal_ALP"
+VarName_1="M"
+VarName_2="deltaE"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_after_application" "final_output_after_application_M_deltaE_signal" "plot" "${ALP_Type}" "${ALP_Legends}"
+
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_bkg_ALP"
+VarName_1="M"
+VarName_2="deltaE"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_after_application" "final_output_after_application_M_deltaE_bkg" "plot" "${Background_Types_STR}" "${Background_Legends_STR}"
+
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_signal_ALP"
+VarName_1="M"
+VarName_2="deltaE"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M_deltaE_signal" "plot" "${ALP_Type}" "${ALP_Legends}"
+
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_bkg_ALP"
+VarName_1="M"
+VarName_2="deltaE"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M_deltaE_bkg" "plot" "${Background_Types_STR}" "${Background_Legends_STR}"
+
