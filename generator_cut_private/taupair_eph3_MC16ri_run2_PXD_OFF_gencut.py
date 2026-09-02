@@ -244,7 +244,7 @@ si.add_simulation(path=main, bkgfiles=bg_local)
 re.add_reconstruction(path=main)
 
 # Finally add mdst output (file name overwritten on the grid)
-mdst.add_mdst_output(path=main, filename="mdst.root")
+mdst.add_mdst_output(path=main, filename=args.output)
 
 # process events and print call statistics
 b2.process(path=main)
