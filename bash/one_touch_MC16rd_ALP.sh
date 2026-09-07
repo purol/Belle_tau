@@ -235,6 +235,8 @@ wait_job "SYSTCAL"
 bash ${shell_DIR}/submitter_PCA_ALP.sh
 wait_job "PCA"
 
+bash ${shell_DIR}/submitter_GetCorrelation_ALP.sh
+
 bash ${shell_DIR}/submitter_Create_workspace_ALP.sh
 wait_job "CRTWS"
 
