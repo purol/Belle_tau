@@ -10,7 +10,17 @@ submit_code() {
   mkdir -p "./${VerName}/${Analysis_VerName}/cal_out"
   mkdir -p "./${VerName}/${Analysis_VerName}/cal_log"
 
-  bsub -q s -J SYSTCAL -o "./${VerName}/${Analysis_VerName}/cal_log/${LogName}_${indicator}.log" ${Code} "./${VerName}/${Analysis_VerName}" "final_output_test_after_application" "./${VerName}/${Analysis_VerName}/cal_out" ${NToys} ${indicator} "${Signal_Type}" "${Background_Types_STR}"
+  bsub -q s \
+  -J SYSTCAL \
+  -o "./${VerName}/${Analysis_VerName}/cal_log/${LogName}_${indicator}.log" \
+  ${Code} \
+  "./${VerName}/${Analysis_VerName}" \
+  "final_output_after_application" \
+  "./${VerName}/${Analysis_VerName}/cal_out" \
+  ${NToys} \
+  ${indicator} \
+  "${Signal_Type}" \
+  "${Background_Types_STR}"
 }
 
 

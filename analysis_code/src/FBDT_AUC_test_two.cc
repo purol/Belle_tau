@@ -56,14 +56,14 @@ int main(int argc, char* argv[]) {
 
 
     EventWeights::Register("MC_weight", MC_weight);
-    EventWeights::Register("double_weight", double_weight);
+    EventWeights::Register("test_weight", test_weight);
 
     Loader loader("tau_lfv");
 
     for (int i = 0; i < signal_list.size(); i++) loader.Load((argv[2 + variable_num] + std::string("/") + signal_list.at(i) + std::string("/final_output_test/")).c_str(), "root", signal_list.at(i).c_str());
     for (int i = 0; i < background_list.size(); i++) loader.Load((argv[2 + variable_num] + std::string("/") + background_list.at(i) + std::string("/final_output_test/")).c_str(), "root", background_list.at(i).c_str());
     loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
-    loader.AddWeight("double_weight");
+    loader.AddWeight("test_weight");
 
     // Create a new vector to hold the combined elements
     std::vector<std::string> all_label;

@@ -30,7 +30,15 @@ submit_CLs() {
     for mu in $mu_list
     do
       for index in {0..10}; do
-        bsub -q s -J TAUCLS -o "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/log/${mu}_${index}.log" ${Code} "./${VerName}/${Analysis_VerName}" "workspace_${mass}_${life}_${A}_${B}.root" "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/out" ${mu} ${index}
+        bsub -q s \
+        -J TAUCLS \
+        -o "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/log/${mu}_${index}.log" \
+        ${Code} \
+        "./${VerName}/${Analysis_VerName}" \
+        "workspace_${mass}_${life}_${A}_${B}.root" \
+        "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/out" \
+        ${mu} \
+        ${index}
       done
     done
 

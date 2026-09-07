@@ -25,7 +25,7 @@ submit_Plotter() {
     "${VarMin}" \
     "${VarMax}" \
     "./${VerName}/${Analysis_VerName}/${Type1}/${InputDir1}/" \
-    "${FBDT_weight_DIR}/${Type2}/${InputDir2}/" \
+    "${nominal_analysis_DIR}/${Type2}/${InputDir2}/" \
     "./${VerName}/${Analysis_VerName}/${OutputPath}/" \
     "${OutputName}.png" \
     "${Type1}" \
@@ -33,7 +33,7 @@ submit_Plotter() {
     "${Signal_Legends}" \
     "#tau#rightarrow#mu#mu#mu" \
     "none" \
-    "${FBDT_weight_DIR}"
+    "${nominal_analysis_DIR}"
 
   bsub -q l \
   -J Compare \
@@ -44,8 +44,8 @@ submit_Plotter() {
  
 code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_one"
 VarName="BDT_output_1"
-submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_test_after_application" "FBDT1_comp" "plot" "${Signal_Type}" "SIGNAL"
+submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application" "FBDT1_comp" "plot" "${Signal_Type}" "SIGNAL"
 
 code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_two"
 VarName="BDT_output_2"
-submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_test_after_application" "FBDT2_comp" "plot" "${Signal_Type}" "SIGNAL"
+submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application" "FBDT2_comp" "plot" "${Signal_Type}" "SIGNAL"

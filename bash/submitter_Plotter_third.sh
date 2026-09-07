@@ -30,7 +30,11 @@ submit_Plotter() {
       "${SignalLegends}" \
       "${BackgroundLegends}"
 
-    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" "${command}"
+    bsub -q l \
+    -J Plotter \
+    -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" \
+    -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" \
+    "${command}"
   elif [ "$#" -eq 12 ]; then
     local Code=$1 # ex. ./bin/Plotter
     local VerName=$2 # ex. Alice
@@ -62,7 +66,11 @@ submit_Plotter() {
       "${VarMin}" \
       "${VarMax}"
 
-    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" "${command}"
+    bsub -q l \
+    -J Plotter \
+    -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" \
+    -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" \
+    "${command}"
   fi
 
 }
@@ -94,19 +102,23 @@ submit_Plotter_2D(){
     "${Types}" \
     "${Legends}"
 
-  bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" "${command}"
+  bsub -q l \
+  -J Plotter \
+  -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" \
+  -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" \
+  "${command}"
 
 }
  
 
-code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_signal_half"
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_signal"
 VarName_1="M"
 VarName_2="deltaE"
-submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_test_after_application_after_cut" "final_output_test_after_application_after_cut_M_deltaE_signal" "plot" "${Signal_Type}" "${Signal_Legends}"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_after_application_after_cut" "final_output_after_application_after_cut_M_deltaE_signal" "plot" "${Signal_Type}" "${Signal_Legends}"
 
-code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_bkg_half"
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_bkg"
 VarName_1="M"
 VarName_2="deltaE"
-submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_test_after_application_after_cut" "final_output_test_after_application_after_cut_M_deltaE_bkg" "plot" "${Background_Types_STR}" "${Background_Legends_STR}"
+submit_Plotter_2D ${code} ${Analysis_Name} ${VarName_1} ${VarName_2} "final_output_after_application_after_cut" "final_output_after_application_after_cut_M_deltaE_bkg" "plot" "${Background_Types_STR}" "${Background_Legends_STR}"
 
 

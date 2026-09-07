@@ -14,7 +14,16 @@ submit_fitter() {
   local SampleName=$3 # ex. MUMUTAUTAU
 
   get_params "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection" | while read mass life A B; do
-    bsub -q s -J 2DFIT -o "/dev/null" ${Code} "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection" "./${VerName}/${Analysis_VerName}/" "${mass}" "${life}" "${A}" "${B}"
+    bsub -q s \
+    -J 2DFIT \
+    -o "/dev/null" \
+    ${Code} \
+    "./${VerName}/${Analysis_VerName}/${SampleName}/before_strict_M_deltaE_selection" \
+    "./${VerName}/${Analysis_VerName}/" \
+    "${mass}" \
+    "${life}" \
+    "${A}" \
+    "${B}"
   done
 }
 

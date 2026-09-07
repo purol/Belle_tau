@@ -38,13 +38,11 @@ int main(int argc, char* argv[]) {
     ReadFOM(argv[6], &BDT_cut_2);
 
     EventWeights::Register("MC_weight", MC_weight);
-    EventWeights::Register("double_weight", double_weight);
 
     Loader loader("tau_lfv");
 
     loader.Load(argv[1], argv[2], "label");
     loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
-    loader.AddWeight("double_weight");
 
     loader.PrintInformation("========== initial ==========");
 
