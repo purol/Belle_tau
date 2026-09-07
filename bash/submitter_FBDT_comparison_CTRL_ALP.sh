@@ -59,6 +59,59 @@ submit_Plotter() {
   done
 
 }
+
+submit_Plotter_weight() {
+  local command
+
+  local Code=$1 # ex. ./bin/Plotter
+  local VerName=$2 # ex. Alice
+  local VarName=$3 # ex. deltaE
+  local VarMin=$4
+  local VarMax=$5
+  local InputDir1=$6 # ex. before_M_deltaE_selection
+  local InputDir2=$7 # ex. before_M_deltaE_selection
+  local OutputName=$8 # ex. deltaE
+  local OutputPath=$9 # ex. plot
+  local Type1=${10}
+  local Type2=${11}
+  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
+  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
+  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
+
+  get_params "${nominal_analysis_DIR}/${Type2}/${InputDir2}/" | while read mass life A B; do
+    BDTName_ALP=${VarName}_${mass}_${life}_${A}_${B}
+    BDTName_ALP=${BDTName_ALP//-/m}
+
+    printf -v command '%q ' \
+      ${Code} \
+      "${BDTName_ALP}" \
+      50 \
+      "${VarMin}" \
+      "${VarMax}" \
+      "./${VerName}/${Analysis_VerName}/${Type1}/${InputDir1}/" \
+      "${nominal_analysis_DIR}/${Type2}/${InputDir2}/" \
+      "./${VerName}/${Analysis_VerName}/${OutputPath}/" \
+      "${OutputName}_${BDTName_ALP}.png" \
+      "${Type1}" \
+      "${Type2}" \
+      "${Signal_Legends}" \
+      "#tau#rightarrow#alpha#mu" \
+      "none" \
+      "${nominal_analysis_DIR}" \
+      "./${VerName}/${Analysis_VerName}" \
+      "${mass}" \
+      "${life}" \
+      "${A}" \
+      "${B}"
+
+    bsub -q l \
+    -J Compare \
+    -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/compare_weight_${BDTName_ALP}_${OutputName}.log" \
+    -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/compare_weight_${BDTName_ALP}_${OutputName}.err" \
+    "${command}"
+  done
+
+}
  
 code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_ALP_one"
 VarName="BDT_output_1"
@@ -67,3 +120,11 @@ submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_a
 code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_ALP_two"
 VarName="BDT_output_2"
 submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application" "FBDT2_comp" "plot" "${Signal_Type}" "ALP"
+
+code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_ALP_weight_one"
+VarName="BDT_output_1"
+submit_Plotter_weight ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application" "FBDT1_comp_weight" "plot" "${Signal_Type}" "ALP"
+
+code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_ALP_weight_two"
+VarName="BDT_output_2"
+submit_Plotter_weight ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application" "FBDT2_comp_weight" "plot" "${Signal_Type}" "ALP"

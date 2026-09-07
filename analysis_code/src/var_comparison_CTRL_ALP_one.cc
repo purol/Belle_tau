@@ -47,10 +47,10 @@ int main(int argc, char* argv[]) {
     else if(std::string(argv[13]) == "none") ThereIsRatio = false;
     if(std::string(argv[13]) == "ratio") ThereIsRatio = true;
 
-    double mass = std::stod(argv[14]);
-    double life = std::stod(argv[15]);
-    int A = std::stoi(argv[16]);
-    int B = std::stoi(argv[17]);
+    double mass = std::stod(argv[15]);
+    double life = std::stod(argv[16]);
+    int A = std::stoi(argv[17]);
+    int B = std::stoi(argv[18]);
 
     double M_left_cut_value = 0;
     double M_right_cut_value = 0;
@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
     double M_right_sigma;
     double theta;
 
-    ReadResolution((std::string(argv[13]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+    ReadResolution((std::string(argv[14]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
     std::string variable_name(argv[1]);
 
