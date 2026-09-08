@@ -9,7 +9,7 @@ Ntuple_path="/home/belle2/junewoo/storage_ghi/tau_Ntuple_compare"
 Type="DDBAR"
 
 Type_path="${Ntuple_path}/${version}/${Type}"
-output_path="${Type_path}/${MCVersion}"
+output_path="${Type_path}/${MCVersion}_nominal"
 log_path="${Type_path}/${MCVersion}/log"
 
 mkdir -p "${output_path}"
@@ -40,7 +40,7 @@ Ntuple_path="/home/belle2/junewoo/storage_ghi/tau_Ntuple_compare"
 Type="DDBAR"
 
 Type_path="${Ntuple_path}/${version}/${Type}"
-output_path="${Type_path}/${MCVersion}"
+output_path="${Type_path}/${MCVersion}_gencut"
 log_path="${Type_path}/${MCVersion}/log"
 
 mkdir -p "${output_path}"
