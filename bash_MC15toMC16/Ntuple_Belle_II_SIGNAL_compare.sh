@@ -12,6 +12,9 @@ Type_path="${Ntuple_path}/${version}/${Type}"
 output_path="${Type_path}/${MCVersion}"
 log_path="${Type_path}/${MCVersion}/log"
 
+mkdir -p "${output_path}"
+mkdir -p "${log_path}"
+
 for file in $(find "${Skim_path}/${MCVersion}_on/${Type}/output" -maxdepth 1 -name "*.root")
 do
     echo $file
@@ -39,6 +42,9 @@ Type="SIGNAL"
 Type_path="${Ntuple_path}/${version}/${Type}"
 output_path="${Type_path}/${MCVersion}"
 log_path="${Type_path}/${MCVersion}/log"
+
+mkdir -p "${output_path}"
+mkdir -p "${log_path}"
 
 for file in $(find "${Skim_path}/${MCVersion}_on/${Type}/output" -maxdepth 1 -name "*.root")
 do
