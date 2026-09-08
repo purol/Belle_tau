@@ -74,6 +74,7 @@ submit_Plotter_weight() {
   local OutputPath=$9 # ex. plot
   local Type1=${10}
   local Type2=${11}
+  local WeightPath=${12} # ex. Weight
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
@@ -98,7 +99,7 @@ submit_Plotter_weight() {
       "#tau#rightarrow#alpha#mu" \
       "none" \
       "${nominal_analysis_DIR}" \
-      "./${VerName}/${Analysis_VerName}" \
+      "./${VerName}/${Analysis_VerName}/${WeightPath}" \
       "${mass}" \
       "${life}" \
       "${A}" \
@@ -123,8 +124,8 @@ submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_a
 
 code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_ALP_weight_one"
 VarName="BDT_output_1"
-submit_Plotter_weight ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application" "FBDT1_comp_weight" "plot" "${Signal_Type}" "ALP"
+submit_Plotter_weight ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application" "FBDT1_comp_weight" "plot" "${Signal_Type}" "ALP" "Weight"
 
 code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_ALP_weight_two"
 VarName="BDT_output_2"
-submit_Plotter_weight ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application" "FBDT2_comp_weight" "plot" "${Signal_Type}" "ALP"
+submit_Plotter_weight ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application" "FBDT2_comp_weight" "plot" "${Signal_Type}" "ALP" "Weight"

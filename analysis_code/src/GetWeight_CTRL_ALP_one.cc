@@ -104,7 +104,7 @@ int main(int argc, char* argv[]) {
     loader_sample2.IsBCSValid();
     loader_sample2.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
     loader_sample2.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
-    loader_sample2.FillTH1D(hist_CTRL_ALP, "extraInfo__boALP_M__bc");
+    loader_sample2.FillTH1D(hist_CTRL_ALP, argv[5]);
     loader_sample2.end();
 
     // calculate weights
@@ -177,7 +177,7 @@ int main(int argc, char* argv[]) {
     legend->SetFillStyle(0); legend->SetLineWidth(0);
     legend->Draw();
 
-    c_temp->SaveAs((std::string(argv[10]) + "/mass_comparison_one_" + std::string(argv[10]) + "_" + std::string(argv[11]) + "_" + std::string(argv[12]) + "_" + std::string(argv[13]) + ".png").c_str());
+    c_temp->SaveAs((std::string(argv[10]) + "/mass_comparison_one_" + std::string(argv[12]) + "_" + std::string(argv[13]) + "_" + std::string(argv[14]) + "_" + std::string(argv[15]) + ".png").c_str());
 
     return 0;
 }
