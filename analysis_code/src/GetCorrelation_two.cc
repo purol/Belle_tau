@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
         loader_temp.PrintInformation("========== (-15 delta < deltaE < -5 delta) ==========");
 
         loader_temp.Cut(("(" + std::to_string(lower) + "< BDT2) && (BDT2 < " + std::to_string(upper) + ")").c_str());
-        loader_temp.PrintInformation("========== " + std::to_string(lower) + " < BDT2 < " + std::to_string(upper) + " ==========");
+        loader_temp.PrintInformation(("========== " + std::to_string(lower) + " < BDT2 < " + std::to_string(upper) + " ==========").c_str());
 
         loader_temp.FillTH1D(temp_th1d, "M");
 

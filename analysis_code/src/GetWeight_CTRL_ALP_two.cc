@@ -125,11 +125,11 @@ int main(int argc, char* argv[]) {
         double N_CTRL = hist_CTRL->GetBinContent(i);
         double N_ALP = hist_CTRL_ALP->GetBinContent(i);
         if (N_CTRL > 0.000001) {
-            hist_ratio->SetBinContent(N_ALP / N_CTRL);
+            hist_ratio->SetBinContent(i, N_ALP / N_CTRL);
             N_ALP_used_for_weight = N_ALP_used_for_weight + N_ALP;
         }
         else {
-            hist_ratio->SetBinContent(0.0);
+            hist_ratio->SetBinContent(i, 0.0);
         }
     }
 
@@ -142,7 +142,7 @@ int main(int argc, char* argv[]) {
         fprintf(fp, "\n");
         const double low = hist_ratio->GetXaxis()->GetBinLowEdge(i);
         const double high = hist_ratio->GetXaxis()->GetBinUpEdge(i);
-        const double weight = hist_ratio->GetXaxis()->GetBinContent(i);
+        const double weight = hist_ratio->GetBinContent(i);
         fprintf(fp, "%lf,%lf,%lf", weight, low, high);
     }
     fclose(fp);
