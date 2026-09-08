@@ -37,5 +37,8 @@ submit_analysis() {
 
 }
 
-code="${Belle_tau_DIR}/analysis_code/bin/GetCorrelation_ALP"
+code="${Belle_tau_DIR}/analysis_code/bin/GetCorrelation_one_ALP"
+submit_analysis ${code} ${Analysis_Name} ${Background_Types_STR}
+
+code="${Belle_tau_DIR}/analysis_code/bin/GetCorrelation_two_ALP"
 submit_analysis ${code} ${Analysis_Name} ${Background_Types_STR}

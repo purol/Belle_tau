@@ -21,5 +21,8 @@ submit_analysis() {
 
 }
 
-code="${Belle_tau_DIR}/analysis_code/bin/GetCorrelation"
+code="${Belle_tau_DIR}/analysis_code/bin/GetCorrelation_one"
+submit_analysis ${code} ${Analysis_Name} ${Background_Types_STR}
+
+code="${Belle_tau_DIR}/analysis_code/bin/GetCorrelation_two"
 submit_analysis ${code} ${Analysis_Name} ${Background_Types_STR}
