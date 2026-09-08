@@ -46,7 +46,4 @@ submit_analysis() {
 
 # MC15ri signal
 code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main"
-for Type in "${Types[@]}"; do
-    submit_analysis ${code} ${Analysis_Name} "SIGNAL" "MC15ri"
-    sleep 0.5s
-done
+submit_analysis ${code} ${Analysis_Name} "SIGNAL" "MC15ri"
