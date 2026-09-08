@@ -10,7 +10,7 @@ Type="DDBAR"
 
 Type_path="${Ntuple_path}/${version}/${Type}"
 output_path="${Type_path}/${MCVersion}_nominal"
-log_path="${Type_path}/${MCVersion}/log"
+log_path="${Type_path}/${MCVersion}_nominal/log"
 
 mkdir -p "${output_path}"
 mkdir -p "${log_path}"
@@ -41,7 +41,7 @@ Type="DDBAR"
 
 Type_path="${Ntuple_path}/${version}/${Type}"
 output_path="${Type_path}/${MCVersion}_gencut"
-log_path="${Type_path}/${MCVersion}/log"
+log_path="${Type_path}/${MCVersion}_gencut/log"
 
 mkdir -p "${output_path}"
 mkdir -p "${log_path}"
