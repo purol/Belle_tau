@@ -21,7 +21,7 @@ ratio_cfg = {
     "track_variables": ["p", "cosTheta"],
     "precut": "[-3.0 < dz < 3.0] and [dr < 1.0]",
     "model_names": ["Jpsimumu", "Radmumu", "TwophotonMumu"],
-    "output": "MuonEff05_on.csv",
+    "output": "MuonEff01_on.csv",
     "binning": [[0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5],
                [-0.866, -0.682, -0.4226, -0.1045, 0.225, 0.5, 0.766, 0.8829, 0.9563]]
 }
