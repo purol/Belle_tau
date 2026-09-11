@@ -102,8 +102,9 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
     loader_data.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} }); /* After box open, it should be removed! */
-    loader_data.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} }); /* After box open, it should be removed! */
-    loader_data.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("muonID_05_prompt", { {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("muonID_05_prompt", { {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("muonID_01_prompt", { {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} }); /* After box open, it should be removed! */
     loader_data.Cut(cut_region.c_str());
     loader_data.RandomBCS();
     loader_data.IsBCSValid();
@@ -115,8 +116,9 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     Loader loader_signal("tau_lfv");
     for (int i = 0; i < signal_list_.size(); i++) loader_signal.Load((input_path_1_ + std::string("/") + signal_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", signal_list_.at(i).c_str());
     loader_signal.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
-    loader_signal.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} });
-    loader_signal.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} });
+    loader_signal.AddWeight("muonID_05_prompt", { {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_signal.AddWeight("muonID_05_prompt", { {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_signal.AddWeight("muonID_01_prompt", { {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
     loader_signal.Cut(cut_region.c_str());
     loader_signal.RandomBCS();
     loader_signal.IsBCSValid();
@@ -128,8 +130,9 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     Loader loader_bkg("tau_lfv");
     for (int i = 0; i < background_list_.size(); i++) loader_bkg.Load((input_path_1_ + std::string("/") + background_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", background_list_.at(i).c_str());
     loader_bkg.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
-    loader_bkg.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} });
-    loader_bkg.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} });
+    loader_bkg.AddWeight("muonID_05_prompt", { {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_bkg.AddWeight("muonID_05_prompt", { {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_bkg.AddWeight("muonID_01_prompt", { {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
     loader_bkg.Cut(cut_region.c_str());
     loader_bkg.RandomBCS();
     loader_bkg.IsBCSValid();
@@ -180,8 +183,9 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
     loader_data.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} }); /* After box open, it should be removed! */
-    loader_data.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} }); /* After box open, it should be removed! */
-    loader_data.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("muonID_05_prompt", { {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("muonID_05_prompt", { {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("muonID_01_prompt", { {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} }); /* After box open, it should be removed! */
     loader_data.Cut(cut_region.c_str());
     loader_data.RandomBCS();
     loader_data.IsBCSValid();
@@ -200,8 +204,9 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
     Loader loader_signal("tau_lfv");
     for (int i = 0; i < signal_list_.size(); i++) loader_signal.Load((input_path_1_ + std::string("/") + signal_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", signal_list_.at(i).c_str());
     loader_signal.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
-    loader_signal.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} });
-    loader_signal.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} });
+    loader_signal.AddWeight("muonID_05_prompt", { {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_signal.AddWeight("muonID_05_prompt", { {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_signal.AddWeight("muonID_01_prompt", { {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
     loader_signal.Cut(cut_region.c_str());
     loader_signal.RandomBCS();
     loader_signal.IsBCSValid();
@@ -220,8 +225,9 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
     Loader loader_bkg("tau_lfv");
     for (int i = 0; i < background_list_.size(); i++) loader_bkg.Load((input_path_1_ + std::string("/") + background_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", background_list_.at(i).c_str());
     loader_bkg.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
-    loader_bkg.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} });
-    loader_bkg.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} });
+    loader_bkg.AddWeight("muonID_05_prompt", { {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_bkg.AddWeight("muonID_05_prompt", { {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_bkg.AddWeight("muonID_01_prompt", { {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
     loader_bkg.Cut(cut_region.c_str());
     loader_bkg.RandomBCS();
     loader_bkg.IsBCSValid();
@@ -375,8 +381,9 @@ void ABCD_method(const char* input_path_1_, const char* input_path_2_, const cha
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
     loader_data.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} }); /* After box open, it should be removed! */
-    loader_data.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} }); /* After box open, it should be removed! */
-    loader_data.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("muonID_05_prompt", { {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("muonID_05_prompt", { {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("muonID_01_prompt", { {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} }); /* After box open, it should be removed! */
     loader_data.Cut(cut_region.c_str());
     loader_data.RandomBCS();
     loader_data.IsBCSValid();
@@ -556,7 +563,8 @@ int main(int argc, char* argv[]) {
     theta_g = theta;
 
     EventWeights::Register("MC_weight", MC_weight);
-    EventWeights::Register("muonID_05", muonID_05);
+    EventWeights::Register("muonID_01_prompt", muonID_01_prompt);
+    EventWeights::Register("muonID_05_prompt", muonID_05_prompt);
 
     // we do not open the box, so I just use background MC
     FillHistogram(argv[1], argv[2], data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err, background_list, signal_list, background_list);
