@@ -44,7 +44,6 @@ def convert_name(name: str) -> str:
 
 # global variables
 BELLEONE = False
-ISALPDEFINED = False
 
 def AssignIndex(sample_name, event_name, energy_name):
     sample_index = -100
@@ -226,7 +225,7 @@ def FillSeveralPhotons(path):
 
     return list_names
 
-def BasicAnalysisForTau(tau_list, sample_index, type_index, energy_index, mass_ALP, life_ALP, path):
+def BasicAnalysisForTau(tau_list, sample_index, type_index, energy_index, mass_ALP, life_ALP, use_mcalp, path):
     # we do not use treefit for tau, because it makes m_tau distribution strange for tau -> alpha mu analysis 
     # vertex.treeFit(list_name=tau_list, conf_level=-1, updateAllDaughters=False, path=path)
 
@@ -256,21 +255,21 @@ def BasicAnalysisForTau(tau_list, sample_index, type_index, energy_index, mass_A
 
     # get information for Dalitz Plot
     ma.fillParticleListFromMC('mu+:MCParticle', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
-    if ISALPDEFINED:
+    if use_mcalp:
         ma.reconstructMCDecay(decayString="alpha0:MCParticle =direct=> mu+:MCParticle mu-:MCParticle ?gamma", cut="", path=path)
         ma.reconstructMCDecay(decayString="tau+:MCALP =direct=> alpha0:MCParticle mu+:MCParticle ?gamma", cut="", path=path)
         ma.rankByLowest(particleList="tau+:MCALP", variable="random", outputVariable='random_MCALP', overwriteRank = True, path=path)
         ma.applyCuts(list_name = "tau+:MCALP", cut = "extraInfo(random_MCALP) == 1", path=path)
-
-        vm.addAlias("MCALPFlag", "nParticlesInList(tau+:MCALP)")
-        vm.addAlias("MCALPinvMOneTwo", "averageValueInList(tau+:MCALP, daughterInvM(0:0,0:1))")
-        vm.addAlias("MCALPinvMOneThree", "averageValueInList(tau+:MCALP, daughterInvM(0:0,1))")
-        vm.addAlias("MCALPinvMTwoThree", "averageValueInList(tau+:MCALP, daughterInvM(0:1,1))")
+        
+        ma.variablesToExtraInfo(tau_list,{"nParticlesInList(tau+:MCALP)": "MCALPFlag"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCALP, daughterInvM(0:0,0:1))": "MCALPinvMOneTwo"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCALP, daughterInvM(0:0,1))": "MCALPinvMOneThree"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCALP, daughterInvM(0:1,1))": "MCALPinvMTwoThree"}, option=2, path=path)
     else:
-        vm.addAlias("MCALPFlag", "constant(0)")
-        vm.addAlias("MCALPinvMOneTwo", "constant(-1)")
-        vm.addAlias("MCALPinvMOneThree", "constant(-1)")
-        vm.addAlias("MCALPinvMTwoThree", "constant(-1)")
+        ma.variablesToExtraInfo(tau_list,{"constant(0)":  "MCALPFlag"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCALPinvMOneTwo"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCALPinvMOneThree"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCALPinvMTwoThree"}, option=2, path=path)
         
     ma.reconstructMCDecay(decayString="tau+:MCPrompt =direct=> mu+:MCParticle mu-:MCParticle mu+:MCParticle ?gamma", cut="", path=path)
     ma.rankByLowest(particleList="tau+:MCPrompt", variable="random", outputVariable='random_MC', overwriteRank = True, path=path)
@@ -414,7 +413,7 @@ def DefineVariables(tau_list, photon_names, IsItPrompt, path):
     event_vars = ["beamE"] + vc.event_shape + vc.event_kinematics + ["cosToThrustOfEvent"] + ["eventExtraInfo(EventCode)"] + ["nParticlesInList(pi+:evtshape_kinematics)", "nParticlesInList(gamma:evtshape_kinematics)"] + \
                  ["totalEnergyOfParticlesInList(gamma:evtshape_kinematics)"] + \
                  ["MySampleType", "MyEventType", "MyEnergyType"] + ["MyALPMass", "MyALPLife"] + \
-                 ["MCALPFlag", "MCALPinvMOneTwo", "MCALPinvMOneThree", "MCALPinvMTwoThree"] + \
+                 ["extraInfo(MCALPFlag)", "extraInfo(MCALPinvMOneTwo)", "extraInfo(MCALPinvMOneThree)", "extraInfo(MCALPinvMTwoThree)"] + \
                  ["MCPromptFlag", "MCPromptinvMOneTwo", "MCPromptinvMOneThree", "MCPromptinvMTwoThree"]
     triggers = ["L1FTDL(fff)", "L1FTDL(ffo)", "L1FTDL(fyo)", "L1FTDL(ffy)", "L1FTDL(stt)", "L1FTDL(hie)", "L1FTDL(lml0)", "L1FTDL(lml1)", "L1FTDL(lml2)", "L1FTDL(lml3)", \
                 "L1FTDL(lml4)", "L1FTDL(lml5)", "L1FTDL(lml6)", "L1FTDL(lml7)", "L1FTDL(lml8)", "L1FTDL(lml9)", "L1FTDL(lml10)", "L1FTDL(lml11)", "L1FTDL(lml12)", "L1FTDL(lml13)", \
@@ -742,7 +741,7 @@ if(args.prompt):
     vertex.treeFit(list_name="tau+:LFV_lll", conf_level=-1, updateAllDaughters=False, path=my_path)
 
     # basic analysis for tau: buildROE, continuum suppression, truth match, assign event type / sample type
-    BasicAnalysisForTau("tau+:LFV_lll", sample_index=sample_index, type_index=type_index, energy_index=energy_index, mass_ALP=args.mass_ALP, life_ALP=args.life_ALP, path=my_path)
+    BasicAnalysisForTau("tau+:LFV_lll", sample_index=sample_index, type_index=type_index, energy_index=energy_index, mass_ALP=args.mass_ALP, life_ALP=args.life_ALP, use_mcalp=False, path=my_path)
 
     # define variables
     var_list = DefineVariables("tau+:LFV_lll", photon_names=photon_names, IsItPrompt=True, path=my_path)
@@ -753,12 +752,12 @@ if(args.prompt):
 # do the same thing for the vertex displacement
 if(args.vertex):
     pdg.add_particle('alpha0', 94144, 1.0, 0.004, 0, 0)  # name, PDG, mass, width, charge, spin
-    ISALPDEFINED = True
+
     ma.reconstructDecay("alpha0:LFV_vertex -> mu+:all mu-:all", cut="", path=my_path)
     # treefit for alpha significantly improves m_alpha distribution
     vertex.treeFit(list_name="alpha0:LFV_vertex", conf_level=-1, updateAllDaughters=False, path=my_path)
     ma.reconstructDecay("tau+:LFV_vertex -> alpha0:LFV_vertex mu+:taulfv", tauLFVCuts3, 10, path=my_path)
-    BasicAnalysisForTau("tau+:LFV_vertex", sample_index=sample_index, type_index=type_index, energy_index=energy_index, mass_ALP=args.mass_ALP, life_ALP=args.life_ALP, path=my_path)
+    BasicAnalysisForTau("tau+:LFV_vertex", sample_index=sample_index, type_index=type_index, energy_index=energy_index, mass_ALP=args.mass_ALP, life_ALP=args.life_ALP, use_mcalp=True, path=my_path)
     var_list = DefineVariables("tau+:LFV_vertex", photon_names=photon_names, IsItPrompt=False, path=my_path)
     tau_list = tau_list + ["tau+:LFV_vertex"]
 
@@ -766,13 +765,13 @@ if(args.vertex):
 if(args.control):
     ma.reconstructDecay("tau+:LFV_control -> pi+:taulfv pi-:taulfv pi+:taulfv", tauLFVCuts_control_prompt, 20, path=my_path)
     vertex.treeFit(list_name="tau+:LFV_control", conf_level=-1, updateAllDaughters=False, path=my_path)
-    BasicAnalysisForTau("tau+:LFV_control", sample_index=sample_index, type_index=type_index, energy_index=energy_index, mass_ALP=args.mass_ALP, life_ALP=args.life_ALP, path=my_path)
+    BasicAnalysisForTau("tau+:LFV_control", sample_index=sample_index, type_index=type_index, energy_index=energy_index, mass_ALP=args.mass_ALP, life_ALP=args.life_ALP, use_mcalp=False, path=my_path)
     var_list = DefineVariables("tau+:LFV_control", photon_names=photon_names, IsItPrompt=True, path=my_path)
     tau_list = tau_list + ["tau+:LFV_control"]
 
     stdV0s.stdKshorts(path=my_path)
     ma.reconstructDecay("tau+:LFV_control_KS -> K_S0:merged pi+:taulfv", tauLFVCuts_control_vertex, 30, path=my_path)
-    BasicAnalysisForTau("tau+:LFV_control_KS", sample_index=sample_index, type_index=type_index, energy_index=energy_index, mass_ALP=args.mass_ALP, life_ALP=args.life_ALP, path=my_path)
+    BasicAnalysisForTau("tau+:LFV_control_KS", sample_index=sample_index, type_index=type_index, energy_index=energy_index, mass_ALP=args.mass_ALP, life_ALP=args.life_ALP, use_mcalp=False, path=my_path)
     var_list = DefineVariables("tau+:LFV_control_KS", photon_names=photon_names, IsItPrompt=False, path=my_path)
     tau_list = tau_list + ["tau+:LFV_control_KS"]
 
