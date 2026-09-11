@@ -189,17 +189,36 @@ EventWeight luminosity_scale(
     false
 );
 
-EventWeight KS0_tracking(
-    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/KS0_tracking_csv/MC15rd/KS0_tracking_correction_MC15rd_converted.csv",
+EventWeight KS0_tracking_MC16rd_run1(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/KS0_tracking_csv/MC16rd/K_S0_calib_2D_Run1_ks_M.csv",
     {
-        {"theta",    "thetamin", "thetamax"},
-        {"momentum", "pmin",     "pmax"},
-        {"distance", "dmin",     "dmax"}
+        {"sample", "sample_min", "sample_max"},
+        {"experiment", "experiment_min", "experiment_max"},
+        {"costheta", "cosTheta_min", "cosTheta_max"},
+        {"momentum", "p_min", "p_max"},
+        {"distance", "d_min", "d_max"}
     },
-    "w",
+    "central_value",
     {
-        {"stat", "w_e_stat", "w_e_stat", false},
-        {"syst", "w_e_syst", "w_e_syst", false}
+        {"stat_uncorr", "stat_uncorr", "stat_uncorr", false},
+        {"sys_corr", "sys_corr", "sys_corr", true}
+    },
+    true
+);
+
+EventWeight KS0_tracking_MC16rd_run2(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/KS0_tracking_csv/MC16rd/K_S0_calib_2D_Run2_ks_M.csv",
+    {
+        {"sample", "sample_min", "sample_max"},
+        {"experiment", "experiment_min", "experiment_max"},
+        {"costheta", "cosTheta_min", "cosTheta_max"},
+        {"momentum", "p_min", "p_max"},
+        {"distance", "d_min", "d_max"}
+    },
+    "central_value",
+    {
+        {"stat_uncorr", "stat_uncorr", "stat_uncorr", false},
+        {"sys_corr", "sys_corr", "sys_corr", true}
     },
     true
 );

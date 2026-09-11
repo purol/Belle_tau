@@ -72,7 +72,8 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_data.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} }); /* After box open, it should be removed! */
     loader_data.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} }); /* After box open, it should be removed! */
     loader_data.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} }); /* After box open, it should be removed! */
-    loader_data.AddWeight("KS0_tracking", { {"theta", "extraInfo__boALP_theta__bc"}, {"momentum", "p_ALP"}, {"distance", "extraInfo__boALP_distance__bc"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("KS0_tracking_run1", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("KS0_tracking_run2", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} }); /* After box open, it should be removed! */
     loader_data.Cut(cut_region.c_str());
     loader_data.Cut(cut_m_alpha.c_str());
     loader_data.RandomBCS();
@@ -87,7 +88,8 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_signal.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader_signal.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} });
     loader_signal.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} });
-    loader_signal.AddWeight("KS0_tracking", { {"theta", "extraInfo__boALP_theta__bc"}, {"momentum", "p_ALP"}, {"distance", "extraInfo__boALP_distance__bc"} });
+    loader_signal.AddWeight("KS0_tracking_run1", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
+    loader_signal.AddWeight("KS0_tracking_run2", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
     loader_signal.Cut(cut_region.c_str());
     loader_signal.Cut(cut_m_alpha.c_str());
     loader_signal.RandomBCS();
@@ -102,7 +104,8 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_bkg.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader_bkg.AddWeight("muonID_05", { {"charge", "first_muon_charge"}, {"momentum", "first_muon_p"}, {"theta", "first_muon_theta"} });
     loader_bkg.AddWeight("muonID_05", { {"charge", "second_muon_charge"}, {"momentum", "second_muon_p"}, {"theta", "second_muon_theta"} });
-    loader_bkg.AddWeight("KS0_tracking", { {"theta", "extraInfo__boALP_theta__bc"}, {"momentum", "p_ALP"}, {"distance", "extraInfo__boALP_distance__bc"} });
+    loader_bkg.AddWeight("KS0_tracking_run1", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
+    loader_bkg.AddWeight("KS0_tracking_run2", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
     loader_bkg.Cut(cut_region.c_str());
     loader_bkg.Cut(cut_m_alpha.c_str());
     loader_bkg.RandomBCS();
@@ -218,7 +221,8 @@ int main(int argc, char* argv[]) {
 
     EventWeights::Register("MC_weight", MC_weight);
     EventWeights::Register("muonID_05", muonID_05);
-    EventWeights::Register("KS0_tracking", KS0_tracking);
+    EventWeights::Register("KS0_tracking_run1", KS0_tracking_MC16rd_run1);
+    EventWeights::Register("KS0_tracking_run2", KS0_tracking_MC16rd_run2);
 
     ReadResolution((std::string(argv[1]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
