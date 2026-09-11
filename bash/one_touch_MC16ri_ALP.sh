@@ -10,7 +10,7 @@ export Analysis_VerName="v000" # version of analysis
 export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau" # analysis code path
 export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple" # Ntuple path
 
-Background_Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CHARM"
+Background_Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CCBAR"
     "MUMU" "EE" "EEEE" "EEMUMU" "LLXX" "HHISR" "GG" 
     "TAUPAIR"
     ) # name of directories under ${Ntuple_DIR} for background sample. Do not include colon.
