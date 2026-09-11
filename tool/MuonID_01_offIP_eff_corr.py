@@ -20,11 +20,13 @@ ratio_cfg = {
     "mc_collection": "MC16rd_proc16+prompt",
     "track_variables": ["p", "cosTheta"],
     "precut": "",
-    "model_names": ["Jpsimumu", "Radmumu", "TwophotonMumu"],
-    "output": "MuonEff05_off.csv",
-    "binning": [[0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5],
+    "model_names": ["Radmumu"],
+    "output": "MuonEff01_off.csv",
+    "binning": [[0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0],
                [-0.866, -0.682, -0.4226, -0.1045, 0.225, 0.5, 0.766, 0.8829, 0.9563]]
 }
 
 efficiency = wm.produce_data_mc_ratio(**ratio_cfg)
 efficiency.plot()
+
+plt.savefig("MuonEff01_off.png", dpi=400, bbox_inches="tight")
