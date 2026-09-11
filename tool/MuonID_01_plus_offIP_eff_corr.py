@@ -14,14 +14,14 @@ from show_db_content import show_db_content
 from show_variables import show_ntuple_variables
 
 ratio_cfg = {
-    "cut": "muonID > 0.5",
+    "cut": "muonID > 0.1",
     "particle_type": "mu",
     "data_collection": "proc16+prompt",
     "mc_collection": "MC16rd_proc16+prompt",
     "track_variables": ["p", "cosTheta"],
-    "precut": "",
+    "precut": "charge > 0",
     "model_names": ["Radmumu"],
-    "output": "MuonEff05_off.csv",
+    "output": "MuonEff01_off_plus.csv",
     "binning": [[0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0],
                [-0.866, -0.682, -0.4226, -0.1045, 0.225, 0.5, 0.766, 0.8829, 0.9563]]
 }
@@ -29,4 +29,4 @@ ratio_cfg = {
 efficiency = wm.produce_data_mc_ratio(**ratio_cfg)
 efficiency.plot()
 
-plt.savefig("MuonEff05_off.png", dpi=400, bbox_inches="tight")
+plt.savefig("MuonEff01_off_plus.png", dpi=400, bbox_inches="tight")
