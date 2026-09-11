@@ -1,102 +1,166 @@
 #!/bin/bash
 
-version="Cirno"
+version="Ibaraki"
 script="./python/gbasf2_${version}.py"
 Skim_path="/home/belle2/junewoo/storage_ghi/tau_SKIM_2"
 Ntuple_path="/home/belle2/junewoo/storage_ghi/tau_Ntuple"
 
-# 4S on-resonance
-on_list=("CHARM" "CHG" "DDBAR" "EE" "EEEE"
-         "EEKK" "EEMUMU" "EEPIPI" "EEPP" "EETAUTAU"
-         "GG" "K0K0ISR" "KKISR" "MIX" "MUMU"
-         "MUMUMUMU" "MUMUTAUTAU" "PIPIISR" "PIPIPI0ISR" "SIGNAL"
-         "SSBAR" "TAUPAIR" "TAUTAUTAUTAU" "UUBAR" "ALP")
+# MC16ri 4S on-resonance
+on_list=("ALP" "CCBAR" "CHG" "DDBAR" "EE" "EEEE" 
+         "EEMUMU" "GG" "HHISR" "LLXX" "MIX" 
+         "MUMU" "SIGNAL" "SSBAR" "TAUPAIR" "UUBAR")
 
-on_flag=("ccbar" "charged" "ddbar" "ee" "eeee"
-        "eeKK" "eemumu" "eepipi" "eepp" "eetautau"
-        "gg" "K0K0barISR" "KKISR" "mixed" "mumu"
-        "mumumumu" "mumutautau" "pipiISR" "pipipi0ISR" "signal"
-        "ssbar" "taupair" "tautautautau" "uubar" "ALP")
+on_flag=("ALP" "ccbar" "charged" "ddbar" "ee" "eee"
+         "eemumu" "gg" "hhISR" "llXX" "mixed"
+         "mumu" "signal" "ssbar" "taupair" "uubar")
 
 for i in "${!on_list[@]}"; do
     Type="${on_list[$i]}"
     Flag="${on_flag[$i]}"
 
     Type_path="${Ntuple_path}/${version}/${Type}"
-    output_path="${Type_path}/MC15ri"
-    log_path="${Type_path}/MC15ri/log"
+    output_path="${Type_path}/MC16ri"
+    log_path="${Type_path}/MC16ri/log"
 
     mkdir -p "${Type_path}"
     mkdir -p "${output_path}"
     mkdir -p "${log_path}"
 
-    for file in $(find "${Skim_path}/MC15ri_on/${Type}/output" -maxdepth 1 -name "*.root")
+    for file in $(find "${Skim_path}/MC16ri_on/${Type}/output" -maxdepth 1 -name "*.root")
     do
         echo $file
         basename=$(basename -s .root $file)
-        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "4S" --prompt --vertex --KEKCC --inputfile ${file} --destination "${output_path}"
-        sleep 0.3
+        bsub -q s \
+        -o "${log_path}/${basename}.log" \
+        ${script} \
+        --sample "MC16ri" \
+        --type ${Flag} \
+        --energy "4S" \
+        --prompt \
+        --vertex \
+        --KEKCC \
+        --inputfile ${file} \
+        --destination "${output_path}"
+        sleep 0.5
     done
 done 
 
-# off-resonance
-off_list=("CHARM" "DDBAR" "EE" "EEEE" "EEKK"
-          "EEMUMU" "EEPIPI" "EEPP" "EETAUTAU" "GG" 
-          "MUMU" "MUMUMUMU" "SIGNAL" "SSBAR" "TAUPAIR"
-          "UUBAR")
+# MC16rd 4S on-resonance
+on_list=("ALP" "BB" "EE" "EEEE" 
+         "EEMUMU" "GG" "HHISR" "LLXX"
+         "MUMU" "SIGNAL" "TAUPAIR" "UDSC")
 
-off_flag=("ccbar" "ddbar" "ee" "eeee" "eeKK"
-          "eemumu" "eepipi" "eepp" "eetautau" "gg"
-          "mumu" "mumumumu" "signal" "ssbar" "taupair"
-          "uubar")
+on_flag=("ALP" "BB" "ee" "eeee"
+         "eemumu" "gg" "hhISR" "llXX"
+         "mumu" "signal" "taupair" "udsc")
 
-for i in "${!off_list[@]}"; do
-    Type="${off_list[$i]}"
-    Flag="${off_flag[$i]}"
+for i in "${!on_list[@]}"; do
+    Type="${on_list[$i]}"
+    Flag="${on_flag[$i]}"
 
     Type_path="${Ntuple_path}/${version}/${Type}"
-    output_path="${Type_path}/MC15ri"
-    log_path="${Type_path}/MC15ri/log"
+    output_path="${Type_path}/MC16rd"
+    log_path="${Type_path}/MC16rd/log"
 
     mkdir -p "${Type_path}"
     mkdir -p "${output_path}"
     mkdir -p "${log_path}"
 
-    for file in $(find "${Skim_path}/MC15ri_off/${Type}/output" -maxdepth 1 -name "*.root")
+    for file in $(find "${Skim_path}/MC16rd_on/${Type}/output" -maxdepth 1 -name "*.root")
     do
         echo $file
         basename=$(basename -s .root $file)
-        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "off" --prompt --vertex --KEKCC --inputfile ${file} --destination "${output_path}"
-        sleep 0.3
+        bsub -q s \
+        -o "${log_path}/${basename}.log" \
+        ${script} \
+        --sample "MC16rd" \
+        --type ${Flag} \
+        --energy "4S" \
+        --prompt \
+        --vertex \
+        --KEKCC \
+        --inputfile ${file} \
+        --destination "${output_path}"
+        sleep 0.5
     done
 done 
 
-# E = 10.810 GeV
-Scan_10810_list=("BBs" "BsBs" "CHARM" "CHG" "DDBAR"
-            "MIX" "MUMU" "SIGNAL" "SSBAR" "TAUPAIR"
-            "UUBAR")
+# MC16rd 4S off-resonance
+on_list=("EE" "EEEE" "EEMUMU" "GG" 
+         "HHISR" "LLXX" "MUMU" 
+         "SIGNAL" "TAUPAIR" "UDSC")
 
-Scan_10810_flag=("BBs" "BsBs" "ccbar" "charged" "ddbar" 
-            "mixed" "mumu" "signal" "ssbar" "taupair"
-            "uubar")
+on_flag=("ee" "eeee" "eemumu" "gg"
+         "hhISR" "llXX" "mumu"
+         "signal" "taupair" "udsc")
 
-for i in "${!Scan_10810_list[@]}"; do
-    Type="${Scan_10810_list[$i]}"
-    Flag="${Scan_10810_flag[$i]}"
+for i in "${!on_list[@]}"; do
+    Type="${on_list[$i]}"
+    Flag="${on_flag[$i]}"
 
     Type_path="${Ntuple_path}/${version}/${Type}"
-    output_path="${Type_path}/MC15ri"
-    log_path="${Type_path}/MC15ri/log"
+    output_path="${Type_path}/MC16rd"
+    log_path="${Type_path}/MC16rd/log"
 
     mkdir -p "${Type_path}"
     mkdir -p "${output_path}"
     mkdir -p "${log_path}"
 
-    for file in $(find "${Skim_path}/MC15ri_5S/${Type}/output" -maxdepth 1 -name "*.root")
+    for file in $(find "${Skim_path}/MC16rd_off/${Type}/output" -maxdepth 1 -name "*.root")
     do
         echo $file
         basename=$(basename -s .root $file)
-        bsub -q s -o "${log_path}/${basename}.log" ${script} --sample "MC15ri" --type ${Flag} --energy "10810" --prompt --vertex --KEKCC --inputfile ${file} --destination "${output_path}"
-        sleep 0.3
+        bsub -q s \
+        -o "${log_path}/${basename}.log" \
+        ${script} \
+        --sample "MC16rd" \
+        --type ${Flag} \
+        --energy "off" \
+        --prompt \
+        --vertex \
+        --KEKCC \
+        --inputfile ${file} \
+        --destination "${output_path}"
+        sleep 0.5
+    done
+done 
+
+# MC16rd 4S 5S
+on_list=("BB" "EE" "EEEE" "EEMUMU"
+         "GG" "HHISR" "LLXX" "MUMU"
+         "SIGNAL" "TAUPAIR" "UDSC")
+
+on_flag=("BB" "ee" "eeee" "eemumu"
+         "gg" "hhISR" "llXX" "mumu"
+         "signal" "taupair" "udsc")
+
+for i in "${!on_list[@]}"; do
+    Type="${on_list[$i]}"
+    Flag="${on_flag[$i]}"
+
+    Type_path="${Ntuple_path}/${version}/${Type}"
+    output_path="${Type_path}/MC16rd"
+    log_path="${Type_path}/MC16rd/log"
+
+    mkdir -p "${Type_path}"
+    mkdir -p "${output_path}"
+    mkdir -p "${log_path}"
+
+    for file in $(find "${Skim_path}/MC16rd_5S/${Type}/output" -maxdepth 1 -name "*.root")
+    do
+        echo $file
+        basename=$(basename -s .root $file)
+        bsub -q s \
+        -o "${log_path}/${basename}.log" \
+        ${script} \
+        --sample "MC16rd" \
+        --type ${Flag} \
+        --energy "5Sscan" \
+        --prompt \
+        --vertex \
+        --KEKCC \
+        --inputfile ${file} \
+        --destination "${output_path}"
+        sleep 0.5
     done
 done 
