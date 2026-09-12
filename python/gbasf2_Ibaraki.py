@@ -266,6 +266,10 @@ def BasicAnalysisForTau(tau_list, sample_index, type_index, energy_index, mass_A
         ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCALP, daughterInvM(0:0,1))": "MCALPinvMOneThree"}, option=2, path=path)
         ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCALP, daughterInvM(0:1,1))": "MCALPinvMTwoThree"}, option=2, path=path)
     else:
+        ma.reconstructMCDecay(decayString="tau+:MCPrompt =direct=> mu+:MCParticle mu-:MCParticle mu+:MCParticle ?gamma", cut="", path=path)
+        ma.rankByLowest(particleList="tau+:MCPrompt", variable="random", outputVariable='random_MC', overwriteRank = True, path=path)
+        ma.applyCuts(list_name = "tau+:MCPrompt", cut = "extraInfo(random_MC) == 1", path=path)
+
         ma.variablesToExtraInfo(tau_list,{"constant(0)":  "MCALPFlag"}, option=2, path=path)
         ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCALPinvMOneTwo"}, option=2, path=path)
         ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCALPinvMOneThree"}, option=2, path=path)
