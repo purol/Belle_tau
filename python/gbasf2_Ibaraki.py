@@ -421,9 +421,9 @@ def DefineVariables(tau_list, photon_names, IsItPrompt, path):
                  ["extraInfo(MCALPFlag)", "extraInfo(MCALPinvMOneTwo)", "extraInfo(MCALPinvMOneThree)", "extraInfo(MCALPinvMTwoThree)"] + \
                  ["extraInfo(MCPromptFlag)", "extraInfo(MCPromptinvMOneTwo)", "extraInfo(MCPromptinvMOneThree)", "extraInfo(MCPromptinvMTwoThree)"]
     triggers = ["L1FTDL(fff)", "L1FTDL(ffo)", "L1FTDL(fyo)", "L1FTDL(ffy)", "L1FTDL(stt)", "L1FTDL(hie)", "L1FTDL(lml0)", "L1FTDL(lml1)", "L1FTDL(lml2)", "L1FTDL(lml3)", \
-                "L1FTDL(lml4)", "L1FTDL(lml5)", "L1FTDL(lml6)", "L1FTDL(lml7)", "L1FTDL(lml8)", "L1FTDL(lml9)", "L1FTDL(lml10)", "L1FTDL(lml11)", "L1FTDL(lml12)", "L1FTDL(lml13)", \
+                "L1FTDL(lml4)", "L1FTDL(lml5)", "L1FTDL(lml6)", "L1FTDL(lml7)", "L1FTDL(lml8)", "L1FTDL(lml9)", "L1FTDL(lml10)", "L1FTDL(lml12)", "L1FTDL(lml13)", \
                 "L1PSNM(fff)", "L1PSNM(ffo)", "L1PSNM(fyo)", "L1PSNM(ffy)", "L1PSNM(stt)", "L1PSNM(hie)", "L1PSNM(lml0)", "L1PSNM(lml1)", "L1PSNM(lml2)", "L1PSNM(lml3)", \
-                "L1PSNM(lml4)", "L1PSNM(lml5)", "L1PSNM(lml6)", "L1PSNM(lml7)", "L1PSNM(lml8)", "L1PSNM(lml9)", "L1PSNM(lml10)", "L1PSNM(lml11)", "L1PSNM(lml12)", "L1PSNM(lml13)"]
+                "L1PSNM(lml4)", "L1PSNM(lml5)", "L1PSNM(lml6)", "L1PSNM(lml7)", "L1PSNM(lml8)", "L1PSNM(lml9)", "L1PSNM(lml10)", "L1PSNM(lml12)", "L1PSNM(lml13)"]
     MC_vars = ["isSignal", "isSignalAcceptMissingNeutrino"] + ['extraInfo(DecayHash)', 'extraInfo(DecayHashExtended)'] + ['tauPlusMCMode', 'tauMinusMCMode']
 
     # add variables about other photon candidates
