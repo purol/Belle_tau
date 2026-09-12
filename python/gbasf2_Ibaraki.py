@@ -27,6 +27,8 @@ from glob import glob
 import argparse
 import re
 
+basf2.logging.max_repetitions = 10
+
 def convert_name(name: str) -> str:
     # Step 1: replace "+:" or "-:" with "_"
     name = re.sub(r'[+-]:', '_', name)
@@ -424,6 +426,7 @@ def DefineVariables(tau_list, photon_names, IsItPrompt, path):
                 "L1FTDL(lml4)", "L1FTDL(lml5)", "L1FTDL(lml6)", "L1FTDL(lml7)", "L1FTDL(lml8)", "L1FTDL(lml9)", "L1FTDL(lml10)", "L1FTDL(lml11)", "L1FTDL(lml12)", "L1FTDL(lml13)", \
                 "L1PSNM(fff)", "L1PSNM(ffo)", "L1PSNM(fyo)", "L1PSNM(ffy)", "L1PSNM(stt)", "L1PSNM(hie)", "L1PSNM(lml0)", "L1PSNM(lml1)", "L1PSNM(lml2)", "L1PSNM(lml3)", \
                 "L1PSNM(lml4)", "L1PSNM(lml5)", "L1PSNM(lml6)", "L1PSNM(lml7)", "L1PSNM(lml8)", "L1PSNM(lml9)", "L1PSNM(lml10)", "L1PSNM(lml11)", "L1PSNM(lml12)", "L1PSNM(lml13)"]
+    triggers = ["ifNANgiveX(" + trig + ",-1)" for trig in triggers]
     MC_vars = ["isSignal", "isSignalAcceptMissingNeutrino"] + ['extraInfo(DecayHash)', 'extraInfo(DecayHashExtended)'] + ['tauPlusMCMode', 'tauMinusMCMode']
 
     # add variables about other photon candidates
