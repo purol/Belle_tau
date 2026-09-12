@@ -45,5 +45,5 @@ gbasf2_Doremy.py
 gbasf2_Cirno.py
 - (add ALP costheta and p, argparse for ALP parameter) ->
 gbasf2_Larva.py
-- (add MC Dalitz information, use -1 for non-existing trigger, set 10 to be the maximum number of warning message) ->
+- (add MC Dalitz information, use -1 for non-existing trigger, set 10 to be the maximum number of warning message, remove unneeded gencut objects) ->
 gbasf2_Ibaraki.py

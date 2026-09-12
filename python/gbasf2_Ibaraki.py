@@ -466,11 +466,11 @@ def AnalysisGenCut(tau_lists, MDeltaCuts, Ntuple_name, path):
     ma.fillParticleListFromMC('Z0:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
     ma.fillParticleListFromMC('D0:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
     ma.fillParticleListFromMC('D+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
-    ma.fillParticleListFromMC('pi+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
-    ma.fillParticleListFromMC('K+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
-    ma.fillParticleListFromMC('e+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
-    ma.fillParticleListFromMC('mu+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
-    ma.fillParticleListFromMC('p+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+    ma.fillParticleListFromMC('pi+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('K+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('e+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('mu+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('p+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
 
     # convert mass hypothesis
     ma.copyList(outputListName="pi+:PrimaryMC_muMass", inputListName="pi+:PrimaryMC", path=path)
@@ -779,29 +779,16 @@ if(args.control):
 
     stdV0s.stdKshorts(path=my_path)
     ma.reconstructDecay("tau+:LFV_control_KS -> K_S0:merged pi+:taulfv", tauLFVCuts_control_vertex, 30, path=my_path)
-    BasicAnalysisForTau("tau+:LFV_control_KS", sample_index=sample_index, type_index=type_index, energy_index=energy_index, mass_ALP=args.mass_ALP, life_ALP=args.life_ALP, use_mcalp=False, path=my_path)
+    BasicAnalysisForTau("tau+:LFV_control_KS", sample_index=sample_index, type_index=type_index, energy_index=energy_index, mass_ALP=args.mass_ALP, life_ALP=args.life_ALP, use_mcalp=True, path=my_path)
     var_list = DefineVariables("tau+:LFV_control_KS", photon_names=photon_names, IsItPrompt=False, path=my_path)
     tau_list = tau_list + ["tau+:LFV_control_KS"]
 
 if tau_list:
     ma.copyLists(outputListName="tau+:LFV_comb", inputListNames=tau_list, path=my_path)
     if(args.gencut): # make Ntuple for gencut
-        # define muonID cut
-        Condition_one = '[[daughter(0, p) > daughter(1, p)] and [daughter(0, p) > daughter(2, p)] and [daughter(0, muonID) > 0.1]]'
-        Condition_two = '[[daughter(1, p) > daughter(0, p)] and [daughter(1, p) > daughter(2, p)] and [daughter(1, muonID) > 0.1]]'
-        Condition_three = '[[daughter(2, p) > daughter(0, p)] and [daughter(2, p) > daughter(1, p)] and [daughter(2, muonID) > 0.1]]'
-        first_muon_cut = '[' + Condition_one + ' or ' + Condition_two + ' or ' + Condition_three + ']'
-
-        Condition_one = '[[[[daughter(0, p) > daughter(1, p)] and [daughter(2, p) > daughter(0, p)]] or [[daughter(1, p) > daughter(0, p)] and [daughter(0, p) > daughter(2, p)]]] and [daughter(0, muonID) > 0.1]]'
-        Condition_two = '[[[[daughter(1, p) > daughter(0, p)] and [daughter(2, p) > daughter(1, p)]] or [[daughter(0, p) > daughter(1, p)] and [daughter(1, p) > daughter(2, p)]]] and [daughter(1, muonID) > 0.1]]'
-        Condition_three = '[[[[daughter(2, p) > daughter(0, p)] and [daughter(1, p) > daughter(2, p)]] or [[daughter(0, p) > daughter(2, p)] and [daughter(2, p) > daughter(1, p)]]] and [daughter(2, muonID) > 0.1]]'
-        second_muon_cut = '[' + Condition_one + ' or ' + Condition_two + ' or ' + Condition_three + ']'
-
         ma.cutAndCopyList("tau+:LFV_comb_1", "tau+:LFV_comb", cut="[1.60 < M < 1.94] and [-0.45 < deltaE < 0.39] and [roeEextra(cleanMask) < 5.0]", path=my_path)
-        ma.cutAndCopyList("tau+:LFV_comb_2", "tau+:LFV_comb", cut="[1.60 < M < 1.94] and [-0.45 < deltaE < 0.39] and [roeEextra(cleanMask) < 5.0] and " + first_muon_cut, path=my_path)
-        ma.cutAndCopyList("tau+:LFV_comb_3", "tau+:LFV_comb", cut="[1.60 < M < 1.94] and [-0.45 < deltaE < 0.39] and [roeEextra(cleanMask) < 5.0] and " + first_muon_cut + ' and ' + second_muon_cut, path=my_path)
         MDeltaCuts = ["", "[1.0 < M < 4.0] and [-1.0 < deltaE < 1.0]", "[1.0 < M < 2.5] and [-1.0 < deltaE < 1.0]"]
-        AnalysisGenCut(tau_lists = ["tau+:LFV_comb_1", "tau+:LFV_comb_2", "tau+:LFV_comb_3"], MDeltaCuts = MDeltaCuts, Ntuple_name = output_file, path=my_path)
+        AnalysisGenCut(tau_lists = ["tau+:LFV_comb_1"], MDeltaCuts = MDeltaCuts, Ntuple_name = output_file, path=my_path)
     else: # Make Ntuple and hashmap
         MakeNtupleandHashmap("tau+:LFV_comb", variable_list=var_list, Ntuple_name=output_file, hashmap_name=hashmapName, path=my_path)
              
