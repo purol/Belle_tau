@@ -260,25 +260,30 @@ def BasicAnalysisForTau(tau_list, sample_index, type_index, energy_index, mass_A
         ma.reconstructMCDecay(decayString="tau+:MCALP =direct=> alpha0:MCParticle mu+:MCParticle ?gamma", cut="", path=path)
         ma.rankByLowest(particleList="tau+:MCALP", variable="random", outputVariable='random_MCALP', overwriteRank = True, path=path)
         ma.applyCuts(list_name = "tau+:MCALP", cut = "extraInfo(random_MCALP) == 1", path=path)
+
+        ma.variablesToExtraInfo(tau_list,{"constant(0)": "MCPromptFlag"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCPromptinvMOneTwo"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCPromptinvMOneThree"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCPromptinvMTwoThree"}, option=2, path=path)
         
         ma.variablesToExtraInfo(tau_list,{"nParticlesInList(tau+:MCALP)": "MCALPFlag"}, option=2, path=path)
         ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCALP, daughterInvM(0:0,0:1))": "MCALPinvMOneTwo"}, option=2, path=path)
         ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCALP, daughterInvM(0:0,1))": "MCALPinvMOneThree"}, option=2, path=path)
         ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCALP, daughterInvM(0:1,1))": "MCALPinvMTwoThree"}, option=2, path=path)
     else:
+        ma.reconstructMCDecay(decayString="tau+:MCPrompt =direct=> mu+:MCParticle mu-:MCParticle mu+:MCParticle ?gamma", cut="", path=path)
+        ma.rankByLowest(particleList="tau+:MCPrompt", variable="random", outputVariable='random_MC', overwriteRank = True, path=path)
+        ma.applyCuts(list_name = "tau+:MCPrompt", cut = "extraInfo(random_MC) == 1", path=path)
+
+        ma.variablesToExtraInfo(tau_list,{"nParticlesInList(tau+:MCPrompt)": "MCPromptFlag"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCPrompt, daughterInvM(0,1))": "MCPromptinvMOneTwo"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCPrompt, daughterInvM(0,2))": "MCPromptinvMOneThree"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCPrompt, daughterInvM(1,2))": "MCPromptinvMTwoThree"}, option=2, path=path)
+
         ma.variablesToExtraInfo(tau_list,{"constant(0)":  "MCALPFlag"}, option=2, path=path)
         ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCALPinvMOneTwo"}, option=2, path=path)
         ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCALPinvMOneThree"}, option=2, path=path)
         ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCALPinvMTwoThree"}, option=2, path=path)
-        
-    ma.reconstructMCDecay(decayString="tau+:MCPrompt =direct=> mu+:MCParticle mu-:MCParticle mu+:MCParticle ?gamma", cut="", path=path)
-    ma.rankByLowest(particleList="tau+:MCPrompt", variable="random", outputVariable='random_MC', overwriteRank = True, path=path)
-    ma.applyCuts(list_name = "tau+:MCPrompt", cut = "extraInfo(random_MC) == 1", path=path)
-
-    vm.addAlias("MCPromptFlag", "nParticlesInList(tau+:MCPrompt)")
-    vm.addAlias("MCPromptinvMOneTwo", "averageValueInList(tau+:MCPrompt, daughterInvM(0,1))")
-    vm.addAlias("MCPromptinvMOneThree", "averageValueInList(tau+:MCPrompt, daughterInvM(0,2))")
-    vm.addAlias("MCPromptinvMTwoThree", "averageValueInList(tau+:MCPrompt, daughterInvM(1,2))")
 
 def DefineVariables(tau_list, photon_names, IsItPrompt, path):
     # define vars
@@ -414,7 +419,7 @@ def DefineVariables(tau_list, photon_names, IsItPrompt, path):
                  ["totalEnergyOfParticlesInList(gamma:evtshape_kinematics)"] + \
                  ["MySampleType", "MyEventType", "MyEnergyType"] + ["MyALPMass", "MyALPLife"] + \
                  ["extraInfo(MCALPFlag)", "extraInfo(MCALPinvMOneTwo)", "extraInfo(MCALPinvMOneThree)", "extraInfo(MCALPinvMTwoThree)"] + \
-                 ["MCPromptFlag", "MCPromptinvMOneTwo", "MCPromptinvMOneThree", "MCPromptinvMTwoThree"]
+                 ["extraInfo(MCPromptFlag)", "extraInfo(MCPromptinvMOneTwo)", "extraInfo(MCPromptinvMOneThree)", "extraInfo(MCPromptinvMTwoThree)"]
     triggers = ["L1FTDL(fff)", "L1FTDL(ffo)", "L1FTDL(fyo)", "L1FTDL(ffy)", "L1FTDL(stt)", "L1FTDL(hie)", "L1FTDL(lml0)", "L1FTDL(lml1)", "L1FTDL(lml2)", "L1FTDL(lml3)", \
                 "L1FTDL(lml4)", "L1FTDL(lml5)", "L1FTDL(lml6)", "L1FTDL(lml7)", "L1FTDL(lml8)", "L1FTDL(lml9)", "L1FTDL(lml10)", "L1FTDL(lml11)", "L1FTDL(lml12)", "L1FTDL(lml13)", \
                 "L1PSNM(fff)", "L1PSNM(ffo)", "L1PSNM(fyo)", "L1PSNM(ffy)", "L1PSNM(stt)", "L1PSNM(hie)", "L1PSNM(lml0)", "L1PSNM(lml1)", "L1PSNM(lml2)", "L1PSNM(lml3)", \
