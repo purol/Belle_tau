@@ -14,9 +14,14 @@ on_flag=("ALP" "ccbar" "charged" "ddbar" "ee" "eeee"
          "eemumu" "gg" "hhISR" "llXX" "mixed"
          "mumu" "signal" "ssbar" "taupair" "uubar")
 
+queue_type=("s" "s" "s" "s" "s" "s"
+         "s" "s" "s" "s" "s"
+         "s" "s" "s" "s" "s")
+
 for i in "${!on_list[@]}"; do
     Type="${on_list[$i]}"
     Flag="${on_flag[$i]}"
+    Queue="${queue_type[$i]}"
 
     Type_path="${Ntuple_path}/${version}/${Type}"
     output_path="${Type_path}/MC16ri"
@@ -30,7 +35,7 @@ for i in "${!on_list[@]}"; do
     do
         echo $file
         basename=$(basename -s .root $file)
-        bsub -q s \
+        bsub -q ${Queue} \
         -o "${log_path}/${basename}.log" \
         ${script} \
         --sample "MC16ri" \
@@ -54,9 +59,14 @@ on_flag=("ALP" "BB" "ee" "eeee"
          "eemumu" "gg" "hhISR" "llXX"
          "mumu" "signal" "taupair" "udsc")
 
+queue_type=("s" "s" "s" "s"
+         "l" "s" "s" "l"
+         "s" "s" "s" "s")
+
 for i in "${!on_list[@]}"; do
     Type="${on_list[$i]}"
     Flag="${on_flag[$i]}"
+    Queue="${queue_type[$i]}"
 
     Type_path="${Ntuple_path}/${version}/${Type}"
     output_path="${Type_path}/MC16rd"
@@ -70,7 +80,7 @@ for i in "${!on_list[@]}"; do
     do
         echo $file
         basename=$(basename -s .root $file)
-        bsub -q s \
+        bsub -q ${Queue} \
         -o "${log_path}/${basename}.log" \
         ${script} \
         --sample "MC16rd" \
@@ -94,9 +104,14 @@ on_flag=("ee" "eeee" "eemumu" "gg"
          "hhISR" "llXX" "mumu"
          "signal" "taupair" "udsc")
 
+queue_type=("s" "s" "s" "s"
+         "s" "s" "s"
+         "s" "s" "s")
+
 for i in "${!on_list[@]}"; do
     Type="${on_list[$i]}"
     Flag="${on_flag[$i]}"
+    Queue="${queue_type[$i]}"
 
     Type_path="${Ntuple_path}/${version}/${Type}"
     output_path="${Type_path}/MC16rd"
@@ -110,7 +125,7 @@ for i in "${!on_list[@]}"; do
     do
         echo $file
         basename=$(basename -s .root $file)
-        bsub -q s \
+        bsub -q ${Queue} \
         -o "${log_path}/${basename}.log" \
         ${script} \
         --sample "MC16rd" \
@@ -134,9 +149,14 @@ on_flag=("BB" "ee" "eeee" "eemumu"
          "gg" "hhISR" "llXX" "mumu"
          "signal" "taupair" "udsc")
 
+queue_type=("s" "s" "s" "s"
+         "s" "s" "s" "s"
+         "s" "s" "s")
+
 for i in "${!on_list[@]}"; do
     Type="${on_list[$i]}"
     Flag="${on_flag[$i]}"
+    Queue="${queue_type[$i]}"
 
     Type_path="${Ntuple_path}/${version}/${Type}"
     output_path="${Type_path}/MC16rd"
@@ -150,7 +170,7 @@ for i in "${!on_list[@]}"; do
     do
         echo $file
         basename=$(basename -s .root $file)
-        bsub -q s \
+        bsub -q ${Queue} \
         -o "${log_path}/${basename}.log" \
         ${script} \
         --sample "MC16rd" \
