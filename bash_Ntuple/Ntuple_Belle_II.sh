@@ -10,7 +10,7 @@ on_list=("ALP" "CCBAR" "CHG" "DDBAR" "EE" "EEEE"
          "EEMUMU" "GG" "HHISR" "LLXX" "MIX" 
          "MUMU" "SIGNAL" "SSBAR" "TAUPAIR" "UUBAR")
 
-on_flag=("ALP" "ccbar" "charged" "ddbar" "ee" "eee"
+on_flag=("ALP" "ccbar" "charged" "ddbar" "ee" "eeee"
          "eemumu" "gg" "hhISR" "llXX" "mixed"
          "mumu" "signal" "ssbar" "taupair" "uubar")
 
