@@ -59,7 +59,7 @@ on_flag=("ALP" "BB" "ee" "eeee"
          "eemumu" "gg" "hhISR" "llXX"
          "mumu" "signal" "taupair" "udsc")
 
-queue_type=("s" "s" "s" "s"
+queue_type=("s" "s" "s" "l"
          "l" "s" "s" "l"
          "s" "s" "s" "s")
 
