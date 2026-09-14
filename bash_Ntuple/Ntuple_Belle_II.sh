@@ -104,7 +104,7 @@ on_flag=("ee" "eeee" "eemumu" "gg"
          "hhISR" "llXX" "mumu"
          "signal" "taupair" "udsc")
 
-queue_type=("s" "s" "s" "s"
+queue_type=("s" "l" "s" "s"
          "s" "s" "s"
          "s" "s" "s")
 
