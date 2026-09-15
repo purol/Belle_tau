@@ -127,6 +127,7 @@
 # define Scale_BelleII_5S_GG_MC16rd (lumi_BelleII_5S/0.0392695400598)
 # define Scale_BelleII_5S_llXX_MC16rd (lumi_BelleII_5S/0.0785390801196)
 # define Scale_BelleII_5S_TAUPAIR_MC16rd (lumi_BelleII_5S/0.0785390801196)
+# define Scale_BelleII_5S_BB_MC16rd (lumi_BelleII_5S/0.0785390801196)
 # define Scale_BelleII_5S_UDSC_MC16rd (lumi_BelleII_5S/0.0785390801196) // just average of udsc
 
 

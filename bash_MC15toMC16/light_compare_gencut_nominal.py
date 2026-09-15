@@ -21,18 +21,18 @@ TREE_NAME = "tau_lfv"
 
 VARIABLE = "cleoConeThrust0"
 
-NBINS = 20
+NBINS = 30
 XRANGE = (0.0, 10.0)
 
 
 CUTS = {
-    "deltaE": (-0.214264, 0.061181),
-    "M":      (1.684249, 1.871269),
+    "deltaE": (-0.216646, 0.068024),
+    "M":      (1.675815, 1.874335),
 }
 
 
-LEGEND1 = r"MC16ri $d\bar{d}$ with gencut"
-LEGEND2 = r"MC16ri $d\bar{d}$ without gencut"
+LEGEND1 = r"MC16ri $q\bar{q}$ with gencut"
+LEGEND2 = r"MC16ri $q\bar{q}$ without gencut"
 
 RATIO_LABEL = "Gencut / Nominal"
 
