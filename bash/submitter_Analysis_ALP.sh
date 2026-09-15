@@ -54,11 +54,11 @@ IFS=':' read -r -a Types <<< "$Types_STR_WITH_ALP"
 code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main_ALP"
 for Type in "${Types[@]}"; do
     submit_analysis ${code} ${Analysis_Name} ${Type}
-    sleep 0.5s
+    sleep 1.0s
 done
 
 code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main_log_ALP"
 for Type in "${Types[@]}"; do
     submit_logger ${code} ${Analysis_Name} ${Type}
-    sleep 0.5s
+    sleep 1.0s
 done
