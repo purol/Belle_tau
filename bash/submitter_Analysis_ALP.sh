@@ -28,6 +28,7 @@ submit_analysis() {
       "${Ntuple_DIR}/${VerName}/${SampleName}/${MC_version}" \
       "${filename}.root" \
       "./${VerName}/${Analysis_VerName}/${SampleName}"
+      sleep 1.0s
     done
   fi
 
