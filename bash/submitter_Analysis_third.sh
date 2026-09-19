@@ -24,7 +24,7 @@ submit_analysis() {
       "./${VerName}/${Analysis_VerName}/" \
       "./${VerName}/${Analysis_VerName}/GridSearch_one/FOM.log" \
       "./${VerName}/${Analysis_VerName}/GridSearch_two/FOM.log"
-      sleep 1.0s
+      sleep 0.5s
     done
   fi
 

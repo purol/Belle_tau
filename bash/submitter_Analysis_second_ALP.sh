@@ -21,6 +21,8 @@ submit_analysis() {
       "${filename}.root" \
       "./${VerName}/${Analysis_VerName}/${SampleName}" \
       "./${VerName}/${Analysis_VerName}/"
+
+      sleep 0.5s
     done
   fi
 
