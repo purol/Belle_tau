@@ -32,7 +32,7 @@ submit_analysis() {
       "${Ntuple_DIR}/${VerName}/${SampleName}/${MC_version}" \
       "${filename}.root" \
       "./${VerName}/${Analysis_VerName}/${SampleName}"
-      sleep 1.0s
+      sleep 0.5s
     done
   fi
 
@@ -44,7 +44,12 @@ submit_logger() {
   local SampleName=$3 # ex. MUMUTAUTAU
 
   if compgen -G "${Ntuple_DIR}/${VerName}/${SampleName}/${MC_version}/*.root" > /dev/null; then
-    bsub -q l -J Logger -o "./${VerName}/${Analysis_VerName}/${SampleName}/${SampleName}_${VerName}_${Analysis_VerName}.log" -e "./${VerName}/${Analysis_VerName}/${SampleName}/${SampleName}_${VerName}_${Analysis_VerName}.err" ${Code} "${Ntuple_DIR}/${VerName}/${SampleName}/${MC_version}"
+    bsub -q l \
+    -J Logger \
+    -o "./${VerName}/${Analysis_VerName}/${SampleName}/${SampleName}_${VerName}_${Analysis_VerName}.log" \
+    -e "./${VerName}/${Analysis_VerName}/${SampleName}/${SampleName}_${VerName}_${Analysis_VerName}.err" \
+    ${Code} \
+    "${Ntuple_DIR}/${VerName}/${SampleName}/${MC_version}"
   fi
 
 }
@@ -54,11 +59,11 @@ IFS=':' read -r -a Types <<< "$Types_STR_WITH_SIGNAL"
 code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main"
 for Type in "${Types[@]}"; do
     submit_analysis ${code} ${Analysis_Name} ${Type}
-    sleep 1.0s
+    sleep 0.5s
 done
 
 code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main_log"
 for Type in "${Types[@]}"; do
     submit_logger ${code} ${Analysis_Name} ${Type}
-    sleep 1.0s
+    sleep 0.5s
 done

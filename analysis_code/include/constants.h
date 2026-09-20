@@ -71,10 +71,10 @@
 
 # define Scale_BelleII_4S_CHG_MC16ri (lumi_BelleII_4S/1.1)
 # define Scale_BelleII_4S_MIX_MC16ri (lumi_BelleII_4S/1.1)
-# define Scale_BelleII_4S_UUBAR_MC16ri (lumi_BelleII_4S/1.1)
-# define Scale_BelleII_4S_DDBAR_MC16ri (lumi_BelleII_4S/1.1)
-# define Scale_BelleII_4S_SSBAR_MC16ri (lumi_BelleII_4S/1.1)
-# define Scale_BelleII_4S_CHARM_MC16ri (lumi_BelleII_4S/1.1)
+# define Scale_BelleII_4S_UUBAR_MC16ri (lumi_BelleII_4S/(1.1+21.8)) // nominal + with gencut
+# define Scale_BelleII_4S_DDBAR_MC16ri (lumi_BelleII_4S/(1.1+21.8)) // nominal + with gencut
+# define Scale_BelleII_4S_SSBAR_MC16ri (lumi_BelleII_4S/(1.1+21.8)) // nominal + with gencut
+# define Scale_BelleII_4S_CHARM_MC16ri (lumi_BelleII_4S/(1.1+21.8)) // nominal + with gencut
 # define Scale_BelleII_4S_MUMU_MC16ri (lumi_BelleII_4S/1.1)
 # define Scale_BelleII_4S_EE_MC16ri (lumi_BelleII_4S/0.175)
 # define Scale_BelleII_4S_EEEE_MC16ri (lumi_BelleII_4S/1.1)
@@ -82,7 +82,7 @@
 # define Scale_BelleII_4S_hhISR_MC16ri (lumi_BelleII_4S/1.1)
 # define Scale_BelleII_4S_GG_MC16ri (lumi_BelleII_4S/1.35)
 # define Scale_BelleII_4S_llXX_MC16ri (lumi_BelleII_4S/1.1)
-# define Scale_BelleII_4S_TAUPAIR_MC16ri (lumi_BelleII_4S/1.1)
+# define Scale_BelleII_4S_TAUPAIR_MC16ri (lumi_BelleII_4S/(1.1+14.5)) // nominal + with gencut
 
 # define Scale_BelleII_4S_CHG_MC16rd (lumi_BelleII_4S/1.94633937621)
 # define Scale_BelleII_4S_MIX_MC16rd (lumi_BelleII_4S/1.94563145615)
