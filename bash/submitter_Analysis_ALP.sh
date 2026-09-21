@@ -28,7 +28,7 @@ submit_analysis() {
       "${Ntuple_DIR}/${VerName}/${SampleName}/${MC_version}" \
       "${filename}.root" \
       "./${VerName}/${Analysis_VerName}/${SampleName}"
-      sleep 0.5s
+      sleep 0.3s
     done
   fi
 
@@ -55,11 +55,11 @@ IFS=':' read -r -a Types <<< "$Types_STR_WITH_ALP"
 code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main_ALP"
 for Type in "${Types[@]}"; do
     submit_analysis ${code} ${Analysis_Name} ${Type}
-    sleep 0.5s
+    sleep 0.3s
 done
 
 code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main_log_ALP"
 for Type in "${Types[@]}"; do
     submit_logger ${code} ${Analysis_Name} ${Type}
-    sleep 0.5s
+    sleep 0.3s
 done

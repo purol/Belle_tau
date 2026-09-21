@@ -22,7 +22,7 @@ submit_analysis() {
       "./${VerName}/${Analysis_VerName}/${SampleName}" \
       "./${VerName}/${Analysis_VerName}/"
 
-      sleep 0.5s
+      sleep 0.3s
     done
   fi
 
@@ -52,11 +52,11 @@ IFS=':' read -r -a Types <<< "$Types_STR_WITH_SIGNAL"
 code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main_second"
 for Type in "${Types[@]}"; do
     submit_analysis ${code} ${Analysis_Name} ${Type}
-    sleep 0.5s
+    sleep 0.3s
 done
 
 code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main_second_log"
 for Type in "${Types[@]}"; do
     submit_logger ${code} ${Analysis_Name} ${Type}
-    sleep 0.5s
+    sleep 0.3s
 done
