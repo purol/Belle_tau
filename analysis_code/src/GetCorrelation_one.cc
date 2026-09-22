@@ -69,10 +69,10 @@ int main(int argc, char* argv[]) {
     loader.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
     loader.PrintInformation("========== (-5 delta < deltaE < 5 delta) ==========");
 
-    loader.DrawTH2D("BDT1", "M", ";BDT1 output;M [GeV/c^{2}]", 50, 0.0, 1.0, 50, M_peak - 20 * M_left_sigma, M_peak + 20 * M_right_sigma, (argv[6] + std::string("/") + "BDT1_M_distribution.png").c_str(), "COLZ");
+    loader.DrawTH2D("BDT_output_1", "M", ";BDT1 output;M [GeV/c^{2}]", 50, 0.0, 1.0, 50, M_peak - 20 * M_left_sigma, M_peak + 20 * M_right_sigma, (argv[6] + std::string("/") + "BDT1_M_distribution.png").c_str(), "COLZ");
    
     RooDataSet dataset("dataset", "dataset", RooArgSet(BDT1, M_inv, weight), RooFit::WeightVar("weight"));
-    loader.FillDataSet(&dataset, { &BDT1, &M_inv }, { "BDT1", "M" });
+    loader.FillDataSet(&dataset, { &BDT1, &M_inv }, { "BDT_output_1", "M" });
 
     loader.end();
 
@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
         loader_temp.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
         loader_temp.PrintInformation("========== (-5 delta < deltaE < 5 delta) ==========");
 
-        loader_temp.Cut(("(" + std::to_string(lower) + "< BDT1) && (BDT1 < " + std::to_string(upper) + ")").c_str());
+        loader_temp.Cut(("(" + std::to_string(lower) + "< BDT_output_1) && (BDT_output_1 < " + std::to_string(upper) + ")").c_str());
         loader_temp.PrintInformation(("========== " + std::to_string(lower) + " < BDT1 < " + std::to_string(upper) + " ==========").c_str());
 
         loader_temp.FillTH1D(temp_th1d, "M");

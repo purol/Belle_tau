@@ -105,10 +105,10 @@ int main(int argc, char* argv[]) {
     loader.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
     loader.PrintInformation("========== (-15 delta < deltaE < -5 delta) ==========");
 
-    loader.DrawTH2D("BDT2", "M", ";BDT2 output;M [GeV/c^{2}]", 50, 0.0, 1.0, 50, M_peak - 20 * M_left_sigma, M_peak + 20 * M_right_sigma, (argv[6] + std::string("/") + "BDT2_M_distribution_" + std::string(argv[7]) + "_" + std::string(argv[8]) + "_" + std::string(argv[9]) + "_" + std::string(argv[10]) + ".png").c_str(), "COLZ");
+    loader.DrawTH2D("BDT_output_2", "M", ";BDT2 output;M [GeV/c^{2}]", 50, 0.0, 1.0, 50, M_peak - 20 * M_left_sigma, M_peak + 20 * M_right_sigma, (argv[6] + std::string("/") + "BDT2_M_distribution_" + std::string(argv[7]) + "_" + std::string(argv[8]) + "_" + std::string(argv[9]) + "_" + std::string(argv[10]) + ".png").c_str(), "COLZ");
 
     RooDataSet dataset_two("dataset_two", "dataset_two", RooArgSet(BDT2, M_inv, weight), RooFit::WeightVar("weight"));
-    loader.FillDataSet(&dataset_two, { &BDT2, &M_inv }, { "BDT2", "M" });
+    loader.FillDataSet(&dataset_two, { &BDT2, &M_inv }, { "BDT_output_2", "M" });
 
     loader.end();
 
@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
         loader_temp.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
         loader_temp.PrintInformation("========== (-15 delta < deltaE < -5 delta) ==========");
 
-        loader_temp.Cut(("(" + std::to_string(lower) + "< BDT2) && (BDT2 < " + std::to_string(upper) + ")").c_str());
+        loader_temp.Cut(("(" + std::to_string(lower) + "< BDT_output_2) && (BDT_output_2 < " + std::to_string(upper) + ")").c_str());
         loader_temp.PrintInformation(("========== " + std::to_string(lower) + " < BDT2 < " + std::to_string(upper) + " ==========").c_str());
 
         loader_temp.FillTH1D(temp_th1d, "M");
