@@ -4,7 +4,7 @@
 #  PREDEFINED VARIABLES
 #  You SHOULD change these values 
 
-export Analysis_Name="Ibaraki_CTRL" # name of analysis
+export Analysis_Name="Larva_CTRL" # name of analysis
 export Analysis_VerName="v000" # version of analysis
 
 export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau" # analysis code path
@@ -94,7 +94,7 @@ input_variables_two=(
     "cleoConeThrust4"
 ) # list of input variables for the region 1
 
-export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/MC16r/v000" # FBDT weight file path
+export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/MC16ri/v000" # FBDT weight file path
 export nominal_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/MC16rd/v000" # nominal tau->mumumu analysis path
 # =================================================================================== #
 
