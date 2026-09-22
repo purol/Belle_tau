@@ -92,7 +92,7 @@ input_variables_two=(
     "cleoConeThrust4"
 ) # list of input variables for the region 1
 
-export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/v000" # FBDT weight file path
+export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/MC16ri/v000" # FBDT weight file path
 # =================================================================================== #
 
 

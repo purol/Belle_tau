@@ -94,8 +94,8 @@ input_variables_two=(
     "cleoConeThrust4"
 ) # list of input variables for the region 1
 
-export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/v000" # FBDT weight file path
-export nominal_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/v000" # nominal tau->mumumu analysis path
+export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/MC16r/v000" # FBDT weight file path
+export nominal_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/MC16rd/v000" # nominal tau->mumumu analysis path
 # =================================================================================== #
 
 export shell_DIR="${Belle_tau_DIR}/bash"
