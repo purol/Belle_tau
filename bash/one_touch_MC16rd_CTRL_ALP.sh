@@ -21,7 +21,7 @@ export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP s
 Background_Legends=("B#bar{B}" "q#bar{q}"
     "#mu#mu" "ee" "others" "ee#mu#mu" "others" "others" "others"
     "#tau#bar{#tau}"
-    "#tau#rightarrowK_{S}^{0}#pi#nu"
+    "#tau#bar{#tau}"
     ) # legends of background sample for plots. Do not include colon.
 export Signal_Legends="#tau#rightarrow#pi#pi#pi#nu" # legends of prompt sample for plots. Do not include colon.
 export ALP_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
