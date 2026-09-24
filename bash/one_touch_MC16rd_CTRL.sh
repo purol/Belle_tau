@@ -10,7 +10,7 @@ export Analysis_VerName="v000" # version of analysis
 export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau" # analysis code path
 export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple_CTRL" # Ntuple path
 
-Background_Types=("BB" "UDSC"
+Background_Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CCBAR"
     "MUMU" "EE" "EEEE" "EEMUMU" "LLXX" "HHISR" "GG" 
     "TAUPAIR"
     "KS0pinu_pure"
@@ -18,7 +18,7 @@ Background_Types=("BB" "UDSC"
 export Signal_Type="pipipinu" # name of directories under ${Ntuple_DIR} for prompt signal sample. Do not include colon.
 export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample. Do not include colon.
 
-Background_Legends=("B#bar{B}" "q#bar{q}"
+Background_Legends=("B#bar{B}" "B#bar{B}" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#bar{q}"
     "#mu#mu" "ee" "others" "ee#mu#mu" "others" "others" "others"
     "#tau#bar{#tau}"
     "#tau#bar{#tau}"
