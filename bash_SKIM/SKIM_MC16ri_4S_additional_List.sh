@@ -4,7 +4,7 @@ export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau" #
 Code="${Belle_tau_DIR}/python/tau_mumumu_TauToMuMuMu_List.py"
 
 energy_name="MC16ri_on"
-batch_size=100
+batch_size=30
 samples=(UUBAR DDBAR SSBAR CCBAR TAUPAIR)
 run_groups=(run1 run2_PXDOFF run2_PXDON)
 
