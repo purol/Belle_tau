@@ -14,6 +14,9 @@ from scipy.spatial.distance import pdist, squareform
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Edit this tuple to change the variables used as the dCor target.
+DCOR_TARGET_COLUMNS = ("M")
+
 # MC16ri 4S scale factors from analysis_code/include/constants.h.
 LUMINOSITY_MC16RI_4S = 0.49841  # ab-1
 
@@ -57,7 +60,11 @@ class RepeatedDistanceCorrelation:
     """
 
     def __init__(self, df, max_events, repeats, seed, workers=1):
-        valid = np.isfinite(df[["M", "deltaE", "weight"]].to_numpy(dtype=float)).all(axis=1)
+        missing = [column for column in DCOR_TARGET_COLUMNS if column not in df.columns]
+        if missing:
+            raise ValueError(f"Missing dCor target columns: {missing}")
+        target_columns = list(DCOR_TARGET_COLUMNS)
+        valid = np.isfinite(df[target_columns + ["weight"]].to_numpy(dtype=float)).all(axis=1)
         valid &= df["weight"].to_numpy(dtype=float) > 0
         self.sample = df.loc[valid]
         if len(self.sample) < 5:
@@ -66,16 +73,16 @@ class RepeatedDistanceCorrelation:
         weights = self.sample["weight"].to_numpy(dtype=float, copy=True)
         weights /= weights.sum()
         self.weights = weights
-        self.target = self._standardize(self.sample[["M", "deltaE"]].to_numpy(dtype=float))
+        self.target = self._standardize(self.sample[target_columns].to_numpy(dtype=float))
         if self.target is None:
-            raise ValueError("M or deltaE has no variation for distance correlation.")
+            raise ValueError(f"A dCor target column has no variation: {target_columns}")
 
         self.max_events = max_events
         self.repeats = repeats
         self.seed = seed
         self.workers = min(workers, repeats)
         self.cache = {}
-        print(f"Distance correlation: {repeats} draw(s) of {max_events} weighted events from {len(self.sample)} valid events using {self.workers} worker(s)")
+        print(f"Configured distance correlation: {max_events} events per draw, {repeats} draws, {self.workers} worker(s), {len(self.sample)} valid events")
 
     def _standardize(self, values):
         if not np.isfinite(values).all():
@@ -267,23 +274,33 @@ def calculate_weights(df: pd.DataFrame) -> pd.Series:
     return pd.Series(weights, index=df.index)
 
 
-def summarize_variable_metrics(df, distance_evaluators, bins=1000, skip_cols=["label", "weight"]):
+def summarize_variable_metrics(df, bins=1000, skip_cols=["label", "weight"]):
     # Subset signal and background
     signal_df = df[df["label"] == 1]
     bkg_df    = df[df["label"] == 0]
     signal_weights = signal_df["weight"].values
     bkg_weights    = bkg_df["weight"].values
 
-    features = [col for col in df.columns if col not in skip_cols]
+    features = [col for col in df.columns if col not in skip_cols and col not in DCOR_TARGET_COLUMNS]
     results = []
 
     def compute_separation(signal, background, signal_weights, background_weights, bins):
-        h_s, bin_edges = np.histogram(signal, bins=bins, weights=signal_weights, density=True)
-        h_b, _ = np.histogram(background, bins=bin_edges, weights=background_weights, density=True)
+        signal_valid = np.isfinite(signal) & np.isfinite(signal_weights) & (signal_weights > 0)
+        background_valid = np.isfinite(background) & np.isfinite(background_weights) & (background_weights > 0)
+        if not signal_valid.any() or not background_valid.any():
+            return np.nan
+        h_s, bin_edges = np.histogram(signal[signal_valid], bins=bins,
+                                      weights=signal_weights[signal_valid])
+        h_b, _ = np.histogram(background[background_valid], bins=bin_edges,
+                              weights=background_weights[background_valid])
+        if h_s.sum() <= 0 or h_b.sum() <= 0:
+            return np.nan
+        bin_widths = np.diff(bin_edges)
+        h_s = h_s / (h_s.sum() * bin_widths)
+        h_b = h_b / (h_b.sum() * bin_widths)
         epsilon = 1e-10
-        bin_width = bin_edges[1] - bin_edges[0]
-        separation = 0.5 * np.sum(((h_s - h_b) ** 2) / (h_s + h_b + epsilon)) * bin_width
-        return separation
+        separation = 0.5 * np.sum(((h_s - h_b) ** 2) / (h_s + h_b + epsilon) * bin_widths)
+        return float(separation) if np.isfinite(separation) else np.nan
 
     for feature in features:
         try:
@@ -291,23 +308,38 @@ def summarize_variable_metrics(df, distance_evaluators, bins=1000, skip_cols=["l
             bkg_values    = bkg_df[feature].values
             sep = compute_separation(signal_values, bkg_values, signal_weights, bkg_weights, bins)
 
-            signal_dcor = distance_evaluators[1].stats([feature])
-            bkg_dcor = distance_evaluators[0].stats([feature])
-
-            results.append({
-                "varname": feature,
-                "separation": sep,
-                "signal_dcor_M_deltaE": signal_dcor["estimate"],
-                "signal_dcor_batch_mean_M_deltaE": signal_dcor["batch_mean"],
-                "signal_dcor_batch_std_M_deltaE": signal_dcor["batch_std"],
-                "bkg_dcor_M_deltaE": bkg_dcor["estimate"],
-                "bkg_dcor_batch_mean_M_deltaE": bkg_dcor["batch_mean"],
-                "bkg_dcor_batch_std_M_deltaE": bkg_dcor["batch_std"],
-            })
+            if np.isfinite(sep):
+                results.append({"varname": feature, "separation": sep})
+            else:
+                print(f"Skipping {feature} due to invalid separation.")
         except Exception as e:
             print(f"Skipping {feature} due to error: {e}")
 
-    return pd.DataFrame(results).sort_values(by="separation", ascending=False)
+    return pd.DataFrame(results, columns=["varname", "separation"]).sort_values(by="separation", ascending=False)
+
+
+def add_selected_dcor_metrics(selected_summary, distance_evaluators):
+    """Calculate individual dCor only for variables retained by selection."""
+    target_label = "_".join(DCOR_TARGET_COLUMNS)
+    columns = [
+        f"signal_dcor_{target_label}", f"signal_dcor_batch_mean_{target_label}",
+        f"signal_dcor_batch_std_{target_label}", f"bkg_dcor_{target_label}",
+        f"bkg_dcor_batch_mean_{target_label}", f"bkg_dcor_batch_std_{target_label}",
+    ]
+    metrics = []
+    for feature in selected_summary["varname"]:
+        signal_dcor = distance_evaluators[1].stats([feature])
+        bkg_dcor = distance_evaluators[0].stats([feature])
+        metrics.append({
+            f"signal_dcor_{target_label}": signal_dcor["estimate"],
+            f"signal_dcor_batch_mean_{target_label}": signal_dcor["batch_mean"],
+            f"signal_dcor_batch_std_{target_label}": signal_dcor["batch_std"],
+            f"bkg_dcor_{target_label}": bkg_dcor["estimate"],
+            f"bkg_dcor_batch_mean_{target_label}": bkg_dcor["batch_mean"],
+            f"bkg_dcor_batch_std_{target_label}": bkg_dcor["batch_std"],
+        })
+    return pd.concat([selected_summary.reset_index(drop=True),
+                      pd.DataFrame(metrics, columns=columns)], axis=1)
 
 def create_and_plot_spearman_matrix(df, selected_vars, region_name):
     print(f"\n--- Generating Spearman Matrix for Region {region_name} ---")
@@ -413,15 +445,15 @@ parser.add_argument(
 )
 parser.add_argument(
     '--distance_threshold', type=float, default=0.1,
-    help='Threshold on the pooled Monte Carlo estimate of full weighted dCor between selected variables and (M, deltaE).'
+    help=f'Threshold on the pooled Monte Carlo estimate of full weighted dCor between selected variables and {DCOR_TARGET_COLUMNS}.'
 )
 parser.add_argument(
     '--distance_max_events', type=int, default=6000,
-    help='Weighted event draws per repeat, per class and region (default: 6000). Memory scales with its square, independently of repeat count.'
+    help='Events sampled with replacement in EACH draw, per class and region (default: 6000). Memory scales with its square.'
 )
 parser.add_argument(
     '--distance_repeats', type=int, default=10,
-    help='Number of Monte Carlo batches per class and region (default: 10). More batches improve precision without a large distance matrix.'
+    help='Independent draws per class and region (default: 10); each draw contains --distance_max_events events.'
 )
 parser.add_argument(
     '--distance_workers', type=int, default=2,
@@ -530,7 +562,7 @@ def read_all_root_files_self_function(
     files_with_trees = [f"{path}:{tree_name}" for path in root_files]
 
     # remove unneeded variables
-    EXCLUDE_SUBSTRINGS = ( "OneMuon", "TwoMuon", "ThreeMuon", "FTDL", "PSNM", "bogamma__clcut_v", "isSignal", "DecayHash", "MCMode", "muonID" )
+    EXCLUDE_SUBSTRINGS = ( "OneMuon", "TwoMuon", "ThreeMuon", "FTDL", "PSNM", "bogamma__clcut_v", "isSignal", "DecayHash", "MCMode", "muonID", "mcPDG" )
     branches_postfilter = []
     if branches is None:
         with uproot.open(files_with_trees[0]) as tree:
@@ -686,10 +718,10 @@ df_train_one = df_train_one[((resolution["M"]["peak"] - 5*resolution["M"]["left_
 df_test_one = df_test[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]) < df_test["deltaE"]) & (df_test["deltaE"] < (resolution["deltaE"]["peak"] + 5*resolution["deltaE"]["right_sigma"]))]
 df_test_one = df_test_one[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_test_one["M"]) & (df_test_one["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
 
+summary_result = summarize_variable_metrics(df_train_one)
 distance_evaluators = make_distance_evaluators(df_train_one, args.distance_max_events, args.distance_repeats, args.distance_seed, args.distance_workers)
-summary_result = summarize_variable_metrics(df_train_one, distance_evaluators)
 selected_vars_one, selected_dcor_one = select_variables(summary_result, df_train_one, "one", distance_evaluators, args.distance_threshold)
-selected_summary_one = summary_result.set_index("varname").loc[selected_vars_one].reset_index().merge(selected_dcor_one, on="varname", sort=False, validate="one_to_one")
+selected_summary_one = add_selected_dcor_metrics(summary_result.set_index("varname").loc[selected_vars_one].reset_index(), distance_evaluators).merge(selected_dcor_one, on="varname", sort=False, validate="one_to_one")
 print(selected_summary_one)
 selected_summary_one.to_csv("Importance_one.csv", index=False)
 plot_selected_separation_power(selected_summary_one, "one")
@@ -703,10 +735,10 @@ df_train_two = df_train_two[((resolution["M"]["peak"] - 5*resolution["M"]["left_
 df_test_two = df_test[((resolution["deltaE"]["peak"] - 15*resolution["deltaE"]["left_sigma"]) < df_test["deltaE"]) & (df_test["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
 df_test_two = df_test_two[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_test_two["M"]) & (df_test_two["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
 
+summary_result = summarize_variable_metrics(df_train_two)
 distance_evaluators = make_distance_evaluators(df_train_two, args.distance_max_events, args.distance_repeats, args.distance_seed, args.distance_workers)
-summary_result = summarize_variable_metrics(df_train_two, distance_evaluators)
 selected_vars_two, selected_dcor_two = select_variables(summary_result, df_train_two, "two", distance_evaluators, args.distance_threshold)
-selected_summary_two = summary_result.set_index("varname").loc[selected_vars_two].reset_index().merge(selected_dcor_two, on="varname", sort=False, validate="one_to_one")
+selected_summary_two = add_selected_dcor_metrics(summary_result.set_index("varname").loc[selected_vars_two].reset_index(), distance_evaluators).merge(selected_dcor_two, on="varname", sort=False, validate="one_to_one")
 print(selected_summary_two)
 selected_summary_two.to_csv("Importance_two.csv", index=False)
 plot_selected_separation_power(selected_summary_two, "two")
