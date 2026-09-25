@@ -207,7 +207,7 @@ def select_variables(summary_df, train_df, region_name, distance_evaluators, dis
         f"Variable selection report - Region {region_name}",
         f"dCor target: {', '.join(DCOR_TARGET_COLUMNS)}",
         f"Rule: joint dCor must be < {distance_threshold:g} in both signal and background.",
-        "Spearman rule: reject when |rho| > 0.5 in both classes for an already selected variable.",
+        "Spearman rule: reject when |rho| > 0.99 in both classes for an already selected variable.",
         "Candidates are tested in descending separation order. dCor uses the selected set plus the candidate.",
         "",
     ]
@@ -229,11 +229,11 @@ def select_variables(summary_df, train_df, region_name, distance_evaluators, dis
                 # Spearman correlation
                 bkg_spearman_corr = spearmanr(bkg_df[candidate_var], bkg_df[selected_var]).correlation
                 signal_spearman_corr = spearmanr(signal_df[candidate_var], signal_df[selected_var]).correlation
-                if (abs(bkg_spearman_corr) > 0.5 and abs(signal_spearman_corr) > 0.5):
+                if (abs(bkg_spearman_corr) > 0.99 and abs(signal_spearman_corr) > 0.99):
                     reasons.append(
                         f"Spearman with selected variable {selected_var}: "
                         f"signal rho={signal_spearman_corr:.6g}, "
-                        f"background rho={bkg_spearman_corr:.6g}; both |rho| > 0.5"
+                        f"background rho={bkg_spearman_corr:.6g}; both |rho| > 0.99"
                     )
                     break  # The first blocking variable explains the rejection.
 
