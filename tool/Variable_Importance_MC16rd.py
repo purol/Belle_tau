@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Edit this tuple to change the variables used as the dCor target.
-DCOR_TARGET_COLUMNS = ("M")
+DCOR_TARGET_COLUMNS = ("M", "deltaE")
 
 # MC16rd luminosities (ab-1) and generated equivalent luminosities (ab-1).
 # Values follow analysis_code/include/constants.h.
@@ -228,9 +228,10 @@ def make_distance_evaluators(df, max_events, repeats, seed, workers):
     }
 
 
-def select_variables(summary_df, data_df, region_name, distance_evaluators, distance_threshold):
+def select_variables(summary_df, data_df, region_name, distance_evaluators, distance_threshold,
+                     report_path=None, skipped_variables=None):
     """
-    Selects variables based on separation, correlation with M and deltaE,
+    Selects variables based on separation, dCor with DCOR_TARGET_COLUMNS,
     and correlation with already selected variables.
     """
     print(f"\n--- Selecting variables for Region {region_name} ---")
@@ -244,27 +245,41 @@ def select_variables(summary_df, data_df, region_name, distance_evaluators, dist
 
     selected_variables = []
     selected_dcor = []
+    report_lines = [
+        f"Variable selection report - Region {region_name}",
+        f"dCor target: {', '.join(DCOR_TARGET_COLUMNS)}",
+        f"Rule: joint dCor must be < {distance_threshold:g} in both signal and background.",
+        "Spearman rule: reject when |rho| > 0.5 in both classes for an already selected variable.",
+        "Candidates are tested in descending separation order. dCor uses the selected set plus the candidate.",
+        "",
+    ]
 
-    for index, row in sorted_summary.iterrows():
+    for rank, (_, row) in enumerate(sorted_summary.iterrows(), start=1):
         candidate_var = row["varname"]
 
         # Check the candidate AND all previously selected variables jointly.
         candidate_set = selected_variables + [candidate_var]
         signal_dcor = distance_evaluators[1].stats(candidate_set)
         bkg_dcor = distance_evaluators[0].stats(candidate_set)
+        signal_estimate = signal_dcor["estimate"]
+        bkg_estimate = bkg_dcor["estimate"]
+        reasons = []
         # Decide with the pooled full-data estimate, not an extreme batch value.
-        if signal_dcor["estimate"] < distance_threshold and bkg_dcor["estimate"] < distance_threshold:
-            is_correlated_with_selected = False
+        if signal_estimate < distance_threshold and bkg_estimate < distance_threshold:
             # 2. Check correlation with already selected variables
             for selected_var in selected_variables:
                 # Spearman correlation
                 bkg_spearman_corr = spearmanr(bkg_df[candidate_var], bkg_df[selected_var]).correlation
                 signal_spearman_corr = spearmanr(signal_df[candidate_var], signal_df[selected_var]).correlation
                 if (abs(bkg_spearman_corr) > 0.5 and abs(signal_spearman_corr) > 0.5):
-                    is_correlated_with_selected = True
-                    break  # No need to check other selected variables
+                    reasons.append(
+                        f"Spearman with selected variable {selected_var}: "
+                        f"signal rho={signal_spearman_corr:.6g}, "
+                        f"background rho={bkg_spearman_corr:.6g}; both |rho| > 0.5"
+                    )
+                    break  # The first blocking variable explains the rejection.
 
-            if not is_correlated_with_selected:
+            if not reasons:
                 selected_variables.append(candidate_var)
                 selected_dcor.append({
                     "varname": candidate_var,
@@ -275,6 +290,37 @@ def select_variables(summary_df, data_df, region_name, distance_evaluators, dist
                     "joint_bkg_dcor_batch_mean": bkg_dcor["batch_mean"],
                     "joint_bkg_dcor_batch_std": bkg_dcor["batch_std"],
                 })
+        else:
+            for class_name, estimate in (("signal", signal_estimate), ("background", bkg_estimate)):
+                if not np.isfinite(estimate):
+                    reasons.append(f"{class_name} joint dCor is non-finite ({estimate})")
+                elif estimate >= distance_threshold:
+                    reasons.append(
+                        f"{class_name} joint dCor {estimate:.6g} >= {distance_threshold:g}"
+                    )
+
+        report_lines.extend([
+            f"{rank}. {candidate_var} - {'REJECTED' if reasons else 'SELECTED'}",
+            f"   separation: {row['separation']:.6g}",
+            f"   tested set: {', '.join(candidate_set)}",
+            f"   joint dCor: signal={signal_estimate:.6g}, background={bkg_estimate:.6g}",
+            *[f"   reason: {reason}" for reason in reasons],
+            "",
+        ])
+
+    if skipped_variables:
+        report_lines.append("Not tested because separation could not be calculated:")
+        report_lines.extend(f"- {name}: {reason}" for name, reason in skipped_variables)
+        report_lines.append("")
+    report_lines.append(
+        f"Summary: {len(selected_variables)} selected, "
+        f"{len(sorted_summary) - len(selected_variables)} rejected, "
+        f"{len(skipped_variables or [])} not tested."
+    )
+    if report_path is not None:
+        with open(report_path, "w", encoding="utf-8") as report_file:
+            report_file.write("\n".join(report_lines) + "\n")
+        print(f"Saved selection report to {report_path}")
 
     print(f"Selected {len(selected_variables)} variables for Region {region_name}:")
     print(selected_variables)
@@ -316,7 +362,7 @@ def calculate_weights(df: pd.DataFrame) -> pd.Series:
     return pd.Series(weights, index=df.index)
 
 
-def summarize_variable_metrics(df, bins=1000, skip_cols=["label", "weight"]):
+def summarize_variable_metrics(df, bins=1000, skip_cols=["label", "weight"], skipped_variables=None):
     # Subset signal and background
     signal_df = df[df["label"] == 1]
     bkg_df    = df[df["label"] == 0]
@@ -354,8 +400,12 @@ def summarize_variable_metrics(df, bins=1000, skip_cols=["label", "weight"]):
                 results.append({"varname": feature, "separation": sep})
             else:
                 print(f"Skipping {feature} due to invalid separation.")
+                if skipped_variables is not None:
+                    skipped_variables.append((feature, "invalid separation (no usable weighted histogram)"))
         except Exception as e:
             print(f"Skipping {feature} due to error: {e}")
+            if skipped_variables is not None:
+                skipped_variables.append((feature, f"separation error: {e}"))
 
     return pd.DataFrame(results, columns=["varname", "separation"]).sort_values(by="separation", ascending=False)
 
@@ -498,8 +548,8 @@ parser.add_argument(
     help='Independent draws per class and region (default: 10); each draw contains --distance_max_events events.'
 )
 parser.add_argument(
-    '--distance_workers', type=int, default=2,
-    help='Concurrent threads for distance-correlation batches (default: 2). Memory grows with the number of workers.'
+    '--distance_workers', type=int, default=10,
+    help='Concurrent threads for distance-correlation batches (default: 10). Memory grows with the number of workers.'
 )
 parser.add_argument(
     '--distance_seed', type=int, default=42,
@@ -604,7 +654,7 @@ def read_all_root_files_self_function(
     files_with_trees = [f"{path}:{tree_name}" for path in root_files]
 
     # remove unneeded variables
-    EXCLUDE_SUBSTRINGS = ( "OneMuon", "TwoMuon", "ThreeMuon", "FTDL", "PSNM", "bogamma__clcut_v", "isSignal", "DecayHash", "MCMode", "muonID", "mcPDG" )
+    EXCLUDE_SUBSTRINGS = ( "OneMuon", "TwoMuon", "ThreeMuon", "FTDL", "PSNM", "bogamma__clcut_v", "isSignal", "DecayHash", "MCMode", "ID", "mcPDG" )
     branches_postfilter = []
     if branches is None:
         with uproot.open(files_with_trees[0]) as tree:
@@ -730,9 +780,13 @@ df_all = drop_removed_variables(df_all, removed_variables)
 df_one = df_all[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]) < df_all["deltaE"]) & (df_all["deltaE"] < (resolution["deltaE"]["peak"] + 5*resolution["deltaE"]["right_sigma"]))]
 df_one = df_one[((resolution["M"]["peak"] - 20*resolution["M"]["left_sigma"]) < df_one["M"]) & (df_one["M"] < (resolution["M"]["peak"] + 20*resolution["M"]["right_sigma"]))]
 
-summary_result = summarize_variable_metrics(df_one)
+skipped_variables_one = []
+summary_result = summarize_variable_metrics(df_one, skipped_variables=skipped_variables_one)
 distance_evaluators = make_distance_evaluators(df_one, args.distance_max_events, args.distance_repeats, args.distance_seed, args.distance_workers)
-selected_vars_one, selected_dcor_one = select_variables(summary_result, df_one, "one", distance_evaluators, args.distance_threshold)
+selected_vars_one, selected_dcor_one = select_variables(
+    summary_result, df_one, "one", distance_evaluators, args.distance_threshold,
+    report_path="variable_selection_report_one.txt", skipped_variables=skipped_variables_one,
+)
 selected_summary_one = add_selected_dcor_metrics(summary_result.set_index("varname").loc[selected_vars_one].reset_index(), distance_evaluators).merge(selected_dcor_one, on="varname", sort=False, validate="one_to_one")
 print(selected_summary_one)
 selected_summary_one.to_csv("Importance_one.csv", index=False)
@@ -745,9 +799,13 @@ create_and_plot_spearman_matrix(df_one[df_one["label"] == 0], selected_vars_one,
 df_two = df_all[((resolution["deltaE"]["peak"] - 15*resolution["deltaE"]["left_sigma"]) < df_all["deltaE"]) & (df_all["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
 df_two = df_two[((resolution["M"]["peak"] - 20*resolution["M"]["left_sigma"]) < df_two["M"]) & (df_two["M"] < (resolution["M"]["peak"] + 20*resolution["M"]["right_sigma"]))]
 
-summary_result = summarize_variable_metrics(df_two)
+skipped_variables_two = []
+summary_result = summarize_variable_metrics(df_two, skipped_variables=skipped_variables_two)
 distance_evaluators = make_distance_evaluators(df_two, args.distance_max_events, args.distance_repeats, args.distance_seed, args.distance_workers)
-selected_vars_two, selected_dcor_two = select_variables(summary_result, df_two, "two", distance_evaluators, args.distance_threshold)
+selected_vars_two, selected_dcor_two = select_variables(
+    summary_result, df_two, "two", distance_evaluators, args.distance_threshold,
+    report_path="variable_selection_report_two.txt", skipped_variables=skipped_variables_two,
+)
 selected_summary_two = add_selected_dcor_metrics(summary_result.set_index("varname").loc[selected_vars_two].reset_index(), distance_evaluators).merge(selected_dcor_two, on="varname", sort=False, validate="one_to_one")
 print(selected_summary_two)
 selected_summary_two.to_csv("Importance_two.csv", index=False)
