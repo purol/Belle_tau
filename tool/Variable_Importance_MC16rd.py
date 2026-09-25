@@ -87,66 +87,137 @@ def signal_scale_mc16rd(energy_type):
     return tau_pairs * BR_SIGNAL * 2.0 / SIGNAL_MC16RD_EVENTS[energy_type]
 
 
-class DistanceCorrelationEvaluator:
-    """Weighted distance correlation on a fixed, reproducible event subsample.
+class RepeatedDistanceCorrelation:
+    """Estimate full weighted dCor from repeated, bounded-size event samples.
 
-    The sample statistic is biased upward at finite sample size, especially as
-    the number of selected variables grows. Calibrate the threshold on MC.
+    Events are sampled with replacement in proportion to their weights.
+    Each batch uses unbiased U-statistic estimates of the three squared
+    distance-covariance components. Pool components before taking the dCor
+    ratio: increasing repeats then converges to full-data weighted dCor.
+    Memory depends on max_events squared, but not on the full event count or
+    the number of repeats.
     """
 
-    def __init__(self, df, max_events=1000, seed=42):
+    def __init__(self, df, max_events, repeats, seed, workers=1):
         valid = np.isfinite(df[["M", "deltaE", "weight"]].to_numpy(dtype=float)).all(axis=1)
         valid &= df["weight"].to_numpy(dtype=float) > 0
-        sample = df.loc[valid]
-        if len(sample) > max_events:
-            sample = sample.sample(n=max_events, random_state=seed)
-        if len(sample) < 5:
+        self.sample = df.loc[valid]
+        if len(self.sample) < 5:
             raise ValueError("Distance correlation needs at least five positive-weight events.")
 
-        self.sample = sample
-        self.weights = sample["weight"].to_numpy(dtype=float, copy=True)
-        self.weights /= self.weights.sum()
-        self.target = self._centered_distances(sample[["M", "deltaE"]].to_numpy(dtype=float))
+        weights = self.sample["weight"].to_numpy(dtype=float, copy=True)
+        weights /= weights.sum()
+        self.weights = weights
+        self.target = self._standardize(self.sample[["M", "deltaE"]].to_numpy(dtype=float))
         if self.target is None:
-            raise ValueError("M or deltaE has no variation in the distance-correlation sample.")
-        self.target_variance = self._distance_variance(self.target)
-        if self.target_variance <= 0:
-            raise ValueError("M and deltaE have no variation in the distance-correlation sample.")
+            raise ValueError("M or deltaE has no variation for distance correlation.")
 
-    def _centered_distances(self, values):
-        values = np.asarray(values, dtype=float)
-        if values.ndim == 1:
-            values = values[:, None]
+        self.max_events = max_events
+        self.repeats = repeats
+        self.seed = seed
+        self.workers = min(workers, repeats)
+        self.cache = {}
+        print(f"Distance correlation: {repeats} draw(s) of {max_events} weighted events from {len(self.sample)} valid events using {self.workers} worker(s)")
+
+    def _standardize(self, values):
         if not np.isfinite(values).all():
             return None
         means = np.average(values, axis=0, weights=self.weights)
         scales = np.sqrt(np.average((values - means) ** 2, axis=0, weights=self.weights))
         if np.any(scales <= 0):
             return None
-        # Standardize coordinates so Euclidean distance is not set by units.
-        distances = squareform(pdist((values - means) / scales, metric="euclidean"))
-        row_means = distances @ self.weights
-        grand_mean = self.weights @ row_means
-        return distances - row_means[:, None] - row_means[None, :] + grand_mean
+        return (values - means) / scales
 
-    def _distance_variance(self, centered):
-        return np.einsum("i,ij,ij,j->", self.weights, centered, centered, self.weights)
+    @staticmethod
+    def _u_moment(a, b):
+        """Unbiased estimate of the full empirical squared distance covariance."""
+        n = len(a)
+        a_rows = a.sum(axis=1)
+        b_rows = b.sum(axis=1)
+        ab = np.einsum("ij,ij->", a, b)
+        row_product = a_rows @ b_rows
+        pair = ab / (n * (n - 1))
+        triple = (row_product - ab) / (n * (n - 1) * (n - 2))
+        quadruple = (a_rows.sum() * b_rows.sum() - 4 * row_product + 2 * ab) / (n * (n - 1) * (n - 2) * (n - 3))
+        return float(pair + quadruple - 2 * triple)
 
-    def score(self, columns):
-        centered = self._centered_distances(self.sample[list(columns)].to_numpy(dtype=float))
-        if centered is None:
+    @staticmethod
+    def _ratio(covariance, x_variance, y_variance):
+        if x_variance <= 0 or y_variance <= 0:
             return np.nan
-        x_variance = self._distance_variance(centered)
-        if x_variance <= 0:
-            return np.nan
-        covariance = np.einsum("i,ij,ij,j->", self.weights, centered, self.target, self.weights)
-        return float(np.sqrt(np.clip(covariance / np.sqrt(x_variance * self.target_variance), 0, 1)))
+        return float(np.sqrt(np.clip(covariance / np.sqrt(x_variance * y_variance), 0, 1)))
+
+    def _batch_moments(self, values, indices):
+        # Both input arrays are read-only across workers; distance matrices are local.
+        a = squareform(pdist(values[indices], metric="euclidean"))
+        b = squareform(pdist(self.target[indices], metric="euclidean"))
+        covariance = self._u_moment(a, b)
+        x_variance = self._u_moment(a, a)
+        y_variance = self._u_moment(b, b)
+        return covariance, x_variance, y_variance
+
+    def _iter_batch_moments(self, values):
+        rng = np.random.default_rng(self.seed)
+
+        def draw_indices():
+            return rng.choice(len(self.sample), size=self.max_events, p=self.weights)
+
+        if self.workers == 1:
+            for _ in range(self.repeats):
+                yield self._batch_moments(values, draw_indices())
+            return
+
+        # Submit at most one batch per worker, then collect in draw order.
+        # This preserves the sequential RNG stream and bounds peak memory.
+        with ThreadPoolExecutor(max_workers=self.workers) as executor:
+            pending = [executor.submit(self._batch_moments, values, draw_indices())
+                       for _ in range(self.workers)]
+            for repeat in range(self.repeats):
+                slot = repeat % self.workers
+                moments = pending[slot].result()
+                if repeat + self.workers < self.repeats:
+                    pending[slot] = executor.submit(self._batch_moments, values, draw_indices())
+                yield moments
+
+    def stats(self, columns):
+        key = tuple(columns)
+        if key in self.cache:
+            return self.cache[key]
+
+        values = self._standardize(self.sample[list(key)].to_numpy(dtype=float))
+        if values is None:
+            result = {"estimate": np.nan, "batch_mean": np.nan, "batch_std": np.nan}
+        else:
+            moment_sum = np.zeros(3, dtype=float)
+            batch_mean = 0.0
+            batch_m2 = 0.0
+            batch_valid = True
+            for repeat, (covariance, x_variance, y_variance) in enumerate(self._iter_batch_moments(values)):
+                moment_sum += (covariance, x_variance, y_variance)
+                score = self._ratio(covariance, x_variance, y_variance)
+                if np.isfinite(score):
+                    delta = score - batch_mean
+                    batch_mean += delta / (repeat + 1)
+                    batch_m2 += delta * (score - batch_mean)
+                else:
+                    batch_valid = False
+
+            # A mean of batch dCor values is not consistent for full-data dCor.
+            # The ratio of pooled covariance/variance terms is consistent.
+            pooled = moment_sum / self.repeats
+            result = {
+                "estimate": self._ratio(*pooled),
+                "batch_mean": batch_mean if batch_valid else np.nan,
+                "batch_std": float(np.sqrt(batch_m2 / (self.repeats - 1))) if batch_valid and self.repeats > 1 else (0.0 if batch_valid else np.nan),
+            }
+        self.cache[key] = result
+        return result
 
 
-def make_distance_evaluators(df, max_events):
+def make_distance_evaluators(df, max_events, repeats, seed, workers):
     return {
-        1: DistanceCorrelationEvaluator(df[df["label"] == 1], max_events, seed=42),
-        0: DistanceCorrelationEvaluator(df[df["label"] == 0], max_events, seed=43),
+        1: RepeatedDistanceCorrelation(df[df["label"] == 1], max_events, repeats, seed, workers),
+        0: RepeatedDistanceCorrelation(df[df["label"] == 0], max_events, repeats, seed + 1, workers),
     }
 
 
@@ -165,15 +236,17 @@ def select_variables(summary_df, data_df, region_name, distance_evaluators, dist
     bkg_df = data_df[data_df["label"] == 0]
 
     selected_variables = []
+    selected_dcor = []
 
     for index, row in sorted_summary.iterrows():
         candidate_var = row["varname"]
 
         # Check the candidate AND all previously selected variables jointly.
         candidate_set = selected_variables + [candidate_var]
-        signal_dcor = distance_evaluators[1].score(candidate_set)
-        bkg_dcor = distance_evaluators[0].score(candidate_set)
-        if signal_dcor < distance_threshold and bkg_dcor < distance_threshold:
+        signal_dcor = distance_evaluators[1].stats(candidate_set)
+        bkg_dcor = distance_evaluators[0].stats(candidate_set)
+        # Decide with the pooled full-data estimate, not an extreme batch value.
+        if signal_dcor["estimate"] < distance_threshold and bkg_dcor["estimate"] < distance_threshold:
             is_correlated_with_selected = False
             # 2. Check correlation with already selected variables
             for selected_var in selected_variables:
@@ -186,10 +259,23 @@ def select_variables(summary_df, data_df, region_name, distance_evaluators, dist
 
             if not is_correlated_with_selected:
                 selected_variables.append(candidate_var)
+                selected_dcor.append({
+                    "varname": candidate_var,
+                    "joint_signal_dcor_estimate": signal_dcor["estimate"],
+                    "joint_signal_dcor_batch_mean": signal_dcor["batch_mean"],
+                    "joint_signal_dcor_batch_std": signal_dcor["batch_std"],
+                    "joint_bkg_dcor_estimate": bkg_dcor["estimate"],
+                    "joint_bkg_dcor_batch_mean": bkg_dcor["batch_mean"],
+                    "joint_bkg_dcor_batch_std": bkg_dcor["batch_std"],
+                })
 
     print(f"Selected {len(selected_variables)} variables for Region {region_name}:")
     print(selected_variables)
-    return selected_variables
+    return selected_variables, pd.DataFrame(selected_dcor, columns=[
+        "varname", "joint_signal_dcor_estimate", "joint_signal_dcor_batch_mean",
+        "joint_signal_dcor_batch_std", "joint_bkg_dcor_estimate",
+        "joint_bkg_dcor_batch_mean", "joint_bkg_dcor_batch_std",
+    ])
 
 def calculate_weights(df: pd.DataFrame) -> pd.Series:
     """Match the MC16rd MC_weight entries in MyObtainWeight.h."""
@@ -247,14 +333,18 @@ def summarize_variable_metrics(df, distance_evaluators, bins=1000, skip_cols=["l
             bkg_values    = bkg_df[feature].values
             sep = compute_separation(signal_values, bkg_values, signal_weights, bkg_weights, bins)
 
-            signal_dcor = distance_evaluators[1].score([feature])
-            bkg_dcor = distance_evaluators[0].score([feature])
+            signal_dcor = distance_evaluators[1].stats([feature])
+            bkg_dcor = distance_evaluators[0].stats([feature])
 
             results.append({
                 "varname": feature,
                 "separation": sep,
-                "signal_dcor_M_deltaE": signal_dcor,
-                "bkg_dcor_M_deltaE": bkg_dcor
+                "signal_dcor_M_deltaE": signal_dcor["estimate"],
+                "signal_dcor_batch_mean_M_deltaE": signal_dcor["batch_mean"],
+                "signal_dcor_batch_std_M_deltaE": signal_dcor["batch_std"],
+                "bkg_dcor_M_deltaE": bkg_dcor["estimate"],
+                "bkg_dcor_batch_mean_M_deltaE": bkg_dcor["batch_mean"],
+                "bkg_dcor_batch_std_M_deltaE": bkg_dcor["batch_std"],
             })
         except Exception as e:
             print(f"Skipping {feature} due to error: {e}")
@@ -364,17 +454,35 @@ parser.add_argument(
 )
 parser.add_argument(
     '--distance_threshold', type=float, default=0.1,
-    help='Maximum joint distance correlation of selected variables with (M, deltaE). Recalibrate for each sample and event limit.'
+    help='Threshold on the pooled Monte Carlo estimate of full weighted dCor between selected variables and (M, deltaE).'
 )
 parser.add_argument(
-    '--distance_max_events', type=int, default=50000,
-    help='Maximum events per class and region for the O(n^2) distance-correlation calculation.'
+    '--distance_max_events', type=int, default=6000,
+    help='Weighted event draws per repeat, per class and region (default: 6000). Memory scales with its square, independently of repeat count.'
+)
+parser.add_argument(
+    '--distance_repeats', type=int, default=10,
+    help='Number of Monte Carlo batches per class and region (default: 10). More batches improve precision without a large distance matrix.'
+)
+parser.add_argument(
+    '--distance_workers', type=int, default=2,
+    help='Concurrent threads for distance-correlation batches (default: 2). Memory grows with the number of workers.'
+)
+parser.add_argument(
+    '--distance_seed', type=int, default=42,
+    help='Base random seed for distance-correlation subsampling (default: 42).'
 )
 args = parser.parse_args()
 if not 0 <= args.distance_threshold <= 1:
     parser.error('--distance_threshold must be between 0 and 1')
 if args.distance_max_events < 5:
     parser.error('--distance_max_events must be at least 5')
+if args.distance_repeats < 1:
+    parser.error('--distance_repeats must be at least 1')
+if args.distance_workers < 1:
+    parser.error('--distance_workers must be at least 1')
+if args.distance_seed < 0:
+    parser.error('--distance_seed must be nonnegative')
 
 def ReadResolution(file_path: str):
     """
@@ -589,10 +697,10 @@ df_all = drop_removed_variables(df_all, removed_variables)
 df_one = df_all[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]) < df_all["deltaE"]) & (df_all["deltaE"] < (resolution["deltaE"]["peak"] + 5*resolution["deltaE"]["right_sigma"]))]
 df_one = df_one[((resolution["M"]["peak"] - 20*resolution["M"]["left_sigma"]) < df_one["M"]) & (df_one["M"] < (resolution["M"]["peak"] + 20*resolution["M"]["right_sigma"]))]
 
-distance_evaluators = make_distance_evaluators(df_one, args.distance_max_events)
+distance_evaluators = make_distance_evaluators(df_one, args.distance_max_events, args.distance_repeats, args.distance_seed, args.distance_workers)
 summary_result = summarize_variable_metrics(df_one, distance_evaluators)
-selected_vars_one = select_variables(summary_result, df_one, "one", distance_evaluators, args.distance_threshold)
-selected_summary_one = summary_result.set_index("varname").loc[selected_vars_one].reset_index()
+selected_vars_one, selected_dcor_one = select_variables(summary_result, df_one, "one", distance_evaluators, args.distance_threshold)
+selected_summary_one = summary_result.set_index("varname").loc[selected_vars_one].reset_index().merge(selected_dcor_one, on="varname", sort=False, validate="one_to_one")
 print(selected_summary_one)
 selected_summary_one.to_csv("Importance_one.csv", index=False)
 plot_selected_separation_power(selected_summary_one, "one")
@@ -604,10 +712,10 @@ create_and_plot_spearman_matrix(df_one[df_one["label"] == 0], selected_vars_one,
 df_two = df_all[((resolution["deltaE"]["peak"] - 15*resolution["deltaE"]["left_sigma"]) < df_all["deltaE"]) & (df_all["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
 df_two = df_two[((resolution["M"]["peak"] - 20*resolution["M"]["left_sigma"]) < df_two["M"]) & (df_two["M"] < (resolution["M"]["peak"] + 20*resolution["M"]["right_sigma"]))]
 
-distance_evaluators = make_distance_evaluators(df_two, args.distance_max_events)
+distance_evaluators = make_distance_evaluators(df_two, args.distance_max_events, args.distance_repeats, args.distance_seed, args.distance_workers)
 summary_result = summarize_variable_metrics(df_two, distance_evaluators)
-selected_vars_two = select_variables(summary_result, df_two, "two", distance_evaluators, args.distance_threshold)
-selected_summary_two = summary_result.set_index("varname").loc[selected_vars_two].reset_index()
+selected_vars_two, selected_dcor_two = select_variables(summary_result, df_two, "two", distance_evaluators, args.distance_threshold)
+selected_summary_two = summary_result.set_index("varname").loc[selected_vars_two].reset_index().merge(selected_dcor_two, on="varname", sort=False, validate="one_to_one")
 print(selected_summary_two)
 selected_summary_two.to_csv("Importance_two.csv", index=False)
 plot_selected_separation_power(selected_summary_two, "two")
