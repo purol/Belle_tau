@@ -15,88 +15,78 @@ import seaborn as sns
 from itertools import combinations
 from concurrent.futures import ProcessPoolExecutor
 
-# =========== scale factor for MC15ri ===========
-# Luminosity (ab-1)
-lumi_BelleII_4S = 0.36357
-lumi_BelleII_off = 0.04228
-lumi_BelleII_10810 = 0.00469
+# MC16rd luminosities (ab-1) and generated equivalent luminosities (ab-1).
+# Values follow analysis_code/include/constants.h.
+LUMINOSITY_MC16RD = {1: 0.49841, 2: 0.061, 7: 0.01976}  # 4S, off, 5S
 
-# --- Scale factors for BelleII 4S ---
-Scale_BelleII_4S_CHG_MC15ri = (lumi_BelleII_4S/6.0)
-Scale_BelleII_4S_MIX_MC15ri = (lumi_BelleII_4S/6.0)
-Scale_BelleII_4S_UUBAR_MC15ri = (lumi_BelleII_4S/8.0)
-Scale_BelleII_4S_DDBAR_MC15ri = (lumi_BelleII_4S/8.0)
-Scale_BelleII_4S_SSBAR_MC15ri = (lumi_BelleII_4S/8.0)
-Scale_BelleII_4S_CHARM_MC15ri = (lumi_BelleII_4S/8.0)
-Scale_BelleII_4S_MUMU_MC15ri = (lumi_BelleII_4S/1.0)
-Scale_BelleII_4S_EE_MC15ri = (lumi_BelleII_4S/0.1)
-Scale_BelleII_4S_EEEE_MC15ri = (lumi_BelleII_4S/0.2)
-Scale_BelleII_4S_EEMUMU_MC15ri = (lumi_BelleII_4S/0.2)
-Scale_BelleII_4S_EEPIPI_MC15ri = (lumi_BelleII_4S/1.0)
-Scale_BelleII_4S_EEKK_MC15ri = (lumi_BelleII_4S/2.0)
-Scale_BelleII_4S_EEPP_MC15ri = (lumi_BelleII_4S/2.0)
-Scale_BelleII_4S_PIPIISR_MC15ri = (lumi_BelleII_4S/2.0)
-Scale_BelleII_4S_PIPIPI0ISR_MC15ri = (lumi_BelleII_4S/2.0)
-Scale_BelleII_4S_KKISR_MC15ri = (lumi_BelleII_4S/2.0)
-Scale_BelleII_4S_GG_MC15ri = (lumi_BelleII_4S/0.5)
-Scale_BelleII_4S_EETAUTAU_MC15ri = (lumi_BelleII_4S/2.0)
-Scale_BelleII_4S_K0K0BARISR_MC15ri = (lumi_BelleII_4S/2.0)
-Scale_BelleII_4S_MUMUMUMU_MC15ri = (lumi_BelleII_4S/2.0)
-Scale_BelleII_4S_MUMUTAUTAU_MC15ri = (lumi_BelleII_4S/2.0)
-Scale_BelleII_4S_TAUTAUTAUTAU_MC15ri = (lumi_BelleII_4S/10.0)
-Scale_BelleII_4S_TAUPAIR_MC15ri = (lumi_BelleII_4S/1.0)
+# MyEventType -> generated luminosity. Event types follow MyObtainWeight.h.
+BACKGROUND_LUMINOSITY_MC16RD = {
+    1: {
+        1: 1.94633937621,  # CHG
+        2: 1.94563145615,  # MIX
+        3: 1.94633637827,  # UUBAR
+        4: 1.94633884394,  # DDBAR
+        5: 1.94633884394,  # SSBAR
+        6: 1.94633711858,  # CHARM
+        7: 1.94633884394,  # MUMU
+        8: 0.0486578614459,  # EE
+        9: 0.486566030869,  # EEEE
+        10: 0.486578551736,  # EEMUMU
+        16: 0.973157373475,  # GG
+        22: 1.94633937621,  # TAUPAIR
+        33: 1.94598541618,  # BB
+        34: 0.453130660382,  # hhISR
+        35: 1.94633637827,  # llXX
+        36: 1.94633779618,  # UDSC
+    },
+    2: {
+        3: 0.239977757314,  # UUBAR
+        4: 0.239977757314,  # DDBAR
+        5: 0.239977757314,  # SSBAR
+        6: 0.239977757314,  # CHARM
+        7: 0.239977757314,  # MUMU
+        8: 0.00599944393284,  # EE
+        9: 0.0586445594131,  # EEEE
+        10: 0.0586450400904,  # EEMUMU
+        16: 0.119988878657,  # GG
+        22: 0.239977757314,  # TAUPAIR
+        34: 0.0599961249791,  # hhISR
+        35: 0.238369538444,  # llXX
+        36: 0.239977757314,  # UDSC
+    },
+    7: {
+        3: 0.0785390801196,  # UUBAR
+        4: 0.0785390801196,  # DDBAR
+        5: 0.0785390801196,  # SSBAR
+        6: 0.0785390801196,  # CHARM
+        7: 0.0785390801196,  # MUMU
+        8: 0.00196347700299,  # EE
+        9: 0.0196347700299,  # EEEE
+        10: 0.0196347700299,  # EEMUMU
+        16: 0.0392695400598,  # GG
+        22: 0.0785390801196,  # TAUPAIR
+        33: 0.0785390801196,  # BB
+        34: 0.0196347700299,  # hhISR
+        35: 0.0785390801196,  # llXX
+        36: 0.0785390801196,  # UDSC
+    },
+}
 
-# --- Scale factors for BelleII off-resonance ---
-Scale_BelleII_off_UUBAR_MC15ri = (lumi_BelleII_off/0.05)
-Scale_BelleII_off_DDBAR_MC15ri = (lumi_BelleII_off/0.05)
-Scale_BelleII_off_SSBAR_MC15ri = (lumi_BelleII_off/0.05)
-Scale_BelleII_off_CHARM_MC15ri = (lumi_BelleII_off/0.05)
-Scale_BelleII_off_EE_MC15ri = (lumi_BelleII_off/0.005)
-Scale_BelleII_off_EEEE_MC15ri = (lumi_BelleII_off/0.05)
-Scale_BelleII_off_EEMUMU_MC15ri = (lumi_BelleII_off/0.05)
-Scale_BelleII_off_EETAUTAU_MC15ri = (lumi_BelleII_off/0.5)
-Scale_BelleII_off_EEPIPI_MC15ri = (lumi_BelleII_off/0.05)
-Scale_BelleII_off_EEKK_MC15ri = (lumi_BelleII_off/0.05)
-Scale_BelleII_off_EEPP_MC15ri = (lumi_BelleII_off/0.5)
-Scale_BelleII_off_GG_MC15ri = (lumi_BelleII_off/0.005)
-Scale_BelleII_off_MUMU_MC15ri = (lumi_BelleII_off/0.05)
-Scale_BelleII_off_MUMUMUMU_MC15ri = (lumi_BelleII_off/0.5)
-Scale_BelleII_off_TAUPAIR_MC15ri = (lumi_BelleII_off/0.05)
+BR_SIGNAL = 1e-8
+TAU_CROSSSECTION_4S = 0.919  # nb
+SIGNAL_MC16RD_EVENTS = {1: 4632618, 2: 564223, 7: 186901}
+SIGNAL_ENERGY_GEV = {
+    1: 10.58,
+    2: 10.52,
+    7: (10.657 * 3.544 + 10.706 * 1.628 + 10.751 * 9.880 + 10.810 * 4.713) / 19.764,
+}
 
-# --- Scale factors for BelleII 10810 ---
-Scale_BelleII_10810_BBs_MC15ri = (lumi_BelleII_10810/0.046)
-Scale_BelleII_10810_BsBs_MC15ri = (lumi_BelleII_10810/0.046)
-Scale_BelleII_10810_CHG_MC15ri = (lumi_BelleII_10810/0.046)
-Scale_BelleII_10810_MIX_MC15ri = (lumi_BelleII_10810/0.046)
-Scale_BelleII_10810_UUBAR_MC15ri = (lumi_BelleII_10810/0.046)
-Scale_BelleII_10810_DDBAR_MC15ri = (lumi_BelleII_10810/0.046)
-Scale_BelleII_10810_SSBAR_MC15ri = (lumi_BelleII_10810/0.046)
-Scale_BelleII_10810_CHARM_MC15ri = (lumi_BelleII_10810/0.046)
-Scale_BelleII_10810_MUMU_MC15ri = (lumi_BelleII_10810/0.046)
-Scale_BelleII_10810_TAUPAIR_MC15ri = (lumi_BelleII_10810/0.046)
 
-# --- Signal Scale Factors ---
-tau_crosssection_4S = 0.919 # nb
-tau_crosssection_off = 0.929 # nb
-tau_crosssection_10810 = 0.880 # nb
+def signal_scale_mc16rd(energy_type):
+    cross_section = TAU_CROSSSECTION_4S * (10.58 / SIGNAL_ENERGY_GEV[energy_type]) ** 2
+    tau_pairs = LUMINOSITY_MC16RD[energy_type] / 1e-9 * cross_section
+    return tau_pairs * BR_SIGNAL * 2.0 / SIGNAL_MC16RD_EVENTS[energy_type]
 
-Nevt_taupair_BelleII_4S = ((lumi_BelleII_4S / 1e-9) * tau_crosssection_4S)
-Nevt_taupair_BelleII_off = ((lumi_BelleII_off / 1e-9) * tau_crosssection_off)
-Nevt_taupair_BelleII_10810 = ((lumi_BelleII_10810 / 1e-9) * tau_crosssection_10810)
-
-Nevt_SIGNAL_BelleII_4S_MC15ri = 10000000
-Nevt_SIGNAL_BelleII_off_MC15ri = 400000
-Nevt_SIGNAL_BelleII_10810_MC15ri = 400000
-
-BR_SIGNAL = 1e-8 # 10^(-8) 
-
-Nevt_SIGNAL_BelleII_4S = (Nevt_taupair_BelleII_4S * BR_SIGNAL * 2.0)
-Nevt_SIGNAL_BelleII_off = (Nevt_taupair_BelleII_off * BR_SIGNAL * 2.0)
-Nevt_SIGNAL_BelleII_10810 = (Nevt_taupair_BelleII_10810 * BR_SIGNAL * 2.0)
-
-Scale_SIGNAL_BelleII_4S_MC15ri = (Nevt_SIGNAL_BelleII_4S / Nevt_SIGNAL_BelleII_4S_MC15ri)
-Scale_SIGNAL_BelleII_off_MC15ri = (Nevt_SIGNAL_BelleII_off / Nevt_SIGNAL_BelleII_off_MC15ri)
-Scale_SIGNAL_BelleII_10810_MC15ri = (Nevt_SIGNAL_BelleII_10810 / Nevt_SIGNAL_BelleII_10810_MC15ri)
 
 def calculate_symmetric_xi_for_pair(args):
     """
@@ -141,7 +131,7 @@ def symmetric_xi(x, y):
 
     return max(xi_xy, xi_yx)
 
-def select_variables(summary_df, train_df, region_name):
+def select_variables(summary_df, data_df, region_name):
     """
     Selects variables based on separation, correlation with M and deltaE,
     and correlation with already selected variables.
@@ -152,8 +142,8 @@ def select_variables(summary_df, train_df, region_name):
     sorted_summary = summary_df.sort_values(by="separation", ascending=False)
 
     # Separate signal and background dataframes
-    signal_df = train_df[train_df["label"] == 1]
-    bkg_df = train_df[train_df["label"] == 0]
+    signal_df = data_df[data_df["label"] == 1]
+    bkg_df = data_df[data_df["label"] == 0]
 
     selected_variables = []
 
@@ -199,149 +189,36 @@ def select_variables(summary_df, train_df, region_name):
     return selected_variables
 
 def calculate_weights(df: pd.DataFrame) -> pd.Series:
-    """
-    Calculates weights for events based on SampleType, EnergyType, and EventType.
-    This function is a Python implementation of the C++ logic.
-    """
-    # Define column names for clarity
-    sample_type_col = 'MySampleType'
-    event_type_col = 'MyEventType'
-    energy_type_col = 'MyEnergyType' # Assuming this is the name
+    """Match the MC16rd MC_weight entries in MyObtainWeight.h."""
+    sample_type = df["MySampleType"].to_numpy()
+    event_type = df["MyEventType"].to_numpy()
+    energy_type = df["MyEnergyType"].to_numpy()
 
-    # Conditions for MC15ri
-    is_mc15ri = (df[sample_type_col] > 0.5) & (df[sample_type_col] < 1.5)
-    
-    # Energy type conditions
-    is_4s = (df[energy_type_col] > 0.5) & (df[energy_type_col] < 1.5)
-    is_off = (df[energy_type_col] > 1.5) & (df[energy_type_col] < 2.5)
-    is_10810 = (df[energy_type_col] > 5.5) & (df[energy_type_col] < 6.5)
+    weights = np.zeros(len(df), dtype=np.float64)
+    is_data = ((-1.5 < sample_type) & (sample_type < -0.5)) | (
+        (4.5 < sample_type) & (sample_type < 5.5)
+    )
+    weights[is_data] = 1.0
 
-    # A list of all conditions and their corresponding weight choices
-    conditions = [
-        # Belle data
-        (df[sample_type_col] > 4.5) & (df[sample_type_col] < 5.5),
-        # Data
-        (df[sample_type_col] > -1.5) & (df[sample_type_col] < -0.5),
-        
-        # MC15ri @ 4S
-        is_mc15ri & is_4s & (df[event_type_col] > -0.5) & (df[event_type_col] < 0.5),   # SIGNAL
-        is_mc15ri & is_4s & (df[event_type_col] > 0.5) & (df[event_type_col] < 1.5),    # CHG
-        is_mc15ri & is_4s & (df[event_type_col] > 1.5) & (df[event_type_col] < 2.5),    # MIX
-        is_mc15ri & is_4s & (df[event_type_col] > 2.5) & (df[event_type_col] < 3.5),    # UUBAR
-        is_mc15ri & is_4s & (df[event_type_col] > 3.5) & (df[event_type_col] < 4.5),    # DDBAR
-        is_mc15ri & is_4s & (df[event_type_col] > 4.5) & (df[event_type_col] < 5.5),    # SSBAR
-        is_mc15ri & is_4s & (df[event_type_col] > 5.5) & (df[event_type_col] < 6.5),    # CHARM
-        is_mc15ri & is_4s & (df[event_type_col] > 6.5) & (df[event_type_col] < 7.5),    # MUMU
-        is_mc15ri & is_4s & (df[event_type_col] > 7.5) & (df[event_type_col] < 8.5),    # EE
-        is_mc15ri & is_4s & (df[event_type_col] > 8.5) & (df[event_type_col] < 9.5),    # EEEE
-        is_mc15ri & is_4s & (df[event_type_col] > 9.5) & (df[event_type_col] < 10.5),   # EEMUMU
-        is_mc15ri & is_4s & (df[event_type_col] > 10.5) & (df[event_type_col] < 11.5),  # EEPIPI
-        is_mc15ri & is_4s & (df[event_type_col] > 11.5) & (df[event_type_col] < 12.5),  # EEKK
-        is_mc15ri & is_4s & (df[event_type_col] > 12.5) & (df[event_type_col] < 13.5),  # EEPP
-        is_mc15ri & is_4s & (df[event_type_col] > 13.5) & (df[event_type_col] < 14.5),  # PIPIISR
-        is_mc15ri & is_4s & (df[event_type_col] > 14.5) & (df[event_type_col] < 15.5),  # KKISR
-        is_mc15ri & is_4s & (df[event_type_col] > 15.5) & (df[event_type_col] < 16.5),  # GG
-        is_mc15ri & is_4s & (df[event_type_col] > 16.5) & (df[event_type_col] < 17.5),  # EETAUTAU
-        is_mc15ri & is_4s & (df[event_type_col] > 17.5) & (df[event_type_col] < 18.5),  # K0K0BARISR
-        is_mc15ri & is_4s & (df[event_type_col] > 18.5) & (df[event_type_col] < 19.5),  # MUMUMUMU
-        is_mc15ri & is_4s & (df[event_type_col] > 19.5) & (df[event_type_col] < 20.5),  # MUMUTAUTAU
-        is_mc15ri & is_4s & (df[event_type_col] > 20.5) & (df[event_type_col] < 21.5),  # TAUTAUTAUTAU
-        is_mc15ri & is_4s & (df[event_type_col] > 21.5) & (df[event_type_col] < 22.5),  # TAUPAIR
-        is_mc15ri & is_4s & (df[event_type_col] > 22.5) & (df[event_type_col] < 23.5),  # PIPIPI0ISR
+    is_mc16rd = (3.5 < sample_type) & (sample_type < 4.5)
+    matched = is_data.copy()
+    for energy, luminosity in LUMINOSITY_MC16RD.items():
+        energy_mask = is_mc16rd & (energy - 0.5 < energy_type) & (energy_type < energy + 0.5)
+        signal_mask = energy_mask & (-0.5 < event_type) & (event_type < 0.5)
+        weights[signal_mask] = signal_scale_mc16rd(energy)
+        matched |= signal_mask
 
-        # MC15ri @ off-resonance
-        is_mc15ri & is_off & (df[event_type_col] > -0.5) & (df[event_type_col] < 0.5),   # SIGNAL
-        is_mc15ri & is_off & (df[event_type_col] > 2.5) & (df[event_type_col] < 3.5),   # UUBAR
-        is_mc15ri & is_off & (df[event_type_col] > 3.5) & (df[event_type_col] < 4.5),   # DDBAR
-        is_mc15ri & is_off & (df[event_type_col] > 4.5) & (df[event_type_col] < 5.5),   # SSBAR
-        is_mc15ri & is_off & (df[event_type_col] > 5.5) & (df[event_type_col] < 6.5),   # CHARM
-        is_mc15ri & is_off & (df[event_type_col] > 6.5) & (df[event_type_col] < 7.5),   # MUMU
-        is_mc15ri & is_off & (df[event_type_col] > 7.5) & (df[event_type_col] < 8.5),   # EE
-        is_mc15ri & is_off & (df[event_type_col] > 8.5) & (df[event_type_col] < 9.5),   # EEEE
-        is_mc15ri & is_off & (df[event_type_col] > 9.5) & (df[event_type_col] < 10.5),  # EEMUMU
-        is_mc15ri & is_off & (df[event_type_col] > 10.5) & (df[event_type_col] < 11.5), # EEPIPI
-        is_mc15ri & is_off & (df[event_type_col] > 11.5) & (df[event_type_col] < 12.5), # EEKK
-        is_mc15ri & is_off & (df[event_type_col] > 12.5) & (df[event_type_col] < 13.5), # EEPP
-        is_mc15ri & is_off & (df[event_type_col] > 15.5) & (df[event_type_col] < 16.5), # GG
-        is_mc15ri & is_off & (df[event_type_col] > 16.5) & (df[event_type_col] < 17.5), # EETAUTAU
-        is_mc15ri & is_off & (df[event_type_col] > 18.5) & (df[event_type_col] < 19.5), # MUMUMUMU
-        is_mc15ri & is_off & (df[event_type_col] > 21.5) & (df[event_type_col] < 22.5), # TAUPAIR
-        
-        # MC15ri @ 10810
-        is_mc15ri & is_10810 & (df[event_type_col] > -0.5) & (df[event_type_col] < 0.5),   # SIGNAL
-        is_mc15ri & is_10810 & (df[event_type_col] > 0.5) & (df[event_type_col] < 1.5),   # CHG
-        is_mc15ri & is_10810 & (df[event_type_col] > 1.5) & (df[event_type_col] < 2.5),   # MIX
-        is_mc15ri & is_10810 & (df[event_type_col] > 2.5) & (df[event_type_col] < 3.5),   # UUBAR
-        is_mc15ri & is_10810 & (df[event_type_col] > 3.5) & (df[event_type_col] < 4.5),   # DDBAR
-        is_mc15ri & is_10810 & (df[event_type_col] > 4.5) & (df[event_type_col] < 5.5),   # SSBAR
-        is_mc15ri & is_10810 & (df[event_type_col] > 5.5) & (df[event_type_col] < 6.5),   # CHARM
-        is_mc15ri & is_10810 & (df[event_type_col] > 6.5) & (df[event_type_col] < 7.5),   # MUMU
-        is_mc15ri & is_10810 & (df[event_type_col] > 21.5) & (df[event_type_col] < 22.5), # TAUPAIR
-        is_mc15ri & is_10810 & (df[event_type_col] > 23.5) & (df[event_type_col] < 24.5), # BBs
-        is_mc15ri & is_10810 & (df[event_type_col] > 24.5) & (df[event_type_col] < 25.5), # BsBs
-    ]
-    
-    choices = [
-        1.0, # Belle data weight
-        1.0, # Data weight
-        
-        Scale_SIGNAL_BelleII_4S_MC15ri,
-        Scale_BelleII_4S_CHG_MC15ri,
-        Scale_BelleII_4S_MIX_MC15ri,
-        Scale_BelleII_4S_UUBAR_MC15ri,
-        Scale_BelleII_4S_DDBAR_MC15ri,
-        Scale_BelleII_4S_SSBAR_MC15ri,
-        Scale_BelleII_4S_CHARM_MC15ri,
-        Scale_BelleII_4S_MUMU_MC15ri,
-        Scale_BelleII_4S_EE_MC15ri,
-        Scale_BelleII_4S_EEEE_MC15ri,
-        Scale_BelleII_4S_EEMUMU_MC15ri,
-        Scale_BelleII_4S_EEPIPI_MC15ri,
-        Scale_BelleII_4S_EEKK_MC15ri,
-        Scale_BelleII_4S_EEPP_MC15ri,
-        Scale_BelleII_4S_PIPIISR_MC15ri,
-        Scale_BelleII_4S_KKISR_MC15ri,
-        Scale_BelleII_4S_GG_MC15ri,
-        Scale_BelleII_4S_EETAUTAU_MC15ri,
-        Scale_BelleII_4S_K0K0BARISR_MC15ri,
-        Scale_BelleII_4S_MUMUMUMU_MC15ri,
-        Scale_BelleII_4S_MUMUTAUTAU_MC15ri,
-        Scale_BelleII_4S_TAUTAUTAUTAU_MC15ri,
-        Scale_BelleII_4S_TAUPAIR_MC15ri,
-        Scale_BelleII_4S_PIPIPI0ISR_MC15ri,
-        
-        Scale_SIGNAL_BelleII_off_MC15ri,
-        Scale_BelleII_off_UUBAR_MC15ri,
-        Scale_BelleII_off_DDBAR_MC15ri,
-        Scale_BelleII_off_SSBAR_MC15ri,
-        Scale_BelleII_off_CHARM_MC15ri,
-        Scale_BelleII_off_MUMU_MC15ri,
-        Scale_BelleII_off_EE_MC15ri,
-        Scale_BelleII_off_EEEE_MC15ri,
-        Scale_BelleII_off_EEMUMU_MC15ri,
-        Scale_BelleII_off_EEPIPI_MC15ri,
-        Scale_BelleII_off_EEKK_MC15ri,
-        Scale_BelleII_off_EEPP_MC15ri,
-        Scale_BelleII_off_GG_MC15ri,
-        Scale_BelleII_off_EETAUTAU_MC15ri,
-        Scale_BelleII_off_MUMUMUMU_MC15ri,
-        Scale_BelleII_off_TAUPAIR_MC15ri,
-        
-        Scale_SIGNAL_BelleII_10810_MC15ri,
-        Scale_BelleII_10810_CHG_MC15ri,
-        Scale_BelleII_10810_MIX_MC15ri,
-        Scale_BelleII_10810_UUBAR_MC15ri,
-        Scale_BelleII_10810_DDBAR_MC15ri,
-        Scale_BelleII_10810_SSBAR_MC15ri,
-        Scale_BelleII_10810_CHARM_MC15ri,
-        Scale_BelleII_10810_MUMU_MC15ri,
-        Scale_BelleII_10810_TAUPAIR_MC15ri,
-        Scale_BelleII_10810_BBs_MC15ri,
-        Scale_BelleII_10810_BsBs_MC15ri,
-    ]
+        for event, generated_luminosity in BACKGROUND_LUMINOSITY_MC16RD[energy].items():
+            event_mask = energy_mask & (event - 0.5 < event_type) & (event_type < event + 0.5)
+            weights[event_mask] = luminosity / generated_luminosity
+            matched |= event_mask
 
-    # np.select is a vectorized and efficient way to perform this assignment
-    return pd.Series(np.select(conditions, choices, default=0.0), index=df.index)
+    if np.any(is_mc16rd & ~matched):
+        unknown = df.loc[is_mc16rd & ~matched, ["MyEnergyType", "MyEventType"]]
+        raise ValueError(f"No MC16rd weight for energy/event types: {unknown.drop_duplicates().to_dict('records')}")
+
+    return pd.Series(weights, index=df.index)
+
 
 def summarize_variable_metrics(df, bins=1000, skip_cols=["label", "weight"]):
     # Subset signal and background
@@ -685,99 +562,66 @@ def read_with_weight(paths, tree_name, input_variables):
     return df
 
 signal_list = ["SIGNAL"]
-background_list = ["BBs", "BsBs", "CHARM", "CHG", "DDBAR", "EE", "EEEE", 
-    "EEKK", "EEMUMU", "EEPIPI", "EEPP", "EETAUTAU", "GG", 
-    "K0K0BARISR", "KKISR", "MIX", "MUMU", "MUMUMUMU", 
-    "MUMUTAUTAU", "PIPIPI0ISR", "PIPIISR", "SSBAR", "TAUPAIR", "TAUTAUTAUTAU", "UUBAR"]
+# MC16rd directory names from bash/one_touch_MC16rd.sh.
+background_list = ["BB", "UDSC", "MUMU", "EE", "EEEE", "EEMUMU", "LLXX", "HHISR", "GG", "TAUPAIR"]
 
 removed_variables = args.removed_variables
 input_path = args.input_path
 
-SIGNAL_train_path = [f"{input_path}/{e}/final_output_train/" for e in signal_list]
-SIGNAL_test_path = [f"{input_path}/{e}/final_output_test/" for e in signal_list]
-BKG_train_path = [f"{input_path}/{e}/final_output_train/" for e in background_list]
-BKG_test_path = [f"{input_path}/{e}/final_output_test/" for e in background_list]
-
 resolution = ReadResolution(f"{input_path}/M_deltaE_result.txt")
 
 # read ROOT files
-df_SIGNAL_train_list = []
-df_SIGNAL_test_list  = []
-df_BKG_train_list = []
-df_BKG_test_list = []
+df_signal_list = []
+df_bkg_list = []
 
 for label in signal_list:
-    train_path = [f"{input_path}/{label}/final_output_train/"]
-    test_path = [f"{input_path}/{label}/final_output_test/"]
-    
-    df_train = read_with_weight(train_path, "tau_lfv", input_variables = None)
-    df_test  = read_with_weight(test_path,  "tau_lfv", input_variables = None)
-
-    df_SIGNAL_train_list.append(df_train)
-    df_SIGNAL_test_list.append(df_test)
+    sample_path = f"{input_path}/{label}/final_output/"
+    df_signal_list.append(read_with_weight(sample_path, "tau_lfv", input_variables=None))
 
 for label in background_list:
-    train_path = [f"{input_path}/{label}/final_output_train/"]
-    test_path = [f"{input_path}/{label}/final_output_test/"]
-    
-    df_train = read_with_weight(train_path, "tau_lfv", input_variables = None)
-    df_test  = read_with_weight(test_path, "tau_lfv", input_variables = None)
+    sample_path = f"{input_path}/{label}/final_output/"
+    df_bkg_list.append(read_with_weight(sample_path, "tau_lfv", input_variables=None))
 
-    df_BKG_train_list.append(df_train)
-    df_BKG_test_list.append(df_test)
+df_signal = pd.concat(df_signal_list, ignore_index=True)
+df_bkg = pd.concat(df_bkg_list, ignore_index=True)
 
-df_SIGNAL_train = pd.concat(df_SIGNAL_train_list, ignore_index=True)
-df_SIGNAL_test  = pd.concat(df_SIGNAL_test_list, ignore_index=True)
-df_BKG_train = pd.concat(df_BKG_train_list, ignore_index=True)
-df_BKG_test  = pd.concat(df_BKG_test_list, ignore_index=True)
-
-del df_SIGNAL_train_list
-del df_SIGNAL_test_list
-del df_BKG_train_list
-del df_BKG_test_list
+del df_signal_list
+del df_bkg_list
 
 # Add labels (signal = 1, background = 0)
-df_SIGNAL_train["label"] = 1
-df_SIGNAL_test["label"] = 1
-df_BKG_train["label"] = 0
-df_BKG_test["label"] = 0
+df_signal["label"] = 1
+df_bkg["label"] = 0
 
 # merge data
-df_train = pd.concat([df_SIGNAL_train, df_BKG_train], ignore_index=True)
-df_test = pd.concat([df_SIGNAL_test, df_BKG_test], ignore_index=True)
+df_all = pd.concat([df_signal, df_bkg], ignore_index=True)
 
 # remove unneeded features
-df_train = df_train.drop(columns=removed_variables, errors='ignore')
-df_test = df_test.drop(columns=removed_variables, errors='ignore')
+df_all = df_all.drop(columns=removed_variables, errors='ignore')
 
 # ====================================================== region one ====================================================== #
 # filter
-df_train_one = df_train[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]) < df_train["deltaE"]) & (df_train["deltaE"] < (resolution["deltaE"]["peak"] + 5*resolution["deltaE"]["right_sigma"]))]
-df_train_one = df_train_one[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_train_one["M"]) & (df_train_one["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
-df_test_one = df_test[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]) < df_test["deltaE"]) & (df_test["deltaE"] < (resolution["deltaE"]["peak"] + 5*resolution["deltaE"]["right_sigma"]))]
-df_test_one = df_test_one[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_test_one["M"]) & (df_test_one["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
+df_one = df_all[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]) < df_all["deltaE"]) & (df_all["deltaE"] < (resolution["deltaE"]["peak"] + 5*resolution["deltaE"]["right_sigma"]))]
+df_one = df_one[((resolution["M"]["peak"] - 20*resolution["M"]["left_sigma"]) < df_one["M"]) & (df_one["M"] < (resolution["M"]["peak"] + 20*resolution["M"]["right_sigma"]))]
 
-summary_result = summarize_variable_metrics(df_train_one)
+summary_result = summarize_variable_metrics(df_one)
 print(summary_result)
 summary_result.to_csv("Importance_one.csv")
-create_and_plot_correlation_matrices(df_train_one[df_train_one["label"] == 1], summary_result, "one_signal")
-create_and_plot_correlation_matrices(df_train_one[df_train_one["label"] == 0], summary_result, "one_bkg")
+create_and_plot_correlation_matrices(df_one[df_one["label"] == 1], summary_result, "one_signal")
+create_and_plot_correlation_matrices(df_one[df_one["label"] == 0], summary_result, "one_bkg")
 
 # Select variables for region one
-selected_vars_one = select_variables(summary_result, df_train_one, "one")
+selected_vars_one = select_variables(summary_result, df_one, "one")
 
 # ====================================================== region two ====================================================== #
 # filter
-df_train_two = df_train[((resolution["deltaE"]["peak"] - 15*resolution["deltaE"]["left_sigma"]) < df_train["deltaE"]) & (df_train["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
-df_train_two = df_train_two[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_train_two["M"]) & (df_train_two["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
-df_test_two = df_test[((resolution["deltaE"]["peak"] - 15*resolution["deltaE"]["left_sigma"]) < df_test["deltaE"]) & (df_test["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
-df_test_two = df_test_two[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_test_two["M"]) & (df_test_two["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
+df_two = df_all[((resolution["deltaE"]["peak"] - 15*resolution["deltaE"]["left_sigma"]) < df_all["deltaE"]) & (df_all["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
+df_two = df_two[((resolution["M"]["peak"] - 20*resolution["M"]["left_sigma"]) < df_two["M"]) & (df_two["M"] < (resolution["M"]["peak"] + 20*resolution["M"]["right_sigma"]))]
 
-summary_result = summarize_variable_metrics(df_train_two)
+summary_result = summarize_variable_metrics(df_two)
 print(summary_result)
 summary_result.to_csv("Importance_two.csv")
-create_and_plot_correlation_matrices(df_train_two[df_train_two["label"] == 1], summary_result, "two_signal")
-create_and_plot_correlation_matrices(df_test_two[df_test_two["label"] == 0], summary_result, "two_bkg")
+create_and_plot_correlation_matrices(df_two[df_two["label"] == 1], summary_result, "two_signal")
+create_and_plot_correlation_matrices(df_two[df_two["label"] == 0], summary_result, "two_bkg")
 
 # Select variables for region two
-selected_vars_two = select_variables(summary_result, df_train_two, "two")
+selected_vars_two = select_variables(summary_result, df_two, "two")
