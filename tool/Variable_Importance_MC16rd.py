@@ -486,7 +486,7 @@ def read_all_root_files_self_function(
     files_with_trees = [f"{path}:{tree_name}" for path in root_files]
 
     # remove unneeded variables
-    EXCLUDE_SUBSTRINGS = ( "OneMuon", "TwoMuon", "ThreeMuon", "FTDL", "PSNM", "bogamma__clcut_v", "isSignal", "DecayHash", "MCMode" )
+    EXCLUDE_SUBSTRINGS = ( "OneMuon", "TwoMuon", "ThreeMuon", "FTDL", "PSNM", "bogamma__clcut_v", "isSignal", "DecayHash", "MCMode", "muonID" )
     branches_postfilter = []
     if branches is None:
         with uproot.open(files_with_trees[0]) as tree:
