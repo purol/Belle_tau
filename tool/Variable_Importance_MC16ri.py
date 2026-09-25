@@ -3,17 +3,16 @@ import uproot
 import pandas as pd
 import os
 import argparse
+from fnmatch import fnmatchcase
 from typing import List, Optional, Union
 from concurrent.futures import ThreadPoolExecutor
 import tqdm
 import sys
 import numpy as np
-from scipy.stats import spearmanr, chatterjeexi
+from scipy.stats import spearmanr
+from scipy.spatial.distance import pdist, squareform
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-from itertools import combinations
-from concurrent.futures import ProcessPoolExecutor
 
 # MC16ri 4S scale factors from analysis_code/include/constants.h.
 LUMINOSITY_MC16RI_4S = 0.49841  # ab-1
@@ -46,50 +45,70 @@ def signal_scale_mc16ri():
     return tau_pairs * BR_SIGNAL * 2.0 / SIGNAL_MC16RI_EVENTS
 
 
-def calculate_symmetric_xi_for_pair(args):
+class DistanceCorrelationEvaluator:
+    """Weighted distance correlation on a fixed, reproducible event subsample.
+
+    The sample statistic is biased upward at finite sample size, especially as
+    the number of selected variables grows. Calibrate the threshold on MC.
     """
-    Worker function for parallel execution.
-    Calculates symmetric xi for a single pair of variable names.
-    """
-    df, var1, var2 = args
-    try:
-        # Using .values is crucial for performance with multiprocessing
-        x = df[var1].values
-        y = df[var2].values
 
-        # Remove NaNs consistently before passing to the function
-        mask = np.isfinite(x) & np.isfinite(y)
-        if mask.sum() < 5: # Not enough data points to be meaningful
-             return var1, var2, np.nan
+    def __init__(self, df, max_events=1000, seed=42):
+        valid = np.isfinite(df[["M", "deltaE", "weight"]].to_numpy(dtype=float)).all(axis=1)
+        valid &= df["weight"].to_numpy(dtype=float) > 0
+        sample = df.loc[valid]
+        if len(sample) > max_events:
+            sample = sample.sample(n=max_events, random_state=seed)
+        if len(sample) < 5:
+            raise ValueError("Distance correlation needs at least five positive-weight events.")
 
-        xi_xy = chatterjeexi(x[mask], y[mask]).statistic
-        xi_yx = chatterjeexi(y[mask], x[mask]).statistic
-        xi_val = max(xi_xy, xi_yx)
-        return var1, var2, xi_val
-    except Exception as e:
-        # This will run in a separate process, so printing might be messy.
-        # It's better to just return NaN on failure.
-        return var1, var2, np.nan
-        
-def symmetric_xi(x, y):
-    """
-    Direction-robust Chatterjee's xi correlation.
-    Returns max(xi(x->y), xi(y->x)).
-    """
-    x = np.asarray(x)
-    y = np.asarray(y)
+        self.sample = sample
+        self.weights = sample["weight"].to_numpy(dtype=float, copy=True)
+        self.weights /= self.weights.sum()
+        self.target = self._centered_distances(sample[["M", "deltaE"]].to_numpy(dtype=float))
+        if self.target is None:
+            raise ValueError("M or deltaE has no variation in the distance-correlation sample.")
+        self.target_variance = self._distance_variance(self.target)
+        if self.target_variance <= 0:
+            raise ValueError("M and deltaE have no variation in the distance-correlation sample.")
 
-    # remove NaNs consistently
-    mask = np.isfinite(x) & np.isfinite(y)
-    if mask.sum() < 5:
-        return np.nan
+    def _centered_distances(self, values):
+        values = np.asarray(values, dtype=float)
+        if values.ndim == 1:
+            values = values[:, None]
+        if not np.isfinite(values).all():
+            return None
+        means = np.average(values, axis=0, weights=self.weights)
+        scales = np.sqrt(np.average((values - means) ** 2, axis=0, weights=self.weights))
+        if np.any(scales <= 0):
+            return None
+        # Standardize coordinates so Euclidean distance is not set by units.
+        distances = squareform(pdist((values - means) / scales, metric="euclidean"))
+        row_means = distances @ self.weights
+        grand_mean = self.weights @ row_means
+        return distances - row_means[:, None] - row_means[None, :] + grand_mean
 
-    xi_xy = chatterjeexi(x[mask], y[mask]).statistic
-    xi_yx = chatterjeexi(y[mask], x[mask]).statistic
+    def _distance_variance(self, centered):
+        return np.einsum("i,ij,ij,j->", self.weights, centered, centered, self.weights)
 
-    return max(xi_xy, xi_yx)
+    def score(self, columns):
+        centered = self._centered_distances(self.sample[list(columns)].to_numpy(dtype=float))
+        if centered is None:
+            return np.nan
+        x_variance = self._distance_variance(centered)
+        if x_variance <= 0:
+            return np.nan
+        covariance = np.einsum("i,ij,ij,j->", self.weights, centered, self.target, self.weights)
+        return float(np.sqrt(np.clip(covariance / np.sqrt(x_variance * self.target_variance), 0, 1)))
 
-def select_variables(summary_df, train_df, region_name):
+
+def make_distance_evaluators(df, max_events):
+    return {
+        1: DistanceCorrelationEvaluator(df[df["label"] == 1], max_events, seed=42),
+        0: DistanceCorrelationEvaluator(df[df["label"] == 0], max_events, seed=43),
+    }
+
+
+def select_variables(summary_df, train_df, region_name, distance_evaluators, distance_threshold):
     """
     Selects variables based on separation, correlation with M and deltaE,
     and correlation with already selected variables.
@@ -108,17 +127,11 @@ def select_variables(summary_df, train_df, region_name):
     for index, row in sorted_summary.iterrows():
         candidate_var = row["varname"]
 
-        # 1. Check correlation with M and deltaE
-        if (
-            abs(row["signal_spea_M"]) < 0.1 and
-            abs(row["signal_spea_deltaE"]) < 0.1 and
-            abs(row["bkg_spea_M"]) < 0.1 and
-            abs(row["bkg_spea_deltaE"]) < 0.1 and
-            abs(row["signal_xi_M"]) < 0.1 and
-            abs(row["signal_xi_deltaE"]) < 0.1 and
-            abs(row["bkg_xi_M"]) < 0.1 and
-            abs(row["bkg_xi_deltaE"]) < 0.1
-        ):
+        # Check the candidate AND all previously selected variables jointly.
+        candidate_set = selected_variables + [candidate_var]
+        signal_dcor = distance_evaluators[1].score(candidate_set)
+        bkg_dcor = distance_evaluators[0].score(candidate_set)
+        if signal_dcor < distance_threshold and bkg_dcor < distance_threshold:
             is_correlated_with_selected = False
             # 2. Check correlation with already selected variables
             for selected_var in selected_variables:
@@ -126,16 +139,6 @@ def select_variables(summary_df, train_df, region_name):
                 bkg_spearman_corr = spearmanr(bkg_df[candidate_var], bkg_df[selected_var]).correlation
                 signal_spearman_corr = spearmanr(signal_df[candidate_var], signal_df[selected_var]).correlation
                 if (abs(bkg_spearman_corr) > 0.5 and abs(signal_spearman_corr) > 0.5):
-                    is_correlated_with_selected = True
-                    break  # No need to check other selected variables
-
-            for selected_var in selected_variables:
-                if is_correlated_with_selected: # already it turns out that there is a correlation from spearman
-                    break
-                # Chatterjee's Xi correlation
-                bkg_xi_corr = symmetric_xi(bkg_df[candidate_var].values, bkg_df[selected_var].values)
-                signal_xi_corr = symmetric_xi(signal_df[candidate_var].values,signal_df[selected_var].values)
-                if (abs(bkg_xi_corr) > 0.5 and abs(signal_xi_corr) > 0.5):
                     is_correlated_with_selected = True
                     break  # No need to check other selected variables
 
@@ -178,7 +181,7 @@ def calculate_weights(df: pd.DataFrame) -> pd.Series:
     return pd.Series(weights, index=df.index)
 
 
-def summarize_variable_metrics(df, bins=1000, skip_cols=["label", "weight"]):
+def summarize_variable_metrics(df, distance_evaluators, bins=1000, skip_cols=["label", "weight"]):
     # Subset signal and background
     signal_df = df[df["label"] == 1]
     bkg_df    = df[df["label"] == 0]
@@ -202,69 +205,35 @@ def summarize_variable_metrics(df, bins=1000, skip_cols=["label", "weight"]):
             bkg_values    = bkg_df[feature].values
             sep = compute_separation(signal_values, bkg_values, signal_weights, bkg_weights, bins)
 
-            signal_spea_M = spearmanr(signal_df[feature], signal_df["M"]).correlation if "M" in signal_df.columns else np.nan
-            signal_spea_de  = spearmanr(signal_df[feature], signal_df["deltaE"]).correlation if "deltaE" in signal_df.columns else np.nan
-            bkg_spea_M = spearmanr(bkg_df[feature], bkg_df["M"]).correlation if "M" in bkg_df.columns else np.nan
-            bkg_spea_de  = spearmanr(bkg_df[feature], bkg_df["deltaE"]).correlation if "deltaE" in bkg_df.columns else np.nan
-
-            signal_xi_M = max(chatterjeexi(signal_df[feature].values, signal_df["M"].values).statistic, chatterjeexi(signal_df["M"].values, signal_df[feature].values).statistic) if "M" in signal_df.columns else np.nan
-            signal_xi_de  = max(chatterjeexi(signal_df[feature].values, signal_df["deltaE"].values).statistic, chatterjeexi(signal_df["deltaE"].values, signal_df[feature].values).statistic) if "deltaE" in signal_df.columns else np.nan
-            bkg_xi_M = max(chatterjeexi(bkg_df[feature].values, bkg_df["M"].values).statistic, chatterjeexi(bkg_df["M"].values, bkg_df[feature].values).statistic) if "M" in bkg_df.columns else np.nan
-            bkg_xi_de  = max(chatterjeexi(bkg_df[feature].values, bkg_df["deltaE"].values).statistic, chatterjeexi(bkg_df["deltaE"].values, bkg_df[feature].values).statistic) if "deltaE" in bkg_df.columns else np.nan
+            signal_dcor = distance_evaluators[1].score([feature])
+            bkg_dcor = distance_evaluators[0].score([feature])
 
             results.append({
                 "varname": feature,
                 "separation": sep,
-                "signal_spea_M": signal_spea_M,
-                "signal_spea_deltaE": signal_spea_de,
-                "bkg_spea_M": bkg_spea_M,
-                "bkg_spea_deltaE": bkg_spea_de,
-                "signal_xi_M": signal_xi_M,
-                "signal_xi_deltaE": signal_xi_de,
-                "bkg_xi_M": bkg_xi_M,
-                "bkg_xi_deltaE": bkg_xi_de
+                "signal_dcor_M_deltaE": signal_dcor,
+                "bkg_dcor_M_deltaE": bkg_dcor
             })
         except Exception as e:
             print(f"Skipping {feature} due to error: {e}")
 
     return pd.DataFrame(results).sort_values(by="separation", ascending=False)
 
-def create_and_plot_correlation_matrices(df, summary_df, region_name, separation_thres=0.001, n_top=300):
-    print(f"\n--- Generating Correlation Matrices for Region {region_name} ---")
-
-    # --- 1. Select variables by separation threshold and correlations ---
-    filtered_summary = summary_df[
-    (summary_df["separation"] >= separation_thres) &
-
-    (summary_df["signal_spea_M"].abs() < 0.1) &
-    (summary_df["signal_spea_deltaE"].abs() < 0.1) &
-    (summary_df["bkg_spea_M"].abs() < 0.1) &
-    (summary_df["bkg_spea_deltaE"].abs() < 0.1) &
-
-    (summary_df["signal_xi_M"].abs() < 0.1) &
-    (summary_df["signal_xi_deltaE"].abs() < 0.1) &
-    (summary_df["bkg_xi_M"].abs() < 0.1) &
-    (summary_df["bkg_xi_deltaE"].abs() < 0.1)
-    ]
-
-    if filtered_summary.empty:
-        print(f"No variables passed separation >= {separation_thres}")
+def create_and_plot_spearman_matrix(df, selected_vars, region_name):
+    print(f"\n--- Generating Spearman Matrix for Region {region_name} ---")
+    if not selected_vars:
+        print("No variables passed final selection; skipping Spearman outputs.")
         return
 
-    # --- 2. Select top variables ---
-    filtered_summary = filtered_summary.sort_values(by="separation", ascending=False).head(n_top)
-    top_vars = filtered_summary["varname"].tolist()
-    df_top = df[top_vars]
-    print(f"Selected top {len(top_vars)} variables with highest separation.")
-
-    # --- 3. Calculate Spearman correlation matrix ---
+    # Calculate the matrix only for variables that passed final selection.
+    df_top = df[selected_vars]
     print("Calculating Spearman correlation matrix...")
     spearman_corr = df_top.corr(method='spearman')
 
-    # --- 4. Plot Spearman heatmap ---
+    # Plot Spearman heatmap.
     plt.figure(figsize=(20, 18))
     sns.heatmap(spearman_corr, annot=False, cmap='viridis', fmt=".2f")
-    plt.title(f'Spearman Correlation Matrix (Top {n_top} Variables) - Region {region_name}', fontsize=16)
+    plt.title(f'Spearman Correlation Matrix ({len(selected_vars)} Selected Variables) - Region {region_name}', fontsize=16)
     plt.xticks(rotation=90)
     plt.yticks(rotation=0)
     plt.tight_layout()
@@ -273,39 +242,35 @@ def create_and_plot_correlation_matrices(df, summary_df, region_name, separation
     plt.close()
     print(f"Saved Spearman heatmap to {spearman_filename}")
 
-    # --- 5. csv Spearman heatmap ---
+    # Save Spearman matrix.
     spearman_corr.to_csv(f'spearman_correlation_heatmap_region_{region_name}.csv')
 
-    # --- 6. Calculate Chatterjee's Xi correlation matrix (PARALLELIZED)---
-    print("Calculating Chatterjee's Xi correlation matrix (in parallel)...")
-    xi_corr_matrix = pd.DataFrame(1.0, index=top_vars, columns=top_vars, dtype=np.float64)
 
-    variable_pairs = list(combinations(top_vars, 2))
+def plot_selected_separation_power(selected_summary, region_name):
+    """Plot the separation power of variables retained by final selection."""
+    if selected_summary.empty:
+        print(f"No selected variables for Region {region_name}; skipping separation plot.")
+        return
 
-    tasks = [(df_top, var1, var2) for var1, var2 in variable_pairs]
+    plot_df = selected_summary.sort_values("separation", ascending=True)
+    fig_height = max(4.5, 1.5 + 0.38 * len(plot_df))
+    fig, ax = plt.subplots(figsize=(12, fig_height))
+    bars = ax.barh(plot_df["varname"], plot_df["separation"], color="steelblue")
+    for bar, value in zip(bars, plot_df["separation"]):
+        ax.text(bar.get_width(), bar.get_y() + bar.get_height() / 2,
+                f" {value:.3g}", va="center")
+    ax.set_xlabel("Separation power")
+    ax.set_ylabel("Selected variable")
+    ax.set_title(f"Separation Power of Selected Variables - Region {region_name}")
+    ax.grid(axis="x", linestyle="--", alpha=0.3)
+    ax.set_axisbelow(True)
+    ax.margins(x=0.15)
+    fig.tight_layout()
 
-    with ProcessPoolExecutor() as executor:
-        # Use tqdm to track progress of the parallel execution
-        results = list(tqdm.tqdm(executor.map(calculate_symmetric_xi_for_pair, tasks), total=len(tasks), desc="Calculating Xi"))
-
-    for var1, var2, xi_val in results:
-        xi_corr_matrix.loc[var1, var2] = xi_val
-        xi_corr_matrix.loc[var2, var1] = xi_val # It's a symmetric matrix
-
-    # --- 7. Plot Xi heatmap ---
-    plt.figure(figsize=(20, 18))
-    sns.heatmap(xi_corr_matrix, annot=False, cmap='plasma', fmt=".2f")
-    plt.title(f"Chatterjee's Xi Correlation Matrix (Top {n_top} Variables) - Region {region_name}", fontsize=16)
-    plt.xticks(rotation=90)
-    plt.yticks(rotation=0)
-    plt.tight_layout()
-    xi_filename = f'xi_correlation_heatmap_region_{region_name}.png'
-    plt.savefig(xi_filename)
-    plt.close()
-    print(f"Saved Chatterjee's Xi heatmap to {xi_filename}")
-
-    # --- 8. csv Xi heatmap ---
-    xi_corr_matrix.to_csv(f'xi_correlation_heatmap_region_{region_name}.csv')
+    filename = f"separation_power_region_{region_name}.png"
+    fig.savefig(filename, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Saved separation power bar plot to {filename}")
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -348,14 +313,26 @@ parser.add_argument(
         "MyEventType",
         "MyEnergyType"
     ],
-    help='List of removed variables. This variables are read but not used to calculate separation power and correlation.'
+    help='Column names or shell-style patterns to remove before calculating separation and correlation.'
 )
 parser.add_argument(
     '--input_path', 
     required=True,
     help='input path'
 )
+parser.add_argument(
+    '--distance_threshold', type=float, default=0.1,
+    help='Maximum joint distance correlation of selected variables with (M, deltaE). Recalibrate for each sample and event limit.'
+)
+parser.add_argument(
+    '--distance_max_events', type=int, default=50000,
+    help='Maximum events per class and region for the O(n^2) distance-correlation calculation.'
+)
 args = parser.parse_args()
+if not 0 <= args.distance_threshold <= 1:
+    parser.error('--distance_threshold must be between 0 and 1')
+if args.distance_max_events < 5:
+    parser.error('--distance_max_events must be at least 5')
 
 def ReadResolution(file_path: str):
     """
@@ -444,7 +421,7 @@ def read_all_root_files_self_function(
     files_with_trees = [f"{path}:{tree_name}" for path in root_files]
 
     # remove unneeded variables
-    EXCLUDE_SUBSTRINGS = ( "OneMuon", "TwoMuon", "ThreeMuon", "FTDL", "PSNM", "bogamma__clcut_v", "isSignal", "DecayHash", "MCMode", "muonID" )
+    EXCLUDE_SUBSTRINGS = ( "OneMuon", "TwoMuon", "ThreeMuon", "FTDL", "PSNM", "bogamma__clcut_v", "isSignal", "DecayHash", "MCMode" )
     branches_postfilter = []
     if branches is None:
         with uproot.open(files_with_trees[0]) as tree:
@@ -519,6 +496,15 @@ def read_with_weight(paths, tree_name, input_variables):
         df["weight"] = calculate_weights(df)
     return df
 
+
+def drop_removed_variables(df, patterns):
+    """Remove columns matching exact names or shell-style patterns."""
+    columns_to_drop = [
+        column for column in df.columns
+        if any(column == pattern or fnmatchcase(column, pattern) for pattern in patterns)
+    ]
+    return df.drop(columns=columns_to_drop)
+
 signal_list = ["SIGNAL"]
 # MC16ri directory names from bash/one_touch_MC16ri.sh.
 background_list = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CCBAR",
@@ -581,8 +567,8 @@ df_train = pd.concat([df_SIGNAL_train, df_BKG_train], ignore_index=True)
 df_test = pd.concat([df_SIGNAL_test, df_BKG_test], ignore_index=True)
 
 # remove unneeded features
-df_train = df_train.drop(columns=removed_variables, errors='ignore')
-df_test = df_test.drop(columns=removed_variables, errors='ignore')
+df_train = drop_removed_variables(df_train, removed_variables)
+df_test = drop_removed_variables(df_test, removed_variables)
 
 # ====================================================== region one ====================================================== #
 # filter
@@ -591,14 +577,15 @@ df_train_one = df_train_one[((resolution["M"]["peak"] - 5*resolution["M"]["left_
 df_test_one = df_test[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]) < df_test["deltaE"]) & (df_test["deltaE"] < (resolution["deltaE"]["peak"] + 5*resolution["deltaE"]["right_sigma"]))]
 df_test_one = df_test_one[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_test_one["M"]) & (df_test_one["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
 
-summary_result = summarize_variable_metrics(df_train_one)
-print(summary_result)
-summary_result.to_csv("Importance_one.csv")
-create_and_plot_correlation_matrices(df_train_one[df_train_one["label"] == 1], summary_result, "one_signal")
-create_and_plot_correlation_matrices(df_train_one[df_train_one["label"] == 0], summary_result, "one_bkg")
-
-# Select variables for region one
-selected_vars_one = select_variables(summary_result, df_train_one, "one")
+distance_evaluators = make_distance_evaluators(df_train_one, args.distance_max_events)
+summary_result = summarize_variable_metrics(df_train_one, distance_evaluators)
+selected_vars_one = select_variables(summary_result, df_train_one, "one", distance_evaluators, args.distance_threshold)
+selected_summary_one = summary_result.set_index("varname").loc[selected_vars_one].reset_index()
+print(selected_summary_one)
+selected_summary_one.to_csv("Importance_one.csv", index=False)
+plot_selected_separation_power(selected_summary_one, "one")
+create_and_plot_spearman_matrix(df_train_one[df_train_one["label"] == 1], selected_vars_one, "one_signal")
+create_and_plot_spearman_matrix(df_train_one[df_train_one["label"] == 0], selected_vars_one, "one_bkg")
 
 # ====================================================== region two ====================================================== #
 # filter
@@ -607,11 +594,12 @@ df_train_two = df_train_two[((resolution["M"]["peak"] - 5*resolution["M"]["left_
 df_test_two = df_test[((resolution["deltaE"]["peak"] - 15*resolution["deltaE"]["left_sigma"]) < df_test["deltaE"]) & (df_test["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
 df_test_two = df_test_two[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_test_two["M"]) & (df_test_two["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
 
-summary_result = summarize_variable_metrics(df_train_two)
-print(summary_result)
-summary_result.to_csv("Importance_two.csv")
-create_and_plot_correlation_matrices(df_train_two[df_train_two["label"] == 1], summary_result, "two_signal")
-create_and_plot_correlation_matrices(df_test_two[df_test_two["label"] == 0], summary_result, "two_bkg")
-
-# Select variables for region two
-selected_vars_two = select_variables(summary_result, df_train_two, "two")
+distance_evaluators = make_distance_evaluators(df_train_two, args.distance_max_events)
+summary_result = summarize_variable_metrics(df_train_two, distance_evaluators)
+selected_vars_two = select_variables(summary_result, df_train_two, "two", distance_evaluators, args.distance_threshold)
+selected_summary_two = summary_result.set_index("varname").loc[selected_vars_two].reset_index()
+print(selected_summary_two)
+selected_summary_two.to_csv("Importance_two.csv", index=False)
+plot_selected_separation_power(selected_summary_two, "two")
+create_and_plot_spearman_matrix(df_train_two[df_train_two["label"] == 1], selected_vars_two, "two_signal")
+create_and_plot_spearman_matrix(df_test_two[df_test_two["label"] == 0], selected_vars_two, "two_bkg")
