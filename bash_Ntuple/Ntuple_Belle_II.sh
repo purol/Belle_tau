@@ -5,6 +5,32 @@ script="./python/gbasf2_${version}.py"
 Skim_path="/home/belle2/junewoo/storage_ghi/tau_SKIM_2"
 Ntuple_path="/home/belle2/junewoo/storage_ghi/tau_Ntuple"
 
+
+# Build ALP-specific command-line options from the input filename.
+# Expected pattern: ..._mass<MASS>_life<LIFETIME>_...
+alp_args=()
+set_alp_args() {
+    local type="$1"
+    local filename_base="$2"
+
+    alp_args=()
+
+    # Non-ALP samples must not receive --mass_ALP / --life_ALP.
+    if [[ "${type}" != "ALP" ]]; then
+        return 0
+    fi
+
+    if [[ "${filename_base}" =~ _mass([^_]+)_life([^_]+)_ ]]; then
+        local mass_ALP="${BASH_REMATCH[1]}"
+        local life_ALP="${BASH_REMATCH[2]}"
+        alp_args=(--mass_ALP "${mass_ALP}" --life_ALP "${life_ALP}")
+        echo "ALP parameters: mass=${mass_ALP}, life=${life_ALP}"
+    else
+        echo "ERROR: could not extract ALP mass/lifetime from filename: ${filename_base}" >&2
+        return 1
+    fi
+}
+
 # MC16ri 4S on-resonance
 on_list=("ALP" "CCBAR" "CHG" "DDBAR" "EE" "EEEE" 
          "EEMUMU" "GG" "HHISR" "LLXX" "MIX" 
@@ -35,6 +61,7 @@ for i in "${!on_list[@]}"; do
     do
         echo $file
         basename=$(basename -s .root $file)
+        set_alp_args "${Type}" "${basename}" || continue
         bsub -q ${Queue} \
         -o "${log_path}/${basename}.log" \
         ${script} \
@@ -43,6 +70,7 @@ for i in "${!on_list[@]}"; do
         --energy "4S" \
         --prompt \
         --vertex \
+        "${alp_args[@]}" \
         --KEKCC \
         --inputfile ${file} \
         --destination "${output_path}"
@@ -80,6 +108,7 @@ for i in "${!on_list[@]}"; do
     do
         echo $file
         basename=$(basename -s .root $file)
+        set_alp_args "${Type}" "${basename}" || continue
         bsub -q ${Queue} \
         -o "${log_path}/${basename}.log" \
         ${script} \
@@ -88,6 +117,7 @@ for i in "${!on_list[@]}"; do
         --energy "4S" \
         --prompt \
         --vertex \
+        "${alp_args[@]}" \
         --KEKCC \
         --inputfile ${file} \
         --destination "${output_path}"
@@ -125,6 +155,7 @@ for i in "${!on_list[@]}"; do
     do
         echo $file
         basename=$(basename -s .root $file)
+        set_alp_args "${Type}" "${basename}" || continue
         bsub -q ${Queue} \
         -o "${log_path}/${basename}.log" \
         ${script} \
@@ -133,6 +164,7 @@ for i in "${!on_list[@]}"; do
         --energy "off" \
         --prompt \
         --vertex \
+        "${alp_args[@]}" \
         --KEKCC \
         --inputfile ${file} \
         --destination "${output_path}"
@@ -170,6 +202,7 @@ for i in "${!on_list[@]}"; do
     do
         echo $file
         basename=$(basename -s .root $file)
+        set_alp_args "${Type}" "${basename}" || continue
         bsub -q ${Queue} \
         -o "${log_path}/${basename}.log" \
         ${script} \
@@ -178,6 +211,7 @@ for i in "${!on_list[@]}"; do
         --energy "5Sscan" \
         --prompt \
         --vertex \
+        "${alp_args[@]}" \
         --KEKCC \
         --inputfile ${file} \
         --destination "${output_path}"
