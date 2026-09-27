@@ -161,6 +161,12 @@ int main(int argc, char* argv[]) {
     loader.Cut("(M > 0.9) && (deltaE > -0.3)");
     loader.PrintInformation("========== (M > 0.9) and (deltaE > -0.3) ==========");
 
+    loader.Cut("missingEnergyOfEventCMS > 0.5");
+    loader.PrintInformation("========== missing Energy CMS > 0.5 GeV ==========");
+
+    loader.Cut("extraInfo__bonROE_RemainingTracks_cleanMask__bc < 1.5");
+    loader.PrintInformation("========== nROE track < 1.5 ==========");
+
     loader.RandomBCS();
     loader.IsBCSValid();
     loader.PrintInformation("========== Random BCS ==========");
