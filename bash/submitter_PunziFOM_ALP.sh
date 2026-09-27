@@ -14,6 +14,8 @@ submit_PunziFOM() {
   local BDTName=$3
   local OutputPath=$4
 
+  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
+
   get_params "./${VerName}/${Analysis_VerName}/ALP/final_output" | while read mass life A B; do
     BDTName_ALP=${BDTName}_${mass}_${life}_${A}_${B}
     BDTName_ALP=${BDTName_ALP//-/m}
