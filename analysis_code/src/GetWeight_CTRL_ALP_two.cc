@@ -77,11 +77,13 @@ int main(int argc, char* argv[]) {
 
     ReadResolution((std::string(argv[11]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
+    EventWeights::Register("MC_weight", MC_weight);
+
     std::vector<std::string> sample1_list = split(argv[6], ':');
     std::vector<std::string> sample2_list = split(argv[7], ':');
 
     // define histograms
-    const int nbins = 50;
+    const int nbins = 300;
     TH1D* hist_CTRL = new TH1D("hist_CTRL", ";mass of ALP [GeV/c^{2}];arbitrary unit", nbins, 0.2, 2.0);
     TH1D* hist_CTRL_ALP = new TH1D("hist_CTRL_ALP", ";mass of ALP [GeV/c^{2}];arbitrary unit", nbins, 0.2, 2.0);
     TH1D* hist_ratio = new TH1D("hist_ratio", ";mass of ALP [GeV/c^{2}];ratio", nbins, 0.2, 2.0);

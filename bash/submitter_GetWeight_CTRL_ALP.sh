@@ -27,7 +27,7 @@ submit_Plotter() {
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
 
-  get_params "${nominal_analysis_DIR}/${Type2}/${InputDir2}/" | while read mass life A B; do
+  get_params "${nominal_analysis_DIR}/${Sample2List}/${InputDir2}/" | while read mass life A B; do
 
     printf -v command '%q ' \
       ${Code} \
@@ -36,9 +36,9 @@ submit_Plotter() {
       "${nominal_analysis_DIR}" \
       "${InputDir2}" \
       "${VarName}" \
-      "${Sample1List}" \ 
+      "${Sample1List}" \
       "${Sample2List}" \
-      "${Sample1Label}" \ 
+      "${Sample1Label}" \
       "${Sample2Label}" \
       "./${VerName}/${Analysis_VerName}/${OutputPath}" \
       "${nominal_analysis_DIR}" \
