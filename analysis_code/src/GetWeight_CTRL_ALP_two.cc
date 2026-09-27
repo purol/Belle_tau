@@ -160,6 +160,8 @@ int main(int argc, char* argv[]) {
     hist_CTRL_ALP->SetLineColor(kRed);
     hist_CTRL_ALP->SetFillColor(kRed);
 
+    gStyle->SetOptStat(0);
+
     TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
     double maxY = 0.0;
