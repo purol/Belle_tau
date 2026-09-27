@@ -15,6 +15,16 @@ import seaborn as sns
 from itertools import combinations
 from concurrent.futures import ProcessPoolExecutor
 
+from pathlib import Path
+import re
+
+# Share the SR mass width with the C++ analysis.
+constants_path = Path(__file__).resolve().parents[1] / "analysis_code" / "include" / "constants.h"
+sizeM_match = re.search(r"^\s*#\s*define\s+sizeM\s+(\S+)", constants_path.read_text(encoding="utf-8"), re.MULTILINE)
+if sizeM_match is None:
+    raise ValueError(f"Missing sizeM definition in {constants_path}")
+sizeM = float(sizeM_match.group(1))
+
 # =========== scale factor for MC15ri ===========
 # Luminosity (ab-1)
 lumi_BelleII_4S = 0.36357
@@ -753,9 +763,9 @@ df_test = df_test.drop(columns=removed_variables, errors='ignore')
 # ====================================================== region one ====================================================== #
 # filter
 df_train_one = df_train[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]) < df_train["deltaE"]) & (df_train["deltaE"] < (resolution["deltaE"]["peak"] + 5*resolution["deltaE"]["right_sigma"]))]
-df_train_one = df_train_one[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_train_one["M"]) & (df_train_one["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
+df_train_one = df_train_one[((resolution["M"]["peak"] - sizeM*resolution["M"]["left_sigma"]) < df_train_one["M"]) & (df_train_one["M"] < (resolution["M"]["peak"] + sizeM*resolution["M"]["right_sigma"]))]
 df_test_one = df_test[((resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]) < df_test["deltaE"]) & (df_test["deltaE"] < (resolution["deltaE"]["peak"] + 5*resolution["deltaE"]["right_sigma"]))]
-df_test_one = df_test_one[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_test_one["M"]) & (df_test_one["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
+df_test_one = df_test_one[((resolution["M"]["peak"] - sizeM*resolution["M"]["left_sigma"]) < df_test_one["M"]) & (df_test_one["M"] < (resolution["M"]["peak"] + sizeM*resolution["M"]["right_sigma"]))]
 
 summary_result = summarize_variable_metrics(df_train_one)
 print(summary_result)
@@ -769,9 +779,9 @@ selected_vars_one = select_variables(summary_result, df_train_one, "one")
 # ====================================================== region two ====================================================== #
 # filter
 df_train_two = df_train[((resolution["deltaE"]["peak"] - 15*resolution["deltaE"]["left_sigma"]) < df_train["deltaE"]) & (df_train["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
-df_train_two = df_train_two[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_train_two["M"]) & (df_train_two["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
+df_train_two = df_train_two[((resolution["M"]["peak"] - sizeM*resolution["M"]["left_sigma"]) < df_train_two["M"]) & (df_train_two["M"] < (resolution["M"]["peak"] + sizeM*resolution["M"]["right_sigma"]))]
 df_test_two = df_test[((resolution["deltaE"]["peak"] - 15*resolution["deltaE"]["left_sigma"]) < df_test["deltaE"]) & (df_test["deltaE"] < (resolution["deltaE"]["peak"] - 5*resolution["deltaE"]["left_sigma"]))]
-df_test_two = df_test_two[((resolution["M"]["peak"] - 5*resolution["M"]["left_sigma"]) < df_test_two["M"]) & (df_test_two["M"] < (resolution["M"]["peak"] + 5*resolution["M"]["right_sigma"]))]
+df_test_two = df_test_two[((resolution["M"]["peak"] - sizeM*resolution["M"]["left_sigma"]) < df_test_two["M"]) & (df_test_two["M"] < (resolution["M"]["peak"] + sizeM*resolution["M"]["right_sigma"]))]
 
 summary_result = summarize_variable_metrics(df_train_two)
 print(summary_result)

@@ -1,6 +1,9 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+// Nominal SR half-width in left/right mass resolutions. ABCD sidebands start at 5.
+# define sizeM 4.0
+
 #define lumi_scale (1.0)
 
 // luminosity

@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
     loader_sample1_test.RandomBCS();
     loader_sample1_test.IsBCSValid();
     loader_sample1_test.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
-    loader_sample1_test.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
+    loader_sample1_test.Cut(("(" + std::to_string(M_peak - sizeM * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + sizeM * M_right_sigma) + ")").c_str());
     loader_sample1_test.FillTH1D(sample1_test_th, variable_name);
     loader_sample1_test.FillTH1D(sample1_test_th_KS, variable_name);
     loader_sample1_test.end();
@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) {
     loader_sample2_test.RandomBCS();
     loader_sample2_test.IsBCSValid();
     loader_sample2_test.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
-    loader_sample2_test.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
+    loader_sample2_test.Cut(("(" + std::to_string(M_peak - sizeM * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + sizeM * M_right_sigma) + ")").c_str());
     loader_sample2_test.FillTH1D(sample2_test_th, variable_name);
     loader_sample2_test.FillTH1D(sample2_test_th_KS, variable_name);
     loader_sample2_test.end();

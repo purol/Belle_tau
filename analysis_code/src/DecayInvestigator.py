@@ -9,9 +9,17 @@ import os
 import glob
 import gc
 import re
+from pathlib import Path
+
+# Share the SR mass width with the C++ analysis.
+constants_path = Path(__file__).resolve().parents[1] / "include" / "constants.h"
+sizeM_match = re.search(r"^\s*#\s*define\s+sizeM\s+(\S+)", constants_path.read_text(encoding="utf-8"), re.MULTILINE)
+if sizeM_match is None:
+    raise ValueError(f"Missing sizeM definition in {constants_path}")
+sizeM = float(sizeM_match.group(1))
 
 def IsItRegionOne(deltaE, Mtau, deltaE_peak, deltaE_left_sigma, deltaE_right_sigma, M_peak, M_left_sigma, M_right_sigma):
-    if ((deltaE_peak - 5*deltaE_left_sigma)< deltaE) and (deltaE < (deltaE_peak + 5*deltaE_right_sigma)) and ((M_peak - 5*M_left_sigma)< Mtau) and (Mtau < (M_peak + 5*M_right_sigma)):
+    if ((deltaE_peak - 5*deltaE_left_sigma)< deltaE) and (deltaE < (deltaE_peak + 5*deltaE_right_sigma)) and ((M_peak - sizeM*M_left_sigma)< Mtau) and (Mtau < (M_peak + sizeM*M_right_sigma)):
         return True
     else:
         return False
