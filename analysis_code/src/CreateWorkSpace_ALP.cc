@@ -500,17 +500,17 @@ void ABCD_method(const char* input_path_1_, const char* input_path_2_, const cha
     data_th1d_A_bkg_exp->Divide(data_th1d_C, data_th1d_D);
     data_th1d_A_bkg_exp->Multiply(data_th1d_B);
     printf("============== ABCD method region 1 ==============\n");
-    printf("N_A' = %lf+-%lf\n", data_th1d_A->GetBinContent(1), data_th1d_A->GetBinError(1));
-    printf("N_B' = %lf+-%lf\n", data_th1d_B->GetBinContent(1), data_th1d_B->GetBinError(1));
-    printf("N_C' = %lf+-%lf\n", data_th1d_C->GetBinContent(1), data_th1d_C->GetBinError(1));
-    printf("N_D' = %lf+-%lf\n", data_th1d_D->GetBinContent(1), data_th1d_D->GetBinError(1));
-    printf("estimated N_A' = %lf+-%lf\n", data_th1d_A_bkg_exp->GetBinContent(1), data_th1d_A_bkg_exp->GetBinError(1));
+    printf("N_A = %lf+-%lf\n", data_th1d_A->GetBinContent(1), data_th1d_A->GetBinError(1));
+    printf("N_B = %lf+-%lf\n", data_th1d_B->GetBinContent(1), data_th1d_B->GetBinError(1));
+    printf("N_C = %lf+-%lf\n", data_th1d_C->GetBinContent(1), data_th1d_C->GetBinError(1));
+    printf("N_D = %lf+-%lf\n", data_th1d_D->GetBinContent(1), data_th1d_D->GetBinError(1));
+    printf("estimated N_A = %lf+-%lf\n", data_th1d_A_bkg_exp->GetBinContent(1), data_th1d_A_bkg_exp->GetBinError(1));
     printf("============== ABCD method region 2 ==============\n");
-    printf("N_A' = %lf+-%lf\n", data_th1d_A->GetBinContent(2), data_th1d_A->GetBinError(2));
-    printf("N_B' = %lf+-%lf\n", data_th1d_B->GetBinContent(2), data_th1d_B->GetBinError(2));
-    printf("N_C' = %lf+-%lf\n", data_th1d_C->GetBinContent(2), data_th1d_C->GetBinError(2));
-    printf("N_D' = %lf+-%lf\n", data_th1d_D->GetBinContent(2), data_th1d_D->GetBinError(2));
-    printf("estimated N_A' = %lf+-%lf\n", data_th1d_A_bkg_exp->GetBinContent(2), data_th1d_A_bkg_exp->GetBinError(2));
+    printf("N_A = %lf+-%lf\n", data_th1d_A->GetBinContent(2), data_th1d_A->GetBinError(2));
+    printf("N_B = %lf+-%lf\n", data_th1d_B->GetBinContent(2), data_th1d_B->GetBinError(2));
+    printf("N_C = %lf+-%lf\n", data_th1d_C->GetBinContent(2), data_th1d_C->GetBinError(2));
+    printf("N_D = %lf+-%lf\n", data_th1d_D->GetBinContent(2), data_th1d_D->GetBinError(2));
+    printf("estimated N_A = %lf+-%lf\n", data_th1d_A_bkg_exp->GetBinContent(2), data_th1d_A_bkg_exp->GetBinError(2));
 
     // save
     bkg_ABCD_th1d_->SetBinContent(1, data_th1d_A_bkg_exp->GetBinContent(1));
