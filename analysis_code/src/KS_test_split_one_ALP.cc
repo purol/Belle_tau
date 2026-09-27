@@ -102,7 +102,7 @@ int main(int argc, char* argv[]) {
     loader_signal_train.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader_signal_train.AddWeight("train_weight");
     loader_signal_train.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
-    loader_signal_train.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
+    loader_signal_train.Cut(("(" + std::to_string(M_peak - sizeM * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + sizeM * M_right_sigma) + ")").c_str());
     loader_signal_train.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
     loader_signal_train.FillTH1D(signal_train_th, variable_name);
     loader_signal_train.FillTH1D(signal_train_th_KS, variable_name);
@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
     loader_signal_test.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader_signal_test.AddWeight("test_weight");
     loader_signal_test.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
-    loader_signal_test.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
+    loader_signal_test.Cut(("(" + std::to_string(M_peak - sizeM * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + sizeM * M_right_sigma) + ")").c_str());
     loader_signal_test.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
     loader_signal_test.FillTH1D(signal_test_th, variable_name);
     loader_signal_test.FillTH1D(signal_test_th_KS, variable_name);
@@ -126,7 +126,7 @@ int main(int argc, char* argv[]) {
     loader_background_train.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader_background_train.AddWeight("train_weight");
     loader_background_train.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
-    loader_background_train.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
+    loader_background_train.Cut(("(" + std::to_string(M_peak - sizeM * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + sizeM * M_right_sigma) + ")").c_str());
     loader_background_train.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
     loader_background_train.FillTH1D(background_train_th, variable_name);
     loader_background_train.FillTH1D(background_train_th_KS, variable_name);
@@ -138,7 +138,7 @@ int main(int argc, char* argv[]) {
     loader_background_test.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader_background_test.AddWeight("test_weight");
     loader_background_test.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
-    loader_background_test.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
+    loader_background_test.Cut(("(" + std::to_string(M_peak - sizeM * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + sizeM * M_right_sigma) + ")").c_str());
     loader_background_test.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
     loader_background_test.FillTH1D(background_test_th, variable_name);
     loader_background_test.FillTH1D(background_test_th_KS, variable_name);

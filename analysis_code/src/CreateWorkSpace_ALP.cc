@@ -48,8 +48,8 @@ double mapping_function(std::vector<double> variables_) {
     double M = variables_.at(0);
     double deltaE = variables_.at(1);
 
-    if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
+    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
+    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
     else return NAN;
 
 }
@@ -58,8 +58,8 @@ double mapping_function_plus_M(std::vector<double> variables_) {
     double M = variables_.at(0);
     double deltaE = variables_.at(1);
 
-    if (((M_peak_g - 4.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 6.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - 4.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 6.0 * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
+    if (((M_peak_g - (sizeM - 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM + 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
+    else if (((M_peak_g - (sizeM - 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM + 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
     else return NAN;
 
 }
@@ -68,8 +68,8 @@ double mapping_function_minus_M(std::vector<double> variables_) {
     double M = variables_.at(0);
     double deltaE = variables_.at(1);
 
-    if (((M_peak_g - 6.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 4.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - 6.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 4.0 * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
+    if (((M_peak_g - (sizeM + 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM - 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
+    else if (((M_peak_g - (sizeM + 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM - 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
     else return NAN;
 
 }
@@ -78,8 +78,8 @@ double mapping_function_plus_DeltaE(std::vector<double> variables_) {
     double M = variables_.at(0);
     double deltaE = variables_.at(1);
 
-    if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 4 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 6 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 14 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 4 * deltaE_left_sigma_g))) return 2.0;
+    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 4 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 6 * deltaE_right_sigma_g))) return 1.0;
+    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 14 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 4 * deltaE_left_sigma_g))) return 2.0;
     else return NAN;
 
 }
@@ -88,8 +88,8 @@ double mapping_function_minus_DeltaE(std::vector<double> variables_) {
     double M = variables_.at(0);
     double deltaE = variables_.at(1);
 
-    if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 6 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 4 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 16 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 6 * deltaE_left_sigma_g))) return 2.0;
+    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 6 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 4 * deltaE_right_sigma_g))) return 1.0;
+    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 16 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 6 * deltaE_left_sigma_g))) return 2.0;
     else return NAN;
 
 }
@@ -292,8 +292,8 @@ double mapping_function_A(std::vector<double> variables_) {
     double BDT_output_1 = variables_.at(3);
     double BDT_output_2 = variables_.at(4);
 
-    if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_1_g < BDT_output_1)) return 1.0;
-    else if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_2_g < BDT_output_2)) return 2.0;
+    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_1_g < BDT_output_1)) return 1.0;
+    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_2_g < BDT_output_2)) return 2.0;
     else return NAN;
 
 }
@@ -318,8 +318,8 @@ double mapping_function_C(std::vector<double> variables_) {
     double BDT_output_1 = variables_.at(3);
     double BDT_output_2 = variables_.at(4);
 
-    if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_output_1 <= BDT_cut_1_g)) return 1.0;
-    else if (((M_peak_g - 5.0 * M_left_sigma_g) < M) && (M <= (M_peak_g + 5.0 * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_output_2 <= BDT_cut_2_g)) return 2.0;
+    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_output_1 <= BDT_cut_1_g)) return 1.0;
+    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_output_2 <= BDT_cut_2_g)) return 2.0;
     else return NAN;
 
 }
