@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> sample2_list = split(argv[7], ':');
 
     // define histograms
-    const int nbins = 50;
+    const int nbins = 300;
     TH1D* hist_CTRL = new TH1D("hist_CTRL", ";mass of ALP [GeV/c^{2}];arbitrary unit", nbins, 0.2, 2.0);
     TH1D* hist_CTRL_ALP = new TH1D("hist_CTRL_ALP", ";mass of ALP [GeV/c^{2}];arbitrary unit", nbins, 0.2, 2.0);
     TH1D* hist_ratio = new TH1D("hist_ratio", ";mass of ALP [GeV/c^{2}];ratio", nbins, 0.2, 2.0);
