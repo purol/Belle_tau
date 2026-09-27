@@ -36,9 +36,9 @@ submit_Plotter() {
       "${nominal_analysis_DIR}" \
       "${InputDir2}" \
       "${VarName}" \
-      "${Sample1List}" \ 
+      "${Sample1List}" \
       "${Sample2List}" \
-      "${Sample1Label}" \ 
+      "${Sample1Label}" \
       "${Sample2Label}" \
       "./${VerName}/${Analysis_VerName}/${OutputPath}" \
       "${nominal_analysis_DIR}" \
