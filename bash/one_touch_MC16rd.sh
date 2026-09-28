@@ -46,6 +46,10 @@ input_variables_one=(
     "avg_cosToThrustOfEvent_CM"
     "roeM__bocleanMask__bc"
     "foxWolframR4"
+    "KSFWVariables__bohso24__cm__spcleanMask__bc"
+    "roeEextra__bocleanMask__bc"
+    "KSFWVariables__bohso00__cm__spcleanMask__bc"
+    "first_muon_p"
 ) # list of input variables for the region 1
 input_variables_two=(
     "visibleEnergyOfEventCMS"
@@ -68,6 +72,10 @@ input_variables_two=(
     "missingMass2OfEvent"
     "missingMomentumOfEventCMS_Py"
     "foxWolframR3"
+    "sphericity"
+    "KSFWVariables__bohso24__cm__spcleanMask__bc"
+    "first_muon_p"
+    "cosAngleBetweenMomentumAndVertexVector"
 ) # list of input variables for the region 2
 
 export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/MC16ri/v000" # FBDT weight file path
