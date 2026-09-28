@@ -51,6 +51,7 @@ input_variables_one=(
     "roeEextra__bocleanMask__bc"
     "KSFWVariables__bohso00__cm__spcleanMask__bc"
     "first_muon_p"
+    "totalPhotonsEnergyOfEvent"
 ) # list of input variables for the region 1
 input_variables_two=(
     "visibleEnergyOfEventCMS"
@@ -77,6 +78,7 @@ input_variables_two=(
     "KSFWVariables__bohso24__cm__spcleanMask__bc"
     "first_muon_p"
     "cosAngleBetweenMomentumAndVertexVector"
+    "roeEextra__bocleanMask__bc"
 ) # list of input variables for the region 2
 # =================================================================================== #
 
