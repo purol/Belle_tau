@@ -345,8 +345,8 @@ double mapping_function_Aprime(std::vector<double> variables_) {
     double BDT_output_1 = variables_.at(3);
     double BDT_output_2 = variables_.at(4);
 
-    if (((((M_peak_g - 12.5 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 12.5 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_1_g < BDT_output_1)) return 1.0;
-    else if (((((M_peak_g - 12.5 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 12.5 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_2_g < BDT_output_2)) return 2.0;
+    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.3 * BDT_cut_1_g < BDT_output_1) && (BDT_output_1 < 0.5 * BDT_cut_1_g)) return 1.0;
+    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.3 * BDT_cut_2_g < BDT_output_2) && (BDT_output_2 < 0.5 * BDT_cut_2_g)) return 2.0;
     else return NAN;
 
 }
@@ -358,8 +358,8 @@ double mapping_function_Bprime(std::vector<double> variables_) {
     double BDT_output_1 = variables_.at(3);
     double BDT_output_2 = variables_.at(4);
 
-    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 12.5 * M_left_sigma_g))) || (((M_peak_g + 12.5 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_1_g < BDT_output_1)) return 1.0;
-    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 12.5 * M_left_sigma_g))) || (((M_peak_g + 12.5 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_2_g < BDT_output_2)) return 2.0;
+    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.3 * BDT_cut_1_g < BDT_output_1) && (BDT_output_1 < 0.5 * BDT_cut_1_g)) return 1.0;
+    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.3 * BDT_cut_2_g < BDT_output_2) && (BDT_output_2 < 0.5 * BDT_cut_2_g)) return 2.0;
     else return NAN;
 
 }
@@ -371,8 +371,8 @@ double mapping_function_Cprime(std::vector<double> variables_) {
     double BDT_output_1 = variables_.at(3);
     double BDT_output_2 = variables_.at(4);
 
-    if (((((M_peak_g - 12.5 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 12.5 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_1_g / 2.0 < BDT_output_1) && (BDT_output_1 <= BDT_cut_1_g)) return 1.0;
-    else if (((((M_peak_g - 12.5 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 12.5 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_2_g / 2.0 < BDT_output_2) && (BDT_output_2 <= BDT_cut_2_g)) return 2.0;
+    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.1 * BDT_cut_1_g < BDT_output_1) && (BDT_output_1 < 0.3 * BDT_cut_1_g)) return 1.0;
+    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.1 * BDT_cut_2_g < BDT_output_2) && (BDT_output_2 < 0.3 * BDT_cut_2_g)) return 2.0;
     else return NAN;
 
 }
@@ -384,8 +384,8 @@ double mapping_function_Dprime(std::vector<double> variables_) {
     double BDT_output_1 = variables_.at(3);
     double BDT_output_2 = variables_.at(4);
 
-    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 12.5 * M_left_sigma_g))) || (((M_peak_g + 12.5 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_1_g / 2.0 < BDT_output_1) && (BDT_output_1 <= BDT_cut_1_g)) return 1.0;
-    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 12.5 * M_left_sigma_g))) || (((M_peak_g + 12.5 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_2_g / 2.0 < BDT_output_2) && (BDT_output_2 <= BDT_cut_2_g)) return 2.0;
+    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.1 * BDT_cut_1_g < BDT_output_1) && (BDT_output_1 < 0.3 * BDT_cut_1_g)) return 1.0;
+    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.1 * BDT_cut_2_g < BDT_output_2) && (BDT_output_2 < 0.3 * BDT_cut_2_g)) return 2.0;
     else return NAN;
 
 }
@@ -499,7 +499,7 @@ void ABCD_method(const char* input_path_1_, const char* input_path_2_, const cha
 
     // non-closure uncertainty
     // Use the validation statistical precision as a floor for the non-closure uncertainty.
-    // The statistical correlation from shared sideband events is not modeled here.
+    // Validation and application use disjoint BDT intervals.
     for (int i = 1; i <= 2; i++) {
         double N_Aprime = data_th1d_Aprime->GetBinContent(i);
         double N_Bprime = data_th1d_Bprime->GetBinContent(i);
