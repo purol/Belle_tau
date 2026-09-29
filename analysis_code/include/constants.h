@@ -4,6 +4,11 @@
 // Nominal SR half-width in left/right mass resolutions. ABCD sidebands start at 5.
 # define sizeM 4.0
 
+// Region 1 half-width and half of region 2 width in DeltaE resolutions.
+// Region 2 extends from -(sizeDeltaE_one + 2 * sizeDeltaE_two) to -sizeDeltaE_one.
+# define sizeDeltaE_one 5.0
+# define sizeDeltaE_two 5.0
+
 #define lumi_scale (1.0)
 
 // luminosity

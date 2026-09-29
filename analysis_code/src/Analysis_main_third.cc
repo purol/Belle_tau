@@ -48,13 +48,13 @@ int main(int argc, char* argv[]) {
 
     std::string cut_BDT_1 = "(" + std::to_string(BDT_cut_1) + " < BDT_output_1)";
     std::string cut_M_1 = "((" + std::to_string(M_peak - 20 * M_left_sigma) + " < M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + "))";
-    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak + 6 * deltaE_right_sigma) + "))";
+    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak - sizeDeltaE_one * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak + (sizeDeltaE_one + 1.0) * deltaE_right_sigma) + "))";
     std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
     std::string cut_total_1 = "(" + cut_M_deltaE_1 + "&&" + cut_BDT_1 + ")";
 
     std::string cut_BDT_2 = "(" + std::to_string(BDT_cut_2) + " < BDT_output_2)";
     std::string cut_M_2 = "((" + std::to_string(M_peak - 20 * M_left_sigma) + " < M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + "))";
-    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak - 16 * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "))";
+    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak - (sizeDeltaE_one + 2.0 * sizeDeltaE_two + 1.0) * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak - sizeDeltaE_one * deltaE_left_sigma) + "))";
     std::string cut_M_deltaE_2 = "(" + cut_M_2 + "&&" + cut_deltaE_2 + ")";
     std::string cut_total_2 = "(" + cut_M_deltaE_2 + "&&" + cut_BDT_2 + ")";
 
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
     std::string cut_total = cut_total_1 + "||" + cut_total_2;
 
     loader.Cut(cut_region.c_str());
-    loader.PrintInformation("========== (-20 delta < M < 20 delta) && (-16 delta < deltaE < 6 delta) ==========");
+    loader.PrintInformation(("========== (-20 delta < M < 20 delta) && (" + std::to_string(-(sizeDeltaE_one + 2.0 * sizeDeltaE_two + 1.0)) + " delta < deltaE < " + std::to_string((sizeDeltaE_one + 1.0)) + " delta) ==========").c_str());
 
     loader.RandomBCS();
     loader.IsBCSValid();
@@ -71,8 +71,8 @@ int main(int argc, char* argv[]) {
     loader.Cut(cut_total.c_str());
     loader.PrintInformation(("========== BDT1 > " + std::to_string(BDT_cut_1) + ", BDT2 > " + std::to_string(BDT_cut_2) + " ==========").c_str());
 
-    loader.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
-    loader.PrintInformation("========== (-15 delta < deltaE < 5 delta) ==========");
+    loader.Cut(("(" + std::to_string(deltaE_peak - (sizeDeltaE_one + 2.0 * sizeDeltaE_two) * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak + sizeDeltaE_one * deltaE_right_sigma) + ")").c_str());
+    loader.PrintInformation(("========== (" + std::to_string(-(sizeDeltaE_one + 2.0 * sizeDeltaE_two)) + " delta < deltaE < " + std::to_string(sizeDeltaE_one) + " delta) ==========").c_str());
 
     loader.PrintSeparateRootFile(argv[3], "", "");
 

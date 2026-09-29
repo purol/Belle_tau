@@ -49,8 +49,8 @@ double mapping_function(std::vector<double> variables_) {
     double M = variables_.at(0);
     double deltaE = variables_.at(1);
 
-    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
+    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + sizeDeltaE_one * deltaE_right_sigma_g))) return 1.0;
+    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g))) return 2.0;
     else return NAN;
 
 }
@@ -59,8 +59,8 @@ double mapping_function_plus_M(std::vector<double> variables_) {
     double M = variables_.at(0);
     double deltaE = variables_.at(1);
 
-    if (((M_peak_g - (sizeM - 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM + 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - (sizeM - 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM + 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
+    if (((M_peak_g - (sizeM - 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM + 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + sizeDeltaE_one * deltaE_right_sigma_g))) return 1.0;
+    else if (((M_peak_g - (sizeM - 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM + 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g))) return 2.0;
     else return NAN;
 
 }
@@ -69,8 +69,8 @@ double mapping_function_minus_M(std::vector<double> variables_) {
     double M = variables_.at(0);
     double deltaE = variables_.at(1);
 
-    if (((M_peak_g - (sizeM + 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM - 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - (sizeM + 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM - 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
+    if (((M_peak_g - (sizeM + 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM - 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + sizeDeltaE_one * deltaE_right_sigma_g))) return 1.0;
+    else if (((M_peak_g - (sizeM + 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM - 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g))) return 2.0;
     else return NAN;
 
 }
@@ -79,8 +79,8 @@ double mapping_function_plus_DeltaE(std::vector<double> variables_) {
     double M = variables_.at(0);
     double deltaE = variables_.at(1);
 
-    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 4 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 6 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 14 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 4 * deltaE_left_sigma_g))) return 2.0;
+    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - (sizeDeltaE_one - 1.0) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + (sizeDeltaE_one + 1.0) * deltaE_right_sigma_g))) return 1.0;
+    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two - 1.0) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - (sizeDeltaE_one - 1.0) * deltaE_left_sigma_g))) return 2.0;
     else return NAN;
 
 }
@@ -89,8 +89,8 @@ double mapping_function_minus_DeltaE(std::vector<double> variables_) {
     double M = variables_.at(0);
     double deltaE = variables_.at(1);
 
-    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 6 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 4 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 16 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 6 * deltaE_left_sigma_g))) return 2.0;
+    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - (sizeDeltaE_one + 1.0) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + (sizeDeltaE_one - 1.0) * deltaE_right_sigma_g))) return 1.0;
+    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two + 1.0) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - (sizeDeltaE_one + 1.0) * deltaE_left_sigma_g))) return 2.0;
     else return NAN;
 
 }
@@ -98,13 +98,13 @@ double mapping_function_minus_DeltaE(std::vector<double> variables_) {
 void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, TH1D* data_th1d_stat_err_, TH1D* signal_MC_th1d_stat_err_, TH1D* bkg_MC_th1d_stat_err_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_) {
     std::string cut_BDT_1 = "(" + std::to_string(BDT_cut_1) + " < " + BDT_output_1_name + ")";
     std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 6 * deltaE_right_sigma_g) + "))";
+    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + (sizeDeltaE_one + 1.0) * deltaE_right_sigma_g) + "))";
     std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
     std::string cut_total_1 = "(" + cut_M_deltaE_1 + "&&" + cut_BDT_1 + ")";
 
     std::string cut_BDT_2 = "(" + std::to_string(BDT_cut_2) + " < " + BDT_output_2_name + ")";
     std::string cut_M_2 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak_g - 16 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "))";
+    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two + 1.0) * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) + "))";
     std::string cut_M_deltaE_2 = "(" + cut_M_2 + "&&" + cut_deltaE_2 + ")";
     std::string cut_total_2 = "(" + cut_M_deltaE_2 + "&&" + cut_BDT_2 + ")";
 
@@ -190,13 +190,13 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
 
     std::string cut_BDT_1 = "(" + std::to_string(BDT_cut_1) + " < " + BDT_output_1_name + ")";
     std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 6 * deltaE_right_sigma_g) + "))";
+    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + (sizeDeltaE_one + 1.0) * deltaE_right_sigma_g) + "))";
     std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
     std::string cut_total_1 = "(" + cut_M_deltaE_1 + "&&" + cut_BDT_1 + ")";
 
     std::string cut_BDT_2 = "(" + std::to_string(BDT_cut_2) + " < " + BDT_output_2_name + ")";
     std::string cut_M_2 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak_g - 16 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "))";
+    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two + 1.0) * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) + "))";
     std::string cut_M_deltaE_2 = "(" + cut_M_2 + "&&" + cut_deltaE_2 + ")";
     std::string cut_total_2 = "(" + cut_M_deltaE_2 + "&&" + cut_BDT_2 + ")";
 
@@ -293,8 +293,8 @@ double mapping_function_A(std::vector<double> variables_) {
     double BDT_output_1 = variables_.at(3);
     double BDT_output_2 = variables_.at(4);
 
-    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_1_g < BDT_output_1)) return 1.0;
-    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_2_g < BDT_output_2)) return 2.0;
+    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + sizeDeltaE_one * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_1_g < BDT_output_1)) return 1.0;
+    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_2_g < BDT_output_2)) return 2.0;
     else return NAN;
 
 }
@@ -306,8 +306,8 @@ double mapping_function_B(std::vector<double> variables_) {
     double BDT_output_1 = variables_.at(3);
     double BDT_output_2 = variables_.at(4);
 
-    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_1_g < BDT_output_1)) return 1.0;
-    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_2_g < BDT_output_2)) return 2.0;
+    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + sizeDeltaE_one * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_1_g < BDT_output_1)) return 1.0;
+    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_2_g < BDT_output_2)) return 2.0;
     else return NAN;
 
 }
@@ -319,8 +319,8 @@ double mapping_function_C(std::vector<double> variables_) {
     double BDT_output_1 = variables_.at(3);
     double BDT_output_2 = variables_.at(4);
 
-    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_1_g / 2.0 < BDT_output_1) && (BDT_output_1 <= BDT_cut_1_g)) return 1.0;
-    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_2_g / 2.0 < BDT_output_2) && (BDT_output_2 <= BDT_cut_2_g)) return 2.0;
+    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + sizeDeltaE_one * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_1_g / 2.0 < BDT_output_1) && (BDT_output_1 <= BDT_cut_1_g)) return 1.0;
+    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_2_g / 2.0 < BDT_output_2) && (BDT_output_2 <= BDT_cut_2_g)) return 2.0;
     else return NAN;
 
 }
@@ -332,8 +332,8 @@ double mapping_function_D(std::vector<double> variables_) {
     double BDT_output_1 = variables_.at(3);
     double BDT_output_2 = variables_.at(4);
 
-    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_1_g / 2.0 < BDT_output_1) && (BDT_output_1 <= BDT_cut_1_g)) return 1.0;
-    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_2_g / 2.0 < BDT_output_2) && (BDT_output_2 <= BDT_cut_2_g)) return 2.0;
+    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + sizeDeltaE_one * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_1_g / 2.0 < BDT_output_1) && (BDT_output_1 <= BDT_cut_1_g)) return 1.0;
+    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (BDT_cut_2_g / 2.0 < BDT_output_2) && (BDT_output_2 <= BDT_cut_2_g)) return 2.0;
     else return NAN;
 
 }
@@ -345,8 +345,8 @@ double mapping_function_Aprime(std::vector<double> variables_) {
     double BDT_output_1 = variables_.at(3);
     double BDT_output_2 = variables_.at(4);
 
-    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.3 * BDT_cut_1_g < BDT_output_1) && (BDT_output_1 < 0.5 * BDT_cut_1_g)) return 1.0;
-    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.3 * BDT_cut_2_g < BDT_output_2) && (BDT_output_2 < 0.5 * BDT_cut_2_g)) return 2.0;
+    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + sizeDeltaE_one * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.3 * BDT_cut_1_g < BDT_output_1) && (BDT_output_1 < 0.5 * BDT_cut_1_g)) return 1.0;
+    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.3 * BDT_cut_2_g < BDT_output_2) && (BDT_output_2 < 0.5 * BDT_cut_2_g)) return 2.0;
     else return NAN;
 
 }
@@ -358,8 +358,8 @@ double mapping_function_Bprime(std::vector<double> variables_) {
     double BDT_output_1 = variables_.at(3);
     double BDT_output_2 = variables_.at(4);
 
-    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.3 * BDT_cut_1_g < BDT_output_1) && (BDT_output_1 < 0.5 * BDT_cut_1_g)) return 1.0;
-    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.3 * BDT_cut_2_g < BDT_output_2) && (BDT_output_2 < 0.5 * BDT_cut_2_g)) return 2.0;
+    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + sizeDeltaE_one * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.3 * BDT_cut_1_g < BDT_output_1) && (BDT_output_1 < 0.5 * BDT_cut_1_g)) return 1.0;
+    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.3 * BDT_cut_2_g < BDT_output_2) && (BDT_output_2 < 0.5 * BDT_cut_2_g)) return 2.0;
     else return NAN;
 
 }
@@ -371,8 +371,8 @@ double mapping_function_Cprime(std::vector<double> variables_) {
     double BDT_output_1 = variables_.at(3);
     double BDT_output_2 = variables_.at(4);
 
-    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.1 * BDT_cut_1_g < BDT_output_1) && (BDT_output_1 < 0.3 * BDT_cut_1_g)) return 1.0;
-    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.1 * BDT_cut_2_g < BDT_output_2) && (BDT_output_2 < 0.3 * BDT_cut_2_g)) return 2.0;
+    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + sizeDeltaE_one * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.1 * BDT_cut_1_g < BDT_output_1) && (BDT_output_1 < 0.3 * BDT_cut_1_g)) return 1.0;
+    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.1 * BDT_cut_2_g < BDT_output_2) && (BDT_output_2 < 0.3 * BDT_cut_2_g)) return 2.0;
     else return NAN;
 
 }
@@ -384,8 +384,8 @@ double mapping_function_Dprime(std::vector<double> variables_) {
     double BDT_output_1 = variables_.at(3);
     double BDT_output_2 = variables_.at(4);
 
-    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.1 * BDT_cut_1_g < BDT_output_1) && (BDT_output_1 < 0.3 * BDT_cut_1_g)) return 1.0;
-    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.1 * BDT_cut_2_g < BDT_output_2) && (BDT_output_2 < 0.3 * BDT_cut_2_g)) return 2.0;
+    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + sizeDeltaE_one * deltaE_right_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.1 * BDT_cut_1_g < BDT_output_1) && (BDT_output_1 < 0.3 * BDT_cut_1_g)) return 1.0;
+    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g)) && ((mass - M_left_cut_value) < M_ALP) && (M_ALP < (mass + M_right_cut_value)) && (0.1 * BDT_cut_2_g < BDT_output_2) && (BDT_output_2 < 0.3 * BDT_cut_2_g)) return 2.0;
     else return NAN;
 
 }
@@ -393,13 +393,13 @@ double mapping_function_Dprime(std::vector<double> variables_) {
 void ABCD_method(const char* input_path_1_, const char* input_path_2_, const char* FOM_1_path_, const char* FOM_2_path_, TH1D* bkg_ABCD_th1d_, TH1D* bkg_ABCD_th1d_stat_err_, TH1D* bkg_ABCD_th1d_nonclosure_err_, std::vector<std::string> data_list_) {
     std::string cut_BDT_1 = "(" + std::to_string(BDT_cut_1) + " < " + BDT_output_1_name + ")";
     std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 6 * deltaE_right_sigma_g) + "))";
+    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + (sizeDeltaE_one + 1.0) * deltaE_right_sigma_g) + "))";
     std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
     std::string cut_total_1 = "(" + cut_M_deltaE_1 + "&&" + cut_BDT_1 + ")";
 
     std::string cut_BDT_2 = "(" + std::to_string(BDT_cut_2) + " < " + BDT_output_2_name + ")";
     std::string cut_M_2 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak_g - 16 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "))";
+    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak_g - (sizeDeltaE_one + 2.0 * sizeDeltaE_two + 1.0) * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g - sizeDeltaE_one * deltaE_left_sigma_g) + "))";
     std::string cut_M_deltaE_2 = "(" + cut_M_2 + "&&" + cut_deltaE_2 + ")";
     std::string cut_total_2 = "(" + cut_M_deltaE_2 + "&&" + cut_BDT_2 + ")";
 

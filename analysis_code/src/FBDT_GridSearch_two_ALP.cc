@@ -113,8 +113,8 @@ int main(int argc, char* argv[]) {
     loader.Cut("(0.5 < MyEnergyType) && (MyEnergyType < 1.5)");
     loader.PrintInformation("========== 4S Energy ==========");
     // cut on deltaE
-    loader.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
-    loader.PrintInformation("========== -15 delta < deltaE < -5 delta ==========");
+    loader.Cut(("(" + std::to_string(deltaE_peak - (sizeDeltaE_one + 2.0 * sizeDeltaE_two) * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - sizeDeltaE_one * deltaE_left_sigma) + ")").c_str());
+    loader.PrintInformation(("========== " + std::to_string(-(sizeDeltaE_one + 2.0 * sizeDeltaE_two)) + " delta < deltaE < " + std::to_string(-sizeDeltaE_one) + " delta ==========").c_str());
     loader.Cut(("(" + std::to_string(M_peak - 20 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + ")").c_str());
     loader.PrintInformation("========== -20 delta < M < 20 delta ==========");
 

@@ -85,8 +85,8 @@ int main(int argc, char* argv[]) {
 
     loader.Cut("(0.5 < MyEnergyType) && (MyEnergyType < 1.5)");
     loader.PrintInformation("========== 4S Energy ==========");
-    loader.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
-    loader.PrintInformation("========== -5 delta < deltaE < 5 delta ==========");
+    loader.Cut(("(" + std::to_string(deltaE_peak - sizeDeltaE_one * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + sizeDeltaE_one * deltaE_right_sigma) + ")").c_str());
+    loader.PrintInformation(("========== " + std::to_string(-sizeDeltaE_one) + " delta < deltaE < " + std::to_string(sizeDeltaE_one) + " delta ==========").c_str());
     loader.Cut(("(" + std::to_string(M_peak - sizeM * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + sizeM * M_right_sigma) + ")").c_str());
     loader.PrintInformation(("========== -" + std::to_string(sizeM) + " delta < M < " + std::to_string(sizeM) + " delta ==========").c_str());
     loader.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
