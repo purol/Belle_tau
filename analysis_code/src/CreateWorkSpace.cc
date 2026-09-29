@@ -728,7 +728,8 @@ int main(int argc, char* argv[]) {
 
     RooStats::HistFactory::Sample bkg_Belle_II("bkg_Belle_II", "bkg_ABCD_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str());
     bkg_Belle_II.ActivateStatError("bkg_ABCD_th1d_stat_err", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-    for (int i = 1; i <= 2; i++) bkg_Belle_II.AddHistoSys(("ABCD_nonclosure_region" + std::to_string(i)).c_str(), ("bkg_ABCD_nonclosure_neg_region" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("bkg_ABCD_nonclosure_pos_region" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
+    /* ABCD_nonclosure_region is commented out, because I assume the stat uncertainty in validation region is larger than the discrepancy on there */
+    //for (int i = 1; i <= 2; i++) bkg_Belle_II.AddHistoSys(("ABCD_nonclosure_region" + std::to_string(i)).c_str(), ("bkg_ABCD_nonclosure_neg_region" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("bkg_ABCD_nonclosure_pos_region" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
     /* <<following uncertainties are not needed because we use ABCD method>>
     * bkg_Belle_II.AddOverallSys("tracking_efficiency", 1.0 - (track_rel_uncertainty / 100.0) * 3, 1.0 + (track_rel_uncertainty / 100.0) * 3);
     * bkg_Belle_II.AddHistoSys("M_resolution", "bkg_neg_M_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "", "bkg_pos_M_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
