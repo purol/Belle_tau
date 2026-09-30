@@ -37,6 +37,6 @@ $(TARGETS): $(BINDIR)/% : $(TMPDIR)/%.o
 	@ $(CXX) -o $@ $< $(LDFLAGS) $(LIBS) $(INCLUDES) -L$(LIBDIR)
 	@ echo '<< compilation succeeded!! >>'
 
-$(OBJS): $(TMPDIR)/%.o : $(SRCDIR)/%.cc $(INCDIR)/constants.h
+$(OBJS): $(TMPDIR)/%.o : $(SRCDIR)/%.cc $(INCDIR)/constants.h $(INCDIR)/functions.h
 	@ echo '<< compiling $@ >>'
 	@ $(CXX) $(CFLAGS) $(INCLUDES) -L$(LIBDIR) -c $< -o $@

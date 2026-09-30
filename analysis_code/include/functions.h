@@ -340,7 +340,20 @@ void ReadPCA_remain(const char* filename, TH1D* signal_MC_th1d_nominal, TH1D* si
 
 }
 
-double mapping_function_ABCD(std::vector<double> variables_, bool validation_, int fluc_mode = -1) {
+// Pass the selection values explicitly so this helper does not depend on executable globals.
+struct ABCDParameters {
+    double BDT_cut_1;
+    double BDT_cut_2;
+    double deltaE_peak;
+    double deltaE_left_sigma;
+    double deltaE_right_sigma;
+    double M_peak;
+    double M_left_sigma;
+    double M_right_sigma;
+    double M_size;
+};
+
+inline double mapping_function_ABCD(std::vector<double> variables_, const ABCDParameters& parameters_, bool validation_, int fluc_mode = -1) {
     double M = variables_.at(0);
     double deltaE = variables_.at(1);
     double BDT_1 = variables_.at(2);
@@ -349,15 +362,15 @@ double mapping_function_ABCD(std::vector<double> variables_, bool validation_, i
     double deltaE_shift = fluc_mode == 2 ? 1.0 : (fluc_mode == 3 ? -1.0 : 0.0);
 
     int region = 0;
-    if (((deltaE_peak_g - (5.0 - deltaE_shift) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + (5.0 + deltaE_shift) * deltaE_right_sigma_g))) region = 1;
-    else if (((deltaE_peak_g - (15.0 - deltaE_shift) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - (5.0 - deltaE_shift) * deltaE_left_sigma_g))) region = 2;
+    if (((parameters_.deltaE_peak - (5.0 - deltaE_shift) * parameters_.deltaE_left_sigma) < deltaE) && (deltaE <= (parameters_.deltaE_peak + (5.0 + deltaE_shift) * parameters_.deltaE_right_sigma))) region = 1;
+    else if (((parameters_.deltaE_peak - (15.0 - deltaE_shift) * parameters_.deltaE_left_sigma) < deltaE) && (deltaE <= (parameters_.deltaE_peak - (5.0 - deltaE_shift) * parameters_.deltaE_left_sigma))) region = 2;
     else return NAN;
 
     // Shift the common boundaries together for resolution variations; the outer mass boundary stays at 20 sigma.
-    bool central = ((M_peak_g - (sizeM - M_shift) * M_left_sigma_g) < M) && (validation_ ? M < (M_peak_g + (sizeM + M_shift) * M_right_sigma_g) : M <= (M_peak_g + (sizeM + M_shift) * M_right_sigma_g));
-    bool sideband = (((M_peak_g - 20.0 * M_left_sigma_g) < M) && (validation_ ? M < (M_peak_g - (5.0 - M_shift) * M_left_sigma_g) : M <= (M_peak_g - (5.0 - M_shift) * M_left_sigma_g))) || (((M_peak_g + (5.0 + M_shift) * M_right_sigma_g) < M) && (validation_ ? M < (M_peak_g + 20.0 * M_right_sigma_g) : M <= (M_peak_g + 20.0 * M_right_sigma_g)));
+    bool central = ((parameters_.M_peak - (parameters_.M_size - M_shift) * parameters_.M_left_sigma) < M) && (validation_ ? M < (parameters_.M_peak + (parameters_.M_size + M_shift) * parameters_.M_right_sigma) : M <= (parameters_.M_peak + (parameters_.M_size + M_shift) * parameters_.M_right_sigma));
+    bool sideband = (((parameters_.M_peak - 20.0 * parameters_.M_left_sigma) < M) && (validation_ ? M < (parameters_.M_peak - (5.0 - M_shift) * parameters_.M_left_sigma) : M <= (parameters_.M_peak - (5.0 - M_shift) * parameters_.M_left_sigma))) || (((parameters_.M_peak + (5.0 + M_shift) * parameters_.M_right_sigma) < M) && (validation_ ? M < (parameters_.M_peak + 20.0 * parameters_.M_right_sigma) : M <= (parameters_.M_peak + 20.0 * parameters_.M_right_sigma)));
     double BDT = region == 1 ? BDT_1 : BDT_2;
-    double BDT_cut = region == 1 ? BDT_cut_1 : BDT_cut_2;
+    double BDT_cut = region == 1 ? parameters_.BDT_cut_1 : parameters_.BDT_cut_2;
     bool high_BDT = validation_ ? (0.3 * BDT_cut < BDT && BDT < 0.5 * BDT_cut) : BDT_cut < BDT;
     bool low_BDT = validation_ ? (0.1 * BDT_cut < BDT && BDT < 0.3 * BDT_cut) : (BDT_cut / 2.0 < BDT && BDT <= BDT_cut);
 

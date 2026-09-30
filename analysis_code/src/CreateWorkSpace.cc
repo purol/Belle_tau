@@ -37,27 +37,33 @@ double theta_g;
 bool validation_region_g = false;
 
 double mapping_function(std::vector<double> variables_) {
-    return mapping_function_ABCD(variables_, validation_region_g);
+    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
+    return mapping_function_ABCD(variables_, parameters, validation_region_g);
 }
 
 double mapping_function_validation(std::vector<double> variables_) {
-    return mapping_function_ABCD(variables_, true);
+    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
+    return mapping_function_ABCD(variables_, parameters, true);
 }
 
 double mapping_function_plus_M(std::vector<double> variables_) {
-    return mapping_function_ABCD(variables_, validation_region_g, 0);
+    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
+    return mapping_function_ABCD(variables_, parameters, validation_region_g, 0);
 }
 
 double mapping_function_minus_M(std::vector<double> variables_) {
-    return mapping_function_ABCD(variables_, validation_region_g, 1);
+    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
+    return mapping_function_ABCD(variables_, parameters, validation_region_g, 1);
 }
 
 double mapping_function_plus_DeltaE(std::vector<double> variables_) {
-    return mapping_function_ABCD(variables_, validation_region_g, 2);
+    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
+    return mapping_function_ABCD(variables_, parameters, validation_region_g, 2);
 }
 
 double mapping_function_minus_DeltaE(std::vector<double> variables_) {
-    return mapping_function_ABCD(variables_, validation_region_g, 3);
+    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
+    return mapping_function_ABCD(variables_, parameters, validation_region_g, 3);
 }
 
 void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, TH1D* data_th1d_stat_err_, TH1D* signal_MC_th1d_stat_err_, TH1D* bkg_MC_th1d_stat_err_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_, bool validation_ = false) {

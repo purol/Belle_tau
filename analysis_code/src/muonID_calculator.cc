@@ -29,9 +29,10 @@ double theta_g;
 bool include_validation = false;
 
 double mapping_function(std::vector<double> variables_) {
-    double bin = mapping_function_ABCD(variables_, false);
+    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
+    double bin = mapping_function_ABCD(variables_, parameters, false);
     if (std::isfinite(bin) || !include_validation) return bin;
-    return 8.0 + mapping_function_ABCD(variables_, true);
+    return 8.0 + mapping_function_ABCD(variables_, parameters, true);
 }
 
 void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, TH1D* data_th1d_stat_err_, TH1D* signal_MC_th1d_stat_err_, TH1D* bkg_MC_th1d_stat_err_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_) {
