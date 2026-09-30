@@ -7,7 +7,7 @@ mkdir -p ./output
 mkdir -p ./log
 mkdir -p ./err
 
-source /cvmfs/belle.cern.ch/tools/b2setup release-08-02-05
+source /cvmfs/belle.cern.ch/tools/b2setup release-08-02-07
 export PYTHONNOUSERSITE=1
 
 for datfile in ${DAT_DIR_PLUS}/*.dat; do
@@ -26,6 +26,9 @@ for datfile in ${DAT_DIR_PLUS}/*.dat; do
     done
 done
 
+source /cvmfs/belle.cern.ch/tools/b2setup release-08-03-01
+export PYTHONNOUSERSITE=1
+
 for datfile in ${DAT_DIR_PLUS}/*.dat; do
     for iterator in {1..3}; do
         # Extract parameters from filename: alpha_mass0.2_life0.1_A1_B1.dat
@@ -41,6 +44,9 @@ for datfile in ${DAT_DIR_PLUS}/*.dat; do
         sleep 0.5
     done
 done
+
+source /cvmfs/belle.cern.ch/tools/b2setup release-08-03-01
+export PYTHONNOUSERSITE=1
 
 for datfile in ${DAT_DIR_PLUS}/*.dat; do
     for iterator in {1..3}; do
@@ -58,6 +64,9 @@ for datfile in ${DAT_DIR_PLUS}/*.dat; do
     done
 done
 
+source /cvmfs/belle.cern.ch/tools/b2setup release-08-02-07
+export PYTHONNOUSERSITE=1
+
 for datfile in ${DAT_DIR_MINUS}/*.dat; do
     for iterator in {1..5}; do
         # Extract parameters from filename: alpha_mass0.2_life0.1_A1_B1.dat
@@ -74,6 +83,9 @@ for datfile in ${DAT_DIR_MINUS}/*.dat; do
     done
 done
 
+source /cvmfs/belle.cern.ch/tools/b2setup release-08-03-01
+export PYTHONNOUSERSITE=1
+
 for datfile in ${DAT_DIR_MINUS}/*.dat; do
     for iterator in {1..3}; do
         # Extract parameters from filename: alpha_mass0.2_life0.1_A1_B1.dat
@@ -89,6 +101,9 @@ for datfile in ${DAT_DIR_MINUS}/*.dat; do
         sleep 0.5
     done
 done
+
+source /cvmfs/belle.cern.ch/tools/b2setup release-08-03-01
+export PYTHONNOUSERSITE=1
 
 for datfile in ${DAT_DIR_MINUS}/*.dat; do
     for iterator in {1..3}; do
