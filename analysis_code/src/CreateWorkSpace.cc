@@ -285,7 +285,11 @@ void Write_ABCD_histograms(const std::vector<ABCDValidation>& validation_) {
         }
         // The independent validation discrepancy abs(kappa_hat - 1) sets the up/down templates for A only.
         double discrepancy = validation_.at(i - 1).discrepancy;
-        if (!std::isfinite(discrepancy)) continue;
+        if (!std::isfinite(discrepancy)) {
+            printf("[Write_ABCD_histograms] discrepancy is not finite\n");
+            eixt(1):
+        }
+
         double down = 1.0 - discrepancy;
         if (down < 0.0) down = 0.0;
         std::string suffix = "_region" + std::to_string(i);
