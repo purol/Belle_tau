@@ -360,10 +360,10 @@ inline double ABCD_validation_kappa(const std::vector<double>& observed_) {
     return (mean_A / mean_B) * (mean_D / mean_C);
 }
 
-inline ABCDValidation Fit_ABCD_validation(const std::vector<double>& observed_) {
-    if (observed_.size() != 4) throw std::runtime_error("[Fit_ABCD_validation] four observations are required");
+inline ABCDValidation Calculate_ABCD_nonclosure(const std::vector<double>& observed_) {
+    if (observed_.size() != 4) throw std::runtime_error("[Calculate_ABCD_nonclosure] four observations are required");
     for (double observed : observed_) {
-        if (!std::isfinite(observed) || observed < 0.0) throw std::runtime_error("[Fit_ABCD_validation] invalid observation");
+        if (!std::isfinite(observed) || observed < 0.0) throw std::runtime_error("[Calculate_ABCD_nonclosure] invalid observation");
     }
 
     ABCDValidation result;
@@ -385,7 +385,7 @@ inline std::vector<ABCDValidation> Validate_ABCD(TH1* validation_, const char* f
     for (int region = 1; region <= 2; region++) {
         std::vector<double> observed;
         for (int j = 1; j <= 4; j++) observed.push_back(validation_->GetBinContent(4 * (region - 1) + j));
-        results.push_back(Fit_ABCD_validation(observed));
+        results.push_back(Calculate_ABCD_nonclosure(observed));
     }
 
     FILE* fp = fopen(filename_, "w");
