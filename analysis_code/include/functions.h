@@ -354,12 +354,24 @@ struct ABCDParameters {
 };
 
 inline double mapping_function_ABCD(std::vector<double> variables_, const ABCDParameters& parameters_, bool validation_, int fluc_mode = -1) {
+    /*
+     * fluc_mode
+     * -1: no fluctuation
+     *  0: M positive
+     *  1: M negative
+     *  2: deltaE positive
+     *  3: deltaE negative
+    */
     double M = variables_.at(0);
     double deltaE = variables_.at(1);
     double BDT_1 = variables_.at(2);
     double BDT_2 = variables_.at(3);
-    double M_shift = fluc_mode == 0 ? 1.0 : (fluc_mode == 1 ? -1.0 : 0.0);
-    double deltaE_shift = fluc_mode == 2 ? 1.0 : (fluc_mode == 3 ? -1.0 : 0.0);
+    double M_shift = 0.0;
+    double deltaE_shift = 0.0;
+    if (fluc_mode == 0) M_shift = 1.0;
+    else if (fluc_mode == 1) M_shift = -1.0;
+    else if (fluc_mode == 2) deltaE_shift = 1.0;
+    else if (fluc_mode == 3) deltaE_shift = -1.0;
 
     int region = 0;
     if (((parameters_.deltaE_peak - (5.0 - deltaE_shift) * parameters_.deltaE_left_sigma) < deltaE) && (deltaE <= (parameters_.deltaE_peak + (5.0 + deltaE_shift) * parameters_.deltaE_right_sigma))) region = 1;
@@ -367,12 +379,42 @@ inline double mapping_function_ABCD(std::vector<double> variables_, const ABCDPa
     else return NAN;
 
     // Shift the common boundaries together for resolution variations; the outer mass boundary stays at 20 sigma.
-    bool central = ((parameters_.M_peak - (parameters_.M_size - M_shift) * parameters_.M_left_sigma) < M) && (validation_ ? M < (parameters_.M_peak + (parameters_.M_size + M_shift) * parameters_.M_right_sigma) : M <= (parameters_.M_peak + (parameters_.M_size + M_shift) * parameters_.M_right_sigma));
-    bool sideband = (((parameters_.M_peak - 20.0 * parameters_.M_left_sigma) < M) && (validation_ ? M < (parameters_.M_peak - (5.0 - M_shift) * parameters_.M_left_sigma) : M <= (parameters_.M_peak - (5.0 - M_shift) * parameters_.M_left_sigma))) || (((parameters_.M_peak + (5.0 + M_shift) * parameters_.M_right_sigma) < M) && (validation_ ? M < (parameters_.M_peak + 20.0 * parameters_.M_right_sigma) : M <= (parameters_.M_peak + 20.0 * parameters_.M_right_sigma)));
-    double BDT = region == 1 ? BDT_1 : BDT_2;
-    double BDT_cut = region == 1 ? parameters_.BDT_cut_1 : parameters_.BDT_cut_2;
-    bool high_BDT = validation_ ? (0.3 * BDT_cut < BDT && BDT < 0.5 * BDT_cut) : BDT_cut < BDT;
-    bool low_BDT = validation_ ? (0.1 * BDT_cut < BDT && BDT < 0.3 * BDT_cut) : (BDT_cut / 2.0 < BDT && BDT <= BDT_cut);
+    double central_lower = parameters_.M_peak - (parameters_.M_size - M_shift) * parameters_.M_left_sigma;
+    double central_upper = parameters_.M_peak + (parameters_.M_size + M_shift) * parameters_.M_right_sigma;
+    double sideband_left_lower = parameters_.M_peak - 20.0 * parameters_.M_left_sigma;
+    double sideband_left_upper = parameters_.M_peak - (5.0 - M_shift) * parameters_.M_left_sigma;
+    double sideband_right_lower = parameters_.M_peak + (5.0 + M_shift) * parameters_.M_right_sigma;
+    double sideband_right_upper = parameters_.M_peak + 20.0 * parameters_.M_right_sigma;
+
+    double BDT;
+    double BDT_cut;
+    if (region == 1) {
+        BDT = BDT_1;
+        BDT_cut = parameters_.BDT_cut_1;
+    }
+    else {
+        BDT = BDT_2;
+        BDT_cut = parameters_.BDT_cut_2;
+    }
+
+    bool central;
+    bool sideband;
+    bool high_BDT;
+    bool low_BDT;
+    if (validation_) {
+        central = (central_lower < M) && (M < central_upper);
+        sideband = ((sideband_left_lower < M) && (M < sideband_left_upper)) ||
+                   ((sideband_right_lower < M) && (M < sideband_right_upper));
+        high_BDT = (0.3 * BDT_cut < BDT) && (BDT < 0.5 * BDT_cut);
+        low_BDT = (0.1 * BDT_cut < BDT) && (BDT < 0.3 * BDT_cut);
+    }
+    else {
+        central = (central_lower < M) && (M <= central_upper);
+        sideband = ((sideband_left_lower < M) && (M <= sideband_left_upper)) ||
+                   ((sideband_right_lower < M) && (M <= sideband_right_upper));
+        high_BDT = BDT_cut < BDT;
+        low_BDT = (BDT_cut / 2.0 < BDT) && (BDT <= BDT_cut);
+    }
 
     // A1, B1, C1, D1, A2, B2, C2, D2, with the same ordering for validation.
     if (central && high_BDT) return 4.0 * (region - 1) + 1.0;
