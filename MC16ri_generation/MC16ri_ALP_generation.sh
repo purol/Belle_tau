@@ -7,7 +7,7 @@ mkdir -p ./output
 mkdir -p ./log
 mkdir -p ./err
 
-source /cvmfs/belle.cern.ch/tools/b2setup release-08-00-09
+source /cvmfs/belle.cern.ch/tools/b2setup release-08-02-05
 export PYTHONNOUSERSITE=1
 
 for datfile in ${DAT_DIR_PLUS}/*.dat; do
