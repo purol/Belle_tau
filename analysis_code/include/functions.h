@@ -345,8 +345,6 @@ void ReadPCA_remain(const char* filename, TH1D* signal_MC_th1d_nominal, TH1D* si
 
 struct ABCDValidation {
     double kappa;
-    double kappa_low;
-    double kappa_high;
     double discrepancy;
     double q_closure;
     std::vector<double> closure_yields;
@@ -390,8 +388,6 @@ inline ABCDValidation Fit_ABCD_validation(const std::vector<double>& observed_) 
     }
     ABCDValidation result;
     result.kappa = ABCD_validation_kappa(observed_, 0.0);
-    result.kappa_low = 0.0;
-    result.kappa_high = std::numeric_limits<double>::infinity();
     result.discrepancy = std::numeric_limits<double>::infinity();
     result.q_closure = 0.0;
     result.closure_yields = observed_;
@@ -409,32 +405,9 @@ inline ABCDValidation Fit_ABCD_validation(const std::vector<double>& observed_) 
     result.closure_yields = { observed_.at(0) + closure_shift, observed_.at(1) - closure_shift, observed_.at(2) - closure_shift, observed_.at(3) + closure_shift };
     result.q_closure = ABCD_validation_deviance(observed_, closure_shift);
 
-    // Nominal 68% profile-likelihood interval: -2 log(L_profile / L_max) <= 1.
-    // At low counts this is a likelihood interval, not a guarantee of exact frequentist coverage.
-    if (ABCD_validation_deviance(observed_, lower) > 1.0) {
-        double outside = lower;
-        double inside = 0.0;
-        for (int i = 0; i < 100; i++) {
-            double middle = outside + (inside - outside) / 2.0;
-            if (ABCD_validation_deviance(observed_, middle) > 1.0) outside = middle;
-            else inside = middle;
-        }
-        lower = inside;
-    }
-    if (ABCD_validation_deviance(observed_, upper) > 1.0) {
-        double outside = upper;
-        double inside = 0.0;
-        for (int i = 0; i < 100; i++) {
-            double middle = inside + (outside - inside) / 2.0;
-            if (ABCD_validation_deviance(observed_, middle) > 1.0) outside = middle;
-            else inside = middle;
-        }
-        upper = inside;
-    }
-    result.kappa_low = ABCD_validation_kappa(observed_, lower);
-    result.kappa_high = ABCD_validation_kappa(observed_, upper);
-    if (std::isfinite(result.kappa_low) && std::isfinite(result.kappa_high)) {
-        result.discrepancy = std::max(std::fabs(result.kappa_low - 1.0), std::fabs(result.kappa_high - 1.0));
+    // Use the best-fit non-closure for the systematic.
+    if (std::isfinite(result.kappa)) {
+        result.discrepancy = std::fabs(result.kappa - 1.0);
     }
     return result;
 }
@@ -450,17 +423,16 @@ inline std::vector<ABCDValidation> Validate_ABCD(TH1* validation_, const char* f
     FILE* fp = fopen(filename_, "w");
     if (fp == nullptr) throw std::runtime_error("[Validate_ABCD] cannot write the validation report");
     fprintf(fp, "Independent signal-free eight-bin Poisson validation; the two deltaE regions factorize.\n");
-    fprintf(fp, "Profile interval: -2 log(L_profile / L_max) <= 1 (nominal 68%%).\n");
-    fprintf(fp, "discrepancy = max(abs(kappa_low - 1), abs(kappa_high - 1)); no nominal correction.\n");
+    fprintf(fp, "discrepancy = abs(kappa_hat - 1); no nominal correction.\n");
     fprintf(fp, "Down/up A templates: max(0, 1-discrepancy), 1+discrepancy; B/C/D unchanged.\n");
-    fprintf(fp, "Non-finite bounds are reported without a finite fallback or pseudocounts.\n");
+    fprintf(fp, "A non-finite or undefined kappa_hat cannot supply a finite systematic; no fallback or pseudocounts.\n");
     double q_total = 0.0;
     for (int region = 1; region <= 2; region++) {
         const ABCDValidation& result = results.at(region - 1);
         fprintf(fp, "region %d\n", region);
         for (int j = 1; j <= 4; j++) fprintf(fp, "  bin %d: observed=%.17g closure_fit=%.17g\n", 4 * (region - 1) + j, validation_->GetBinContent(4 * (region - 1) + j), result.closure_yields.at(j - 1));
-        fprintf(fp, "  kappa_hat=%.17g kappa_low=%.17g kappa_high=%.17g discrepancy=%.17g q_closure=%.17g\n", result.kappa, result.kappa_low, result.kappa_high, result.discrepancy, result.q_closure);
-        printf("[ABCD validation] region %d: kappa=%g, profile interval=[%g, %g], non-closure uncertainty=%g, q_closure=%g\n", region, result.kappa, result.kappa_low, result.kappa_high, result.discrepancy, result.q_closure);
+        fprintf(fp, "  kappa_hat=%.17g discrepancy=%.17g q_closure=%.17g\n", result.kappa, result.discrepancy, result.q_closure);
+        printf("[ABCD validation] region %d: kappa=%g, non-closure uncertainty=%g, q_closure=%g\n", region, result.kappa, result.discrepancy, result.q_closure);
         if (!std::isfinite(result.discrepancy)) printf("[ABCD validation] region %d: a finite systematic cannot be determined from these observations\n", region);
         else if (result.discrepancy > 1.0) printf("[ABCD validation] region %d: the down variation is limited to zero yield\n", region);
         q_total += result.q_closure;
