@@ -18,7 +18,9 @@ def save_correlation_matrix(corr_matrix, title, filename):
 
 def covariance_to_correlation(cov_matrix):
     std_devs = np.sqrt(np.diag(cov_matrix))  # Get standard deviations
-    correlation_matrix = cov_matrix / np.outer(std_devs, std_devs)  # Normalize
+    denominator = np.outer(std_devs, std_devs)
+    # Empty or constant control bins have no variance and no defined correlation.
+    correlation_matrix = np.divide(cov_matrix, denominator, out=np.zeros_like(cov_matrix), where=denominator > 0)
     return correlation_matrix
 
 parser = argparse.ArgumentParser()
@@ -37,7 +39,7 @@ if args.half_only:
     df = df.iloc[:, :num_features]
 
 # Compute correlation matrix before PCA
-corr_before = df.corr()
+corr_before = df.corr().fillna(0.0)
 cov_before = df.cov()
 
 # Apply PCA without standardization
@@ -46,7 +48,7 @@ X_pca = pca.fit_transform(df)
 
 # select the num of dim
 cumsum = np.cumsum(pca.explained_variance_ratio_)
-dim = np.argmax(cumsum >= 0.98) + 1
+dim = np.argmax(cumsum >= 0.98) + 1 if np.sum(pca.explained_variance_) > 0 else 0
 print(dim, "components are selected")
 
 # Eigenvalues (variance explained by each principal component)
