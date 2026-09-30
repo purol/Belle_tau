@@ -27,35 +27,6 @@ double M_left_sigma_g;
 double M_right_sigma_g;
 double theta_g;
 
-double mapping_function_ABCD(std::vector<double> variables_, bool validation_, int fluc_mode = -1) {
-    double M = variables_.at(0);
-    double deltaE = variables_.at(1);
-    double BDT_1 = variables_.at(2);
-    double BDT_2 = variables_.at(3);
-    double M_shift = fluc_mode == 0 ? 1.0 : (fluc_mode == 1 ? -1.0 : 0.0);
-    double deltaE_shift = fluc_mode == 2 ? 1.0 : (fluc_mode == 3 ? -1.0 : 0.0);
-
-    int region = 0;
-    if (((deltaE_peak_g - (5.0 - deltaE_shift) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + (5.0 + deltaE_shift) * deltaE_right_sigma_g))) region = 1;
-    else if (((deltaE_peak_g - (15.0 - deltaE_shift) * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - (5.0 - deltaE_shift) * deltaE_left_sigma_g))) region = 2;
-    else return NAN;
-
-    // Shift the common boundaries together for resolution variations; the outer mass boundary stays at 20 sigma.
-    bool central = ((M_peak_g - (sizeM - M_shift) * M_left_sigma_g) < M) && (validation_ ? M < (M_peak_g + (sizeM + M_shift) * M_right_sigma_g) : M <= (M_peak_g + (sizeM + M_shift) * M_right_sigma_g));
-    bool sideband = (((M_peak_g - 20.0 * M_left_sigma_g) < M) && (validation_ ? M < (M_peak_g - (5.0 - M_shift) * M_left_sigma_g) : M <= (M_peak_g - (5.0 - M_shift) * M_left_sigma_g))) || (((M_peak_g + (5.0 + M_shift) * M_right_sigma_g) < M) && (validation_ ? M < (M_peak_g + 20.0 * M_right_sigma_g) : M <= (M_peak_g + 20.0 * M_right_sigma_g)));
-    double BDT = region == 1 ? BDT_1 : BDT_2;
-    double BDT_cut = region == 1 ? BDT_cut_1 : BDT_cut_2;
-    bool high_BDT = validation_ ? (0.3 * BDT_cut < BDT && BDT < 0.5 * BDT_cut) : BDT_cut < BDT;
-    bool low_BDT = validation_ ? (0.1 * BDT_cut < BDT && BDT < 0.3 * BDT_cut) : (BDT_cut / 2.0 < BDT && BDT <= BDT_cut);
-
-    // A1, B1, C1, D1, A2, B2, C2, D2, with the same ordering for validation.
-    if (central && high_BDT) return 4.0 * (region - 1) + 1.0;
-    else if (sideband && high_BDT) return 4.0 * (region - 1) + 2.0;
-    else if (central && low_BDT) return 4.0 * (region - 1) + 3.0;
-    else if (sideband && low_BDT) return 4.0 * (region - 1) + 4.0;
-    else return NAN;
-}
-
 bool include_validation = false;
 
 double mapping_function(std::vector<double> variables_) {
