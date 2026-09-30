@@ -405,7 +405,7 @@ int main(int argc, char* argv[]) {
     bool use_ABCD_nonclosure = false;
     /* ABCD_nonclosure is commented out for now. Uncomment the next line to include the independent validation systematic. */
     // use_ABCD_nonclosure = true;
-    // Validation is signal-free and is fitted separately. Signal PCA files always contain eight bins.
+    // Validation is signal-free; kappa and its discrepancy are calculated separately. Signal PCA files always contain eight bins.
 
     // TH1 list
     /*
@@ -503,7 +503,7 @@ int main(int argc, char* argv[]) {
     // ABCD method
     ABCD_method(argv[1], argv[3], argv[4], argv[5], data_th1d, data_validation_th1d, data_th1d_stat_err, background_list);
 
-    // Fit only the eight validation observations, with no signal or application data.
+    // Calculate kappa and abs(kappa - 1) directly from the eight validation observations, with no signal or application data.
     std::vector<ABCDValidation> validation = Validate_ABCD(data_validation_th1d, (std::string(argv[6]) + "/ABCD_validation.txt").c_str(), { BDT_cut_1, BDT_cut_2 }, validation_BDT_cuts);
     if (use_ABCD_nonclosure) {
         for (int i = 0; i < (int)validation.size(); i++) {

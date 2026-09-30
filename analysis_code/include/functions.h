@@ -373,7 +373,7 @@ inline ABCDValidation Calculate_ABCD_nonclosure(const std::vector<double>& obser
     result.kappa = ABCD_validation_kappa(observed_);
     result.discrepancy = std::numeric_limits<double>::infinity();
 
-    // Use the best-fit non-closure for the systematic.
+    // Use abs(kappa_hat - 1), calculated directly from the validation yields, for the systematic.
     if (std::isfinite(result.kappa)) {
         result.discrepancy = std::fabs(result.kappa - 1.0);
     }
