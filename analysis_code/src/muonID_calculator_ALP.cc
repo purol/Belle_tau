@@ -38,13 +38,9 @@ double M_left_sigma_g;
 double M_right_sigma_g;
 double theta_g;
 
-bool include_validation = false;
-
 double mapping_function(std::vector<double> variables_) {
     ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
-    double bin = mapping_function_ABCD(variables_, parameters, false);
-    if (std::isfinite(bin) || !include_validation) return bin;
-    return 8.0 + mapping_function_ABCD(variables_, parameters, true);
+    return mapping_function_ABCD(variables_, parameters, false);
 }
 
 void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, TH1D* data_th1d_stat_err_, TH1D* signal_MC_th1d_stat_err_, TH1D* bkg_MC_th1d_stat_err_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_) {
@@ -135,10 +131,8 @@ int main(int argc, char* argv[]) {
     * argv[11]: B constant
     */
 
-    // Optional last argument: validation. Use joint toys only when enabling the validation likelihood.
-    include_validation = argc > 12 && std::string(argv[12]) == "validation";
-    int NBin = include_validation ? 16 : 8;
-    // A1, B1, C1, D1, A2, B2, C2, D2; optional validation bins follow in the same order.
+    int NBin = 8;
+    // A1, B1, C1, D1, A2, B2, C2, D2. Validation is assumed to contain no signal.
     TH1D* data_th1d = new TH1D("data_th1d", ";bin index;", NBin, 0.5, NBin + 0.5);
     TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", NBin, 0.5, NBin + 0.5);
     TH1D* bkg_MC_th1d = new TH1D("bkg_MC_th1d", ";bin index;", NBin, 0.5, NBin + 0.5);
@@ -250,11 +244,16 @@ int main(int argc, char* argv[]) {
         // Signal columns first, then background columns, so PCA_toys.py --half_only selects the signal.
         for (int j = 1; j <= NBin; j++) {
             double nominal = MC_th1d_nominal.at(j - 1);
-            fprintf(fp, "%lf,", nominal != 0.0 ? signal_MC_th1d->GetBinContent(j) / nominal : 1.0);
+            double relative_yield = 1.0;
+            if (nominal != 0.0) relative_yield = signal_MC_th1d->GetBinContent(j) / nominal;
+            fprintf(fp, "%lf,", relative_yield);
         }
         for (int j = 1; j <= NBin; j++) {
             double nominal = MC_th1d_nominal.at(NBin + j - 1);
-            fprintf(fp, "%lf%s", nominal != 0.0 ? bkg_MC_th1d->GetBinContent(j) / nominal : 1.0, j == NBin ? "\n" : ",");
+            double relative_yield = 1.0;
+            if (nominal != 0.0) relative_yield = bkg_MC_th1d->GetBinContent(j) / nominal;
+            if (j == NBin) fprintf(fp, "%lf\n", relative_yield);
+            else fprintf(fp, "%lf,", relative_yield);
         }
 
     }

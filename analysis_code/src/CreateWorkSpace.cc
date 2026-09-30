@@ -34,11 +34,9 @@ double M_left_sigma_g;
 double M_right_sigma_g;
 double theta_g;
 
-bool validation_region_g = false;
-
 double mapping_function(std::vector<double> variables_) {
     ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
-    return mapping_function_ABCD(variables_, parameters, validation_region_g);
+    return mapping_function_ABCD(variables_, parameters, false);
 }
 
 double mapping_function_validation(std::vector<double> variables_) {
@@ -48,26 +46,25 @@ double mapping_function_validation(std::vector<double> variables_) {
 
 double mapping_function_plus_M(std::vector<double> variables_) {
     ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
-    return mapping_function_ABCD(variables_, parameters, validation_region_g, 0);
+    return mapping_function_ABCD(variables_, parameters, false, 0);
 }
 
 double mapping_function_minus_M(std::vector<double> variables_) {
     ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
-    return mapping_function_ABCD(variables_, parameters, validation_region_g, 1);
+    return mapping_function_ABCD(variables_, parameters, false, 1);
 }
 
 double mapping_function_plus_DeltaE(std::vector<double> variables_) {
     ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
-    return mapping_function_ABCD(variables_, parameters, validation_region_g, 2);
+    return mapping_function_ABCD(variables_, parameters, false, 2);
 }
 
 double mapping_function_minus_DeltaE(std::vector<double> variables_) {
     ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
-    return mapping_function_ABCD(variables_, parameters, validation_region_g, 3);
+    return mapping_function_ABCD(variables_, parameters, false, 3);
 }
 
-void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, TH1D* data_th1d_stat_err_, TH1D* signal_MC_th1d_stat_err_, TH1D* bkg_MC_th1d_stat_err_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_, bool validation_ = false) {
-    validation_region_g = validation_;
+void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, TH1D* data_th1d_stat_err_, TH1D* signal_MC_th1d_stat_err_, TH1D* bkg_MC_th1d_stat_err_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_) {
     std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
     std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 6 * deltaE_right_sigma_g) + "))";
     std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
@@ -127,14 +124,16 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     // get statistical uncertainty (relative error)
     // Empty MC bins have zero relative uncertainty; all eight bins are filled from the selected events.
     for (int i = 1; i <= 8; i++) {
-        data_th1d_stat_err_->SetBinContent(i, data_th1d_->GetBinContent(i) > 0.0 ? data_th1d_->GetBinError(i) / data_th1d_->GetBinContent(i) : 0.0);
-        signal_MC_th1d_stat_err_->SetBinContent(i, signal_MC_th1d_->GetBinContent(i) > 0.0 ? signal_MC_th1d_->GetBinError(i) / signal_MC_th1d_->GetBinContent(i) : 0.0);
-        bkg_MC_th1d_stat_err_->SetBinContent(i, bkg_MC_th1d_->GetBinContent(i) > 0.0 ? bkg_MC_th1d_->GetBinError(i) / bkg_MC_th1d_->GetBinContent(i) : 0.0);
+        if (data_th1d_->GetBinContent(i) > 0.0) data_th1d_stat_err_->SetBinContent(i, data_th1d_->GetBinError(i) / data_th1d_->GetBinContent(i));
+        else data_th1d_stat_err_->SetBinContent(i, 0.0);
+        if (signal_MC_th1d_->GetBinContent(i) > 0.0) signal_MC_th1d_stat_err_->SetBinContent(i, signal_MC_th1d_->GetBinError(i) / signal_MC_th1d_->GetBinContent(i));
+        else signal_MC_th1d_stat_err_->SetBinContent(i, 0.0);
+        if (bkg_MC_th1d_->GetBinContent(i) > 0.0) bkg_MC_th1d_stat_err_->SetBinContent(i, bkg_MC_th1d_->GetBinError(i) / bkg_MC_th1d_->GetBinContent(i));
+        else bkg_MC_th1d_stat_err_->SetBinContent(i, 0.0);
     }
 }
 
-void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_, int fluc_mode, bool validation_ = false) {
-    validation_region_g = validation_;
+void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_, int fluc_mode) {
     /*
     * fluc mode:
     * 0: positive M fluctuation
@@ -222,7 +221,6 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
 }
 
 void ABCD_method(const char* input_path_1_, const char* input_path_2_, const char* FOM_1_path_, const char* FOM_2_path_, TH1D* data_th1d_, TH1D* validation_th1d_, TH1D* data_stat_err_, std::vector<std::string> data_list_) {
-    validation_region_g = false;
     data_th1d_->Reset();
     validation_th1d_->Reset();
     ReadFOM(FOM_1_path_, &BDT_cut_1);
@@ -267,64 +265,14 @@ void ABCD_method(const char* input_path_1_, const char* input_path_2_, const cha
             printf("%s bin %d = %lf\n", hist->GetName(), i, yield);
         }
     }
-    for (int i = 1; i <= 8; i++) data_stat_err_->SetBinContent(i, data_th1d_->GetBinContent(i) > 0.0 ? data_th1d_->GetBinError(i) / data_th1d_->GetBinContent(i) : 0.0);
+    for (int i = 1; i <= 8; i++) {
+        if (data_th1d_->GetBinContent(i) > 0.0) data_stat_err_->SetBinContent(i, data_th1d_->GetBinError(i) / data_th1d_->GetBinContent(i));
+        else data_stat_err_->SetBinContent(i, 0.0);
+    }
     // B, C and D can contain signal. Their counts are fitted with mu * signal + background, not divided into a fixed estimate.
 }
 
-void ReadPCA_ABCD(const char* filename_, TH1D* nominal_, TH1D* validation_, const char* syst_name_, std::vector<TH1D*>* syst_, std::vector<TH1D*>* validation_syst_, bool use_validation_) {
-    if (!use_validation_) {
-        ReadPCA(filename_, nominal_, syst_name_, syst_);
-        return;
-    }
-    // Optional joint PCA: eight application bins followed by eight validation bins from the same toys.
-    // Both channels use the same component index, retaining their systematic correlations.
-    TH1D nominal_joint("nominal_joint", ";bin index;", 16, 0.5, 16.5);
-    for (int i = 1; i <= 8; i++) {
-        nominal_joint.SetBinContent(i, nominal_->GetBinContent(i));
-        nominal_joint.SetBinError(i, nominal_->GetBinError(i));
-        nominal_joint.SetBinContent(i + 8, validation_->GetBinContent(i));
-        nominal_joint.SetBinError(i + 8, validation_->GetBinError(i));
-    }
-    std::vector<TH1D*> syst_joint;
-    ReadPCA(filename_, &nominal_joint, syst_name_, &syst_joint);
-    for (int i = 0; i < (int)syst_joint.size(); i++) {
-        std::string suffix = std::string(syst_name_) + (i % 2 == 0 ? "_p_" : "_n_") + std::to_string(i / 2);
-        syst_joint.at(i)->SetName(("signal_joint_hist_" + suffix).c_str());
-        TH1D* hist = new TH1D(("signal_hist_" + suffix).c_str(), ";bin index;", 8, 0.5, 8.5);
-        TH1D* validation_hist = new TH1D(("signal_validation_hist_" + suffix).c_str(), ";bin index;", 8, 0.5, 8.5);
-        for (int j = 1; j <= 8; j++) {
-            hist->SetBinContent(j, syst_joint.at(i)->GetBinContent(j));
-            hist->SetBinError(j, syst_joint.at(i)->GetBinError(j));
-            validation_hist->SetBinContent(j, syst_joint.at(i)->GetBinContent(j + 8));
-            validation_hist->SetBinError(j, syst_joint.at(i)->GetBinError(j + 8));
-        }
-        syst_->push_back(hist);
-        validation_syst_->push_back(validation_hist);
-        delete syst_joint.at(i);
-    }
-}
-
-void ReadPCA_remain_ABCD(const char* filename_, TH1D* nominal_, TH1D* validation_, TH1D* relative_syst_, TH1D* validation_relative_syst_, bool use_validation_) {
-    if (!use_validation_) {
-        ReadPCA_remain(filename_, nominal_, relative_syst_);
-        return;
-    }
-    TH1D nominal_joint("nominal_joint", ";bin index;", 16, 0.5, 16.5);
-    TH1D relative_syst_joint("relative_syst_joint", ";bin index;", 16, 0.5, 16.5);
-    for (int i = 1; i <= 8; i++) {
-        nominal_joint.SetBinContent(i, nominal_->GetBinContent(i));
-        nominal_joint.SetBinContent(i + 8, validation_->GetBinContent(i));
-        relative_syst_joint.SetBinContent(i, relative_syst_->GetBinContent(i));
-        relative_syst_joint.SetBinContent(i + 8, validation_relative_syst_->GetBinContent(i));
-    }
-    ReadPCA_remain(filename_, &nominal_joint, &relative_syst_joint);
-    for (int i = 1; i <= 8; i++) {
-        relative_syst_->SetBinContent(i, relative_syst_joint.GetBinContent(i));
-        validation_relative_syst_->SetBinContent(i, relative_syst_joint.GetBinContent(i + 8));
-    }
-}
-
-void Write_ABCD_histograms() {
+void Write_ABCD_histograms(const std::vector<ABCDValidation>& validation_) {
     // Each unit template selects one bin of the eight-bin channel; its yield is set by the norm factors.
     std::vector<std::string> regions = { "A", "B", "C", "D" };
     for (int i = 1; i <= 2; i++) {
@@ -335,54 +283,64 @@ void Write_ABCD_histograms() {
             hist->SetBinError(4 * (i - 1) + j + 1, 0.0);
             hist->Write();
         }
+        // The independent validation interval sets the up/down templates for A only.
+        double discrepancy = validation_.at(i - 1).discrepancy;
+        if (!std::isfinite(discrepancy)) continue;
+        double down = 1.0 - discrepancy;
+        if (down < 0.0) down = 0.0;
+        std::string suffix = "_region" + std::to_string(i);
+        TH1D* hist_p = new TH1D(("bkg_ABCD_nonclosure_p" + suffix).c_str(), ";bin index;", 8, 0.5, 8.5);
+        TH1D* hist_n = new TH1D(("bkg_ABCD_nonclosure_n" + suffix).c_str(), ";bin index;", 8, 0.5, 8.5);
+        hist_p->SetBinContent(4 * (i - 1) + 1, 1.0 + discrepancy);
+        hist_n->SetBinContent(4 * (i - 1) + 1, down);
+        hist_p->SetBinError(4 * (i - 1) + 1, 0.0);
+        hist_n->SetBinError(4 * (i - 1) + 1, 0.0);
+        hist_p->Write();
+        hist_n->Write();
     }
 }
 
-void Add_ABCD_samples(RooStats::HistFactory::Channel& channel_, const char* filename_, TH1D* data_, bool validation_, bool use_nonclosure_) {
+void Add_ABCD_samples(RooStats::HistFactory::Channel& channel_, const char* filename_, TH1D* data_, const std::vector<ABCDValidation>& validation_, bool use_nonclosure_) {
     // A = beta * r, B = beta, C = nu * r, D = nu, independently for each deltaE region.
     // The signal sample supplies mu * signal in every bin, including B, C and D.
     // Do not add ActivateStatError: all eight bins already have their Poisson counting terms.
     std::vector<std::string> regions = { "A", "B", "C", "D" };
     for (int i = 1; i <= 2; i++) {
         std::string suffix = "_region" + std::to_string(i);
-        std::string parameter_suffix = (validation_ ? "_validation" : "") + suffix;
         double N_B = data_->GetBinContent(4 * (i - 1) + 2);
         double N_C = data_->GetBinContent(4 * (i - 1) + 3);
         double N_D = data_->GetBinContent(4 * (i - 1) + 4);
         // Positive starting values are only minimizer seeds. No events are added to the observations.
-        double beta = N_B > 0.0 ? N_B : 1.0;
-        double nu = N_D > 0.0 ? N_D : 1.0;
-        double r = N_C > 0.0 ? N_C / nu : 1.0;
+        double beta = 1.0;
+        double nu = 1.0;
+        double r = 1.0;
+        if (N_B > 0.0) beta = N_B;
+        if (N_D > 0.0) nu = N_D;
+        if (N_C > 0.0) r = N_C / nu;
         double beta_max = std::max(100.0, 10.0 * beta);
         double nu_max = std::max(100.0, 10.0 * nu);
         double r_max = std::max(100.0, 10.0 * r);
         for (int j = 0; j < (int)regions.size(); j++) {
-            std::string name = "bkg_" + regions.at(j) + parameter_suffix;
+            std::string name = "bkg_" + regions.at(j) + suffix;
             RooStats::HistFactory::Sample bkg(name.c_str(), ("bkg_ABCD_unit_" + regions.at(j) + suffix).c_str(), filename_);
-            if (j < 2) bkg.AddNormFactor("ABCD_beta" + parameter_suffix, beta, 0.0, beta_max);
-            else bkg.AddNormFactor("ABCD_nu" + parameter_suffix, nu, 0.0, nu_max);
-            if (j == 0 || j == 2) bkg.AddNormFactor("ABCD_r" + parameter_suffix, r, 0.0, r_max);
-            // Only kappa is shared with validation; beta', nu' and r' are independent.
-            // Transferring kappa to the application BDT range is an extra assumption.
-            // Do not add a separate non-closure HistoSys, which would count the validation information twice.
-            if (j == 0 && use_nonclosure_) bkg.AddNormFactor("ABCD_kappa" + suffix, 1.0, 0.0, 100.0);
+            if (j < 2) bkg.AddNormFactor("ABCD_beta" + suffix, beta, 0.0, beta_max);
+            else bkg.AddNormFactor("ABCD_nu" + suffix, nu, 0.0, nu_max);
+            if (j == 0 || j == 2) bkg.AddNormFactor("ABCD_r" + suffix, r, 0.0, r_max);
+            // Keep the nominal ABCD prediction. Validation enters only through this separate nuisance.
+            // Applying the validation discrepancy to the application BDT range is an extra assumption.
+            if (j == 0 && use_nonclosure_ && validation_.at(i - 1).discrepancy > 0.0) {
+                bkg.AddHistoSys(("ABCD_nonclosure" + suffix).c_str(), ("bkg_ABCD_nonclosure_n" + suffix).c_str(), filename_, "", ("bkg_ABCD_nonclosure_p" + suffix).c_str(), filename_, "");
+            }
             bkg.SetNormalizeByTheory(false);
             channel_.AddSample(bkg);
         }
-        if (validation_ && (N_B == 0.0 || N_D == 0.0)) printf("[ABCD_method] empty validation sideband in region %d; kappa may have no finite upper bound\n", i);
     }
 }
 
-void Set_ABCD_parameter_ranges(RooWorkspace* w_, bool use_nonclosure_) {
+void Set_ABCD_parameter_ranges(RooWorkspace* w_) {
     // HistFactory needs finite construction ranges. They must not act as artificial statistical constraints.
     // Remove the upper bounds in the saved workspace, retaining the physical lower bound of zero.
     std::vector<std::string> parameters = { "beta", "nu", "r" };
-    if (use_nonclosure_) {
-        parameters.push_back("beta_validation");
-        parameters.push_back("nu_validation");
-        parameters.push_back("r_validation");
-        parameters.push_back("kappa");
-    }
     for (int i = 1; i <= 2; i++) {
         for (int j = 0; j < (int)parameters.size(); j++) {
             std::string name = "ABCD_" + parameters.at(j) + "_region" + std::to_string(i);
@@ -409,9 +367,9 @@ int main(int argc, char* argv[]) {
     */
 
     bool use_ABCD_nonclosure = false;
-    /* ABCD_nonclosure is commented out for now. Uncomment the next line to include the validation Poisson terms. */
+    /* ABCD_nonclosure is commented out for now. Uncomment the next line to include the independent validation systematic. */
     // use_ABCD_nonclosure = true;
-    // Validation requires joint application/validation PCA files made with the calculator validation option.
+    // Validation is signal-free and is fitted separately. Signal PCA files always contain eight bins.
 
     // TH1 list
     /*
@@ -423,62 +381,41 @@ int main(int argc, char* argv[]) {
     TH1D* data_th1d = new TH1D("data_th1d", ";bin index;", 8, 0.5, 8.5);
     TH1D* data_validation_th1d = new TH1D("data_validation_th1d", ";bin index;", 8, 0.5, 8.5);
     TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", 8, 0.5, 8.5);
-    TH1D* signal_validation_MC_th1d = new TH1D("signal_validation_MC_th1d", ";bin index;", 8, 0.5, 8.5);
     TH1D* bkg_MC_th1d = new TH1D("bkg_MC_th1d", ";bin index;", 8, 0.5, 8.5);
-    TH1D* bkg_validation_MC_th1d = new TH1D("bkg_validation_MC_th1d", ";bin index;", 8, 0.5, 8.5);
 
     // relative error
     TH1D* data_th1d_stat_err = new TH1D("data_th1d_stat_err", ";bin index;", 8, 0.5, 8.5);
-    TH1D* data_validation_th1d_stat_err = new TH1D("data_validation_th1d_stat_err", ";bin index;", 8, 0.5, 8.5);
     TH1D* signal_MC_th1d_stat_err = new TH1D("signal_MC_th1d_stat_err", ";bin index;", 8, 0.5, 8.5);
-    TH1D* signal_validation_MC_th1d_stat_err = new TH1D("signal_validation_MC_th1d_stat_err", ";bin index;", 8, 0.5, 8.5);
     TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", 8, 0.5, 8.5);
-    TH1D* bkg_validation_MC_th1d_stat_err = new TH1D("bkg_validation_MC_th1d_stat_err", ";bin index;", 8, 0.5, 8.5);
 
     TH1D* data_pos_M_th1d = new TH1D("data_pos_M_th1d", ";bin index;", 8, 0.5, 8.5);
-    TH1D* data_validation_pos_M_th1d = new TH1D("data_validation_pos_M_th1d", ";bin index;", 8, 0.5, 8.5);
     TH1D* signal_pos_M_MC_th1d = new TH1D("signal_pos_M_MC_th1d", ";bin index;", 8, 0.5, 8.5);
-    TH1D* signal_validation_pos_M_MC_th1d = new TH1D("signal_validation_pos_M_MC_th1d", ";bin index;", 8, 0.5, 8.5);
     TH1D* bkg_pos_M_MC_th1d = new TH1D("bkg_pos_M_MC_th1d", ";bin index;", 8, 0.5, 8.5);
-    TH1D* bkg_validation_pos_M_MC_th1d = new TH1D("bkg_validation_pos_M_MC_th1d", ";bin index;", 8, 0.5, 8.5);
 
     TH1D* data_neg_M_th1d = new TH1D("data_neg_M_th1d", ";bin index;", 8, 0.5, 8.5);
-    TH1D* data_validation_neg_M_th1d = new TH1D("data_validation_neg_M_th1d", ";bin index;", 8, 0.5, 8.5);
     TH1D* signal_neg_M_MC_th1d = new TH1D("signal_neg_M_MC_th1d", ";bin index;", 8, 0.5, 8.5);
-    TH1D* signal_validation_neg_M_MC_th1d = new TH1D("signal_validation_neg_M_MC_th1d", ";bin index;", 8, 0.5, 8.5);
     TH1D* bkg_neg_M_MC_th1d = new TH1D("bkg_neg_M_MC_th1d", ";bin index;", 8, 0.5, 8.5);
-    TH1D* bkg_validation_neg_M_MC_th1d = new TH1D("bkg_validation_neg_M_MC_th1d", ";bin index;", 8, 0.5, 8.5);
 
     TH1D* data_pos_DeltaE_th1d = new TH1D("data_pos_DeltaE_th1d", ";bin index;", 8, 0.5, 8.5);
-    TH1D* data_validation_pos_DeltaE_th1d = new TH1D("data_validation_pos_DeltaE_th1d", ";bin index;", 8, 0.5, 8.5);
     TH1D* signal_pos_DeltaE_MC_th1d = new TH1D("signal_pos_DeltaE_MC_th1d", ";bin index;", 8, 0.5, 8.5);
-    TH1D* signal_validation_pos_DeltaE_MC_th1d = new TH1D("signal_validation_pos_DeltaE_MC_th1d", ";bin index;", 8, 0.5, 8.5);
     TH1D* bkg_pos_DeltaE_MC_th1d = new TH1D("bkg_pos_DeltaE_MC_th1d", ";bin index;", 8, 0.5, 8.5);
-    TH1D* bkg_validation_pos_DeltaE_MC_th1d = new TH1D("bkg_validation_pos_DeltaE_MC_th1d", ";bin index;", 8, 0.5, 8.5);
 
     TH1D* data_neg_DeltaE_th1d = new TH1D("data_neg_DeltaE_th1d", ";bin index;", 8, 0.5, 8.5);
-    TH1D* data_validation_neg_DeltaE_th1d = new TH1D("data_validation_neg_DeltaE_th1d", ";bin index;", 8, 0.5, 8.5);
     TH1D* signal_neg_DeltaE_MC_th1d = new TH1D("signal_neg_DeltaE_MC_th1d", ";bin index;", 8, 0.5, 8.5);
-    TH1D* signal_validation_neg_DeltaE_MC_th1d = new TH1D("signal_validation_neg_DeltaE_MC_th1d", ";bin index;", 8, 0.5, 8.5);
     TH1D* bkg_neg_DeltaE_MC_th1d = new TH1D("bkg_neg_DeltaE_MC_th1d", ";bin index;", 8, 0.5, 8.5);
-    TH1D* bkg_validation_neg_DeltaE_MC_th1d = new TH1D("bkg_validation_neg_DeltaE_MC_th1d", ";bin index;", 8, 0.5, 8.5);
 
     ReadFOM(argv[4], &BDT_cut_1);
     ReadFOM(argv[5], &BDT_cut_2);
 
     std::vector<TH1D*> signal_MC_th1d_muonID;
-    std::vector<TH1D*> signal_validation_MC_th1d_muonID;
     std::vector<TH1D*> bkg_MC_th1d_muonID;
 
     std::vector<TH1D*> signal_MC_th1d_luminosity;
-    std::vector<TH1D*> signal_validation_MC_th1d_luminosity;
     std::vector<TH1D*> bkg_MC_th1d_luminosity;
 
     // uncorrelated relative uncertainty
     TH1D* signal_MC_th1d_uncorr = new TH1D("signal_MC_th1d_uncorr", ";bin index;", 8, 0.5, 8.5);
-    TH1D* signal_validation_MC_th1d_uncorr = new TH1D("signal_validation_MC_th1d_uncorr", ";bin index;", 8, 0.5, 8.5);
     TH1D* bkg_MC_th1d_uncorr = new TH1D("bkg_MC_th1d_uncorr", ";bin index;", 8, 0.5, 8.5);
-    TH1D* bkg_validation_MC_th1d_uncorr = new TH1D("bkg_validation_MC_th1d_uncorr", ";bin index;", 8, 0.5, 8.5);
 
     std::vector<std::string> signal_list = split(argv[7], ':');
     std::vector<std::string> background_list = split(argv[8], ':');
@@ -507,28 +444,34 @@ int main(int argc, char* argv[]) {
 
     // we do not open the box, so I just use background MC
     FillHistogram(argv[1], argv[2], data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err, background_list, signal_list, background_list);
-    if (use_ABCD_nonclosure) FillHistogram(argv[1], argv[2], data_validation_th1d, signal_validation_MC_th1d, bkg_validation_MC_th1d, data_validation_th1d_stat_err, signal_validation_MC_th1d_stat_err, bkg_validation_MC_th1d_stat_err, background_list, signal_list, background_list, true);
 
     // muonID histogram
-    ReadPCA_ABCD((std::string(argv[1]) + "/muonID_PCA").c_str(), signal_MC_th1d, signal_validation_MC_th1d, "muonID", &signal_MC_th1d_muonID, &signal_validation_MC_th1d_muonID, use_ABCD_nonclosure);
-    ReadPCA_remain_ABCD((std::string(argv[1]) + "/muonID_PCA_remain").c_str(), signal_MC_th1d, signal_validation_MC_th1d, signal_MC_th1d_uncorr, signal_validation_MC_th1d_uncorr, use_ABCD_nonclosure);
+    ReadPCA((std::string(argv[1]) + "/muonID_PCA").c_str(), signal_MC_th1d, "muonID", &signal_MC_th1d_muonID);
+    ReadPCA_remain((std::string(argv[1]) + "/muonID_PCA_remain").c_str(), signal_MC_th1d, signal_MC_th1d_uncorr);
 
     // luminosity histogram
-    ReadPCA_ABCD((std::string(argv[1]) + "/luminosity_PCA").c_str(), signal_MC_th1d, signal_validation_MC_th1d, "luminosity", &signal_MC_th1d_luminosity, &signal_validation_MC_th1d_luminosity, use_ABCD_nonclosure);
-    ReadPCA_remain_ABCD((std::string(argv[1]) + "/luminosity_PCA_remain").c_str(), signal_MC_th1d, signal_validation_MC_th1d, signal_MC_th1d_uncorr, signal_validation_MC_th1d_uncorr, use_ABCD_nonclosure);
+    ReadPCA((std::string(argv[1]) + "/luminosity_PCA").c_str(), signal_MC_th1d, "luminosity", &signal_MC_th1d_luminosity);
+    ReadPCA_remain((std::string(argv[1]) + "/luminosity_PCA_remain").c_str(), signal_MC_th1d, signal_MC_th1d_uncorr);
 
     // SR fluctuation
     FillHistogram_fluc_SR(argv[1], argv[2], data_pos_M_th1d, signal_pos_M_MC_th1d, bkg_pos_M_MC_th1d, background_list, signal_list, background_list, 0);
-    if (use_ABCD_nonclosure) FillHistogram_fluc_SR(argv[1], argv[2], data_validation_pos_M_th1d, signal_validation_pos_M_MC_th1d, bkg_validation_pos_M_MC_th1d, background_list, signal_list, background_list, 0, true);
     FillHistogram_fluc_SR(argv[1], argv[2], data_neg_M_th1d, signal_neg_M_MC_th1d, bkg_neg_M_MC_th1d, background_list, signal_list, background_list, 1);
-    if (use_ABCD_nonclosure) FillHistogram_fluc_SR(argv[1], argv[2], data_validation_neg_M_th1d, signal_validation_neg_M_MC_th1d, bkg_validation_neg_M_MC_th1d, background_list, signal_list, background_list, 1, true);
     FillHistogram_fluc_SR(argv[1], argv[2], data_pos_DeltaE_th1d, signal_pos_DeltaE_MC_th1d, bkg_pos_DeltaE_MC_th1d, background_list, signal_list, background_list, 2);
-    if (use_ABCD_nonclosure) FillHistogram_fluc_SR(argv[1], argv[2], data_validation_pos_DeltaE_th1d, signal_validation_pos_DeltaE_MC_th1d, bkg_validation_pos_DeltaE_MC_th1d, background_list, signal_list, background_list, 2, true);
     FillHistogram_fluc_SR(argv[1], argv[2], data_neg_DeltaE_th1d, signal_neg_DeltaE_MC_th1d, bkg_neg_DeltaE_MC_th1d, background_list, signal_list, background_list, 3);
-    if (use_ABCD_nonclosure) FillHistogram_fluc_SR(argv[1], argv[2], data_validation_neg_DeltaE_th1d, signal_validation_neg_DeltaE_MC_th1d, bkg_validation_neg_DeltaE_MC_th1d, background_list, signal_list, background_list, 3, true);
 
     // ABCD method
     ABCD_method(argv[1], argv[3], argv[4], argv[5], data_th1d, data_validation_th1d, data_th1d_stat_err, background_list);
+
+    // Fit only the eight validation observations, with no signal or application data.
+    std::vector<ABCDValidation> validation = Validate_ABCD(data_validation_th1d, (std::string(argv[6]) + "/ABCD_validation.txt").c_str());
+    if (use_ABCD_nonclosure) {
+        for (int i = 0; i < (int)validation.size(); i++) {
+            if (!std::isfinite(validation.at(i).discrepancy)) {
+                printf("[ABCD_method] validation region %d has no finite non-closure systematic; see the validation report\n", i + 1);
+                exit(1);
+            }
+        }
+    }
 
     // print information
     printf("data:\n");
@@ -552,45 +495,36 @@ int main(int argc, char* argv[]) {
     data_th1d->Write();
     data_validation_th1d->Write();
     signal_MC_th1d->Write();
-    if (use_ABCD_nonclosure) signal_validation_MC_th1d->Write();
     bkg_MC_th1d->Write();
-    Write_ABCD_histograms();
+    Write_ABCD_histograms(validation);
 
     data_th1d_stat_err->Write();
     signal_MC_th1d_stat_err->Write();
-    if (use_ABCD_nonclosure) signal_validation_MC_th1d_stat_err->Write();
     bkg_MC_th1d_stat_err->Write();
 
     data_pos_M_th1d->Write();
     signal_pos_M_MC_th1d->Write();
-    if (use_ABCD_nonclosure) signal_validation_pos_M_MC_th1d->Write();
     bkg_pos_M_MC_th1d->Write();
 
     data_neg_M_th1d->Write();
     signal_neg_M_MC_th1d->Write();
-    if (use_ABCD_nonclosure) signal_validation_neg_M_MC_th1d->Write();
     bkg_neg_M_MC_th1d->Write();
 
     data_pos_DeltaE_th1d->Write();
     signal_pos_DeltaE_MC_th1d->Write();
-    if (use_ABCD_nonclosure) signal_validation_pos_DeltaE_MC_th1d->Write();
     bkg_pos_DeltaE_MC_th1d->Write();
 
     data_neg_DeltaE_th1d->Write();
     signal_neg_DeltaE_MC_th1d->Write();
-    if (use_ABCD_nonclosure) signal_validation_neg_DeltaE_MC_th1d->Write();
     bkg_neg_DeltaE_MC_th1d->Write();
 
     for (int i = 0; i < signal_MC_th1d_muonID.size(); i++) signal_MC_th1d_muonID.at(i)->Write();
-    if (use_ABCD_nonclosure) for (int i = 0; i < signal_validation_MC_th1d_muonID.size(); i++) signal_validation_MC_th1d_muonID.at(i)->Write();
     for (int i = 0; i < bkg_MC_th1d_muonID.size(); i++) bkg_MC_th1d_muonID.at(i)->Write();
 
     for (int i = 0; i < signal_MC_th1d_luminosity.size(); i++) signal_MC_th1d_luminosity.at(i)->Write();
-    if (use_ABCD_nonclosure) for (int i = 0; i < signal_validation_MC_th1d_luminosity.size(); i++) signal_validation_MC_th1d_luminosity.at(i)->Write();
     for (int i = 0; i < bkg_MC_th1d_luminosity.size(); i++) bkg_MC_th1d_luminosity.at(i)->Write();
 
     signal_MC_th1d_uncorr->Write();
-    if (use_ABCD_nonclosure) signal_validation_MC_th1d_uncorr->Write();
     bkg_MC_th1d_uncorr->Write();
 
     file->Close();
@@ -625,36 +559,15 @@ int main(int argc, char* argv[]) {
     signal_Belle_II.SetNormalizeByTheory(false);
 
     channel_Belle_II.AddSample(signal_Belle_II);
-    Add_ABCD_samples(channel_Belle_II, (std::string(argv[6]) + "/histogram_output.root").c_str(), data_th1d, false, use_ABCD_nonclosure);
+    Add_ABCD_samples(channel_Belle_II, (std::string(argv[6]) + "/histogram_output.root").c_str(), data_th1d, validation, use_ABCD_nonclosure);
 
     // add channel to measurement
     meas.AddChannel(channel_Belle_II);
-    // The optional validation channel also has eight bins and constrains the shared kappa parameters.
-    if (use_ABCD_nonclosure) {
-        RooStats::HistFactory::Channel channel_validation("Belle_II_validation");
-        channel_validation.SetData("data_validation_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str());
-        channel_validation.SetStatErrorConfig(1e-5, "Poisson");
-        RooStats::HistFactory::Sample signal_validation_Belle_II("signal_validation_Belle_II", "signal_validation_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str());
-        signal_validation_Belle_II.ActivateStatError("signal_validation_MC_th1d_stat_err", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-        signal_validation_Belle_II.AddNormFactor("mu", 1.0, 0.0, 100.0);
-        signal_validation_Belle_II.AddOverallSys("tracking_efficiency", 1.0 - (track_rel_uncertainty / 100.0) * 3, 1.0 + (track_rel_uncertainty / 100.0) * 3);
-        signal_validation_Belle_II.AddHistoSys("M_resolution", "signal_validation_neg_M_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "", "signal_validation_pos_M_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-        signal_validation_Belle_II.AddHistoSys("DeltaE_resolution", "signal_validation_neg_DeltaE_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "", "signal_validation_pos_DeltaE_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-        signal_validation_Belle_II.AddOverallSys("cross_section", 1.0 - tau_crosssection_4S_reluncertainty, 1.0 + tau_crosssection_4S_reluncertainty);
-        for (int i = 0; i < signal_validation_MC_th1d_muonID.size() / 2; i++) signal_validation_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("signal_validation_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("signal_validation_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-        for (int i = 0; i < signal_validation_MC_th1d_luminosity.size() / 2; i++) signal_validation_Belle_II.AddHistoSys(("luminosity_" + std::to_string(i)).c_str(), ("signal_validation_hist_luminosity_n_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("signal_validation_hist_luminosity_p_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-        signal_validation_Belle_II.AddShapeSys("uncorrelated_error_validation", RooStats::HistFactory::Constraint::Gaussian, "signal_validation_MC_th1d_uncorr", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-        signal_validation_Belle_II.SetNormalizeByTheory(false);
-
-        channel_validation.AddSample(signal_validation_Belle_II);
-        Add_ABCD_samples(channel_validation, (std::string(argv[6]) + "/histogram_output.root").c_str(), data_validation_th1d, true, true);
-        meas.AddChannel(channel_validation);
-    }
     meas.CollectHistograms();
 
     RooWorkspace* w;
     w = RooStats::HistFactory::MakeModelAndMeasurementFast(meas);
-    Set_ABCD_parameter_ranges(w, use_ABCD_nonclosure);
+    Set_ABCD_parameter_ranges(w);
 
     w->Print();
     w->writeToFile((std::string(argv[6]) + "/workspace.root").c_str());
