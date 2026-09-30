@@ -34,6 +34,8 @@ double M_right_cut_value;
 
 double BDT_cut_1;
 double BDT_cut_2;
+double validation_BDT_cut_1;
+double validation_BDT_cut_2;
 
 std::string BDT_output_1_name;
 std::string BDT_output_2_name;
@@ -49,6 +51,11 @@ double theta_g;
 double mapping_function(std::vector<double> variables_) {
     ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
     return mapping_function_ABCD(variables_, parameters, false);
+}
+
+double mapping_function_validation(std::vector<double> variables_) {
+    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM, validation_BDT_cut_1, validation_BDT_cut_2 };
+    return mapping_function_ABCD(variables_, parameters, true);
 }
 
 double mapping_function_plus_M(std::vector<double> variables_) {
@@ -249,11 +256,7 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
     }
 }
 
-std::vector<double> ABCD_method(const char* input_path_1_, const char* input_path_2_, const char* FOM_1_path_, const char* FOM_2_path_, TH1D* data_th1d_, TH1D* validation_th1d_, TH1D* data_stat_err_, std::vector<std::string> data_list_) {
-    data_th1d_->Reset();
-    validation_th1d_->Reset();
-    ReadFOM(FOM_1_path_, &BDT_cut_1);
-    ReadFOM(FOM_2_path_, &BDT_cut_2);
+std::vector<double> GetValidationBoundary(const char* input_path_1_, const char* input_path_2_, std::vector<std::string> data_list_) {
     std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
     std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 6 * deltaE_right_sigma_g) + "))";
     std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
@@ -285,14 +288,46 @@ std::vector<double> ABCD_method(const char* input_path_1_, const char* input_pat
     loader_data.Cut(cut_m_alpha.c_str());
     loader_data.RandomBCS();
     loader_data.IsBCSValid();
-    loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE", BDT_output_1_name.c_str(), BDT_output_2_name.c_str() }, { mapping_function });
-    // Keep the same selected events and weights; choose the validation boundary after all batches are loaded.
     loader_data.FillDataSet(&validation_data, { &validation_M, &validation_deltaE, &validation_BDT_1, &validation_BDT_2 }, { "M", "deltaE", BDT_output_1_name.c_str(), BDT_output_2_name.c_str() });
     loader_data.end();
     ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
-    std::vector<double> validation_BDT_cuts = Fill_ABCD_validation(validation_th1d_, validation_data, parameters);
+    return GetValidationBoundary(validation_data, parameters);
+}
 
-    // The two observed histograms use A1, B1, C1, D1, A2, B2, C2, D2 order.
+void ABCD_method(const char* input_path_1_, const char* input_path_2_, const char* FOM_1_path_, const char* FOM_2_path_, TH1D* data_th1d_, TH1D* validation_th1d_, TH1D* data_stat_err_, std::vector<std::string> data_list_) {
+    data_th1d_->Reset();
+    validation_th1d_->Reset();
+    ReadFOM(FOM_1_path_, &BDT_cut_1);
+    ReadFOM(FOM_2_path_, &BDT_cut_2);
+    std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
+    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 6 * deltaE_right_sigma_g) + "))";
+    std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
+
+    std::string cut_M_2 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
+    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak_g - 16 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "))";
+    std::string cut_M_deltaE_2 = "(" + cut_M_2 + "&&" + cut_deltaE_2 + ")";
+
+    std::string cut_region = cut_M_deltaE_1 + "||" + cut_M_deltaE_2;
+
+    std::string cut_m_alpha = "(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")";
+
+    Loader loader_data("tau_lfv");
+    for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
+    loader_data.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("muonID_05_ALP", { {"index", "first_muon_index"},  {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("muonID_05_ALP", { {"index", "second_muon_index"},  {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("muonID_01_ALP", { {"index", "third_muon_index"},  {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("KS0_tracking_run1", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} }); /* After box open, it should be removed! */
+    loader_data.AddWeight("KS0_tracking_run2", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} }); /* After box open, it should be removed! */
+    loader_data.Cut(cut_region.c_str());
+    loader_data.Cut(cut_m_alpha.c_str());
+    loader_data.RandomBCS();
+    loader_data.IsBCSValid();
+    loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE", BDT_output_1_name.c_str(), BDT_output_2_name.c_str() }, { mapping_function });
+    loader_data.FillCustomizedTH1D(validation_th1d_, { "M", "deltaE", BDT_output_1_name.c_str(), BDT_output_2_name.c_str() }, { mapping_function_validation });
+    loader_data.end();
+
+    // The two observed histograms are filled directly in A1, B1, C1, D1, A2, B2, C2, D2 order.
     std::vector<TH1D*> histograms = { data_th1d_, validation_th1d_ };
     for (int j = 0; j < (int)histograms.size(); j++) {
         TH1D* hist = histograms.at(j);
@@ -314,7 +349,6 @@ std::vector<double> ABCD_method(const char* input_path_1_, const char* input_pat
         else data_stat_err_->SetBinContent(i, 0.0);
     }
     // B, C and D can contain signal. Their counts are fitted with mu * signal + background, not divided into a fixed estimate.
-    return validation_BDT_cuts;
 }
 
 void Write_ABCD_histograms(const std::vector<ABCDValidation>& validation_) {
@@ -556,8 +590,13 @@ int main(int argc, char* argv[]) {
     FillHistogram_fluc_SR(argv[1], argv[2], data_pos_DeltaE_th1d, signal_pos_DeltaE_MC_th1d, bkg_pos_DeltaE_MC_th1d, background_list, signal_list, background_list, 2);
     FillHistogram_fluc_SR(argv[1], argv[2], data_neg_DeltaE_th1d, signal_neg_DeltaE_MC_th1d, bkg_neg_DeltaE_MC_th1d, background_list, signal_list, background_list, 3);
 
+    // Determine the validation boundary before filling the ABCD histograms.
+    std::vector<double> validation_BDT_cuts = GetValidationBoundary(argv[1], argv[3], background_list);
+    validation_BDT_cut_1 = validation_BDT_cuts.at(0);
+    validation_BDT_cut_2 = validation_BDT_cuts.at(1);
+
     // ABCD method
-    std::vector<double> validation_BDT_cuts = ABCD_method(argv[1], argv[3], argv[4], argv[5], data_th1d, data_validation_th1d, data_th1d_stat_err, background_list);
+    ABCD_method(argv[1], argv[3], argv[4], argv[5], data_th1d, data_validation_th1d, data_th1d_stat_err, background_list);
 
     // Fit only the eight validation observations, with no signal or application data.
     std::vector<ABCDValidation> validation = Validate_ABCD(data_validation_th1d, (std::string(argv[6]) + "/ABCD_validation_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".txt").c_str(), { BDT_cut_1, BDT_cut_2 }, validation_BDT_cuts);
