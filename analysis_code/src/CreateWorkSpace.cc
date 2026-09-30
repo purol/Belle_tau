@@ -141,7 +141,6 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
     * 2: positive DeltaE fluctuation
     * 3: negative DeltaE fluctuation
     */
-    // data
 
     std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
     std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 6 * deltaE_right_sigma_g) + "))";
@@ -153,6 +152,7 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
 
     std::string cut_region = cut_M_deltaE_1 + "||" + cut_M_deltaE_2;
 
+    // data
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
     loader_data.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} }); /* After box open, it should be removed! */
@@ -287,7 +287,7 @@ void Write_ABCD_histograms(const std::vector<ABCDValidation>& validation_) {
         double discrepancy = validation_.at(i - 1).discrepancy;
         if (!std::isfinite(discrepancy)) {
             printf("[Write_ABCD_histograms] discrepancy is not finite\n");
-            eixt(1):
+            exit(1);
         }
 
         double down = 1.0 - discrepancy;
