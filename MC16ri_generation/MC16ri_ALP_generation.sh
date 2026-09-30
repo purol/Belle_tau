@@ -7,6 +7,9 @@ mkdir -p ./output
 mkdir -p ./log
 mkdir -p ./err
 
+source /cvmfs/belle.cern.ch/tools/b2setup release-08-00-09
+export PYTHONNOUSERSITE=1
+
 for datfile in ${DAT_DIR_PLUS}/*.dat; do
     for iterator in {1..5}; do
         # Extract parameters from filename: alpha_mass0.2_life0.1_A1_B1.dat
