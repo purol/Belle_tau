@@ -9,6 +9,7 @@
 #include "TH1D.h"
 #include "TH2D.h"
 #include "RooWorkspace.h"
+#include "RooRealVar.h"
 
 #include "RooStats/HistFactory/Measurement.h"
 #include "RooStats/HistFactory/Channel.h"
@@ -348,7 +349,7 @@ double mapping_function_Dprime(std::vector<double> variables_) {
 
 }
 
-void ABCD_method(const char* input_path_1_, const char* input_path_2_, const char* FOM_1_path_, const char* FOM_2_path_, TH1D* bkg_ABCD_th1d_, TH1D* bkg_ABCD_th1d_stat_err_, TH1D* bkg_ABCD_th1d_nonclosure_err_, std::vector<std::string> data_list_) {
+void ABCD_method(const char* input_path_1_, const char* input_path_2_, const char* FOM_1_path_, const char* FOM_2_path_, std::vector<TH1D*>* data_ABCD_, std::vector<std::string> data_list_) {
     std::string cut_BDT_1 = "(" + std::to_string(BDT_cut_1) + " < BDT_output_1)";
     std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
     std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 6 * deltaE_right_sigma_g) + "))";
@@ -367,7 +368,6 @@ void ABCD_method(const char* input_path_1_, const char* input_path_2_, const cha
     ReadFOM(FOM_1_path_, &BDT_cut_1_g);
     ReadFOM(FOM_2_path_, &BDT_cut_2_g);
 
-    TH1D* data_th1d_A = new TH1D("data_th1d_A", ";bin index;", 2, 0.5, 2.5);
     TH1D* data_th1d_B = new TH1D("data_th1d_B", ";bin index;", 2, 0.5, 2.5);
     TH1D* data_th1d_C = new TH1D("data_th1d_C", ";bin index;", 2, 0.5, 2.5);
     TH1D* data_th1d_D = new TH1D("data_th1d_D", ";bin index;", 2, 0.5, 2.5);
@@ -376,8 +376,6 @@ void ABCD_method(const char* input_path_1_, const char* input_path_2_, const cha
     TH1D* data_th1d_Cprime = new TH1D("data_th1d_Cprime", ";bin index;", 2, 0.5, 2.5);
     TH1D* data_th1d_Dprime = new TH1D("data_th1d_Dprime", ";bin index;", 2, 0.5, 2.5);
 
-    TH1D* data_th1d_A_bkg_exp = new TH1D("data_th1d_A_bkg_exp", ";bin index;", 2, 0.5, 2.5);
-    TH1D* data_th1d_Aprime_bkg_exp = new TH1D("data_th1d_Aprime_bkg_exp", ";bin index;", 2, 0.5, 2.5);
 
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
@@ -388,7 +386,6 @@ void ABCD_method(const char* input_path_1_, const char* input_path_2_, const cha
     loader_data.Cut(cut_region.c_str());
     loader_data.RandomBCS();
     loader_data.IsBCSValid();
-    loader_data.FillCustomizedTH1D(data_th1d_A, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_A });
     loader_data.FillCustomizedTH1D(data_th1d_B, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_B });
     loader_data.FillCustomizedTH1D(data_th1d_C, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_C });
     loader_data.FillCustomizedTH1D(data_th1d_D, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_D });
@@ -398,105 +395,148 @@ void ABCD_method(const char* input_path_1_, const char* input_path_2_, const cha
     loader_data.FillCustomizedTH1D(data_th1d_Dprime, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Dprime });
     loader_data.end();
 
-    // We do not open the box, So data_th1d is MC. We use the proper uncertainty
-    data_th1d_A->SetBinError(1, std::sqrt(data_th1d_A->GetBinContent(1)));
-    data_th1d_A->SetBinError(2, std::sqrt(data_th1d_A->GetBinContent(2)));
-    data_th1d_B->SetBinError(1, std::sqrt(data_th1d_B->GetBinContent(1)));
-    data_th1d_B->SetBinError(2, std::sqrt(data_th1d_B->GetBinContent(2)));
-    data_th1d_C->SetBinError(1, std::sqrt(data_th1d_C->GetBinContent(1)));
-    data_th1d_C->SetBinError(2, std::sqrt(data_th1d_C->GetBinContent(2)));
-    data_th1d_D->SetBinError(1, std::sqrt(data_th1d_D->GetBinContent(1)));
-    data_th1d_D->SetBinError(2, std::sqrt(data_th1d_D->GetBinContent(2)));
-    data_th1d_Aprime->SetBinError(1, std::sqrt(data_th1d_Aprime->GetBinContent(1)));
-    data_th1d_Aprime->SetBinError(2, std::sqrt(data_th1d_Aprime->GetBinContent(2)));
-    data_th1d_Bprime->SetBinError(1, std::sqrt(data_th1d_Bprime->GetBinContent(1)));
-    data_th1d_Bprime->SetBinError(2, std::sqrt(data_th1d_Bprime->GetBinContent(2)));
-    data_th1d_Cprime->SetBinError(1, std::sqrt(data_th1d_Cprime->GetBinContent(1)));
-    data_th1d_Cprime->SetBinError(2, std::sqrt(data_th1d_Cprime->GetBinContent(2)));
-    data_th1d_Dprime->SetBinError(1, std::sqrt(data_th1d_Dprime->GetBinContent(1)));
-    data_th1d_Dprime->SetBinError(2, std::sqrt(data_th1d_Dprime->GetBinContent(2)));
-
-    // check 0 event
-    if (data_th1d_D->GetBinContent(1) == 0) {
-        printf("[ABCD_method] 0 event in region D\n");
-        exit(1);
-    }
-    else if (data_th1d_D->GetBinContent(2) == 0) {
-        printf("[ABCD_method] 0 event in region D\n");
-        exit(1);
-    }
-    else if (data_th1d_Dprime->GetBinContent(1) == 0) {
-        printf("[ABCD_method] 0 event in region D'\n");
-        exit(1);
-    }
-    else if (data_th1d_Dprime->GetBinContent(2) == 0) {
-        printf("[ABCD_method] 0 event in region D'\n");
-        exit(1);
-    }
-
-    // validation
-    data_th1d_Aprime_bkg_exp->Divide(data_th1d_Cprime, data_th1d_Dprime);
-    data_th1d_Aprime_bkg_exp->Multiply(data_th1d_Bprime);
-    printf("============== ABCD method validation region 1 ==============\n");
-    printf("N_A' = %lf+-%lf\n", data_th1d_Aprime->GetBinContent(1), data_th1d_Aprime->GetBinError(1));
-    printf("N_B' = %lf+-%lf\n", data_th1d_Bprime->GetBinContent(1), data_th1d_Bprime->GetBinError(1));
-    printf("N_C' = %lf+-%lf\n", data_th1d_Cprime->GetBinContent(1), data_th1d_Cprime->GetBinError(1));
-    printf("N_D' = %lf+-%lf\n", data_th1d_Dprime->GetBinContent(1), data_th1d_Dprime->GetBinError(1));
-    printf("estimated N_A' = %lf+-%lf\n", data_th1d_Aprime_bkg_exp->GetBinContent(1), data_th1d_Aprime_bkg_exp->GetBinError(1));
-    printf("============== ABCD method validation region 2 ==============\n");
-    printf("N_A' = %lf+-%lf\n", data_th1d_Aprime->GetBinContent(2), data_th1d_Aprime->GetBinError(2));
-    printf("N_B' = %lf+-%lf\n", data_th1d_Bprime->GetBinContent(2), data_th1d_Bprime->GetBinError(2));
-    printf("N_C' = %lf+-%lf\n", data_th1d_Cprime->GetBinContent(2), data_th1d_Cprime->GetBinError(2));
-    printf("N_D' = %lf+-%lf\n", data_th1d_Dprime->GetBinContent(2), data_th1d_Dprime->GetBinError(2));
-    printf("estimated N_A' = %lf+-%lf\n", data_th1d_Aprime_bkg_exp->GetBinContent(2), data_th1d_Aprime_bkg_exp->GetBinError(2));
-
-    // non-closure uncertainty
-    // Use the validation statistical precision as a floor for the non-closure uncertainty.
-    // Validation and application use disjoint BDT intervals.
+    // Keep the control observations, including empty bins, for the Poisson likelihood.
+    // The order is B, C, D, A', B', C', D'. Region A is not used for background estimation.
+    *data_ABCD_ = { data_th1d_B, data_th1d_C, data_th1d_D, data_th1d_Aprime, data_th1d_Bprime, data_th1d_Cprime, data_th1d_Dprime };
     for (int i = 1; i <= 2; i++) {
-        double N_Aprime = data_th1d_Aprime->GetBinContent(i);
-        double N_Bprime = data_th1d_Bprime->GetBinContent(i);
-        double N_Cprime = data_th1d_Cprime->GetBinContent(i);
-        double N_Dprime = data_th1d_Dprime->GetBinContent(i);
-        if (!std::isfinite(N_Aprime) || !std::isfinite(N_Bprime) || !std::isfinite(N_Cprime) || !std::isfinite(N_Dprime) || N_Aprime <= 0.0 || N_Bprime <= 0.0 || N_Cprime <= 0.0 || N_Dprime <= 0.0) {
-            printf("[ABCD_method] non-closure uncertainty requires positive finite validation yields in region %d\n", i);
-            exit(1);
+        printf("============== Poisson ABCD control region %d ==============\n", i);
+        for (int j = 0; j < (int)data_ABCD_->size(); j++) {
+            TH1D* hist = data_ABCD_->at(j);
+            double yield = hist->GetBinContent(i);
+            if (!std::isfinite(yield) || yield < 0.0) {
+                printf("[ABCD_method] invalid yield in %s, region %d\n", hist->GetName(), i);
+                exit(1);
+            }
+            // We do not open the box, So data_th1d is MC. We use the proper uncertainty
+            // MC yields are projected data counts. This error is only for display, not a likelihood constraint.
+            // After box open, remove this override and use the unweighted data counts.
+            hist->SetBinError(i, std::sqrt(yield)); /* After box open, it should be removed! */
+            printf("%s = %lf\n", hist->GetName(), yield);
         }
-        double kappa = N_Aprime / data_th1d_Aprime_bkg_exp->GetBinContent(i);
-        double kappa_err = kappa * std::sqrt(1.0 / N_Aprime + 1.0 / N_Bprime + 1.0 / N_Cprime + 1.0 / N_Dprime);
-        double nonclosure_err = std::max(std::abs(kappa - 1.0), kappa_err);
-        if (!std::isfinite(kappa) || !std::isfinite(kappa_err) || !std::isfinite(nonclosure_err)) {
-            printf("[ABCD_method] invalid non-closure uncertainty in region %d\n", i);
-            exit(1);
-        }
-        bkg_ABCD_th1d_nonclosure_err_->SetBinContent(i, nonclosure_err);
-        bkg_ABCD_th1d_nonclosure_err_->SetBinError(i, 0.0);
-        printf("ABCD validation region %d: kappa = %lf+-%lf, relative non-closure uncertainty = %lf\n", i, kappa, kappa_err, nonclosure_err);
+        double N_B = data_th1d_B->GetBinContent(i);
+        double N_C = data_th1d_C->GetBinContent(i);
+        double N_D = data_th1d_D->GetBinContent(i);
+        // This is only the control-only maximum likelihood estimate, not a fixed background template.
+        if (N_D > 0.0) printf("control-only estimated N_A = %lf (uncertainty from Poisson likelihood)\n", N_B * (N_C / N_D));
+        else printf("[ABCD_method] N_D = 0; the transfer factor requires a likelihood scan\n");
     }
+}
 
-    // application
-    data_th1d_A_bkg_exp->Divide(data_th1d_C, data_th1d_D);
-    data_th1d_A_bkg_exp->Multiply(data_th1d_B);
-    printf("============== ABCD method region 1 ==============\n");
-    printf("N_A = %lf+-%lf\n", data_th1d_A->GetBinContent(1), data_th1d_A->GetBinError(1));
-    printf("N_B = %lf+-%lf\n", data_th1d_B->GetBinContent(1), data_th1d_B->GetBinError(1));
-    printf("N_C = %lf+-%lf\n", data_th1d_C->GetBinContent(1), data_th1d_C->GetBinError(1));
-    printf("N_D = %lf+-%lf\n", data_th1d_D->GetBinContent(1), data_th1d_D->GetBinError(1));
-    printf("estimated N_A = %lf+-%lf\n", data_th1d_A_bkg_exp->GetBinContent(1), data_th1d_A_bkg_exp->GetBinError(1));
-    printf("============== ABCD method region 2 ==============\n");
-    printf("N_A = %lf+-%lf\n", data_th1d_A->GetBinContent(2), data_th1d_A->GetBinError(2));
-    printf("N_B = %lf+-%lf\n", data_th1d_B->GetBinContent(2), data_th1d_B->GetBinError(2));
-    printf("N_C = %lf+-%lf\n", data_th1d_C->GetBinContent(2), data_th1d_C->GetBinError(2));
-    printf("N_D = %lf+-%lf\n", data_th1d_D->GetBinContent(2), data_th1d_D->GetBinError(2));
-    printf("estimated N_A = %lf+-%lf\n", data_th1d_A_bkg_exp->GetBinContent(2), data_th1d_A_bkg_exp->GetBinError(2));
+void Write_ABCD_histograms(std::vector<TH1D*> data_ABCD_) {
+    // Unit templates keep the expected yields free even when an observed control bin is empty.
+    TH1D* bkg_ABCD_unit = new TH1D("bkg_ABCD_unit", ";bin index;", 1, 0.5, 1.5);
+    bkg_ABCD_unit->SetBinContent(1, 1.0);
+    bkg_ABCD_unit->SetBinError(1, 0.0);
+    bkg_ABCD_unit->Write();
+    for (int i = 1; i <= 2; i++) {
+        std::string suffix = "_region" + std::to_string(i);
+        TH1D* bkg_A = new TH1D(("bkg_ABCD_unit" + suffix).c_str(), ";bin index;", 2, 0.5, 2.5);
+        bkg_A->SetBinContent(i, 1.0);
+        bkg_A->SetBinError(i, 0.0);
+        bkg_A->Write();
+        for (int j = 0; j < (int)data_ABCD_.size(); j++) {
+            TH1D* hist = data_ABCD_.at(j);
+            TH1D* data = new TH1D((std::string(hist->GetName()) + suffix).c_str(), ";bin index;", 1, 0.5, 1.5);
+            data->SetBinContent(1, hist->GetBinContent(i));
+            data->SetBinError(1, hist->GetBinError(i));
+            data->Write();
+        }
+    }
+    for (int i = 0; i < (int)data_ABCD_.size(); i++) data_ABCD_.at(i)->Write();
+}
 
-    // save
-    bkg_ABCD_th1d_->SetBinContent(1, data_th1d_A_bkg_exp->GetBinContent(1));
-    bkg_ABCD_th1d_->SetBinContent(2, data_th1d_A_bkg_exp->GetBinContent(2));
-    bkg_ABCD_th1d_->SetBinError(1, data_th1d_A_bkg_exp->GetBinError(1));
-    bkg_ABCD_th1d_->SetBinError(2, data_th1d_A_bkg_exp->GetBinError(2));
-    bkg_ABCD_th1d_stat_err_->SetBinContent(1, data_th1d_A_bkg_exp->GetBinError(1) / data_th1d_A_bkg_exp->GetBinContent(1));
-    bkg_ABCD_th1d_stat_err_->SetBinContent(2, data_th1d_A_bkg_exp->GetBinError(2) / data_th1d_A_bkg_exp->GetBinContent(2));
+void Add_ABCD_channels(RooStats::HistFactory::Measurement& meas_, RooStats::HistFactory::Channel& channel_A_, const char* filename_, std::vector<TH1D*> data_ABCD_, bool use_nonclosure_) {
+    // A = beta * r, B = beta, C = nu * r, D = nu, independently for each deltaE region.
+    // The control samples assume negligible signal contamination, as in the original ABCD method.
+    // Do not add ActivateStatError: the control channel Poisson terms already give the counting uncertainty.
+    for (int i = 1; i <= 2; i++) {
+        std::string suffix = "_region" + std::to_string(i);
+        double N_B = data_ABCD_.at(0)->GetBinContent(i);
+        double N_C = data_ABCD_.at(1)->GetBinContent(i);
+        double N_D = data_ABCD_.at(2)->GetBinContent(i);
+        // Positive starting values are only minimizer seeds. No events are added to the observations.
+        double beta = N_B > 0.0 ? N_B : 1.0;
+        double nu = N_D > 0.0 ? N_D : 1.0;
+        double r = N_C > 0.0 ? N_C / nu : 1.0;
+        double beta_max = std::max(100.0, 10.0 * beta);
+        double nu_max = std::max(100.0, 10.0 * nu);
+        double r_max = std::max(100.0, 10.0 * r);
+
+        RooStats::HistFactory::Sample bkg_A(("bkg_Belle_II" + suffix).c_str(), ("bkg_ABCD_unit" + suffix).c_str(), filename_);
+        bkg_A.AddNormFactor("ABCD_beta" + suffix, beta, 0.0, beta_max);
+        bkg_A.AddNormFactor("ABCD_r" + suffix, r, 0.0, r_max);
+        if (use_nonclosure_) bkg_A.AddNormFactor("ABCD_kappa" + suffix, 1.0, 0.0, 100.0);
+        bkg_A.SetNormalizeByTheory(false);
+        channel_A_.AddSample(bkg_A);
+
+        std::vector<std::string> regions = { "B", "C", "D" };
+        for (int j = 0; j < (int)regions.size(); j++) {
+            std::string name = "ABCD_" + regions.at(j) + suffix;
+            RooStats::HistFactory::Channel channel(name.c_str());
+            channel.SetData(("data_th1d_" + regions.at(j) + suffix).c_str(), filename_);
+            RooStats::HistFactory::Sample bkg(("bkg_" + name).c_str(), "bkg_ABCD_unit", filename_);
+            if (j == 0) bkg.AddNormFactor("ABCD_beta" + suffix, beta, 0.0, beta_max);
+            else bkg.AddNormFactor("ABCD_nu" + suffix, nu, 0.0, nu_max);
+            if (j == 1) bkg.AddNormFactor("ABCD_r" + suffix, r, 0.0, r_max);
+            bkg.SetNormalizeByTheory(false);
+            channel.AddSample(bkg);
+            meas_.AddChannel(channel);
+        }
+
+        // Optional non-closure constraint from the four disjoint validation regions.
+        // A' = kappa * beta' * r', B' = beta', C' = nu' * r', D' = nu'.
+        // Only kappa is shared with the application; its transfer to the higher BDT region is an extra assumption.
+        // Do not add a separate non-closure HistoSys, which would count the validation uncertainty twice.
+        if (use_nonclosure_) {
+            double N_Bprime = data_ABCD_.at(4)->GetBinContent(i);
+            double N_Cprime = data_ABCD_.at(5)->GetBinContent(i);
+            double N_Dprime = data_ABCD_.at(6)->GetBinContent(i);
+            double beta_prime = N_Bprime > 0.0 ? N_Bprime : 1.0;
+            double nu_prime = N_Dprime > 0.0 ? N_Dprime : 1.0;
+            double r_prime = N_Cprime > 0.0 ? N_Cprime / nu_prime : 1.0;
+            double beta_prime_max = std::max(100.0, 10.0 * beta_prime);
+            double nu_prime_max = std::max(100.0, 10.0 * nu_prime);
+            double r_prime_max = std::max(100.0, 10.0 * r_prime);
+            std::vector<std::string> validation_regions = { "Aprime", "Bprime", "Cprime", "Dprime" };
+            for (int j = 0; j < (int)validation_regions.size(); j++) {
+                std::string name = "ABCD_" + validation_regions.at(j) + suffix;
+                RooStats::HistFactory::Channel channel(name.c_str());
+                channel.SetData(("data_th1d_" + validation_regions.at(j) + suffix).c_str(), filename_);
+                RooStats::HistFactory::Sample bkg(("bkg_" + name).c_str(), "bkg_ABCD_unit", filename_);
+                if (j < 2) bkg.AddNormFactor("ABCD_beta_validation" + suffix, beta_prime, 0.0, beta_prime_max);
+                else bkg.AddNormFactor("ABCD_nu_validation" + suffix, nu_prime, 0.0, nu_prime_max);
+                if (j == 0 || j == 2) bkg.AddNormFactor("ABCD_r_validation" + suffix, r_prime, 0.0, r_prime_max);
+                if (j == 0) bkg.AddNormFactor("ABCD_kappa" + suffix, 1.0, 0.0, 100.0);
+                bkg.SetNormalizeByTheory(false);
+                channel.AddSample(bkg);
+                meas_.AddChannel(channel);
+            }
+            if (N_Bprime == 0.0 || N_Dprime == 0.0) printf("[ABCD_method] empty validation sideband in region %d; kappa may have no finite upper bound\n", i);
+        }
+    }
+}
+
+void Set_ABCD_parameter_ranges(RooWorkspace* w_, bool use_nonclosure_) {
+    // HistFactory needs finite construction ranges. They must not act as artificial statistical constraints.
+    // Remove the upper bounds in the saved workspace, retaining the physical lower bound of zero.
+    std::vector<std::string> parameters = { "beta", "nu", "r" };
+    if (use_nonclosure_) {
+        parameters.push_back("beta_validation");
+        parameters.push_back("nu_validation");
+        parameters.push_back("r_validation");
+        parameters.push_back("kappa");
+    }
+    for (int i = 1; i <= 2; i++) {
+        for (int j = 0; j < (int)parameters.size(); j++) {
+            std::string name = "ABCD_" + parameters.at(j) + "_region" + std::to_string(i);
+            RooRealVar* parameter = w_->var(name.c_str());
+            if (parameter == nullptr) {
+                printf("[ABCD_method] missing likelihood parameter %s\n", name.c_str());
+                exit(1);
+            }
+            parameter->removeMax();
+        }
+    }
 }
 
 int main(int argc, char* argv[]) {
@@ -529,14 +569,11 @@ int main(int argc, char* argv[]) {
     TH1D* data_th1d = new TH1D("data_th1d", ";bin index;", 2, 0.5, 2.5);
     TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", 2, 0.5, 2.5);
     TH1D* bkg_MC_th1d = new TH1D("bkg_MC_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_ABCD_th1d = new TH1D("bkg_ABCD_th1d", ";bin index;", 2, 0.5, 2.5);
 
     // relative error
     TH1D* data_th1d_stat_err = new TH1D("data_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
     TH1D* signal_MC_th1d_stat_err = new TH1D("signal_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
     TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_ABCD_th1d_stat_err = new TH1D("bkg_ABCD_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_ABCD_th1d_nonclosure_err = new TH1D("bkg_ABCD_th1d_nonclosure_err", ";bin index;", 2, 0.5, 2.5);
 
     TH1D* data_pos_M_th1d = new TH1D("data_pos_M_th1d", ";bin index;", 2, 0.5, 2.5);
     TH1D* signal_pos_M_MC_th1d = new TH1D("signal_pos_M_MC_th1d", ";bin index;", 2, 0.5, 2.5);
@@ -610,28 +647,11 @@ int main(int argc, char* argv[]) {
     FillHistogram_fluc_SR(argv[1], argv[2], data_neg_DeltaE_th1d, signal_neg_DeltaE_MC_th1d, bkg_neg_DeltaE_MC_th1d, background_list, signal_list, background_list, 3);
 
     // ABCD method
-    ABCD_method(argv[1], argv[3], argv[4], argv[5], bkg_ABCD_th1d, bkg_ABCD_th1d_stat_err, bkg_ABCD_th1d_nonclosure_err, background_list);
-
-    // independent non-closure uncertainty for each region
-    std::vector<TH1D*> bkg_ABCD_th1d_nonclosure_pos;
-    std::vector<TH1D*> bkg_ABCD_th1d_nonclosure_neg;
-    for (int i = 1; i <= 2; i++) {
-        double bkg = bkg_ABCD_th1d->GetBinContent(i);
-        double factor = 1.0 + bkg_ABCD_th1d_nonclosure_err->GetBinContent(i);
-        if (!std::isfinite(bkg) || bkg <= 0.0 || !std::isfinite(factor) || !std::isfinite(bkg * factor)) {
-            printf("[ABCD_method] invalid background or non-closure variation in region %d\n", i);
-            exit(1);
-        }
-        TH1D* bkg_pos = (TH1D*)bkg_ABCD_th1d->Clone(("bkg_ABCD_nonclosure_pos_region" + std::to_string(i)).c_str());
-        TH1D* bkg_neg = (TH1D*)bkg_ABCD_th1d->Clone(("bkg_ABCD_nonclosure_neg_region" + std::to_string(i)).c_str());
-        // Reciprocal down variation keeps the templates positive for uncertainties above 100%.
-        bkg_pos->SetBinContent(i, bkg * factor);
-        bkg_neg->SetBinContent(i, bkg / factor);
-        bkg_pos->SetBinError(i, bkg_ABCD_th1d->GetBinError(i) * factor);
-        bkg_neg->SetBinError(i, bkg_ABCD_th1d->GetBinError(i) / factor);
-        bkg_ABCD_th1d_nonclosure_pos.push_back(bkg_pos);
-        bkg_ABCD_th1d_nonclosure_neg.push_back(bkg_neg);
-    }
+    std::vector<TH1D*> data_ABCD;
+    ABCD_method(argv[1], argv[3], argv[4], argv[5], &data_ABCD, background_list);
+    bool use_ABCD_nonclosure = false;
+    /* ABCD_nonclosure is commented out for now. Uncomment the next line to include the validation Poisson terms. */
+    // use_ABCD_nonclosure = true;
 
     // print information
     printf("data:\n");
@@ -649,26 +669,17 @@ int main(int argc, char* argv[]) {
 
     printf("\n");
 
-    printf("estimated bkg:\n");
-    printf("%lf+-%lf %lf+-%lf\n", bkg_ABCD_th1d->GetBinContent(1), bkg_ABCD_th1d->GetBinError(1), bkg_ABCD_th1d->GetBinContent(2), bkg_ABCD_th1d->GetBinError(2));
-
-    printf("\n");
-
     // Save in root file
     TFile* file = new TFile((std::string(argv[6]) + "/histogram_output.root").c_str(), "RECREATE");
 
     data_th1d->Write();
     signal_MC_th1d->Write();
     bkg_MC_th1d->Write();
-    bkg_ABCD_th1d->Write();
+    Write_ABCD_histograms(data_ABCD);
 
     data_th1d_stat_err->Write();
     signal_MC_th1d_stat_err->Write();
     bkg_MC_th1d_stat_err->Write();
-    bkg_ABCD_th1d_stat_err->Write();
-    bkg_ABCD_th1d_nonclosure_err->Write();
-    for (int i = 0; i < bkg_ABCD_th1d_nonclosure_pos.size(); i++) bkg_ABCD_th1d_nonclosure_pos.at(i)->Write();
-    for (int i = 0; i < bkg_ABCD_th1d_nonclosure_neg.size(); i++) bkg_ABCD_th1d_nonclosure_neg.at(i)->Write();
 
     data_pos_M_th1d->Write();
     signal_pos_M_MC_th1d->Write();
@@ -726,21 +737,8 @@ int main(int argc, char* argv[]) {
     signal_Belle_II.AddShapeSys("uncorrelated_error", RooStats::HistFactory::Constraint::Gaussian, "signal_MC_th1d_uncorr", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
     signal_Belle_II.SetNormalizeByTheory(false);
 
-    RooStats::HistFactory::Sample bkg_Belle_II("bkg_Belle_II", "bkg_ABCD_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str());
-    bkg_Belle_II.ActivateStatError("bkg_ABCD_th1d_stat_err", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-    /* ABCD_nonclosure_region is commented out, because I assume the stat uncertainty in validation region is larger than the discrepancy on there */
-    //for (int i = 1; i <= 2; i++) bkg_Belle_II.AddHistoSys(("ABCD_nonclosure_region" + std::to_string(i)).c_str(), ("bkg_ABCD_nonclosure_neg_region" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("bkg_ABCD_nonclosure_pos_region" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-    /* <<following uncertainties are not needed because we use ABCD method>>
-    * bkg_Belle_II.AddOverallSys("tracking_efficiency", 1.0 - (track_rel_uncertainty / 100.0) * 3, 1.0 + (track_rel_uncertainty / 100.0) * 3);
-    * bkg_Belle_II.AddHistoSys("M_resolution", "bkg_neg_M_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "", "bkg_pos_M_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-    * bkg_Belle_II.AddHistoSys("DeltaE_resolution", "bkg_neg_DeltaE_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "", "bkg_pos_DeltaE_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-    * for (int i = 0; i < bkg_MC_th1d_muonID.size() / 2; i++) bkg_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("bkg_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("bkg_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-    * for (int i = 0; i < bkg_MC_th1d_luminosity.size() / 2; i++) bkg_Belle_II.AddHistoSys(("luminosity_" + std::to_string(i)).c_str(), ("bkg_hist_luminosity_n_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("bkg_hist_luminosity_p_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-    */
-    bkg_Belle_II.SetNormalizeByTheory(false);
-
     channel_Belle_II.AddSample(signal_Belle_II);
-    channel_Belle_II.AddSample(bkg_Belle_II);
+    Add_ABCD_channels(meas, channel_Belle_II, (std::string(argv[6]) + "/histogram_output.root").c_str(), data_ABCD, use_ABCD_nonclosure);
 
     // add channel to measurement
     meas.AddChannel(channel_Belle_II);
@@ -748,6 +746,7 @@ int main(int argc, char* argv[]) {
 
     RooWorkspace* w;
     w = RooStats::HistFactory::MakeModelAndMeasurementFast(meas);
+    Set_ABCD_parameter_ranges(w, use_ABCD_nonclosure);
 
     w->Print();
     w->writeToFile((std::string(argv[6]) + "/workspace.root").c_str());
