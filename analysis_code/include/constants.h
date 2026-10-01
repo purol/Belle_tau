@@ -176,7 +176,7 @@
 
 // for ALP signal
 # define Nevt_ALP_BelleII_4S_MC15ri 200000
-# define Nevt_ALP_BelleII_4S_MC16ri 220000
+# define Nevt_ALP_BelleII_4S_MC16ri 880000
 # define Nevt_ALP_BelleII_4S_MC16rd_ctau_01 10000
 # define Nevt_ALP_BelleII_4S_MC16rd_ctau_1 10000
 # define Nevt_ALP_BelleII_4S_MC16rd_ctau_10 10000
