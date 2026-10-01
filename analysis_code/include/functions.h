@@ -380,7 +380,7 @@ inline ABCDValidation Calculate_ABCD_nonclosure(const std::vector<double>& obser
     return result;
 }
 
-inline std::vector<ABCDValidation> Validate_ABCD(TH1* validation_, const char* filename_, const std::vector<double>& BDT_cuts_, const std::vector<double>& validation_BDT_cuts_) {
+inline std::vector<ABCDValidation> Validate_ABCD(TH1* validation_, const char* filename_, const std::vector<double>& sideband_BDT_cuts_, const std::vector<double>& validation_BDT_cuts_) {
     if (validation_->GetNbinsX() != 8) throw std::runtime_error("[Validate_ABCD] eight validation bins are required");
 
     std::vector<ABCDValidation> results;
@@ -401,7 +401,7 @@ inline std::vector<ABCDValidation> Validate_ABCD(TH1* validation_, const char* f
     for (int region = 1; region <= 2; region++) {
         const ABCDValidation& result = results.at(region - 1);
         fprintf(fp, "region %d\n", region);
-        fprintf(fp, "  validation BDT: 0 < O_BDT < %.17g; C/D <= %.17g < A/B\n", 0.45 * BDT_cuts_.at(region - 1), validation_BDT_cuts_.at(region - 1));
+        fprintf(fp, "  validation BDT: 0 < O_BDT < %.17g; C/D <= %.17g < A/B\n", sideband_BDT_cuts_.at(region - 1), validation_BDT_cuts_.at(region - 1));
         fprintf(fp, "  A+B=%.17g C+D=%.17g\n", validation_->GetBinContent(4 * (region - 1) + 1) + validation_->GetBinContent(4 * (region - 1) + 2), validation_->GetBinContent(4 * (region - 1) + 3) + validation_->GetBinContent(4 * (region - 1) + 4));
 
         for (int j = 1; j <= 4; j++) fprintf(fp, "  bin %d: observed=%.17g\n", 4 * (region - 1) + j, validation_->GetBinContent(4 * (region - 1) + j));
@@ -429,6 +429,8 @@ struct ABCDParameters {
     double M_size;
     double validation_BDT_cut_1 = 0.0;
     double validation_BDT_cut_2 = 0.0;
+    double sideband_BDT_cut_1 = 0.0;
+    double sideband_BDT_cut_2 = 0.0;
 };
 
 inline double mapping_function_ABCD(std::vector<double> variables_, const ABCDParameters& parameters_, bool validation_, int fluc_mode = -1) {
@@ -467,15 +469,18 @@ inline double mapping_function_ABCD(std::vector<double> variables_, const ABCDPa
     double BDT;
     double BDT_cut;
     double validation_BDT_cut;
+    double sideband_BDT_cut;
     if (region == 1) {
         BDT = BDT_1;
         BDT_cut = parameters_.BDT_cut_1;
         validation_BDT_cut = parameters_.validation_BDT_cut_1;
+        sideband_BDT_cut = parameters_.sideband_BDT_cut_1;
     }
     else {
         BDT = BDT_2;
         BDT_cut = parameters_.BDT_cut_2;
         validation_BDT_cut = parameters_.validation_BDT_cut_2;
+        sideband_BDT_cut = parameters_.sideband_BDT_cut_2;
     }
 
     bool central;
@@ -486,15 +491,15 @@ inline double mapping_function_ABCD(std::vector<double> variables_, const ABCDPa
         central = (central_lower < M) && (M < central_upper);
         sideband = ((sideband_left_lower < M) && (M < sideband_left_upper)) ||
                    ((sideband_right_lower < M) && (M < sideband_right_upper));
-        high_BDT = (0.0 < BDT) && (validation_BDT_cut < BDT) && (BDT < 0.45 * BDT_cut);
-        low_BDT = (0.0 < BDT) && (BDT <= validation_BDT_cut) && (BDT < 0.45 * BDT_cut);
+        high_BDT = (0.0 < BDT) && (validation_BDT_cut < BDT) && (BDT < sideband_BDT_cut);
+        low_BDT = (0.0 < BDT) && (BDT <= validation_BDT_cut) && (BDT < sideband_BDT_cut);
     }
     else {
         central = (central_lower < M) && (M <= central_upper);
         sideband = ((sideband_left_lower < M) && (M <= sideband_left_upper)) ||
                    ((sideband_right_lower < M) && (M <= sideband_right_upper));
         high_BDT = BDT_cut < BDT;
-        low_BDT = (BDT_cut / 2.0 < BDT) && (BDT <= BDT_cut);
+        low_BDT = (sideband_BDT_cut < BDT) && (BDT < BDT_cut);
     }
 
     // A1, B1, C1, D1, A2, B2, C2, D2, with the same ordering for validation.
@@ -510,26 +515,29 @@ struct ABCDValidationEvent {
     double weight;
 };
 
-inline double Find_ABCD_validation_boundary(std::vector<ABCDValidationEvent>& events_, double upper_) {
+inline double Find_BDT_boundary(std::vector<ABCDValidationEvent>& events_, double upper_, double upper_fraction_) {
     std::sort(events_.begin(), events_.end(), [](const ABCDValidationEvent& left, const ABCDValidationEvent& right) { return left.BDT < right.BDT; });
     double total = 0.0;
-    
+
     for (const ABCDValidationEvent& event : events_) total += event.weight;
-    if (!std::isfinite(total)) throw std::runtime_error("[Find_ABCD_validation_boundary] invalid total weight");
+    if (!std::isfinite(total)) throw std::runtime_error("[Find_BDT_boundary] invalid total weight");
     if (total == 0.0) {
-        printf("[ABCD validation] no positive validation yield; use the range midpoint and leave the observations empty\n");
-        return upper_ / 2.0;
+        printf("[BDT boundary] no positive yield; use the range fraction and leave the observations empty\n");
+        return upper_ * (1.0 - upper_fraction_);
     }
 
-    // Minimize the difference between A+B and C+D. Equal BDT values stay on the same side.
-    double boundary = 0.0;
-    double difference = total;
+    // Select the requested fraction above the boundary. Equal BDT values stay on the same side.
+    double target = total * upper_fraction_;
+    // Start with an empty upper range; keep the last BDT group below the boundary for validation.
+    double boundary = events_.back().BDT + (upper_ - events_.back().BDT) / 2.0;
+    if (boundary <= events_.back().BDT) boundary = upper_;
+    double difference = target;
     double low = 0.0;
     for (std::size_t i = 0; i < events_.size(); i++) {
         low += events_.at(i).weight;
         if (i + 1 < events_.size() && events_.at(i).BDT == events_.at(i + 1).BDT) continue;
-        double candidate_difference = std::fabs(total - 2.0 * low);
-        if (candidate_difference < difference || boundary == 0.0) {
+        double candidate_difference = std::fabs(total - low - target);
+        if (candidate_difference < difference) {
             difference = candidate_difference;
             boundary = events_.at(i).BDT;
             if (i + 1 < events_.size()) {
@@ -541,8 +549,49 @@ inline double Find_ABCD_validation_boundary(std::vector<ABCDValidationEvent>& ev
     return boundary;
 }
 
+inline std::vector<double> GetABCDBoundary(RooDataSet& data_, ABCDParameters parameters_) {
+    // Select all events below O_cut with the nominal mass and deltaE cuts, including O_BDT = 0.
+    parameters_.sideband_BDT_cut_1 = -std::numeric_limits<double>::infinity();
+    parameters_.sideband_BDT_cut_2 = -std::numeric_limits<double>::infinity();
+    std::vector<std::vector<ABCDValidationEvent>> events(2);
+
+    for (int i = 0; i < data_.numEntries(); i++) {
+        const RooArgSet* row = data_.get(i);
+        std::vector<double> variables = { row->getRealValue("M"), row->getRealValue("deltaE"), row->getRealValue("BDT_1"), row->getRealValue("BDT_2") };
+        double bin = mapping_function_ABCD(variables, parameters_, false);
+        if (!std::isfinite(bin)) continue;
+        int local_bin = ((int)bin - 1) % 4;
+        if (local_bin < 2) continue;
+
+        int region = ((int)bin - 1) / 4;
+        double weight = data_.weight();
+        if (!std::isfinite(weight) || weight < 0.0) throw std::runtime_error("[GetABCDBoundary] data weights must be finite and non-negative");
+        if (weight == 0.0) continue;
+
+        if (region == 0) events.at(region).push_back({ variables.at(2), weight });
+        else if (region == 1) events.at(region).push_back({ variables.at(3), weight });
+    }
+
+    std::vector<double> BDT_cuts = { parameters_.BDT_cut_1, parameters_.BDT_cut_2 };
+    std::vector<double> boundaries;
+    for (int region = 0; region < 2; region++) {
+        // Before box open, use weighted MC yields. Removing the MC weights gives event counts.
+        double boundary = Find_BDT_boundary(events.at(region), BDT_cuts.at(region), 1.0 / 3.0);
+        boundaries.push_back(boundary);
+
+        double total = 0.0;
+        double selected = 0.0;
+        for (const ABCDValidationEvent& event : events.at(region)) {
+            total += event.weight;
+            if (boundary < event.BDT) selected += event.weight;
+        }
+        printf("[ABCD boundary] region %d: BDT boundary=%.17g, below O_cut=%g, C+D=%g, target=%g\n", region + 1, boundary, total, selected, total / 3.0);
+    }
+    return boundaries;
+}
+
 inline std::vector<double> GetValidationBoundary(RooDataSet& data_, ABCDParameters parameters_) {
-    // A zero boundary temporarily selects the full validation range into A/B for each deltaE region.
+    // Validation ends at the C/D lower boundary. A zero split temporarily selects its full range into A/B.
     parameters_.validation_BDT_cut_1 = 0.0;
     parameters_.validation_BDT_cut_2 = 0.0;
     std::vector<std::vector<ABCDValidationEvent>> events(2);
@@ -564,12 +613,12 @@ inline std::vector<double> GetValidationBoundary(RooDataSet& data_, ABCDParamete
         else if (region == 1) events.at(region).push_back({ variables.at(3), weight });
     }
 
-    std::vector<double> BDT_cuts = { parameters_.BDT_cut_1, parameters_.BDT_cut_2 };
+    std::vector<double> BDT_cuts = { parameters_.sideband_BDT_cut_1, parameters_.sideband_BDT_cut_2 };
     std::vector<double> boundaries;
 
     for (int region = 0; region < 2; region++) {
         // Before box open, balance the weighted MC yields. Removing the MC weights gives event counts.
-        double boundary = Find_ABCD_validation_boundary(events.at(region), 0.45 * BDT_cuts.at(region));
+        double boundary = Find_BDT_boundary(events.at(region), BDT_cuts.at(region), 0.5);
         boundaries.push_back(boundary);
 
         double high = 0.0;
