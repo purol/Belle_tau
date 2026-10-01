@@ -224,72 +224,6 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
     }
 }
 
-std::vector<double> GetABCDBoundary(const char* input_path_1_, const char* input_path_2_, std::vector<std::string> data_list_) {
-    std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 6 * deltaE_right_sigma_g) + "))";
-    std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
-
-    std::string cut_M_2 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak_g - 16 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "))";
-    std::string cut_M_deltaE_2 = "(" + cut_M_2 + "&&" + cut_deltaE_2 + ")";
-
-    std::string cut_region = cut_M_deltaE_1 + "||" + cut_M_deltaE_2;
-
-    RooRealVar sideband_M("M", "M", M_peak_g - 20 * M_left_sigma_g, M_peak_g + 20 * M_right_sigma_g);
-    RooRealVar sideband_deltaE("deltaE", "deltaE", deltaE_peak_g - 16 * deltaE_left_sigma_g, deltaE_peak_g + 6 * deltaE_right_sigma_g);
-    RooRealVar sideband_BDT_1("BDT_1", "BDT_1", 0.0, 1.0);
-    RooRealVar sideband_BDT_2("BDT_2", "BDT_2", 0.0, 1.0);
-    RooRealVar sideband_weight("weight", "weight", 1.0);
-    RooDataSet sideband_data("sideband_data", "sideband_data", RooArgSet(sideband_M, sideband_deltaE, sideband_BDT_1, sideband_BDT_2, sideband_weight), RooFit::WeightVar("weight"));
-
-    Loader loader_data("tau_lfv");
-    for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
-    loader_data.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} }); /* After box open, it should be removed! */
-    loader_data.AddWeight("muonID_05_prompt", { {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} }); /* After box open, it should be removed! */
-    loader_data.AddWeight("muonID_05_prompt", { {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} }); /* After box open, it should be removed! */
-    loader_data.AddWeight("muonID_01_prompt", { {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} }); /* After box open, it should be removed! */
-    loader_data.Cut(cut_region.c_str());
-    loader_data.RandomBCS();
-    loader_data.IsBCSValid();
-    loader_data.FillDataSet(&sideband_data, { &sideband_M, &sideband_deltaE, &sideband_BDT_1, &sideband_BDT_2 }, { "M", "deltaE", "BDT_output_1", "BDT_output_2" });
-    loader_data.end();
-    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
-    return GetABCDBoundary(sideband_data, parameters);
-}
-
-std::vector<double> GetValidationBoundary(const char* input_path_1_, const char* input_path_2_, std::vector<std::string> data_list_) {
-    std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 6 * deltaE_right_sigma_g) + "))";
-    std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
-
-    std::string cut_M_2 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak_g - 16 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "))";
-    std::string cut_M_deltaE_2 = "(" + cut_M_2 + "&&" + cut_deltaE_2 + ")";
-
-    std::string cut_region = cut_M_deltaE_1 + "||" + cut_M_deltaE_2;
-    
-    RooRealVar validation_M("M", "M", M_peak_g - 20 * M_left_sigma_g, M_peak_g + 20 * M_right_sigma_g);
-    RooRealVar validation_deltaE("deltaE", "deltaE", deltaE_peak_g - 16 * deltaE_left_sigma_g, deltaE_peak_g + 6 * deltaE_right_sigma_g);
-    RooRealVar validation_BDT_1("BDT_1", "BDT_1", 0.0, 1.0);
-    RooRealVar validation_BDT_2("BDT_2", "BDT_2", 0.0, 1.0);
-    RooRealVar validation_weight("weight", "weight", 1.0);
-    RooDataSet validation_data("validation_data", "validation_data", RooArgSet(validation_M, validation_deltaE, validation_BDT_1, validation_BDT_2, validation_weight), RooFit::WeightVar("weight"));
-
-    Loader loader_data("tau_lfv");
-    for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
-    loader_data.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} }); /* After box open, it should be removed! */
-    loader_data.AddWeight("muonID_05_prompt", { {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} }); /* After box open, it should be removed! */
-    loader_data.AddWeight("muonID_05_prompt", { {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} }); /* After box open, it should be removed! */
-    loader_data.AddWeight("muonID_01_prompt", { {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} }); /* After box open, it should be removed! */
-    loader_data.Cut(cut_region.c_str());
-    loader_data.RandomBCS();
-    loader_data.IsBCSValid();
-    loader_data.FillDataSet(&validation_data, { &validation_M, &validation_deltaE, &validation_BDT_1, &validation_BDT_2 }, { "M", "deltaE", "BDT_output_1", "BDT_output_2" });
-    loader_data.end();
-    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM, 0.0, 0.0, sideband_BDT_cut_1, sideband_BDT_cut_2 };
-    return GetValidationBoundary(validation_data, parameters);
-}
-
 void ABCD_method(const char* input_path_1_, const char* input_path_2_, const char* FOM_1_path_, const char* FOM_2_path_, TH1D* data_th1d_, TH1D* validation_th1d_, TH1D* data_stat_err_, std::vector<std::string> data_list_) {
     data_th1d_->Reset();
     validation_th1d_->Reset();
@@ -513,10 +447,10 @@ int main(int argc, char* argv[]) {
     EventWeights::Register("muonID_01_prompt", muonID_01_prompt);
     EventWeights::Register("muonID_05_prompt", muonID_05_prompt);
 
-    // Keep the upper third below O_cut in C/D. Determine this boundary once with nominal data weights.
-    std::vector<double> sideband_BDT_cuts = GetABCDBoundary(argv[1], argv[3], background_list);
-    sideband_BDT_cut_1 = sideband_BDT_cuts.at(0);
-    sideband_BDT_cut_2 = sideband_BDT_cuts.at(1);
+    // Read the fixed background MC boundaries shared with the other programs.
+    ReadABCDBoundary((std::string(argv[1]) + "/ABCD_boundary.txt").c_str(), { BDT_cut_1, BDT_cut_2 }, &sideband_BDT_cut_1, &sideband_BDT_cut_2, &validation_BDT_cut_1, &validation_BDT_cut_2);
+    std::vector<double> sideband_BDT_cuts = { sideband_BDT_cut_1, sideband_BDT_cut_2 };
+    std::vector<double> validation_BDT_cuts = { validation_BDT_cut_1, validation_BDT_cut_2 };
 
     // we do not open the box, so I just use background MC
     FillHistogram(argv[1], argv[2], data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err, background_list, signal_list, background_list);
@@ -534,11 +468,6 @@ int main(int argc, char* argv[]) {
     FillHistogram_fluc_SR(argv[1], argv[2], data_neg_M_th1d, signal_neg_M_MC_th1d, bkg_neg_M_MC_th1d, background_list, signal_list, background_list, 1);
     FillHistogram_fluc_SR(argv[1], argv[2], data_pos_DeltaE_th1d, signal_pos_DeltaE_MC_th1d, bkg_pos_DeltaE_MC_th1d, background_list, signal_list, background_list, 2);
     FillHistogram_fluc_SR(argv[1], argv[2], data_neg_DeltaE_th1d, signal_neg_DeltaE_MC_th1d, bkg_neg_DeltaE_MC_th1d, background_list, signal_list, background_list, 3);
-
-    // Determine the validation boundary before filling the ABCD histograms.
-    std::vector<double> validation_BDT_cuts = GetValidationBoundary(argv[1], argv[3], background_list);
-    validation_BDT_cut_1 = validation_BDT_cuts.at(0);
-    validation_BDT_cut_2 = validation_BDT_cuts.at(1);
 
     // ABCD method
     ABCD_method(argv[1], argv[3], argv[4], argv[5], data_th1d, data_validation_th1d, data_th1d_stat_err, background_list);

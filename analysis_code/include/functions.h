@@ -88,6 +88,50 @@ void ReadFOM(const char* filename, double* cut_value_) {
 
 }
 
+void ReadABCDBoundary(const char* filename_, const std::vector<double>& BDT_cuts_, double* sideband_BDT_cut_1_, double* sideband_BDT_cut_2_, double* validation_BDT_cut_1_ = nullptr, double* validation_BDT_cut_2_ = nullptr) {
+    std::ifstream input(filename_);
+    if (!input.is_open()) throw std::runtime_error("[ReadABCDBoundary] cannot open " + std::string(filename_) + "; run GetABCDBoundary first");
+
+    // One row per deltaE region: O_cut, C/D lower boundary, validation internal boundary.
+    std::vector<double> sideband_BDT_cuts;
+    std::vector<double> validation_BDT_cuts;
+    for (int i = 0; i < 2; i++) {
+        double BDT_cut;
+        double sideband_BDT_cut;
+        double validation_BDT_cut;
+        if (!(input >> BDT_cut >> sideband_BDT_cut >> validation_BDT_cut)) throw std::runtime_error("[ReadABCDBoundary] invalid boundary file: " + std::string(filename_));
+        if (!std::isfinite(BDT_cut) || !std::isfinite(sideband_BDT_cut) || !std::isfinite(validation_BDT_cut) || BDT_cut <= 0.0 || BDT_cut > 1.0 || validation_BDT_cut < 0.0 || validation_BDT_cut > sideband_BDT_cut || sideband_BDT_cut > BDT_cut) {
+            throw std::runtime_error("[ReadABCDBoundary] invalid BDT boundaries: " + std::string(filename_));
+        }
+        if (!std::isfinite(BDT_cuts_.at(i)) || std::fabs(BDT_cut - BDT_cuts_.at(i)) > 1e-12) throw std::runtime_error("[ReadABCDBoundary] O_cut differs from FOM; regenerate " + std::string(filename_));
+        sideband_BDT_cuts.push_back(sideband_BDT_cut);
+        validation_BDT_cuts.push_back(validation_BDT_cut);
+    }
+    std::string extra;
+    if (input >> extra) throw std::runtime_error("[ReadABCDBoundary] unexpected content in " + std::string(filename_));
+
+    *sideband_BDT_cut_1_ = sideband_BDT_cuts.at(0);
+    *sideband_BDT_cut_2_ = sideband_BDT_cuts.at(1);
+    if (validation_BDT_cut_1_ != nullptr) *validation_BDT_cut_1_ = validation_BDT_cuts.at(0);
+    if (validation_BDT_cut_2_ != nullptr) *validation_BDT_cut_2_ = validation_BDT_cuts.at(1);
+    for (int i = 0; i < 2; i++) printf("[ReadABCDBoundary] region %d: C/D lower boundary=%.17g, validation internal boundary=%.17g\n", i + 1, sideband_BDT_cuts.at(i), validation_BDT_cuts.at(i));
+}
+
+void WriteABCDBoundary(const char* filename_, const std::vector<double>& BDT_cuts_, const std::vector<double>& sideband_BDT_cuts_, const std::vector<double>& validation_BDT_cuts_) {
+    FILE* fp = fopen(filename_, "w");
+    if (fp == nullptr) throw std::runtime_error("[WriteABCDBoundary] cannot open " + std::string(filename_));
+
+    // Keep enough digits to recover the same double values in every program.
+    for (int i = 0; i < 2; i++) {
+        if (fprintf(fp, "%.17g %.17g %.17g\n", BDT_cuts_.at(i), sideband_BDT_cuts_.at(i), validation_BDT_cuts_.at(i)) < 0) {
+            fclose(fp);
+            throw std::runtime_error("[WriteABCDBoundary] cannot write " + std::string(filename_));
+        }
+    }
+    if (fclose(fp) != 0) throw std::runtime_error("[WriteABCDBoundary] cannot close " + std::string(filename_));
+    printf("[WriteABCDBoundary] boundaries saved: %s\n", filename_);
+}
+
 std::string get_ellipse_region_one(const char* deltaE_name_, const char* M_name_, double sigma_, double deltaE_peak_, double deltaE_left_sigma_, double deltaE_right_sigma_, double M_peak_, double M_left_sigma_, double M_right_sigma_, double theta_) {
 
     // ellipse variable
@@ -550,6 +594,9 @@ inline double Find_BDT_boundary(std::vector<ABCDValidationEvent>& events_, doubl
 }
 
 inline std::vector<double> GetABCDBoundary(RooDataSet& data_, ABCDParameters parameters_) {
+    if (!std::isfinite(parameters_.BDT_cut_1) || !std::isfinite(parameters_.BDT_cut_2) || parameters_.BDT_cut_1 <= 0.0 || parameters_.BDT_cut_1 > 1.0 || parameters_.BDT_cut_2 <= 0.0 || parameters_.BDT_cut_2 > 1.0) {
+        throw std::runtime_error("[GetABCDBoundary] invalid O_cut; check the FOM files");
+    }
     // Select all events below O_cut with the nominal mass and deltaE cuts, including O_BDT = 0.
     parameters_.sideband_BDT_cut_1 = -std::numeric_limits<double>::infinity();
     parameters_.sideband_BDT_cut_2 = -std::numeric_limits<double>::infinity();
@@ -575,7 +622,7 @@ inline std::vector<double> GetABCDBoundary(RooDataSet& data_, ABCDParameters par
     std::vector<double> BDT_cuts = { parameters_.BDT_cut_1, parameters_.BDT_cut_2 };
     std::vector<double> boundaries;
     for (int region = 0; region < 2; region++) {
-        // Before box open, use weighted MC yields. Removing the MC weights gives event counts.
+        // Use nominal background MC yields, including after box open.
         double boundary = Find_BDT_boundary(events.at(region), BDT_cuts.at(region), 1.0 / 3.0);
         boundaries.push_back(boundary);
 
@@ -617,7 +664,7 @@ inline std::vector<double> GetValidationBoundary(RooDataSet& data_, ABCDParamete
     std::vector<double> boundaries;
 
     for (int region = 0; region < 2; region++) {
-        // Before box open, balance the weighted MC yields. Removing the MC weights gives event counts.
+        // Balance nominal background MC yields, including after box open.
         double boundary = Find_BDT_boundary(events.at(region), BDT_cuts.at(region), 0.5);
         boundaries.push_back(boundary);
 
