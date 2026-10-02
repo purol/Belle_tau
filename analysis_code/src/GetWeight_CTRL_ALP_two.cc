@@ -100,11 +100,11 @@ int main(int argc, char* argv[]) {
     Loader loader_sample2("tau_lfv");
     for (int i = 0; i < sample2_list.size(); i++) loader_sample2.Load((std::string(argv[3]) + "/" + sample2_list.at(i) + "/" + std::string(argv[4])).c_str(), "root", sample2_list.at(i).c_str());
     loader_sample2.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
-    loader_sample2.Cut(("(" + std::to_string(deltaE_peak - 16 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 6 * deltaE_right_sigma) + ")").c_str());
-    loader_sample2.Cut(("(" + std::to_string(M_peak - 20 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + ")").c_str());
+    loader_sample2.Cut(GetBCSCut(deltaE_peak, deltaE_left_sigma, deltaE_right_sigma, M_peak, M_left_sigma, M_right_sigma).c_str());
     loader_sample2.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
     loader_sample2.RandomBCS();
     loader_sample2.IsBCSValid();
+    loader_sample2.Cut(("(" + std::to_string(M_peak - 20 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + ")").c_str());
     loader_sample2.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
     loader_sample2.FillTH1D(hist_CTRL_ALP, argv[5]);
     loader_sample2.end();

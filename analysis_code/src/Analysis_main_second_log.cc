@@ -38,8 +38,8 @@ int main(int argc, char* argv[]) {
 
     loader.Cut(("(deltaE < " + std::to_string(deltaE_peak + 20 * deltaE_right_sigma) + ")").c_str());
     loader.PrintInformation("========== deltaE < 20 delta ==========");
-    loader.Cut(("(" + std::to_string(M_peak - 20 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + ")").c_str());
-    loader.PrintInformation("========== -20 delta < M < 20 delta ==========");
+    loader.Cut(("(" + std::to_string(M_peak - sizeM_BCS * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + sizeM_BCS * M_right_sigma) + ")").c_str());
+    loader.PrintInformation(("========== -" + std::to_string(sizeM_BCS) + " delta < M < " + std::to_string(sizeM_BCS) + " delta ==========").c_str());
     //loader.DrawTH2D("(E*E-px*px-py*py-pz*pz)^0.5", "deltaE", ";M [GeV];deltaE [GeV];", 50, 1.3, 1.9, 50, -0.9, 0.4, "M_deltaE_before_cut.png");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/final_output").c_str(), "", "");

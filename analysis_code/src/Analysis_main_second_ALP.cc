@@ -53,8 +53,8 @@ int main(int argc, char* argv[]) {
 
         deltaE_boundary_max.push(deltaE_peak + 20 * deltaE_right_sigma);
         deltaE_boundary_min.push(deltaE_peak - 20 * deltaE_left_sigma);
-        M_boundary_max.push(M_peak + 20 * M_right_sigma);
-        M_boundary_min.push(M_peak - 20 * M_left_sigma);
+        M_boundary_max.push(M_peak + sizeM_BCS * M_right_sigma);
+        M_boundary_min.push(M_peak - sizeM_BCS * M_left_sigma);
     }
 
     EventWeights::Register("MC_weight", MC_weight);

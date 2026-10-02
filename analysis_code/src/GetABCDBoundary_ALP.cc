@@ -39,20 +39,12 @@ double M_right_sigma_g;
 double theta_g;
 
 void GetABCDBoundary(const char* input_path_1_, const char* input_path_2_, const char* filename_, std::vector<std::string> background_list_) {
-    std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 6 * deltaE_right_sigma_g) + "))";
-    std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
-
-    std::string cut_M_2 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak_g - 16 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "))";
-    std::string cut_M_deltaE_2 = "(" + cut_M_2 + "&&" + cut_deltaE_2 + ")";
-
-    std::string cut_region = cut_M_deltaE_1 + "||" + cut_M_deltaE_2;
+    std::string cut_region = GetBCSCut(deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g);
 
     std::string cut_m_alpha = "(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")";
 
     RooRealVar sideband_M("M", "M", M_peak_g - 20 * M_left_sigma_g, M_peak_g + 20 * M_right_sigma_g);
-    RooRealVar sideband_deltaE("deltaE", "deltaE", deltaE_peak_g - 16 * deltaE_left_sigma_g, deltaE_peak_g + 6 * deltaE_right_sigma_g);
+    RooRealVar sideband_deltaE("deltaE", "deltaE", deltaE_peak_g - sizeDeltaE_left_BCS * deltaE_left_sigma_g, deltaE_peak_g + sizeDeltaE_right_BCS * deltaE_right_sigma_g);
     RooRealVar sideband_BDT_1("BDT_1", "BDT_1", 0.0, 1.0);
     RooRealVar sideband_BDT_2("BDT_2", "BDT_2", 0.0, 1.0);
     RooRealVar sideband_weight("weight", "weight", 1.0);
@@ -71,6 +63,8 @@ void GetABCDBoundary(const char* input_path_1_, const char* input_path_2_, const
     loader_bkg.Cut(cut_m_alpha.c_str());
     loader_bkg.RandomBCS();
     loader_bkg.IsBCSValid();
+    // The boundary is determined in the nominal mass range after choosing the candidate.
+    loader_bkg.Cut(("(" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + "< M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + ")").c_str());
     loader_bkg.FillDataSet(&background_MC, { &sideband_M, &sideband_deltaE, &sideband_BDT_1, &sideband_BDT_2 }, { "M", "deltaE", BDT_output_1_name.c_str(), BDT_output_2_name.c_str() });
     loader_bkg.end();
     ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
