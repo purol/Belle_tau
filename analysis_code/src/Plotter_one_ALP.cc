@@ -72,8 +72,8 @@ int main(int argc, char* argv[]) {
 
     loader.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
     loader.PrintInformation("========== -5 delta < deltaE < 5 delta ==========");
-    loader.Cut(("(" + std::to_string(M_peak - sizeM * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + sizeM * M_right_sigma) + ")").c_str());
-    loader.PrintInformation(("========== -" + std::to_string(sizeM) + " delta < M < " + std::to_string(sizeM) + " delta ==========").c_str());
+    loader.Cut(("(" + std::to_string(M_peak - 20 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + ")").c_str());
+    loader.PrintInformation(("========== -" + std::to_string(20) + " delta < M < " + std::to_string(20) + " delta ==========").c_str());
 
     if(argc == 14) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), true, false);
     else if (argc == 16) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), 50, std::stod(argv[10]), std::stod(argv[11]), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), true, false);

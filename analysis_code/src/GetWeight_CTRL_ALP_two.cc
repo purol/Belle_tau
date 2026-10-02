@@ -106,7 +106,6 @@ int main(int argc, char* argv[]) {
     loader_sample2.RandomBCS();
     loader_sample2.IsBCSValid();
     loader_sample2.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
-    loader_sample2.Cut(("(" + std::to_string(M_peak - sizeM * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + sizeM * M_right_sigma) + ")").c_str());
     loader_sample2.FillTH1D(hist_CTRL_ALP, argv[5]);
     loader_sample2.end();
 

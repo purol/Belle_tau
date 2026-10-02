@@ -505,10 +505,10 @@ inline double mapping_function_ABCD(std::vector<double> variables_, const ABCDPa
     // Shift the common boundaries together for resolution variations; the outer mass boundary stays at 20 sigma.
     double central_lower = parameters_.M_peak - (parameters_.M_size - M_shift) * parameters_.M_left_sigma;
     double central_upper = parameters_.M_peak + (parameters_.M_size + M_shift) * parameters_.M_right_sigma;
-    double sideband_left_lower = parameters_.M_peak - 20.0 * parameters_.M_left_sigma;
+    double sideband_left_lower = parameters_.M_peak - (20.0 - M_shift) * parameters_.M_left_sigma;
     double sideband_left_upper = parameters_.M_peak - (5.0 - M_shift) * parameters_.M_left_sigma;
     double sideband_right_lower = parameters_.M_peak + (5.0 + M_shift) * parameters_.M_right_sigma;
-    double sideband_right_upper = parameters_.M_peak + 20.0 * parameters_.M_right_sigma;
+    double sideband_right_upper = parameters_.M_peak + (20.0 + M_shift) * parameters_.M_right_sigma;
 
     double BDT;
     double BDT_cut;
