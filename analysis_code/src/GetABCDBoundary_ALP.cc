@@ -63,8 +63,9 @@ void GetABCDBoundary(const char* input_path_1_, const char* input_path_2_, const
     loader_bkg.Cut(cut_m_alpha.c_str());
     loader_bkg.RandomBCS();
     loader_bkg.IsBCSValid();
-    // The boundary is determined in the nominal mass range after choosing the candidate.
+    // The boundary is determined in the nominal mass and deltaE ranges after choosing the candidate.
     loader_bkg.Cut(("(" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + "< M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + ")").c_str());
+    loader_bkg.Cut(("(" + std::to_string(deltaE_peak_g - 15 * deltaE_left_sigma_g) + "< deltaE) && (deltaE <= " + std::to_string(deltaE_peak_g + 5 * deltaE_right_sigma_g) + ")").c_str());
     loader_bkg.FillDataSet(&background_MC, { &sideband_M, &sideband_deltaE, &sideband_BDT_1, &sideband_BDT_2 }, { "M", "deltaE", BDT_output_1_name.c_str(), BDT_output_2_name.c_str() });
     loader_bkg.end();
     ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM };
