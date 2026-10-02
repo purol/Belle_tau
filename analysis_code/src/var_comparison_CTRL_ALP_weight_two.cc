@@ -96,13 +96,13 @@ int main(int argc, char* argv[]) {
 
     ReadResolution((std::string(argv[15]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
-    EventWeight M_weight(
+    EventWeight CTRL_weight(
         std::string(argv[16]) + "/weight_two_2D_CTRL_" + std::string(argv[17]) + "_" + std::string(argv[18]) + "_" + std::string(argv[19]) + "_" + std::string(argv[20]) + ".csv",
         { {compare_variables.at(0), compare_variables.at(0) + "_min", compare_variables.at(0) + "_max"}, {compare_variables.at(1), compare_variables.at(1) + "_min", compare_variables.at(1) + "_max"} },
         "weight",
         true
     );
-    EventWeights::Register("M_weight", M_weight);
+    EventWeights::Register("CTRL_weight", CTRL_weight);
     EventWeights::Register("MC_weight", MC_weight);
 
     std::string variable_name(argv[1]);
@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
     Loader loader_sample1_test("tau_lfv");
     for (int i = 0; i < sample1_list.size(); i++) loader_sample1_test.Load(argv[5], "root", sample1_list.at(i).c_str());
     loader_sample1_test.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
-    loader_sample1_test.AddWeight("M_weight", { {compare_variables.at(0), compare_variables.at(0)}, {compare_variables.at(1), compare_variables.at(1)} });
+    loader_sample1_test.AddWeight("CTRL_weight", { {compare_variables.at(0), compare_variables.at(0)}, {compare_variables.at(1), compare_variables.at(1)} });
     loader_sample1_test.FillTH1D(sample1_test_th, variable_name);
     loader_sample1_test.FillTH1D(sample1_test_th_KS, variable_name);
     loader_sample1_test.end();
