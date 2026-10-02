@@ -11,17 +11,18 @@ get_params() {
 submit_Plotter() {
   local command
 
-  local Code=$1 # ex. ./bin/Plotter
-  local VerName=$2 # ex. Alice
-  local VarName=$3 # ex. deltaE
-  local InputDir1=$4 # ex. before_M_deltaE_selection
-  local InputDir2=$5 # ex. before_M_deltaE_selection
-  local OutputPath=$6 # ex. plot
-  local Sample1List=${7}
-  local Sample2List=${8}
-  local Sample1Label=${9}
-  local Sample2Label=${10}
-  local Flag=${11}
+  local Code=${1} # ex. ./bin/Plotter
+  local VerName=${2} # ex. Alice
+  local VarNames=${3} # ex. deltaE
+  local VarBins=${4} # ex. deltaE
+  local InputDir1=${5} # ex. before_M_deltaE_selection
+  local InputDir2=${6} # ex. before_M_deltaE_selection
+  local OutputPath=${7} # ex. plot
+  local Sample1List=${8}
+  local Sample2List=${9}
+  local Sample1Label=${10}
+  local Sample2Label=${11}
+  local Flag=${12}
 
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
@@ -35,7 +36,8 @@ submit_Plotter() {
       "${InputDir1}" \
       "${nominal_analysis_DIR}" \
       "${InputDir2}" \
-      "${VarName}" \
+      "${VarNames}" \
+      "${VarBins}" \
       "${Sample1List}" \
       "${Sample2List}" \
       "${Sample1Label}" \
@@ -57,9 +59,11 @@ submit_Plotter() {
 }
  
 code="${Belle_tau_DIR}/analysis_code/bin/GetWeight_CTRL_ALP_one"
-VarName="extraInfo__boALP_M__bc"
-submit_Plotter ${code} ${Analysis_Name} ${VarName} "final_output_after_application" "final_output_after_application" "Weight" "${Signal_Type}" "ALP" "${Signal_Legends}" "${ALP_Legends}" "one"
+VarNames="${Two_weight_vars_STR}"
+VarBins="${Two_vars_binnings_STR}"
+submit_Plotter ${code} ${Analysis_Name} ${VarNames} ${VarBins} "final_output_after_application" "final_output_after_application" "Weight" "${Signal_Type}" "ALP" "${Signal_Legends}" "${ALP_Legends}" "one"
 
 code="${Belle_tau_DIR}/analysis_code/bin/GetWeight_CTRL_ALP_two"
-VarName="extraInfo__boALP_M__bc"
-submit_Plotter ${code} ${Analysis_Name} ${VarName} "final_output_after_application" "final_output_after_application" "Weight" "${Signal_Type}" "ALP" "${Signal_Legends}" "${ALP_Legends}" "two"
+VarNames="${Two_weight_vars_STR}"
+VarBins="${Two_vars_binnings_STR}"
+submit_Plotter ${code} ${Analysis_Name} ${VarNames} ${VarBins} "final_output_after_application" "final_output_after_application" "Weight" "${Signal_Type}" "ALP" "${Signal_Legends}" "${ALP_Legends}" "two"

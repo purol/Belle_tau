@@ -68,13 +68,14 @@ submit_Plotter_weight() {
   local VarName=$3 # ex. deltaE
   local VarMin=$4
   local VarMax=$5
-  local InputDir1=$6 # ex. before_M_deltaE_selection
-  local InputDir2=$7 # ex. before_M_deltaE_selection
-  local OutputName=$8 # ex. deltaE
-  local OutputPath=$9 # ex. plot
-  local Type1=${10}
-  local Type2=${11}
-  local WeightPath=${12} # ex. Weight
+  local WeightVarNames=${6}
+  local InputDir1=${7} # ex. before_M_deltaE_selection
+  local InputDir2=${8} # ex. before_M_deltaE_selection
+  local OutputName=${9} # ex. deltaE
+  local OutputPath=${10} # ex. plot
+  local Type1=${11}
+  local Type2=${12}
+  local WeightPath=${13} # ex. Weight
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
@@ -97,6 +98,7 @@ submit_Plotter_weight() {
       "${Type2}" \
       "${Signal_Legends}" \
       "#tau#rightarrow#alpha#mu" \
+      "${WeightVarNames}" \
       "none" \
       "${nominal_analysis_DIR}" \
       "./${VerName}/${Analysis_VerName}/${WeightPath}" \
@@ -124,8 +126,10 @@ submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_a
 
 code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_ALP_weight_one"
 VarName="BDT_output_1"
-submit_Plotter_weight ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application" "FBDT1_comp_weight" "plot" "${Signal_Type}" "ALP" "Weight"
+WeightVarNames="${Two_weight_vars_STR}"
+submit_Plotter_weight ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "${WeightVarNames}" "final_output_after_application" "final_output_after_application" "FBDT1_comp_weight" "plot" "${Signal_Type}" "ALP" "Weight"
 
 code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_ALP_weight_two"
 VarName="BDT_output_2"
-submit_Plotter_weight ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application" "FBDT2_comp_weight" "plot" "${Signal_Type}" "ALP" "Weight"
+WeightVarNames="${Two_weight_vars_STR}"
+submit_Plotter_weight ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "${WeightVarNames}" "final_output_after_application" "final_output_after_application" "FBDT2_comp_weight" "plot" "${Signal_Type}" "ALP" "Weight"
