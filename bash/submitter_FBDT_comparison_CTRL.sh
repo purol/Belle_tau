@@ -42,6 +42,53 @@ submit_Plotter() {
   "${command}"
 }
  
+submit_Plotter_weight() {
+  local command
+
+  local Code=$1 # ex. ./bin/Plotter
+  local VerName=$2 # ex. Alice
+  local VarName=$3 # ex. deltaE
+  local VarMin=$4
+  local VarMax=$5
+  local WeightVarNames=${6}
+  local InputDir1=${7} # ex. before_M_deltaE_selection
+  local InputDir2=${8} # ex. before_M_deltaE_selection
+  local OutputName=${9} # ex. deltaE
+  local OutputPath=${10} # ex. plot
+  local Type1=${11}
+  local Type2=${12}
+  local WeightPath=${13} # ex. Weight
+  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
+  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
+  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
+
+  printf -v command '%q ' \
+    "${Code}" \
+    "${VarName}" \
+    50 \
+    "${VarMin}" \
+    "${VarMax}" \
+    "./${VerName}/${Analysis_VerName}/${Type1}/${InputDir1}/" \
+    "${nominal_analysis_DIR}/${Type2}/${InputDir2}/" \
+    "./${VerName}/${Analysis_VerName}/${OutputPath}/" \
+    "${OutputName}.png" \
+    "${Type1}" \
+    "${Type2}" \
+    "${Signal_Legends}" \
+    "#tau#rightarrow#mu#mu#mu" \
+    "${WeightVarNames}" \
+    "none" \
+    "${nominal_analysis_DIR}" \
+    "./${VerName}/${Analysis_VerName}/${WeightPath}"
+
+  bsub -q l \
+  -J Compare \
+  -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/compare_weight_${VarName}_${OutputName}.log" \
+  -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/compare_weight_${VarName}_${OutputName}.err" \
+  "${command}"
+
+}
+
 code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_one"
 VarName="BDT_output_1"
 submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application" "FBDT1_comp" "plot" "${Signal_Type}" "SIGNAL"
@@ -49,3 +96,13 @@ submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_a
 code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_two"
 VarName="BDT_output_2"
 submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application" "FBDT2_comp" "plot" "${Signal_Type}" "SIGNAL"
+
+code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_weight_one"
+VarName="BDT_output_1"
+WeightVarNames="${Two_weight_vars_STR}"
+submit_Plotter_weight "${code}" "${Analysis_Name}" "${VarName}" 0.0 1.0 "${WeightVarNames}" "final_output_after_application" "final_output_after_application" "FBDT1_comp_weight" "plot" "${Signal_Type}" "SIGNAL" "Weight"
+
+code="${Belle_tau_DIR}/analysis_code/bin/var_comparison_CTRL_weight_two"
+VarName="BDT_output_2"
+WeightVarNames="${Two_weight_vars_STR}"
+submit_Plotter_weight "${code}" "${Analysis_Name}" "${VarName}" 0.0 1.0 "${WeightVarNames}" "final_output_after_application" "final_output_after_application" "FBDT2_comp_weight" "plot" "${Signal_Type}" "SIGNAL" "Weight"
