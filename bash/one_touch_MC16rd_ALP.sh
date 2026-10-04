@@ -17,7 +17,7 @@ Background_Types=("BB" "UDSC"
 export Signal_Type="SIGNAL" # name of directories under ${Ntuple_DIR} for prompt signal sample. Do not include colon.
 export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample. Do not include colon.
 
-Background_Legends=("B#bar{B}" "q#bar{q}"
+Background_Legends=("others" "q#bar{q}"
     "#mu#mu" "ee" "others" "ee#mu#mu" "others" "others" "others"
     "#tau#bar{#tau}"
     ) # legends of background sample for plots. Do not include colon.
