@@ -19,9 +19,9 @@ submit_CLs() {
 
     if awk -v life="$life" 'BEGIN { exit !(life >= 700) }'; then
       mu_list="$(seq 0 20 1000)"
-    elif awk -v life="$life" 'BEGIN { exit !(life >= 300 && life < 700) }'; then
+    elif awk -v life="$life" 'BEGIN { exit !(life >= 200 && life < 700) }'; then
       mu_list="$(seq 0 5 200)"
-    elif awk -v life="$life" 'BEGIN { exit !(life >= 50 && life < 300) }'; then
+    elif awk -v life="$life" 'BEGIN { exit !(life >= 50 && life < 200) }'; then
       mu_list="$(seq 0 0.2 10.0)"
     else
       mu_list="$(seq 0 0.1 5.0)"
