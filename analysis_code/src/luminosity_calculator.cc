@@ -18,6 +18,8 @@
 
 double BDT_cut_1;
 double BDT_cut_2;
+double sideband_BDT_cut_1;
+double sideband_BDT_cut_2;
 
 double deltaE_peak_g;
 double deltaE_left_sigma_g;
@@ -28,30 +30,12 @@ double M_right_sigma_g;
 double theta_g;
 
 double mapping_function(std::vector<double> variables_) {
-    double M = variables_.at(0);
-    double deltaE = variables_.at(1);
-
-    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
-    else return NAN;
-
+    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM, 0.0, 0.0, sideband_BDT_cut_1, sideband_BDT_cut_2 };
+    return mapping_function_ABCD(variables_, parameters, false);
 }
 
 void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, TH1D* data_th1d_stat_err_, TH1D* signal_MC_th1d_stat_err_, TH1D* bkg_MC_th1d_stat_err_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_) {
-    std::string cut_BDT_1 = "(" + std::to_string(BDT_cut_1) + " < BDT_output_1)";
-    std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 6 * deltaE_right_sigma_g) + "))";
-    std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
-    std::string cut_total_1 = "(" + cut_M_deltaE_1 + "&&" + cut_BDT_1 + ")";
-
-    std::string cut_BDT_2 = "(" + std::to_string(BDT_cut_2) + " < BDT_output_2)";
-    std::string cut_M_2 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak_g - 16 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "))";
-    std::string cut_M_deltaE_2 = "(" + cut_M_2 + "&&" + cut_deltaE_2 + ")";
-    std::string cut_total_2 = "(" + cut_M_deltaE_2 + "&&" + cut_BDT_2 + ")";
-
-    std::string cut_region = cut_M_deltaE_1 + "||" + cut_M_deltaE_2;
-    std::string cut_total = cut_total_1 + "||" + cut_total_2;
+    std::string cut_region = GetBCSCut(deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g);
     
     // data
     Loader loader_data("tau_lfv");
@@ -64,8 +48,7 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_data.Cut(cut_region.c_str());
     loader_data.RandomBCS();
     loader_data.IsBCSValid();
-    loader_data.Cut(cut_total.c_str());
-    loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE" }, { mapping_function });
+    loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function });
     loader_data.end();
 
     // signal MC
@@ -79,8 +62,7 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_signal.Cut(cut_region.c_str());
     loader_signal.RandomBCS();
     loader_signal.IsBCSValid();
-    loader_signal.Cut(cut_total.c_str());
-    loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE" }, { mapping_function });
+    loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function });
     loader_signal.end();
 
     // background MC
@@ -94,23 +76,19 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_bkg.Cut(cut_region.c_str());
     loader_bkg.RandomBCS();
     loader_bkg.IsBCSValid();
-    loader_bkg.Cut(cut_total.c_str());
-    loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE" }, { mapping_function });
+    loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function });
     loader_bkg.end();
 
 
     // get statistical uncertainty
-    data_th1d_stat_err_->SetBinContent(1, data_th1d_->GetBinError(1));
-    data_th1d_stat_err_->SetBinContent(2, data_th1d_->GetBinError(2));
-    signal_MC_th1d_stat_err_->SetBinContent(1, signal_MC_th1d_->GetBinError(1));
-    signal_MC_th1d_stat_err_->SetBinContent(2, signal_MC_th1d_->GetBinError(2));
-    bkg_MC_th1d_stat_err_->SetBinContent(1, bkg_MC_th1d_->GetBinError(1));
-    bkg_MC_th1d_stat_err_->SetBinContent(2, bkg_MC_th1d_->GetBinError(2));
+    for (int i = 1; i <= signal_MC_th1d_->GetNbinsX(); i++) {
+        data_th1d_stat_err_->SetBinContent(i, data_th1d_->GetBinError(i));
+        signal_MC_th1d_stat_err_->SetBinContent(i, signal_MC_th1d_->GetBinError(i));
+        bkg_MC_th1d_stat_err_->SetBinContent(i, bkg_MC_th1d_->GetBinError(i));
+        // We do not open the box, So data_th1d is MC. We use the proper uncertainty
+        data_th1d_->SetBinError(i, std::sqrt(data_th1d_->GetBinContent(i))); /* After box open, it should be removed! */
+    }
 
-
-    // We do not open the box, So data_th1d is MC. We use the proper uncertainty
-    data_th1d_->SetBinError(1, std::sqrt(data_th1d_->GetBinContent(1)));
-    data_th1d_->SetBinError(2, std::sqrt(data_th1d_->GetBinContent(2)));
 }
 
 int main(int argc, char* argv[]) {
@@ -124,28 +102,15 @@ int main(int argc, char* argv[]) {
     * argv[7]: background list (separated by colon)
     */
 
-    // TH1 list
-    /*
-    *
-    *   deltaE
-    *      ^
-    *   +5 +-----+-------+-----+
-    *      |     |       |     |
-    *      |     |   1   |     |
-    *   -5 +-----+-------+-----+
-    *      |     |       |     |
-    *      |     |       |     |
-    *      |     |   2   |     |
-    *  -15 +-----+-------+-----+---> M
-    *     -20   -5      +5    +20
-    */
-    TH1D* data_th1d = new TH1D("data_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_MC_th1d = new TH1D("bkg_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+    int NBin = 8;
+    // A1, B1, C1, D1, A2, B2, C2, D2. Validation is assumed to contain no signal.
+    TH1D* data_th1d = new TH1D("data_th1d", ";bin index;", NBin, 0.5, NBin + 0.5);
+    TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", NBin, 0.5, NBin + 0.5);
+    TH1D* bkg_MC_th1d = new TH1D("bkg_MC_th1d", ";bin index;", NBin, 0.5, NBin + 0.5);
 
-    TH1D* data_th1d_stat_err = new TH1D("data_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
-    TH1D* signal_MC_th1d_stat_err = new TH1D("signal_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d_stat_err = new TH1D("data_th1d_stat_err", ";bin index;", NBin, 0.5, NBin + 0.5);
+    TH1D* signal_MC_th1d_stat_err = new TH1D("signal_MC_th1d_stat_err", ";bin index;", NBin, 0.5, NBin + 0.5);
+    TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", NBin, 0.5, NBin + 0.5);
 
     ReadFOM((std::string(argv[1]) + "/GridSearch_one/FOM.log").c_str(), &BDT_cut_1);
     ReadFOM((std::string(argv[1]) + "/GridSearch_two/FOM.log").c_str(), &BDT_cut_2);
@@ -176,6 +141,9 @@ int main(int argc, char* argv[]) {
     EventWeights::Register("muonID_05_prompt", muonID_05_prompt);
     EventWeights::Register("luminosity_scale", luminosity_scale);
 
+    // Read the fixed background MC boundaries shared with the other programs.
+    ReadABCDBoundary((std::string(argv[1]) + "/ABCD_boundary.txt").c_str(), { BDT_cut_1, BDT_cut_2 }, &sideband_BDT_cut_1, &sideband_BDT_cut_2);
+
     // get nominal value
     std::vector<double> MC_th1d_nominal;
    
@@ -187,10 +155,8 @@ int main(int argc, char* argv[]) {
     // we do not open the box, so I just use background MC
     FillHistogram(argv[1], argv[2], data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err, background_list, signal_list, background_list);
 
-    MC_th1d_nominal.push_back(signal_MC_th1d->GetBinContent(1));
-    MC_th1d_nominal.push_back(signal_MC_th1d->GetBinContent(2));
-    MC_th1d_nominal.push_back(bkg_MC_th1d->GetBinContent(1));
-    MC_th1d_nominal.push_back(bkg_MC_th1d->GetBinContent(2));
+    for (int i = 1; i <= NBin; i++) MC_th1d_nominal.push_back(signal_MC_th1d->GetBinContent(i));
+    for (int i = 1; i <= NBin; i++) MC_th1d_nominal.push_back(bkg_MC_th1d->GetBinContent(i));
 
     // print output
     FILE* fp;
@@ -209,17 +175,20 @@ int main(int argc, char* argv[]) {
         // we do not open the box, so I just use background MC
         FillHistogram(argv[1], argv[2], data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err, background_list, signal_list, background_list);
 
-        if (MC_th1d_nominal.at(0) != 0) fprintf(fp, "%lf,", signal_MC_th1d->GetBinContent(1) / MC_th1d_nominal.at(0));
-        else fprintf(fp, "1.0,");
-
-        if (MC_th1d_nominal.at(1) != 0) fprintf(fp, "%lf,", signal_MC_th1d->GetBinContent(2) / MC_th1d_nominal.at(1));
-        else fprintf(fp, "1.0,");
-
-        if (MC_th1d_nominal.at(2) != 0) fprintf(fp, "%lf,", bkg_MC_th1d->GetBinContent(1) / MC_th1d_nominal.at(2));
-        else fprintf(fp, "1.0,");
-
-        if (MC_th1d_nominal.at(3) != 0) fprintf(fp, "%lf\n", bkg_MC_th1d->GetBinContent(2) / MC_th1d_nominal.at(3));
-        else fprintf(fp, "1.0\n");
+        // Signal columns first, then background columns, so PCA_toys.py --half_only selects the signal.
+        for (int j = 1; j <= NBin; j++) {
+            double nominal = MC_th1d_nominal.at(j - 1);
+            double relative_yield = 1.0;
+            if (nominal != 0.0) relative_yield = signal_MC_th1d->GetBinContent(j) / nominal;
+            fprintf(fp, "%lf,", relative_yield);
+        }
+        for (int j = 1; j <= NBin; j++) {
+            double nominal = MC_th1d_nominal.at(NBin + j - 1);
+            double relative_yield = 1.0;
+            if (nominal != 0.0) relative_yield = bkg_MC_th1d->GetBinContent(j) / nominal;
+            if (j == NBin) fprintf(fp, "%lf\n", relative_yield);
+            else fprintf(fp, "%lf,", relative_yield);
+        }
 
     }
 

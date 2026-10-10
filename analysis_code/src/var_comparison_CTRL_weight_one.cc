@@ -33,14 +33,27 @@ int main(int argc, char* argv[]) {
     * argv[10]: sample2 list (separated by colon)
     * argv[11]: sample1 lable
     * argv[12]: sample2 lable
-    * argv[13]: {none|ratio}
-    * argv[14]: M_deltaE path for tau -> mu mu mu decay
+    * argv[13]: two compare variables (separated by colon)
+    * argv[14]: {none|ratio}
+    * argv[15]: M_deltaE path for tau -> mu mu mu decay
+    * argv[16]: M weight path
     */
 
+    if (argc != 17) {
+        printf("16 arguments are required.\n");
+        return 1;
+    }
+
+    std::vector<std::string> compare_variables = split(argv[13], ':');
+    if (compare_variables.size() != 2) {
+        printf("Two compare variables are required.\n");
+        return 1;
+    }
+
     bool ThereIsRatio = false;
-    if(std::string(argv[13]) == "") ThereIsRatio = false;
-    else if(std::string(argv[13]) == "none") ThereIsRatio = false;
-    if(std::string(argv[13]) == "ratio") ThereIsRatio = true;
+    if(std::string(argv[14]) == "") ThereIsRatio = false;
+    else if(std::string(argv[14]) == "none") ThereIsRatio = false;
+    if(std::string(argv[14]) == "ratio") ThereIsRatio = true;
 
     double deltaE_peak;
     double deltaE_left_sigma;
@@ -50,8 +63,15 @@ int main(int argc, char* argv[]) {
     double M_right_sigma;
     double theta;
 
-    ReadResolution((std::string(argv[14]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+    ReadResolution((std::string(argv[15]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
+    EventWeight CTRL_weight(
+        std::string(argv[16]) + "/weight_one_2D_CTRL.csv",
+        { {compare_variables.at(0), compare_variables.at(0) + "_min", compare_variables.at(0) + "_max"}, {compare_variables.at(1), compare_variables.at(1) + "_min", compare_variables.at(1) + "_max"} },
+        "weight",
+        true
+    );
+    EventWeights::Register("CTRL_weight", CTRL_weight);
     EventWeights::Register("MC_weight", MC_weight);
 
     std::string variable_name(argv[1]);
@@ -71,6 +91,7 @@ int main(int argc, char* argv[]) {
     Loader loader_sample1_test("tau_lfv");
     for (int i = 0; i < sample1_list.size(); i++) loader_sample1_test.Load(argv[5], "root", sample1_list.at(i).c_str());
     loader_sample1_test.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_sample1_test.AddWeight("CTRL_weight", { {compare_variables.at(0), compare_variables.at(0)}, {compare_variables.at(1), compare_variables.at(1)} });
     loader_sample1_test.FillTH1D(sample1_test_th, variable_name);
     loader_sample1_test.FillTH1D(sample1_test_th_KS, variable_name);
     loader_sample1_test.end();

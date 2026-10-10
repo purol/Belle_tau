@@ -36,15 +36,7 @@ int main(int argc, char* argv[]) {
 
     EventWeights::Register("MC_weight", MC_weight);
 
-    std::string cut_M_1 = "((" + std::to_string(M_peak - 20 * M_left_sigma) + " < M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + "))";
-    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak + 6 * deltaE_right_sigma) + "))";
-    std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
-
-    std::string cut_M_2 = "((" + std::to_string(M_peak - 20 * M_left_sigma) + " < M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + "))";
-    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak - 16 * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "))";
-    std::string cut_M_deltaE_2 = "(" + cut_M_2 + "&&" + cut_deltaE_2 + ")";
-
-    std::string cut_region = cut_M_deltaE_1 + "||" + cut_M_deltaE_2;
+    std::string cut_region = GetBCSCut(deltaE_peak, deltaE_left_sigma, deltaE_right_sigma, M_peak, M_left_sigma, M_right_sigma);
 
     // define roorealvar
     RooRealVar BDT1("BDT1", "BDT1", 0.0, 1.0);
@@ -60,11 +52,14 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== initial ==========");
 
     loader.Cut(cut_region.c_str());
-    loader.PrintInformation("========== (-20 delta < M < 20 delta) && (-16 delta < deltaE < 6 delta) ==========");
+    loader.PrintInformation(("========== " + cut_region + " ==========").c_str());
 
     loader.RandomBCS();
     loader.IsBCSValid();
     loader.PrintInformation("========== Random BCS ==========");
+
+    loader.Cut(("(" + std::to_string(M_peak - 20 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + ")").c_str());
+    loader.PrintInformation("========== (-20 delta < M < 20 delta) ==========");
 
     loader.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
     loader.PrintInformation("========== (-5 delta < deltaE < 5 delta) ==========");
@@ -98,11 +93,14 @@ int main(int argc, char* argv[]) {
         loader_temp.PrintInformation("========== initial ==========");
 
         loader_temp.Cut(cut_region.c_str());
-        loader_temp.PrintInformation("========== (-20 delta < M < 20 delta) && (-16 delta < deltaE < 6 delta) ==========");
+        loader_temp.PrintInformation(("========== " + cut_region + " ==========").c_str());
 
         loader_temp.RandomBCS();
         loader_temp.IsBCSValid();
         loader_temp.PrintInformation("========== Random BCS ==========");
+
+        loader_temp.Cut(("(" + std::to_string(M_peak - 20 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + ")").c_str());
+        loader_temp.PrintInformation("========== (-20 delta < M < 20 delta) ==========");
 
         loader_temp.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
         loader_temp.PrintInformation("========== (-5 delta < deltaE < 5 delta) ==========");

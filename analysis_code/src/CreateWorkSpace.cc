@@ -9,6 +9,7 @@
 #include "TH1D.h"
 #include "TH2D.h"
 #include "RooWorkspace.h"
+#include "RooRealVar.h"
 
 #include "RooStats/HistFactory/Measurement.h"
 #include "RooStats/HistFactory/Channel.h"
@@ -24,6 +25,10 @@
 
 double BDT_cut_1;
 double BDT_cut_2;
+double sideband_BDT_cut_1;
+double sideband_BDT_cut_2;
+double validation_BDT_cut_1;
+double validation_BDT_cut_2;
 
 double deltaE_peak_g;
 double deltaE_left_sigma_g;
@@ -34,70 +39,37 @@ double M_right_sigma_g;
 double theta_g;
 
 double mapping_function(std::vector<double> variables_) {
-    double M = variables_.at(0);
-    double deltaE = variables_.at(1);
+    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM, 0.0, 0.0, sideband_BDT_cut_1, sideband_BDT_cut_2 };
+    return mapping_function_ABCD(variables_, parameters, false);
+}
 
-    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
-    else return NAN;
-
+double mapping_function_validation(std::vector<double> variables_) {
+    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM, validation_BDT_cut_1, validation_BDT_cut_2, sideband_BDT_cut_1, sideband_BDT_cut_2 };
+    return mapping_function_ABCD(variables_, parameters, true);
 }
 
 double mapping_function_plus_M(std::vector<double> variables_) {
-    double M = variables_.at(0);
-    double deltaE = variables_.at(1);
-
-    if (((M_peak_g - (sizeM - 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM + 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - (sizeM - 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM + 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
-    else return NAN;
-
+    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM, 0.0, 0.0, sideband_BDT_cut_1, sideband_BDT_cut_2 };
+    return mapping_function_ABCD(variables_, parameters, false, 0);
 }
 
 double mapping_function_minus_M(std::vector<double> variables_) {
-    double M = variables_.at(0);
-    double deltaE = variables_.at(1);
-
-    if (((M_peak_g - (sizeM + 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM - 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - (sizeM + 1.0) * M_left_sigma_g) < M) && (M <= (M_peak_g + (sizeM - 1.0) * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g))) return 2.0;
-    else return NAN;
-
+    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM, 0.0, 0.0, sideband_BDT_cut_1, sideband_BDT_cut_2 };
+    return mapping_function_ABCD(variables_, parameters, false, 1);
 }
 
 double mapping_function_plus_DeltaE(std::vector<double> variables_) {
-    double M = variables_.at(0);
-    double deltaE = variables_.at(1);
-
-    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 4 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 6 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 14 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 4 * deltaE_left_sigma_g))) return 2.0;
-    else return NAN;
-
+    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM, 0.0, 0.0, sideband_BDT_cut_1, sideband_BDT_cut_2 };
+    return mapping_function_ABCD(variables_, parameters, false, 2);
 }
 
 double mapping_function_minus_DeltaE(std::vector<double> variables_) {
-    double M = variables_.at(0);
-    double deltaE = variables_.at(1);
-
-    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 6 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 4 * deltaE_right_sigma_g))) return 1.0;
-    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 16 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 6 * deltaE_left_sigma_g))) return 2.0;
-    else return NAN;
-
+    ABCDParameters parameters = { BDT_cut_1, BDT_cut_2, deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g, sizeM, 0.0, 0.0, sideband_BDT_cut_1, sideband_BDT_cut_2 };
+    return mapping_function_ABCD(variables_, parameters, false, 3);
 }
 
 void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, TH1D* data_th1d_stat_err_, TH1D* signal_MC_th1d_stat_err_, TH1D* bkg_MC_th1d_stat_err_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_) {
-    std::string cut_BDT_1 = "(" + std::to_string(BDT_cut_1) + " < BDT_output_1)";
-    std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 6 * deltaE_right_sigma_g) + "))";
-    std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
-    std::string cut_total_1 = "(" + cut_M_deltaE_1 + "&&" + cut_BDT_1 + ")";
-
-    std::string cut_BDT_2 = "(" + std::to_string(BDT_cut_2) + " < BDT_output_2)";
-    std::string cut_M_2 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak_g - 16 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "))";
-    std::string cut_M_deltaE_2 = "(" + cut_M_2 + "&&" + cut_deltaE_2 + ")";
-    std::string cut_total_2 = "(" + cut_M_deltaE_2 + "&&" + cut_BDT_2 + ")";
-
-    std::string cut_region = cut_M_deltaE_1 + "||" + cut_M_deltaE_2;
-    std::string cut_total = cut_total_1 + "||" + cut_total_2;
+    std::string cut_region = GetBCSCut(deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g);
     
     // data
     Loader loader_data("tau_lfv");
@@ -109,8 +81,7 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_data.Cut(cut_region.c_str());
     loader_data.RandomBCS();
     loader_data.IsBCSValid();
-    loader_data.Cut(cut_total.c_str());
-    loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE" }, { mapping_function });
+    loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function });
     loader_data.end();
 
     // signal MC
@@ -123,8 +94,7 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_signal.Cut(cut_region.c_str());
     loader_signal.RandomBCS();
     loader_signal.IsBCSValid();
-    loader_signal.Cut(cut_total.c_str());
-    loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE" }, { mapping_function });
+    loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function });
     loader_signal.end();
 
     // background MC
@@ -137,23 +107,26 @@ void FillHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* d
     loader_bkg.Cut(cut_region.c_str());
     loader_bkg.RandomBCS();
     loader_bkg.IsBCSValid();
-    loader_bkg.Cut(cut_total.c_str());
-    loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE" }, { mapping_function });
+    loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function });
     loader_bkg.end();
 
 
-    // get statistical uncertainty (relative error)
-    data_th1d_stat_err_->SetBinContent(1, data_th1d_->GetBinError(1) / data_th1d_->GetBinContent(1));
-    data_th1d_stat_err_->SetBinContent(2, data_th1d_->GetBinError(2) / data_th1d_->GetBinContent(2));
-    signal_MC_th1d_stat_err_->SetBinContent(1, signal_MC_th1d_->GetBinError(1) / signal_MC_th1d_->GetBinContent(1));
-    signal_MC_th1d_stat_err_->SetBinContent(2, signal_MC_th1d_->GetBinError(2) / signal_MC_th1d_->GetBinContent(2));
-    bkg_MC_th1d_stat_err_->SetBinContent(1, bkg_MC_th1d_->GetBinError(1) / bkg_MC_th1d_->GetBinContent(1));
-    bkg_MC_th1d_stat_err_->SetBinContent(2, bkg_MC_th1d_->GetBinError(2) / bkg_MC_th1d_->GetBinContent(2));
-
-
     // We do not open the box, So data_th1d is MC. We use the proper uncertainty
-    data_th1d_->SetBinError(1, std::sqrt(data_th1d_->GetBinContent(1)));
-    data_th1d_->SetBinError(2, std::sqrt(data_th1d_->GetBinContent(2)));
+    // These are projected data errors. Remove the overrides after box open.
+    for (int i = 1; i <= 8; i++) {
+        data_th1d_->SetBinError(i, std::sqrt(data_th1d_->GetBinContent(i))); /* After box open, it should be removed! */
+    }
+
+    // get statistical uncertainty (relative error)
+    // Empty MC bins have zero relative uncertainty; all eight bins are filled from the selected events.
+    for (int i = 1; i <= 8; i++) {
+        if (data_th1d_->GetBinContent(i) > 0.0) data_th1d_stat_err_->SetBinContent(i, data_th1d_->GetBinError(i) / data_th1d_->GetBinContent(i));
+        else data_th1d_stat_err_->SetBinContent(i, 0.0);
+        if (signal_MC_th1d_->GetBinContent(i) > 0.0) signal_MC_th1d_stat_err_->SetBinContent(i, signal_MC_th1d_->GetBinError(i) / signal_MC_th1d_->GetBinContent(i));
+        else signal_MC_th1d_stat_err_->SetBinContent(i, 0.0);
+        if (bkg_MC_th1d_->GetBinContent(i) > 0.0) bkg_MC_th1d_stat_err_->SetBinContent(i, bkg_MC_th1d_->GetBinError(i) / bkg_MC_th1d_->GetBinContent(i));
+        else bkg_MC_th1d_stat_err_->SetBinContent(i, 0.0);
+    }
 }
 
 void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_, TH1D* data_th1d_, TH1D* signal_MC_th1d_, TH1D* bkg_MC_th1d_, std::vector<std::string> data_list_, std::vector<std::string> signal_list_, std::vector<std::string> background_list_, int fluc_mode) {
@@ -164,23 +137,10 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
     * 2: positive DeltaE fluctuation
     * 3: negative DeltaE fluctuation
     */
+
+    std::string cut_region = GetBCSCut(deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g);
+
     // data
-
-    std::string cut_BDT_1 = "(" + std::to_string(BDT_cut_1) + " < BDT_output_1)";
-    std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 6 * deltaE_right_sigma_g) + "))";
-    std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
-    std::string cut_total_1 = "(" + cut_M_deltaE_1 + "&&" + cut_BDT_1 + ")";
-
-    std::string cut_BDT_2 = "(" + std::to_string(BDT_cut_2) + " < BDT_output_2)";
-    std::string cut_M_2 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak_g - 16 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "))";
-    std::string cut_M_deltaE_2 = "(" + cut_M_2 + "&&" + cut_deltaE_2 + ")";
-    std::string cut_total_2 = "(" + cut_M_deltaE_2 + "&&" + cut_BDT_2 + ")";
-
-    std::string cut_region = cut_M_deltaE_1 + "||" + cut_M_deltaE_2;
-    std::string cut_total = cut_total_1 + "||" + cut_total_2;
-
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
     loader_data.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} }); /* After box open, it should be removed! */
@@ -190,11 +150,10 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
     loader_data.Cut(cut_region.c_str());
     loader_data.RandomBCS();
     loader_data.IsBCSValid();
-    loader_data.Cut(cut_total.c_str());
-    if (fluc_mode == 0) loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE" }, { mapping_function_plus_M });
-    else if (fluc_mode == 1) loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE" }, { mapping_function_minus_M });
-    else if (fluc_mode == 2) loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE" }, { mapping_function_plus_DeltaE });
-    else if (fluc_mode == 3) loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE" }, { mapping_function_minus_DeltaE });
+    if (fluc_mode == 0) loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_plus_M });
+    else if (fluc_mode == 1) loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_minus_M });
+    else if (fluc_mode == 2) loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_plus_DeltaE });
+    else if (fluc_mode == 3) loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_minus_DeltaE });
     else {
         printf("[FillHistogram_fluc_SR] fluctuation index should be one of 0, 1, 2, or 3\n");
         exit(1);
@@ -211,11 +170,10 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
     loader_signal.Cut(cut_region.c_str());
     loader_signal.RandomBCS();
     loader_signal.IsBCSValid();
-    loader_signal.Cut(cut_total.c_str());
-    if (fluc_mode == 0) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE" }, { mapping_function_plus_M });
-    else if (fluc_mode == 1) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE" }, { mapping_function_minus_M });
-    else if (fluc_mode == 2) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE" }, { mapping_function_plus_DeltaE });
-    else if (fluc_mode == 3) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE" }, { mapping_function_minus_DeltaE });
+    if (fluc_mode == 0) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_plus_M });
+    else if (fluc_mode == 1) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_minus_M });
+    else if (fluc_mode == 2) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_plus_DeltaE });
+    else if (fluc_mode == 3) loader_signal.FillCustomizedTH1D(signal_MC_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_minus_DeltaE });
     else {
         printf("[FillHistogram_fluc_SR] fluctuation index should be one of 0, 1, 2, or 3\n");
         exit(1);
@@ -232,11 +190,10 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
     loader_bkg.Cut(cut_region.c_str());
     loader_bkg.RandomBCS();
     loader_bkg.IsBCSValid();
-    loader_bkg.Cut(cut_total.c_str());
-    if (fluc_mode == 0) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE" }, { mapping_function_plus_M });
-    else if (fluc_mode == 1) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE" }, { mapping_function_minus_M });
-    else if (fluc_mode == 2) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE" }, { mapping_function_plus_DeltaE });
-    else if (fluc_mode == 3) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE" }, { mapping_function_minus_DeltaE });
+    if (fluc_mode == 0) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_plus_M });
+    else if (fluc_mode == 1) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_minus_M });
+    else if (fluc_mode == 2) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_plus_DeltaE });
+    else if (fluc_mode == 3) loader_bkg.FillCustomizedTH1D(bkg_MC_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_minus_DeltaE });
     else {
         printf("[FillHistogram_fluc_SR] fluctuation index should be one of 0, 1, 2, or 3\n");
         exit(1);
@@ -245,140 +202,19 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
 
 
     // We do not open the box, So data_th1d is MC. We use the proper uncertainty
-    data_th1d_->SetBinError(1, std::sqrt(data_th1d_->GetBinContent(1)));
-    data_th1d_->SetBinError(2, std::sqrt(data_th1d_->GetBinContent(2)));
+    // Remove the projected data error overrides after box open.
+    for (int i = 1; i <= 8; i++) {
+        data_th1d_->SetBinError(i, std::sqrt(data_th1d_->GetBinContent(i))); /* After box open, it should be removed! */
+    }
 }
 
-double BDT_cut_1_g = -1;
-double BDT_cut_2_g = -1;
-
-double mapping_function_A(std::vector<double> variables_) {
-    double M = variables_.at(0);
-    double deltaE = variables_.at(1);
-    double BDT_1 = variables_.at(2);
-    double BDT_2 = variables_.at(3);
-
-    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (BDT_cut_1_g < BDT_1)) return 1.0;
-    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (BDT_cut_2_g < BDT_2)) return 2.0;
-    else return NAN;
-
-}
-
-double mapping_function_B(std::vector<double> variables_) {
-    double M = variables_.at(0);
-    double deltaE = variables_.at(1);
-    double BDT_1 = variables_.at(2);
-    double BDT_2 = variables_.at(3);
-
-    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (BDT_cut_1_g < BDT_1)) return 1.0;
-    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (BDT_cut_2_g < BDT_2)) return 2.0;
-    else return NAN;
-
-}
-
-double mapping_function_C(std::vector<double> variables_) {
-    double M = variables_.at(0);
-    double deltaE = variables_.at(1);
-    double BDT_1 = variables_.at(2);
-    double BDT_2 = variables_.at(3);
-
-    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (BDT_cut_1_g / 2.0 < BDT_1) && (BDT_1 <= BDT_cut_1_g)) return 1.0;
-    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M <= (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (BDT_cut_2_g / 2.0 < BDT_2) && (BDT_2 <= BDT_cut_2_g)) return 2.0;
-    else return NAN;
-
-}
-
-double mapping_function_D(std::vector<double> variables_) {
-    double M = variables_.at(0);
-    double deltaE = variables_.at(1);
-    double BDT_1 = variables_.at(2);
-    double BDT_2 = variables_.at(3);
-
-    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (BDT_cut_1_g / 2.0 < BDT_1) && (BDT_1 <= BDT_cut_1_g)) return 1.0;
-    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M <= (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M <= (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (BDT_cut_2_g / 2.0 < BDT_2) && (BDT_2 <= BDT_cut_2_g)) return 2.0;
-    else return NAN;
-
-}
-
-double mapping_function_Aprime(std::vector<double> variables_) {
-    double M = variables_.at(0);
-    double deltaE = variables_.at(1);
-    double BDT_1 = variables_.at(2);
-    double BDT_2 = variables_.at(3);
-
-    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (0.3 * BDT_cut_1_g < BDT_1) && (BDT_1 < 0.5 * BDT_cut_1_g)) return 1.0;
-    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (0.3 * BDT_cut_2_g < BDT_2) && (BDT_2 < 0.5 * BDT_cut_2_g)) return 2.0;
-    else return NAN;
-
-}
-
-double mapping_function_Bprime(std::vector<double> variables_) {
-    double M = variables_.at(0);
-    double deltaE = variables_.at(1);
-    double BDT_1 = variables_.at(2);
-    double BDT_2 = variables_.at(3);
-
-    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (0.3 * BDT_cut_1_g < BDT_1) && (BDT_1 < 0.5 * BDT_cut_1_g)) return 1.0;
-    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (0.3 * BDT_cut_2_g < BDT_2) && (BDT_2 < 0.5 * BDT_cut_2_g)) return 2.0;
-    else return NAN;
-
-}
-
-double mapping_function_Cprime(std::vector<double> variables_) {
-    double M = variables_.at(0);
-    double deltaE = variables_.at(1);
-    double BDT_1 = variables_.at(2);
-    double BDT_2 = variables_.at(3);
-
-    if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (0.1 * BDT_cut_1_g < BDT_1) && (BDT_1 < 0.3 * BDT_cut_1_g)) return 1.0;
-    else if (((M_peak_g - sizeM * M_left_sigma_g) < M) && (M < (M_peak_g + sizeM * M_right_sigma_g)) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (0.1 * BDT_cut_2_g < BDT_2) && (BDT_2 < 0.3 * BDT_cut_2_g)) return 2.0;
-    else return NAN;
-
-}
-
-double mapping_function_Dprime(std::vector<double> variables_) {
-    double M = variables_.at(0);
-    double deltaE = variables_.at(1);
-    double BDT_1 = variables_.at(2);
-    double BDT_2 = variables_.at(3);
-
-    if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 5 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g + 5 * deltaE_right_sigma_g)) && (0.1 * BDT_cut_1_g < BDT_1) && (BDT_1 < 0.3 * BDT_cut_1_g)) return 1.0;
-    else if (((((M_peak_g - 20.0 * M_left_sigma_g) < M) && (M < (M_peak_g - 5.0 * M_left_sigma_g))) || (((M_peak_g + 5.0 * M_right_sigma_g) < M) && (M < (M_peak_g + 20.0 * M_right_sigma_g)))) && ((deltaE_peak_g - 15 * deltaE_left_sigma_g) < deltaE) && (deltaE <= (deltaE_peak_g - 5 * deltaE_left_sigma_g)) && (0.1 * BDT_cut_2_g < BDT_2) && (BDT_2 < 0.3 * BDT_cut_2_g)) return 2.0;
-    else return NAN;
-
-}
-
-void ABCD_method(const char* input_path_1_, const char* input_path_2_, const char* FOM_1_path_, const char* FOM_2_path_, TH1D* bkg_ABCD_th1d_, TH1D* bkg_ABCD_th1d_stat_err_, TH1D* bkg_ABCD_th1d_nonclosure_err_, std::vector<std::string> data_list_) {
-    std::string cut_BDT_1 = "(" + std::to_string(BDT_cut_1) + " < BDT_output_1)";
-    std::string cut_M_1 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_1 = "((" + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g + 6 * deltaE_right_sigma_g) + "))";
-    std::string cut_M_deltaE_1 = "(" + cut_M_1 + "&&" + cut_deltaE_1 + ")";
-    std::string cut_total_1 = "(" + cut_M_deltaE_1 + "&&" + cut_BDT_1 + ")";
-
-    std::string cut_BDT_2 = "(" + std::to_string(BDT_cut_2) + " < BDT_output_2)";
-    std::string cut_M_2 = "((" + std::to_string(M_peak_g - 20 * M_left_sigma_g) + " < M) && (M < " + std::to_string(M_peak_g + 20 * M_right_sigma_g) + "))";
-    std::string cut_deltaE_2 = "((" + std::to_string(deltaE_peak_g - 16 * deltaE_left_sigma_g) + "<= deltaE) && (deltaE < " + std::to_string(deltaE_peak_g - 5 * deltaE_left_sigma_g) + "))";
-    std::string cut_M_deltaE_2 = "(" + cut_M_2 + "&&" + cut_deltaE_2 + ")";
-    std::string cut_total_2 = "(" + cut_M_deltaE_2 + "&&" + cut_BDT_2 + ")";
-
-    std::string cut_region = cut_M_deltaE_1 + "||" + cut_M_deltaE_2;
-    std::string cut_total = cut_total_1 + "||" + cut_total_2;
+void ABCD_method(const char* input_path_1_, const char* input_path_2_, const char* FOM_1_path_, const char* FOM_2_path_, TH1D* data_th1d_, TH1D* validation_th1d_, TH1D* data_stat_err_, std::vector<std::string> data_list_) {
+    data_th1d_->Reset();
+    validation_th1d_->Reset();
+    ReadFOM(FOM_1_path_, &BDT_cut_1);
+    ReadFOM(FOM_2_path_, &BDT_cut_2);
+    std::string cut_region = GetBCSCut(deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g);
     
-    ReadFOM(FOM_1_path_, &BDT_cut_1_g);
-    ReadFOM(FOM_2_path_, &BDT_cut_2_g);
-
-    TH1D* data_th1d_A = new TH1D("data_th1d_A", ";bin index;", 2, 0.5, 2.5);
-    TH1D* data_th1d_B = new TH1D("data_th1d_B", ";bin index;", 2, 0.5, 2.5);
-    TH1D* data_th1d_C = new TH1D("data_th1d_C", ";bin index;", 2, 0.5, 2.5);
-    TH1D* data_th1d_D = new TH1D("data_th1d_D", ";bin index;", 2, 0.5, 2.5);
-    TH1D* data_th1d_Aprime = new TH1D("data_th1d_Aprime", ";bin index;", 2, 0.5, 2.5);
-    TH1D* data_th1d_Bprime = new TH1D("data_th1d_Bprime", ";bin index;", 2, 0.5, 2.5);
-    TH1D* data_th1d_Cprime = new TH1D("data_th1d_Cprime", ";bin index;", 2, 0.5, 2.5);
-    TH1D* data_th1d_Dprime = new TH1D("data_th1d_Dprime", ";bin index;", 2, 0.5, 2.5);
-
-    TH1D* data_th1d_A_bkg_exp = new TH1D("data_th1d_A_bkg_exp", ";bin index;", 2, 0.5, 2.5);
-    TH1D* data_th1d_Aprime_bkg_exp = new TH1D("data_th1d_Aprime_bkg_exp", ";bin index;", 2, 0.5, 2.5);
-
     Loader loader_data("tau_lfv");
     for (int i = 0; i < data_list_.size(); i++) loader_data.Load((input_path_1_ + std::string("/") + data_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", data_list_.at(i).c_str());
     loader_data.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} }); /* After box open, it should be removed! */
@@ -388,115 +224,115 @@ void ABCD_method(const char* input_path_1_, const char* input_path_2_, const cha
     loader_data.Cut(cut_region.c_str());
     loader_data.RandomBCS();
     loader_data.IsBCSValid();
-    loader_data.FillCustomizedTH1D(data_th1d_A, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_A });
-    loader_data.FillCustomizedTH1D(data_th1d_B, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_B });
-    loader_data.FillCustomizedTH1D(data_th1d_C, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_C });
-    loader_data.FillCustomizedTH1D(data_th1d_D, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_D });
-    loader_data.FillCustomizedTH1D(data_th1d_Aprime, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Aprime });
-    loader_data.FillCustomizedTH1D(data_th1d_Bprime, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Bprime });
-    loader_data.FillCustomizedTH1D(data_th1d_Cprime, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Cprime });
-    loader_data.FillCustomizedTH1D(data_th1d_Dprime, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_Dprime });
+    loader_data.FillCustomizedTH1D(data_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function });
+    loader_data.FillCustomizedTH1D(validation_th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function_validation });
     loader_data.end();
 
-    // We do not open the box, So data_th1d is MC. We use the proper uncertainty
-    data_th1d_A->SetBinError(1, std::sqrt(data_th1d_A->GetBinContent(1)));
-    data_th1d_A->SetBinError(2, std::sqrt(data_th1d_A->GetBinContent(2)));
-    data_th1d_B->SetBinError(1, std::sqrt(data_th1d_B->GetBinContent(1)));
-    data_th1d_B->SetBinError(2, std::sqrt(data_th1d_B->GetBinContent(2)));
-    data_th1d_C->SetBinError(1, std::sqrt(data_th1d_C->GetBinContent(1)));
-    data_th1d_C->SetBinError(2, std::sqrt(data_th1d_C->GetBinContent(2)));
-    data_th1d_D->SetBinError(1, std::sqrt(data_th1d_D->GetBinContent(1)));
-    data_th1d_D->SetBinError(2, std::sqrt(data_th1d_D->GetBinContent(2)));
-    data_th1d_Aprime->SetBinError(1, std::sqrt(data_th1d_Aprime->GetBinContent(1)));
-    data_th1d_Aprime->SetBinError(2, std::sqrt(data_th1d_Aprime->GetBinContent(2)));
-    data_th1d_Bprime->SetBinError(1, std::sqrt(data_th1d_Bprime->GetBinContent(1)));
-    data_th1d_Bprime->SetBinError(2, std::sqrt(data_th1d_Bprime->GetBinContent(2)));
-    data_th1d_Cprime->SetBinError(1, std::sqrt(data_th1d_Cprime->GetBinContent(1)));
-    data_th1d_Cprime->SetBinError(2, std::sqrt(data_th1d_Cprime->GetBinContent(2)));
-    data_th1d_Dprime->SetBinError(1, std::sqrt(data_th1d_Dprime->GetBinContent(1)));
-    data_th1d_Dprime->SetBinError(2, std::sqrt(data_th1d_Dprime->GetBinContent(2)));
+    // The two observed histograms are filled directly in A1, B1, C1, D1, A2, B2, C2, D2 order.
+    std::vector<TH1D*> histograms = { data_th1d_, validation_th1d_ };
+    for (int j = 0; j < (int)histograms.size(); j++) {
+        TH1D* hist = histograms.at(j);
+        for (int i = 1; i <= 8; i++) {
+            double yield = hist->GetBinContent(i);
+            if (!std::isfinite(yield) || yield < 0.0) {
+                printf("[ABCD_method] invalid yield in %s, bin %d\n", hist->GetName(), i);
+                exit(1);
+            }
+            // We do not open the box, So data_th1d is MC. We use the proper uncertainty
+            // This is a projected data error for display, not an additional likelihood constraint.
+            // After box open, remove the override and use unweighted data counts.
+            hist->SetBinError(i, std::sqrt(yield)); /* After box open, it should be removed! */
+            printf("%s bin %d = %lf\n", hist->GetName(), i, yield);
+        }
+    }
+    for (int i = 1; i <= 8; i++) {
+        if (data_th1d_->GetBinContent(i) > 0.0) data_stat_err_->SetBinContent(i, data_th1d_->GetBinError(i) / data_th1d_->GetBinContent(i));
+        else data_stat_err_->SetBinContent(i, 0.0);
+    }
+    // B, C and D can contain signal. Their counts are fitted with mu * signal + background, not divided into a fixed estimate.
+}
 
-    // check 0 event
-    if (data_th1d_D->GetBinContent(1) == 0) {
-        printf("[ABCD_method] 0 event in region D\n");
-        exit(1);
-    }
-    else if (data_th1d_D->GetBinContent(2) == 0) {
-        printf("[ABCD_method] 0 event in region D\n");
-        exit(1);
-    }
-    else if (data_th1d_Dprime->GetBinContent(1) == 0) {
-        printf("[ABCD_method] 0 event in region D'\n");
-        exit(1);
-    }
-    else if (data_th1d_Dprime->GetBinContent(2) == 0) {
-        printf("[ABCD_method] 0 event in region D'\n");
-        exit(1);
-    }
-
-    // validation
-    data_th1d_Aprime_bkg_exp->Divide(data_th1d_Cprime, data_th1d_Dprime);
-    data_th1d_Aprime_bkg_exp->Multiply(data_th1d_Bprime);
-    printf("============== ABCD method validation region 1 ==============\n");
-    printf("N_A' = %lf+-%lf\n", data_th1d_Aprime->GetBinContent(1), data_th1d_Aprime->GetBinError(1));
-    printf("N_B' = %lf+-%lf\n", data_th1d_Bprime->GetBinContent(1), data_th1d_Bprime->GetBinError(1));
-    printf("N_C' = %lf+-%lf\n", data_th1d_Cprime->GetBinContent(1), data_th1d_Cprime->GetBinError(1));
-    printf("N_D' = %lf+-%lf\n", data_th1d_Dprime->GetBinContent(1), data_th1d_Dprime->GetBinError(1));
-    printf("estimated N_A' = %lf+-%lf\n", data_th1d_Aprime_bkg_exp->GetBinContent(1), data_th1d_Aprime_bkg_exp->GetBinError(1));
-    printf("============== ABCD method validation region 2 ==============\n");
-    printf("N_A' = %lf+-%lf\n", data_th1d_Aprime->GetBinContent(2), data_th1d_Aprime->GetBinError(2));
-    printf("N_B' = %lf+-%lf\n", data_th1d_Bprime->GetBinContent(2), data_th1d_Bprime->GetBinError(2));
-    printf("N_C' = %lf+-%lf\n", data_th1d_Cprime->GetBinContent(2), data_th1d_Cprime->GetBinError(2));
-    printf("N_D' = %lf+-%lf\n", data_th1d_Dprime->GetBinContent(2), data_th1d_Dprime->GetBinError(2));
-    printf("estimated N_A' = %lf+-%lf\n", data_th1d_Aprime_bkg_exp->GetBinContent(2), data_th1d_Aprime_bkg_exp->GetBinError(2));
-
-    // non-closure uncertainty
-    // Use the validation statistical precision as a floor for the non-closure uncertainty.
-    // Validation and application use disjoint BDT intervals.
+void Write_ABCD_histograms(const std::vector<ABCDValidation>& validation_) {
+    // Each unit template selects one bin of the eight-bin channel; its yield is set by the norm factors.
+    std::vector<std::string> regions = { "A", "B", "C", "D" };
     for (int i = 1; i <= 2; i++) {
-        double N_Aprime = data_th1d_Aprime->GetBinContent(i);
-        double N_Bprime = data_th1d_Bprime->GetBinContent(i);
-        double N_Cprime = data_th1d_Cprime->GetBinContent(i);
-        double N_Dprime = data_th1d_Dprime->GetBinContent(i);
-        if (!std::isfinite(N_Aprime) || !std::isfinite(N_Bprime) || !std::isfinite(N_Cprime) || !std::isfinite(N_Dprime) || N_Aprime <= 0.0 || N_Bprime <= 0.0 || N_Cprime <= 0.0 || N_Dprime <= 0.0) {
-            printf("[ABCD_method] non-closure uncertainty requires positive finite validation yields in region %d\n", i);
-            exit(1);
+        for (int j = 0; j < (int)regions.size(); j++) {
+            std::string name = "bkg_ABCD_unit_" + regions.at(j) + "_region" + std::to_string(i);
+            TH1D* hist = new TH1D(name.c_str(), ";bin index;", 8, 0.5, 8.5);
+            hist->SetBinContent(4 * (i - 1) + j + 1, 1.0);
+            hist->SetBinError(4 * (i - 1) + j + 1, 0.0);
+            hist->Write();
         }
-        double kappa = N_Aprime / data_th1d_Aprime_bkg_exp->GetBinContent(i);
-        double kappa_err = kappa * std::sqrt(1.0 / N_Aprime + 1.0 / N_Bprime + 1.0 / N_Cprime + 1.0 / N_Dprime);
-        double nonclosure_err = std::max(std::abs(kappa - 1.0), kappa_err);
-        if (!std::isfinite(kappa) || !std::isfinite(kappa_err) || !std::isfinite(nonclosure_err)) {
-            printf("[ABCD_method] invalid non-closure uncertainty in region %d\n", i);
-            exit(1);
-        }
-        bkg_ABCD_th1d_nonclosure_err_->SetBinContent(i, nonclosure_err);
-        bkg_ABCD_th1d_nonclosure_err_->SetBinError(i, 0.0);
-        printf("ABCD validation region %d: kappa = %lf+-%lf, relative non-closure uncertainty = %lf\n", i, kappa, kappa_err, nonclosure_err);
+        // The independent validation discrepancy abs(kappa_hat - 1) sets the up/down templates for A only.
+        double discrepancy = validation_.at(i - 1).discrepancy;
+        if (!std::isfinite(discrepancy)) continue;
+
+        double down = 1.0 - discrepancy;
+        if (down < 0.0) down = 0.0;
+        std::string suffix = "_region" + std::to_string(i);
+        TH1D* hist_p = new TH1D(("bkg_ABCD_nonclosure_p" + suffix).c_str(), ";bin index;", 8, 0.5, 8.5);
+        TH1D* hist_n = new TH1D(("bkg_ABCD_nonclosure_n" + suffix).c_str(), ";bin index;", 8, 0.5, 8.5);
+        hist_p->SetBinContent(4 * (i - 1) + 1, 1.0 + discrepancy);
+        hist_n->SetBinContent(4 * (i - 1) + 1, down);
+        hist_p->SetBinError(4 * (i - 1) + 1, 0.0);
+        hist_n->SetBinError(4 * (i - 1) + 1, 0.0);
+        hist_p->Write();
+        hist_n->Write();
     }
+}
 
-    // application
-    data_th1d_A_bkg_exp->Divide(data_th1d_C, data_th1d_D);
-    data_th1d_A_bkg_exp->Multiply(data_th1d_B);
-    printf("============== ABCD method region 1 ==============\n");
-    printf("N_A = %lf+-%lf\n", data_th1d_A->GetBinContent(1), data_th1d_A->GetBinError(1));
-    printf("N_B = %lf+-%lf\n", data_th1d_B->GetBinContent(1), data_th1d_B->GetBinError(1));
-    printf("N_C = %lf+-%lf\n", data_th1d_C->GetBinContent(1), data_th1d_C->GetBinError(1));
-    printf("N_D = %lf+-%lf\n", data_th1d_D->GetBinContent(1), data_th1d_D->GetBinError(1));
-    printf("estimated N_A = %lf+-%lf\n", data_th1d_A_bkg_exp->GetBinContent(1), data_th1d_A_bkg_exp->GetBinError(1));
-    printf("============== ABCD method region 2 ==============\n");
-    printf("N_A = %lf+-%lf\n", data_th1d_A->GetBinContent(2), data_th1d_A->GetBinError(2));
-    printf("N_B = %lf+-%lf\n", data_th1d_B->GetBinContent(2), data_th1d_B->GetBinError(2));
-    printf("N_C = %lf+-%lf\n", data_th1d_C->GetBinContent(2), data_th1d_C->GetBinError(2));
-    printf("N_D = %lf+-%lf\n", data_th1d_D->GetBinContent(2), data_th1d_D->GetBinError(2));
-    printf("estimated N_A = %lf+-%lf\n", data_th1d_A_bkg_exp->GetBinContent(2), data_th1d_A_bkg_exp->GetBinError(2));
+void Add_ABCD_samples(RooStats::HistFactory::Channel& channel_, const char* filename_, TH1D* data_, const std::vector<ABCDValidation>& validation_, bool use_nonclosure_) {
+    // A = beta * r, B = beta, C = nu * r, D = nu, independently for each deltaE region.
+    // The signal sample supplies mu * signal in every bin, including B, C and D.
+    // Do not add ActivateStatError: all eight bins already have their Poisson counting terms.
+    std::vector<std::string> regions = { "A", "B", "C", "D" };
+    for (int i = 1; i <= 2; i++) {
+        std::string suffix = "_region" + std::to_string(i);
+        double N_B = data_->GetBinContent(4 * (i - 1) + 2);
+        double N_C = data_->GetBinContent(4 * (i - 1) + 3);
+        double N_D = data_->GetBinContent(4 * (i - 1) + 4);
+        // Positive starting values are only minimizer seeds. No events are added to the observations.
+        double beta = 1.0;
+        double nu = 1.0;
+        double r = 1.0;
+        if (N_B > 0.0) beta = N_B;
+        if (N_D > 0.0) nu = N_D;
+        if (N_C > 0.0) r = N_C / nu;
+        double beta_max = std::max(100.0, 10.0 * beta);
+        double nu_max = std::max(100.0, 10.0 * nu);
+        double r_max = std::max(100.0, 10.0 * r);
+        for (int j = 0; j < (int)regions.size(); j++) {
+            std::string name = "bkg_" + regions.at(j) + suffix;
+            RooStats::HistFactory::Sample bkg(name.c_str(), ("bkg_ABCD_unit_" + regions.at(j) + suffix).c_str(), filename_);
+            if (j < 2) bkg.AddNormFactor("ABCD_beta" + suffix, beta, 0.0, beta_max);
+            else bkg.AddNormFactor("ABCD_nu" + suffix, nu, 0.0, nu_max);
+            if (j == 0 || j == 2) bkg.AddNormFactor("ABCD_r" + suffix, r, 0.0, r_max);
+            // Keep the nominal ABCD prediction. Validation enters only through this separate nuisance.
+            // Applying the validation discrepancy to the application BDT range is an extra assumption.
+            if (j == 0 && use_nonclosure_ && validation_.at(i - 1).discrepancy > 0.0) {
+                bkg.AddHistoSys(("ABCD_nonclosure" + suffix).c_str(), ("bkg_ABCD_nonclosure_n" + suffix).c_str(), filename_, "", ("bkg_ABCD_nonclosure_p" + suffix).c_str(), filename_, "");
+            }
+            bkg.SetNormalizeByTheory(false);
+            channel_.AddSample(bkg);
+        }
+    }
+}
 
-    // save
-    bkg_ABCD_th1d_->SetBinContent(1, data_th1d_A_bkg_exp->GetBinContent(1));
-    bkg_ABCD_th1d_->SetBinContent(2, data_th1d_A_bkg_exp->GetBinContent(2));
-    bkg_ABCD_th1d_->SetBinError(1, data_th1d_A_bkg_exp->GetBinError(1));
-    bkg_ABCD_th1d_->SetBinError(2, data_th1d_A_bkg_exp->GetBinError(2));
-    bkg_ABCD_th1d_stat_err_->SetBinContent(1, data_th1d_A_bkg_exp->GetBinError(1) / data_th1d_A_bkg_exp->GetBinContent(1));
-    bkg_ABCD_th1d_stat_err_->SetBinContent(2, data_th1d_A_bkg_exp->GetBinError(2) / data_th1d_A_bkg_exp->GetBinContent(2));
+void Set_ABCD_parameter_ranges(RooWorkspace* w_) {
+    // HistFactory needs finite construction ranges. They must not act as artificial statistical constraints.
+    // Remove the upper bounds in the saved workspace, retaining the physical lower bound of zero.
+    std::vector<std::string> parameters = { "beta", "nu", "r" };
+    for (int i = 1; i <= 2; i++) {
+        for (int j = 0; j < (int)parameters.size(); j++) {
+            std::string name = "ABCD_" + parameters.at(j) + "_region" + std::to_string(i);
+            RooRealVar* parameter = w_->var(name.c_str());
+            if (parameter == nullptr) {
+                printf("[ABCD_method] missing likelihood parameter %s\n", name.c_str());
+                exit(1);
+            }
+            parameter->removeMax();
+        }
+    }
 }
 
 int main(int argc, char* argv[]) {
@@ -511,51 +347,46 @@ int main(int argc, char* argv[]) {
     * argv[8]: background list (separated by colon)
     */
 
+    bool use_ABCD_nonclosure = false;
+    /* ABCD_nonclosure is commented out for now. Uncomment the next line to include the independent validation systematic. */
+    // use_ABCD_nonclosure = true;
+    // Validation is signal-free; kappa and its discrepancy are calculated separately. Signal PCA files always contain eight bins.
+
     // TH1 list
     /*
-    *
-    *   deltaE
-    *      ^
-    *   +5 +-----+-------+-----+
-    *      |     |       |     |
-    *      |     |   1   |     |
-    *   -5 +-----+-------+-----+
-    *      |     |       |     |
-    *      |     |       |     |
-    *      |     |   2   |     |
-    *  -15 +-----+-------+-----+---> M
-    *     -20   -5      +5    +20
+    * bin:         1   2   3   4   5   6   7   8
+    * region:      A1  B1  C1  D1  A2  B2  C2  D2
+    * validation:  A'1 B'1 C'1 D'1 A'2 B'2 C'2 D'2
+    * Signal and its systematic variations use every bin, including the control regions.
     */
-    TH1D* data_th1d = new TH1D("data_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_MC_th1d = new TH1D("bkg_MC_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_ABCD_th1d = new TH1D("bkg_ABCD_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d = new TH1D("data_th1d", ";bin index;", 8, 0.5, 8.5);
+    TH1D* data_validation_th1d = new TH1D("data_validation_th1d", ";bin index;", 8, 0.5, 8.5);
+    TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", 8, 0.5, 8.5);
+    TH1D* bkg_MC_th1d = new TH1D("bkg_MC_th1d", ";bin index;", 8, 0.5, 8.5);
 
     // relative error
-    TH1D* data_th1d_stat_err = new TH1D("data_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
-    TH1D* signal_MC_th1d_stat_err = new TH1D("signal_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_ABCD_th1d_stat_err = new TH1D("bkg_ABCD_th1d_stat_err", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_ABCD_th1d_nonclosure_err = new TH1D("bkg_ABCD_th1d_nonclosure_err", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_th1d_stat_err = new TH1D("data_th1d_stat_err", ";bin index;", 8, 0.5, 8.5);
+    TH1D* signal_MC_th1d_stat_err = new TH1D("signal_MC_th1d_stat_err", ";bin index;", 8, 0.5, 8.5);
+    TH1D* bkg_MC_th1d_stat_err = new TH1D("bkg_MC_th1d_stat_err", ";bin index;", 8, 0.5, 8.5);
 
-    TH1D* data_pos_M_th1d = new TH1D("data_pos_M_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* signal_pos_M_MC_th1d = new TH1D("signal_pos_M_MC_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_pos_M_MC_th1d = new TH1D("bkg_pos_M_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_pos_M_th1d = new TH1D("data_pos_M_th1d", ";bin index;", 8, 0.5, 8.5);
+    TH1D* signal_pos_M_MC_th1d = new TH1D("signal_pos_M_MC_th1d", ";bin index;", 8, 0.5, 8.5);
+    TH1D* bkg_pos_M_MC_th1d = new TH1D("bkg_pos_M_MC_th1d", ";bin index;", 8, 0.5, 8.5);
 
-    TH1D* data_neg_M_th1d = new TH1D("data_neg_M_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* signal_neg_M_MC_th1d = new TH1D("signal_neg_M_MC_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_neg_M_MC_th1d = new TH1D("bkg_neg_M_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_neg_M_th1d = new TH1D("data_neg_M_th1d", ";bin index;", 8, 0.5, 8.5);
+    TH1D* signal_neg_M_MC_th1d = new TH1D("signal_neg_M_MC_th1d", ";bin index;", 8, 0.5, 8.5);
+    TH1D* bkg_neg_M_MC_th1d = new TH1D("bkg_neg_M_MC_th1d", ";bin index;", 8, 0.5, 8.5);
 
-    TH1D* data_pos_DeltaE_th1d = new TH1D("data_pos_DeltaE_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* signal_pos_DeltaE_MC_th1d = new TH1D("signal_pos_DeltaE_MC_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_pos_DeltaE_MC_th1d = new TH1D("bkg_pos_DeltaE_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_pos_DeltaE_th1d = new TH1D("data_pos_DeltaE_th1d", ";bin index;", 8, 0.5, 8.5);
+    TH1D* signal_pos_DeltaE_MC_th1d = new TH1D("signal_pos_DeltaE_MC_th1d", ";bin index;", 8, 0.5, 8.5);
+    TH1D* bkg_pos_DeltaE_MC_th1d = new TH1D("bkg_pos_DeltaE_MC_th1d", ";bin index;", 8, 0.5, 8.5);
 
-    TH1D* data_neg_DeltaE_th1d = new TH1D("data_neg_DeltaE_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* signal_neg_DeltaE_MC_th1d = new TH1D("signal_neg_DeltaE_MC_th1d", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_neg_DeltaE_MC_th1d = new TH1D("bkg_neg_DeltaE_MC_th1d", ";bin index;", 2, 0.5, 2.5);
+    TH1D* data_neg_DeltaE_th1d = new TH1D("data_neg_DeltaE_th1d", ";bin index;", 8, 0.5, 8.5);
+    TH1D* signal_neg_DeltaE_MC_th1d = new TH1D("signal_neg_DeltaE_MC_th1d", ";bin index;", 8, 0.5, 8.5);
+    TH1D* bkg_neg_DeltaE_MC_th1d = new TH1D("bkg_neg_DeltaE_MC_th1d", ";bin index;", 8, 0.5, 8.5);
 
-    ReadFOM((std::string(argv[1]) + "/GridSearch_one/FOM.log").c_str(), &BDT_cut_1);
-    ReadFOM((std::string(argv[1]) + "/GridSearch_two/FOM.log").c_str(), &BDT_cut_2);
+    ReadFOM(argv[4], &BDT_cut_1);
+    ReadFOM(argv[5], &BDT_cut_2);
 
     std::vector<TH1D*> signal_MC_th1d_muonID;
     std::vector<TH1D*> bkg_MC_th1d_muonID;
@@ -564,8 +395,8 @@ int main(int argc, char* argv[]) {
     std::vector<TH1D*> bkg_MC_th1d_luminosity;
 
     // uncorrelated relative uncertainty
-    TH1D* signal_MC_th1d_uncorr = new TH1D("signal_MC_th1d_uncorr", ";bin index;", 2, 0.5, 2.5);
-    TH1D* bkg_MC_th1d_uncorr = new TH1D("bkg_MC_th1d_uncorr", ";bin index;", 2, 0.5, 2.5);
+    TH1D* signal_MC_th1d_uncorr = new TH1D("signal_MC_th1d_uncorr", ";bin index;", 8, 0.5, 8.5);
+    TH1D* bkg_MC_th1d_uncorr = new TH1D("bkg_MC_th1d_uncorr", ";bin index;", 8, 0.5, 8.5);
 
     std::vector<std::string> signal_list = split(argv[7], ':');
     std::vector<std::string> background_list = split(argv[8], ':');
@@ -592,6 +423,11 @@ int main(int argc, char* argv[]) {
     EventWeights::Register("muonID_01_prompt", muonID_01_prompt);
     EventWeights::Register("muonID_05_prompt", muonID_05_prompt);
 
+    // Read the fixed background MC boundaries shared with the other programs.
+    ReadABCDBoundary((std::string(argv[1]) + "/ABCD_boundary.txt").c_str(), { BDT_cut_1, BDT_cut_2 }, &sideband_BDT_cut_1, &sideband_BDT_cut_2, &validation_BDT_cut_1, &validation_BDT_cut_2);
+    std::vector<double> sideband_BDT_cuts = { sideband_BDT_cut_1, sideband_BDT_cut_2 };
+    std::vector<double> validation_BDT_cuts = { validation_BDT_cut_1, validation_BDT_cut_2 };
+
     // we do not open the box, so I just use background MC
     FillHistogram(argv[1], argv[2], data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err, background_list, signal_list, background_list);
 
@@ -610,47 +446,32 @@ int main(int argc, char* argv[]) {
     FillHistogram_fluc_SR(argv[1], argv[2], data_neg_DeltaE_th1d, signal_neg_DeltaE_MC_th1d, bkg_neg_DeltaE_MC_th1d, background_list, signal_list, background_list, 3);
 
     // ABCD method
-    ABCD_method(argv[1], argv[3], argv[4], argv[5], bkg_ABCD_th1d, bkg_ABCD_th1d_stat_err, bkg_ABCD_th1d_nonclosure_err, background_list);
+    ABCD_method(argv[1], argv[3], argv[4], argv[5], data_th1d, data_validation_th1d, data_th1d_stat_err, background_list);
 
-    // independent non-closure uncertainty for each region
-    std::vector<TH1D*> bkg_ABCD_th1d_nonclosure_pos;
-    std::vector<TH1D*> bkg_ABCD_th1d_nonclosure_neg;
-    for (int i = 1; i <= 2; i++) {
-        double bkg = bkg_ABCD_th1d->GetBinContent(i);
-        double factor = 1.0 + bkg_ABCD_th1d_nonclosure_err->GetBinContent(i);
-        if (!std::isfinite(bkg) || bkg <= 0.0 || !std::isfinite(factor) || !std::isfinite(bkg * factor)) {
-            printf("[ABCD_method] invalid background or non-closure variation in region %d\n", i);
-            exit(1);
+    // Calculate kappa and abs(kappa - 1) directly from the eight validation observations, with no signal or application data.
+    std::vector<ABCDValidation> validation = Validate_ABCD(data_validation_th1d, (std::string(argv[6]) + "/ABCD_validation.txt").c_str(), sideband_BDT_cuts, validation_BDT_cuts);
+    if (use_ABCD_nonclosure) {
+        for (int i = 0; i < (int)validation.size(); i++) {
+            if (!std::isfinite(validation.at(i).discrepancy)) {
+                printf("[ABCD_method] validation region %d has no finite non-closure systematic; see the validation report\n", i + 1);
+                exit(1);
+            }
         }
-        TH1D* bkg_pos = (TH1D*)bkg_ABCD_th1d->Clone(("bkg_ABCD_nonclosure_pos_region" + std::to_string(i)).c_str());
-        TH1D* bkg_neg = (TH1D*)bkg_ABCD_th1d->Clone(("bkg_ABCD_nonclosure_neg_region" + std::to_string(i)).c_str());
-        // Reciprocal down variation keeps the templates positive for uncertainties above 100%.
-        bkg_pos->SetBinContent(i, bkg * factor);
-        bkg_neg->SetBinContent(i, bkg / factor);
-        bkg_pos->SetBinError(i, bkg_ABCD_th1d->GetBinError(i) * factor);
-        bkg_neg->SetBinError(i, bkg_ABCD_th1d->GetBinError(i) / factor);
-        bkg_ABCD_th1d_nonclosure_pos.push_back(bkg_pos);
-        bkg_ABCD_th1d_nonclosure_neg.push_back(bkg_neg);
     }
 
     // print information
     printf("data:\n");
-    printf("%lf+-%lf %lf+-%lf\n", data_th1d->GetBinContent(1), data_th1d->GetBinError(1), data_th1d->GetBinContent(2), data_th1d->GetBinError(2));
+    for (int i = 1; i <= 8; i++) printf("bin %d: %lf+-%lf\n", i, data_th1d->GetBinContent(i), data_th1d->GetBinError(i));
 
     printf("\n");
 
     printf("signal:\n");
-    printf("%lf+-%lf %lf+-%lf\n", signal_MC_th1d->GetBinContent(1), signal_MC_th1d->GetBinError(1), signal_MC_th1d->GetBinContent(2), signal_MC_th1d->GetBinError(2));
+    for (int i = 1; i <= 8; i++) printf("bin %d: %lf+-%lf\n", i, signal_MC_th1d->GetBinContent(i), signal_MC_th1d->GetBinError(i));
 
     printf("\n");
 
     printf("bkg:\n");
-    printf("%lf+-%lf %lf+-%lf\n", bkg_MC_th1d->GetBinContent(1), bkg_MC_th1d->GetBinError(1), bkg_MC_th1d->GetBinContent(2), bkg_MC_th1d->GetBinError(2));
-
-    printf("\n");
-
-    printf("estimated bkg:\n");
-    printf("%lf+-%lf %lf+-%lf\n", bkg_ABCD_th1d->GetBinContent(1), bkg_ABCD_th1d->GetBinError(1), bkg_ABCD_th1d->GetBinContent(2), bkg_ABCD_th1d->GetBinError(2));
+    for (int i = 1; i <= 8; i++) printf("bin %d: %lf+-%lf\n", i, bkg_MC_th1d->GetBinContent(i), bkg_MC_th1d->GetBinError(i));
 
     printf("\n");
 
@@ -658,17 +479,14 @@ int main(int argc, char* argv[]) {
     TFile* file = new TFile((std::string(argv[6]) + "/histogram_output.root").c_str(), "RECREATE");
 
     data_th1d->Write();
+    data_validation_th1d->Write();
     signal_MC_th1d->Write();
     bkg_MC_th1d->Write();
-    bkg_ABCD_th1d->Write();
+    Write_ABCD_histograms(validation);
 
     data_th1d_stat_err->Write();
     signal_MC_th1d_stat_err->Write();
     bkg_MC_th1d_stat_err->Write();
-    bkg_ABCD_th1d_stat_err->Write();
-    bkg_ABCD_th1d_nonclosure_err->Write();
-    for (int i = 0; i < bkg_ABCD_th1d_nonclosure_pos.size(); i++) bkg_ABCD_th1d_nonclosure_pos.at(i)->Write();
-    for (int i = 0; i < bkg_ABCD_th1d_nonclosure_neg.size(); i++) bkg_ABCD_th1d_nonclosure_neg.at(i)->Write();
 
     data_pos_M_th1d->Write();
     signal_pos_M_MC_th1d->Write();
@@ -726,21 +544,8 @@ int main(int argc, char* argv[]) {
     signal_Belle_II.AddShapeSys("uncorrelated_error", RooStats::HistFactory::Constraint::Gaussian, "signal_MC_th1d_uncorr", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
     signal_Belle_II.SetNormalizeByTheory(false);
 
-    RooStats::HistFactory::Sample bkg_Belle_II("bkg_Belle_II", "bkg_ABCD_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str());
-    bkg_Belle_II.ActivateStatError("bkg_ABCD_th1d_stat_err", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-    /* ABCD_nonclosure_region is commented out, because I assume the stat uncertainty in validation region is larger than the discrepancy on there */
-    //for (int i = 1; i <= 2; i++) bkg_Belle_II.AddHistoSys(("ABCD_nonclosure_region" + std::to_string(i)).c_str(), ("bkg_ABCD_nonclosure_neg_region" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("bkg_ABCD_nonclosure_pos_region" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-    /* <<following uncertainties are not needed because we use ABCD method>>
-    * bkg_Belle_II.AddOverallSys("tracking_efficiency", 1.0 - (track_rel_uncertainty / 100.0) * 3, 1.0 + (track_rel_uncertainty / 100.0) * 3);
-    * bkg_Belle_II.AddHistoSys("M_resolution", "bkg_neg_M_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "", "bkg_pos_M_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-    * bkg_Belle_II.AddHistoSys("DeltaE_resolution", "bkg_neg_DeltaE_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "", "bkg_pos_DeltaE_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-    * for (int i = 0; i < bkg_MC_th1d_muonID.size() / 2; i++) bkg_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("bkg_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("bkg_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-    * for (int i = 0; i < bkg_MC_th1d_luminosity.size() / 2; i++) bkg_Belle_II.AddHistoSys(("luminosity_" + std::to_string(i)).c_str(), ("bkg_hist_luminosity_n_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("bkg_hist_luminosity_p_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
-    */
-    bkg_Belle_II.SetNormalizeByTheory(false);
-
     channel_Belle_II.AddSample(signal_Belle_II);
-    channel_Belle_II.AddSample(bkg_Belle_II);
+    Add_ABCD_samples(channel_Belle_II, (std::string(argv[6]) + "/histogram_output.root").c_str(), data_th1d, validation, use_ABCD_nonclosure);
 
     // add channel to measurement
     meas.AddChannel(channel_Belle_II);
@@ -748,6 +553,7 @@ int main(int argc, char* argv[]) {
 
     RooWorkspace* w;
     w = RooStats::HistFactory::MakeModelAndMeasurementFast(meas);
+    Set_ABCD_parameter_ranges(w);
 
     w->Print();
     w->writeToFile((std::string(argv[6]) + "/workspace.root").c_str());

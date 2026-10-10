@@ -2,7 +2,12 @@
 #define CONSTANTS_H
 
 // Nominal SR half-width in left/right mass resolutions. ABCD sidebands start at 5.
-# define sizeM 4.0
+# define sizeM 5.0
+
+// Common candidate range before BCS, including the resolution variations.
+# define sizeM_BCS 21.0
+# define sizeDeltaE_left_BCS 16.0
+# define sizeDeltaE_right_BCS 6.0
 
 #define lumi_scale (1.0)
 

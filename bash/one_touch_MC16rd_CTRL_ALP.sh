@@ -18,7 +18,7 @@ Background_Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CCBAR"
 export Signal_Type="pipipinu" # name of directories under ${Ntuple_DIR} for prompt signal sample. Do not include colon.
 export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample. Do not include colon.
 
-Background_Legends=("B#bar{B}" "B#bar{B}" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#bar{q}"
+Background_Legends=("others" "others" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#bar{q}"
     "#mu#mu" "ee" "others" "ee#mu#mu" "others" "others" "others"
     "#tau#bar{#tau}"
     "#tau#bar{#tau}"
@@ -85,6 +85,8 @@ input_variables_two=(
 
 export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki_ALP/MC16ri/v000" # FBDT weight file path
 export nominal_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki_ALP/MC16rd/v000" # nominal tau->mumumu analysis path
+export Two_weight_vars=("KSFWVariables__bohso24__cm__spcleanMask__bc" "roeM__bocleanMask__bc") # use exactly two variables
+export Two_vars_binnings=("-0.2" "1.4" "5" "-0.1" "4.5" "5") # min1 max1 numbin1 min2 max2 numbin2
 # =================================================================================== #
 
 export shell_DIR="${Belle_tau_DIR}/bash"
@@ -150,6 +152,12 @@ Legends_STR_WITH_SIGNAL_ALP=$(IFS=:; echo "${Legends_With_SIGNAL_ALP[*]}")
 
 export Background_Legends_STR
 Background_Legends_STR=$(IFS=:; echo "${Background_Legends[*]}")
+
+export Two_weight_vars_STR
+Two_weight_vars_STR=$(IFS=:; echo "${Two_weight_vars[*]}")
+
+export Two_vars_binnings_STR
+Two_vars_binnings_STR=$(IFS=:; echo "${Two_vars_binnings[*]}")
 
 wait_all_job() {
   while true; do
