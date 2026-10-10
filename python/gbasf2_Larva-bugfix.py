@@ -637,14 +637,14 @@ else:
     if((args.sample == "data") or (args.sample == "MC16rd")):
         basf2.conditions.prepend_globaltag('performance_release08_20260623')
         if(args.momentum_scale == "center"):
-            ma.scaleTrackMomenta(inputListNames=['mu-:all', 'pi-:all'], payloadName='tracking_MomentumScaling', scalingFactorName='central', path=my_path)
-            ma.correctTrackEnergy(inputListNames=['mu-:all', 'pi-:all'], payloadName='tracking_EnergyLoss', correctionName='central', path=my_path)
+            ma.scaleTrackMomenta(inputListNames=['e-:all', 'mu-:all', 'pi+:all', 'K+:all', 'p+:all'], payloadName='tracking_MomentumScaling', scalingFactorName='central', path=my_path)
+            ma.correctTrackEnergy(inputListNames=['e-:all', 'mu-:all', 'pi+:all', 'K+:all', 'p+:all'], payloadName='tracking_EnergyLoss', correctionName='central', path=my_path)
         elif(args.momentum_scale == "up"):
-            ma.scaleTrackMomenta(inputListNames=['mu-:all', 'pi-:all'], payloadName='tracking_MomentumScaling', scalingFactorName='total_up', path=my_path)
-            ma.correctTrackEnergy(inputListNames=['mu-:all', 'pi-:all'], payloadName='tracking_EnergyLoss', correctionName='total_up', path=my_path)
+            ma.scaleTrackMomenta(inputListNames=['e-:all', 'mu-:all', 'pi+:all', 'K+:all', 'p+:all'], payloadName='tracking_MomentumScaling', scalingFactorName='total_up', path=my_path)
+            ma.correctTrackEnergy(inputListNames=['e-:all', 'mu-:all', 'pi+:all', 'K+:all', 'p+:all'], payloadName='tracking_EnergyLoss', correctionName='total_up', path=my_path)
         elif(args.momentum_scale == "down"):
-            ma.scaleTrackMomenta(inputListNames=['mu-:all', 'pi-:all'], payloadName='tracking_MomentumScaling', scalingFactorName='total_down', path=my_path)
-            ma.correctTrackEnergy(inputListNames=['mu-:all', 'pi-:all'], payloadName='tracking_EnergyLoss', correctionName='total_down', path=my_path)
+            ma.scaleTrackMomenta(inputListNames=['e-:all', 'mu-:all', 'pi+:all', 'K+:all', 'p+:all'], payloadName='tracking_MomentumScaling', scalingFactorName='total_down', path=my_path)
+            ma.correctTrackEnergy(inputListNames=['e-:all', 'mu-:all', 'pi+:all', 'K+:all', 'p+:all'], payloadName='tracking_EnergyLoss', correctionName='total_down', path=my_path)
         else:
             print("unexpected momentum scale option")
             exit(1)
