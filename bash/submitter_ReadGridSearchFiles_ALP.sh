@@ -11,6 +11,27 @@ get_params() {
 code="${Belle_tau_DIR}/analysis_code/bin/ReadGridSearchFile_ALP"
 
 get_params "./${Analysis_Name}/${Analysis_VerName}/ALP/final_output" | while read mass life A B; do
-  bsub -q s -J GRIDFILE -o "/dev/null" ${code} "./${Analysis_Name}/${Analysis_VerName}/GridSearch_one/out_${mass}_${life}_${A}_${B}/" "./${Analysis_Name}/${Analysis_VerName}/GridSearch_one/" "${mass}" "${life}" "${A}" "${B}"
-  bsub -q s -J GRIDFILE -o "/dev/null" ${code} "./${Analysis_Name}/${Analysis_VerName}/GridSearch_two/out_${mass}_${life}_${A}_${B}/" "./${Analysis_Name}/${Analysis_VerName}/GridSearch_two/" "${mass}" "${life}" "${A}" "${B}"
+  bsub -q s \
+  -J GRIDFILE \
+  -o "/dev/null" \
+  ${code} \
+  "./${Analysis_Name}/${Analysis_VerName}/GridSearch_one/out_${mass}_${life}_${A}_${B}/" \
+  "./${Analysis_Name}/${Analysis_VerName}/GridSearch_one/" \
+  "${mass}" \
+  "${life}" \
+  "${A}" \
+  "${B}"
+
+  sleep 0.5s
+
+  bsub -q s \
+  -J GRIDFILE \
+  -o "/dev/null" \
+  ${code} \
+  "./${Analysis_Name}/${Analysis_VerName}/GridSearch_two/out_${mass}_${life}_${A}_${B}/" \
+  "./${Analysis_Name}/${Analysis_VerName}/GridSearch_two/" \
+  "${mass}" \
+  "${life}" \
+  "${A}" \
+  "${B}"
 done

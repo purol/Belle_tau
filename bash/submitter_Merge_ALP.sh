@@ -16,7 +16,12 @@ submit_code() {
 
     mkdir -p "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/out"
 
-    bsub -q s -J MERGECLS -o "/dev/null" ${Code} "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/out" "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/out"
+    bsub -q s \
+    -J MERGECLS \
+    -o "/dev/null" \
+    ${Code} \
+    "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/out" \
+    "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/out"
 
   done
 }

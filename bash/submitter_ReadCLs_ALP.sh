@@ -13,7 +13,12 @@ submit_code() {
   local VerName=$2 # ex. Alice
 
   get_params "./${VerName}/${Analysis_VerName}/ALP/final_output" | while read mass life A B; do
-    bsub -q s -J READCLS -o "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/CLs.log" ${Code} "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/out" "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/"
+    bsub -q s \
+    -J READCLS \
+    -o "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/CLs.log" \
+    ${Code} \
+    "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/out" \
+    "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/"
   done
 }
 

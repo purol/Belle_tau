@@ -20,7 +20,7 @@ check_log_files(){
 IFS=':' read -r -a Types <<< "$Types_STR_WITH_SIGNAL"
 
 for Type in "${Types[@]}"; do
-    check_log_files ${Analysis_Name} ${Type} "final_output_test_after_application"
+    check_log_files ${Analysis_Name} ${Type} "final_output_after_application"
     sleep 0.5s
 done
 

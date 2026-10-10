@@ -11,6 +11,9 @@
 
 EventWeight double_weight = EventWeight(2.0);
 
+EventWeight train_weight = EventWeight(4.0/3.0);
+EventWeight test_weight = EventWeight(4.0);
+
 EventWeight MC_weight(
     {
         "MySampleType",
@@ -139,18 +142,66 @@ EventWeight MC_weight(
         { { { 3.5, 4.5 }, { 15.5, 16.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_GG_MC16rd },  // MC16rd, 5S, GG
         { { { 3.5, 4.5 }, { 34.5, 35.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_llXX_MC16rd },  // MC16rd, 5S, llXX
         { { { 3.5, 4.5 }, { 21.5, 22.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_TAUPAIR_MC16rd },  // MC16rd, 5S, TAUPAIR
+        { { { 3.5, 4.5 }, { 32.5, 33.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_BB_MC16rd },  // MC16rd, 5S, BB
         { { { 3.5, 4.5 }, { 35.5, 36.5 }, { 6.5, 7.5 }, { -10000.0, 10000.0 } }, Scale_BelleII_5S_UDSC_MC16rd },  // MC16rd, 5S, UDSC
         { { { 4.5, 5.5 }, { -10000.0, 10000.0 }, { -10000.0, 10000.0 }, { -10000.0, 10000.0 } }, 1.0 }  // Belle data
     },
     false
 );
 
-EventWeight muonID_05(
-    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC15ri/my_mu_efficiency_table_05.csv",
+EventWeight muonID_01_ALP(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/MuonEff01_ALP.csv",
     {
-        {"charge",   "charge_min", "charge_max"},
-        {"momentum", "p_min",      "p_max"},
-        {"theta",    "theta_min",  "theta_max"}
+        {"index", "index_min", "index_max"},
+        {"PID", "PID_min", "PID_max"},
+        {"momentum", "p_min", "p_max"},
+        {"Theta", "Theta_min", "Theta_max"}
+    },
+    "data_MC_ratio",
+    {
+        {"stat", "data_MC_uncertainty_stat_up", "data_MC_uncertainty_stat_dn", false},
+        {"syst", "data_MC_uncertainty_sys_up",  "data_MC_uncertainty_sys_dn",  false}
+    },
+    true
+);
+
+EventWeight muonID_05_ALP(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/MuonEff05_ALP.csv",
+    {
+        {"index", "index_min", "index_max"},
+        {"PID", "PID_min", "PID_max"},
+        { "momentum", "p_min", "p_max" },
+        {"Theta", "Theta_min", "Theta_max"}
+    },
+    "data_MC_ratio",
+    {
+        {"stat", "data_MC_uncertainty_stat_up", "data_MC_uncertainty_stat_dn", false},
+        {"syst", "data_MC_uncertainty_sys_up",  "data_MC_uncertainty_sys_dn",  false}
+    },
+    true
+);
+
+EventWeight muonID_01_prompt(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/MuonEff01_prompt.csv",
+    {
+        {"PID", "PID_min", "PID_max"},
+        { "momentum", "p_min", "p_max" },
+        {"Theta", "Theta_min", "Theta_max"}
+    },
+    "data_MC_ratio",
+    {
+        {"stat", "data_MC_uncertainty_stat_up", "data_MC_uncertainty_stat_dn", false},
+        {"syst", "data_MC_uncertainty_sys_up",  "data_MC_uncertainty_sys_dn",  false}
+    },
+    true
+);
+
+EventWeight muonID_05_prompt(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/MuonEff05_prompt.csv",
+    {
+        {"PID", "PID_min", "PID_max"},
+        { "momentum", "p_min", "p_max" },
+        {"Theta", "Theta_min", "Theta_max"}
     },
     "data_MC_ratio",
     {
@@ -186,17 +237,36 @@ EventWeight luminosity_scale(
     false
 );
 
-EventWeight KS0_tracking(
-    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/KS0_tracking_csv/MC15rd/KS0_tracking_correction_MC15rd_converted.csv",
+EventWeight KS0_tracking_MC16rd_run1(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/KS0_tracking_csv/MC16rd/K_S0_calib_2D_Run1_ks_M.csv",
     {
-        {"theta",    "thetamin", "thetamax"},
-        {"momentum", "pmin",     "pmax"},
-        {"distance", "dmin",     "dmax"}
+        {"sample", "sample_min", "sample_max"},
+        {"experiment", "experiment_min", "experiment_max"},
+        {"costheta", "cosTheta_min", "cosTheta_max"},
+        {"momentum", "p_min", "p_max"},
+        {"distance", "d_min", "d_max"}
     },
-    "w",
+    "central_value",
     {
-        {"stat", "w_e_stat", "w_e_stat", false},
-        {"syst", "w_e_syst", "w_e_syst", false}
+        {"stat_uncorr", "stat_uncorr", "stat_uncorr", false},
+        {"sys_corr", "sys_corr", "sys_corr", true}
+    },
+    true
+);
+
+EventWeight KS0_tracking_MC16rd_run2(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/KS0_tracking_csv/MC16rd/K_S0_calib_2D_Run2_ks_M.csv",
+    {
+        {"sample", "sample_min", "sample_max"},
+        {"experiment", "experiment_min", "experiment_max"},
+        {"costheta", "cosTheta_min", "cosTheta_max"},
+        {"momentum", "p_min", "p_max"},
+        {"distance", "d_min", "d_max"}
+    },
+    "central_value",
+    {
+        {"stat_uncorr", "stat_uncorr", "stat_uncorr", false},
+        {"sys_corr", "sys_corr", "sys_corr", true}
     },
     true
 );

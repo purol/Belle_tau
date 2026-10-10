@@ -87,14 +87,14 @@ int main(int argc, char* argv[]) {
 
 
     EventWeights::Register("MC_weight", MC_weight);
-    EventWeights::Register("double_weight", double_weight);
+    EventWeights::Register("test_weight", test_weight);
 
     Loader loader("tau_lfv");
 
     for (int i = 0; i < signal_list.size(); i++) loader.Load((argv[2 + variable_num] + std::string("/") + signal_list.at(i) + std::string("/final_output_test/")).c_str(), ("alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_").c_str(), signal_list.at(i).c_str());
     for (int i = 0; i < background_list.size(); i++) loader.Load((argv[2 + variable_num] + std::string("/") + background_list.at(i) + std::string("/final_output_test/")).c_str(), "root", background_list.at(i).c_str());
     loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
-    loader.AddWeight("double_weight");
+    loader.AddWeight("test_weight");
 
     // Create a new vector to hold the combined elements
     std::vector<std::string> all_label;
@@ -111,8 +111,8 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== 4S Energy ==========");
     loader.Cut(("(" + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak + 5 * deltaE_right_sigma) + ")").c_str());
     loader.PrintInformation("========== -5 delta < deltaE < 5 delta ==========");
-    loader.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
-    loader.PrintInformation("========== -5 delta < M < 5 delta ==========");
+    loader.Cut(("(" + std::to_string(M_peak - sizeM * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + sizeM * M_right_sigma) + ")").c_str());
+    loader.PrintInformation(("========== -" + std::to_string(sizeM) + " delta < M < " + std::to_string(sizeM) + " delta ==========").c_str());
     loader.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
     loader.PrintInformation(("========== nominal_mass - " + std::to_string(M_left_cut_value) + " < M_alp < nominal_mass + " + std::to_string(M_right_cut_value) + " ==========").c_str());
 

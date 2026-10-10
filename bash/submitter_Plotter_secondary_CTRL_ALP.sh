@@ -34,7 +34,11 @@ submit_Plotter() {
       "${MCTypes}" \
       "${MCLegends}"
 
-    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" "${command}"
+    bsub -q l \
+    -J Plotter \
+    -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" \
+    -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" \
+    "${command}"
   elif [ "$#" -eq 10 ]; then
     local Code=$1 # ex. ./bin/Plotter
     local VerName=$2 # ex. Alice
@@ -62,7 +66,11 @@ submit_Plotter() {
       "${VarMin}" \
       "${VarMax}"
 
-    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" "${command}"
+    bsub -q l \
+    -J Plotter \
+    -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" \
+    -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" \
+    "${command}"
   fi
 
 }
@@ -94,7 +102,11 @@ submit_Plotter_2D(){
     "${Types}" \
     "${Legends}"
 
-  bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" "${command}"
+  bsub -q l \
+  -J Plotter \
+  -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" \
+  -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" \
+  "${command}"
 
 }
 

@@ -14,7 +14,7 @@ submit_code() {
 }
 
 
-code="${Belle_tau_DIR}/analysis_code/bin/KS_test_half_one"
+code="${Belle_tau_DIR}/analysis_code/bin/KS_test_split_one"
 varname="BDT_output_1"
 Nbin="50"
 MIN="0.0"
@@ -22,7 +22,7 @@ MAX="1.0"
 output="GridSearch_one"
 submit_code ${code} ${Analysis_Name} ${varname} ${Nbin} ${MIN} ${MAX} ${output}
 
-code="${Belle_tau_DIR}/analysis_code/bin/KS_test_half_two"
+code="${Belle_tau_DIR}/analysis_code/bin/KS_test_split_two"
 varname="BDT_output_2"
 Nbin="50"
 MIN="0.0"

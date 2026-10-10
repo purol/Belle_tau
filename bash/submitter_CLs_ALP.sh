@@ -19,9 +19,9 @@ submit_CLs() {
 
     if awk -v life="$life" 'BEGIN { exit !(life >= 700) }'; then
       mu_list="$(seq 0 20 1000)"
-    elif awk -v life="$life" 'BEGIN { exit !(life >= 300 && life < 700) }'; then
+    elif awk -v life="$life" 'BEGIN { exit !(life >= 200 && life < 700) }'; then
       mu_list="$(seq 0 5 200)"
-    elif awk -v life="$life" 'BEGIN { exit !(life >= 50 && life < 300) }'; then
+    elif awk -v life="$life" 'BEGIN { exit !(life >= 50 && life < 200) }'; then
       mu_list="$(seq 0 0.2 10.0)"
     else
       mu_list="$(seq 0 0.1 5.0)"
@@ -30,7 +30,15 @@ submit_CLs() {
     for mu in $mu_list
     do
       for index in {0..10}; do
-        bsub -q s -J TAUCLS -o "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/log/${mu}_${index}.log" ${Code} "./${VerName}/${Analysis_VerName}" "workspace_${mass}_${life}_${A}_${B}.root" "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/out" ${mu} ${index}
+        bsub -q s \
+        -J TAUCLS \
+        -o "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/log/${mu}_${index}.log" \
+        ${Code} \
+        "./${VerName}/${Analysis_VerName}" \
+        "workspace_${mass}_${life}_${A}_${B}.root" \
+        "./${VerName}/${Analysis_VerName}/CLs_${mass}_${life}_${A}_${B}/out" \
+        ${mu} \
+        ${index}
       done
     done
 

@@ -38,7 +38,7 @@ check_log_files(){
 
 }
 
-check_log_files ${Analysis_Name}
+check_log_files "${Analysis_Name}" || exit 1
 
 echo "All logs successfully completed."
 exit 0  # Return zero status to indicate success

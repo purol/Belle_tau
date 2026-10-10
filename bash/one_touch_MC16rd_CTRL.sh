@@ -1,0 +1,221 @@
+#!/bin/bash
+
+# =================================================================================== #
+#  PREDEFINED VARIABLES
+#  You SHOULD change these values 
+
+export Analysis_Name="Larva_CTRL" # name of analysis
+export Analysis_VerName="v000" # version of analysis
+
+export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau" # analysis code path
+export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple_CTRL" # Ntuple path
+
+Background_Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CCBAR"
+    "MUMU" "EE" "EEEE" "EEMUMU" "LLXX" "HHISR" "GG" 
+    "TAUPAIR"
+    "KS0pinu_pure"
+    ) # name of directories under ${Ntuple_DIR} for background sample. Do not include colon.
+export Signal_Type="pipipinu" # name of directories under ${Ntuple_DIR} for prompt signal sample. Do not include colon.
+export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample. Do not include colon.
+
+Background_Legends=("others" "others" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#bar{q}"
+    "#mu#mu" "ee" "others" "ee#mu#mu" "others" "others" "others"
+    "#tau#bar{#tau}"
+    "#tau#bar{#tau}"
+    ) # legends of background sample for plots. Do not include colon.
+export Signal_Legends="#tau#rightarrow#pi#pi#pi#nu" # legends of prompt sample for plots. Do not include colon.
+export ALP_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
+
+export MC_version="MC16rd" # version of MC. This should be under ${Ntuple_DIR}/${Analysis_Name}/(type name)
+
+input_variables_one=(
+    "missingEnergyOfEventCMS"
+    "CleoConeCS__bo1__cm__spcleanMask__bc"
+    "KSFWVariables__bohso20__cm__spcleanMask__bc"
+    "harmonicMomentThrust2"
+    "cleoConeThrust0"
+    "harmonicMomentThrust1"
+    "roeE__bocleanMask__bc"
+    "harmonicMomentThrust4"
+    "cosTBTO__bocleanMask__bc"
+    "diff_cosToThrustOfEvent_CM"
+    "foxWolframR3"
+    "sphericity"
+    "second_muon_p"
+    "cosAngleBetweenMomentumAndVertexVector"
+    "missingMomentumOfEventCMS_Py"
+    "missingMomentumOfEvent_Px"
+    "third_muon_p"
+    "avg_cosToThrustOfEvent_CM"
+    "roeM__bocleanMask__bc"
+    "foxWolframR4"
+    "KSFWVariables__bohso24__cm__spcleanMask__bc"
+    "roeEextra__bocleanMask__bc"
+    "KSFWVariables__bohso00__cm__spcleanMask__bc"
+    "first_muon_p"
+    "totalPhotonsEnergyOfEvent"
+) # list of input variables for the region 1
+input_variables_two=(
+    "visibleEnergyOfEventCMS"
+    "roeM__bocleanMask__bc"
+    "missingMomentumOfEvent"
+    "KSFWVariables__bohso22__cm__spcleanMask__bc"
+    "CleoConeCS__bo1__cm__spcleanMask__bc"
+    "roeE__bocleanMask__bc"
+    "harmonicMomentThrust1"
+    "harmonicMomentThrust2"
+    "diff_cosToThrustOfEvent_CM"
+    "cosTBTO__bocleanMask__bc"
+    "third_muon_p"
+    "harmonicMomentThrust4"
+    "KSFWVariables__bomm2__cm__spcleanMask__bc"
+    "avg_cosToThrustOfEvent_CM"
+    "cleoConeThrust0"
+    "second_muon_p"
+    "missingMomentumOfEventCMS_Px"
+    "missingMass2OfEvent"
+    "missingMomentumOfEventCMS_Py"
+    "foxWolframR3"
+    "sphericity"
+    "KSFWVariables__bohso24__cm__spcleanMask__bc"
+    "first_muon_p"
+    "cosAngleBetweenMomentumAndVertexVector"
+    "roeEextra__bocleanMask__bc"
+) # list of input variables for the region 2
+
+export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/MC16ri/v000" # FBDT weight file path
+export nominal_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/MC16rd/v000" # nominal tau->mumumu analysis path
+export Two_weight_vars=("KSFWVariables__bohso24__cm__spcleanMask__bc" "roeM__bocleanMask__bc") # use exactly two variables
+export Two_vars_binnings=("-0.2" "1.4" "8" "-0.1" "4.5" "8") # min1 max1 numbin1 min2 max2 numbin2
+# =================================================================================== #
+
+export shell_DIR="${Belle_tau_DIR}/bash"
+
+Types_With_ALP=(
+  "${Background_Types[@]}"
+  "${ALP_Type}"
+)
+
+Types_With_SIGNAL=(
+  "${Background_Types[@]}"
+  "${Signal_Type}"
+)
+
+Types_With_SIGNAL_ALP=(
+  "${Background_Types[@]}"
+  "${Signal_Type}"
+  "${ALP_Type}"
+)
+
+Legends_With_ALP=(
+  "${Background_Legends[@]}"
+  "${ALP_Legends}"
+)
+
+Legends_With_SIGNAL=(
+  "${Background_Legends[@]}"
+  "${Signal_Legends}"
+)
+
+Legends_With_SIGNAL_ALP=(
+  "${Background_Legends[@]}"
+  "${Signal_Legends}"
+  "${ALP_Legends}"
+)
+
+export Types_STR_WITH_ALP
+Types_STR_WITH_ALP=$(IFS=:; echo "${Types_With_ALP[*]}")
+
+export Types_STR_WITH_SIGNAL
+Types_STR_WITH_SIGNAL=$(IFS=:; echo "${Types_With_SIGNAL[*]}")
+
+export Types_STR_WITH_SIGNAL_ALP
+Types_STR_WITH_SIGNAL_ALP=$(IFS=:; echo "${Types_With_SIGNAL_ALP[*]}")
+
+export input_variables_one_STR
+input_variables_one_STR=$(IFS=:; echo "${input_variables_one[*]}")
+
+export input_variables_two_STR
+input_variables_two_STR=$(IFS=:; echo "${input_variables_two[*]}")
+
+export Background_Types_STR
+Background_Types_STR=$(IFS=:; echo "${Background_Types[*]}")
+
+export Legends_STR_WITH_ALP
+Legends_STR_WITH_ALP=$(IFS=:; echo "${Legends_With_ALP[*]}")
+
+export Legends_STR_WITH_SIGNAL
+Legends_STR_WITH_SIGNAL=$(IFS=:; echo "${Legends_With_SIGNAL[*]}")
+
+export Legends_STR_WITH_SIGNAL_ALP
+Legends_STR_WITH_SIGNAL_ALP=$(IFS=:; echo "${Legends_With_SIGNAL_ALP[*]}")
+
+export Background_Legends_STR
+Background_Legends_STR=$(IFS=:; echo "${Background_Legends[*]}")
+
+export Two_weight_vars_STR
+Two_weight_vars_STR=$(IFS=:; echo "${Two_weight_vars[*]}")
+
+export Two_vars_binnings_STR
+Two_vars_binnings_STR=$(IFS=:; echo "${Two_vars_binnings[*]}")
+
+wait_all_job() {
+  while true; do
+    # Get the number of jobs (excluding the header line)
+    job_count=$(bjobs 2>/dev/null | tail -n +2 | wc -l)
+  
+    if [[ $job_count -eq 0 ]]; then
+      echo "No remaining jobs."
+      break
+    else
+      echo "Currently, there are $job_count job(s) running. Checking again in 5 minutes..."
+    fi
+
+    # Wait for 5 minutes
+    sleep 300
+done
+}
+
+wait_job() {
+  JOBNAME=$1
+  while true; do
+    # Filter jobs with the JOBNAME and count them
+    job_count=$(bjobs 2>/dev/null | grep -w "${JOBNAME}" | wc -l)
+
+    if [[ $job_count -eq 0 ]]; then
+      echo "No jobs with the name '${JOBNAME}' are running."
+      break
+    else
+      echo "Currently, there are $job_count job(s) with the name '${JOBNAME}' running. Checking again in 5 minutes..."
+    fi
+
+    # Wait for 5 minutes
+    sleep 300
+  done
+}
+
+bash ${shell_DIR}/submitter_Analysis_CTRL.sh
+wait_job "Analyze"
+
+bash ${shell_DIR}/checker_Analysis.sh
+if [[ $? -ne 0 ]]; then
+  echo "Unsuccessful logs found. Stopping the one touch analysis."
+  exit 1
+fi
+
+bash ${shell_DIR}/submitter_Plotter_CTRL.sh
+
+bash ${shell_DIR}/submitter_FBDT_Application.sh
+wait_job "FBDTAPP"
+bash ${shell_DIR}/checker_FBDT_Application.sh
+if [[ $? -ne 0 ]]; then
+  echo "Unsuccessful logs found. Stopping the one touch analysis."
+  exit 1
+fi
+
+bash ${shell_DIR}/submitter_Plotter_secondary_CTRL.sh
+
+bash ${shell_DIR}/submitter_GetWeight_CTRL.sh
+wait_job "GetWeight"
+
+bash ${shell_DIR}/submitter_FBDT_comparison_CTRL.sh

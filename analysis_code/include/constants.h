@@ -1,6 +1,14 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+// Nominal SR half-width in left/right mass resolutions. ABCD sidebands start at 5.
+# define sizeM 5.0
+
+// Common candidate range before BCS, including the resolution variations.
+# define sizeM_BCS 21.0
+# define sizeDeltaE_left_BCS 16.0
+# define sizeDeltaE_right_BCS 6.0
+
 #define lumi_scale (1.0)
 
 // luminosity
@@ -71,10 +79,10 @@
 
 # define Scale_BelleII_4S_CHG_MC16ri (lumi_BelleII_4S/1.1)
 # define Scale_BelleII_4S_MIX_MC16ri (lumi_BelleII_4S/1.1)
-# define Scale_BelleII_4S_UUBAR_MC16ri (lumi_BelleII_4S/1.1)
-# define Scale_BelleII_4S_DDBAR_MC16ri (lumi_BelleII_4S/1.1)
-# define Scale_BelleII_4S_SSBAR_MC16ri (lumi_BelleII_4S/1.1)
-# define Scale_BelleII_4S_CHARM_MC16ri (lumi_BelleII_4S/1.1)
+# define Scale_BelleII_4S_UUBAR_MC16ri (lumi_BelleII_4S/(1.1+21.8)) // nominal + with gencut
+# define Scale_BelleII_4S_DDBAR_MC16ri (lumi_BelleII_4S/(1.1+21.8)) // nominal + with gencut
+# define Scale_BelleII_4S_SSBAR_MC16ri (lumi_BelleII_4S/(1.1+21.8)) // nominal + with gencut
+# define Scale_BelleII_4S_CHARM_MC16ri (lumi_BelleII_4S/(1.1+21.8)) // nominal + with gencut
 # define Scale_BelleII_4S_MUMU_MC16ri (lumi_BelleII_4S/1.1)
 # define Scale_BelleII_4S_EE_MC16ri (lumi_BelleII_4S/0.175)
 # define Scale_BelleII_4S_EEEE_MC16ri (lumi_BelleII_4S/1.1)
@@ -82,7 +90,7 @@
 # define Scale_BelleII_4S_hhISR_MC16ri (lumi_BelleII_4S/1.1)
 # define Scale_BelleII_4S_GG_MC16ri (lumi_BelleII_4S/1.35)
 # define Scale_BelleII_4S_llXX_MC16ri (lumi_BelleII_4S/1.1)
-# define Scale_BelleII_4S_TAUPAIR_MC16ri (lumi_BelleII_4S/1.1)
+# define Scale_BelleII_4S_TAUPAIR_MC16ri (lumi_BelleII_4S/(1.1+14.5)) // nominal + with gencut
 
 # define Scale_BelleII_4S_CHG_MC16rd (lumi_BelleII_4S/1.94633937621)
 # define Scale_BelleII_4S_MIX_MC16rd (lumi_BelleII_4S/1.94563145615)
@@ -127,6 +135,7 @@
 # define Scale_BelleII_5S_GG_MC16rd (lumi_BelleII_5S/0.0392695400598)
 # define Scale_BelleII_5S_llXX_MC16rd (lumi_BelleII_5S/0.0785390801196)
 # define Scale_BelleII_5S_TAUPAIR_MC16rd (lumi_BelleII_5S/0.0785390801196)
+# define Scale_BelleII_5S_BB_MC16rd (lumi_BelleII_5S/0.0785390801196)
 # define Scale_BelleII_5S_UDSC_MC16rd (lumi_BelleII_5S/0.0785390801196) // just average of udsc
 
 
@@ -172,7 +181,7 @@
 
 // for ALP signal
 # define Nevt_ALP_BelleII_4S_MC15ri 200000
-# define Nevt_ALP_BelleII_4S_MC16ri 220000
+# define Nevt_ALP_BelleII_4S_MC16ri 880000
 # define Nevt_ALP_BelleII_4S_MC16rd_ctau_01 10000
 # define Nevt_ALP_BelleII_4S_MC16rd_ctau_1 10000
 # define Nevt_ALP_BelleII_4S_MC16rd_ctau_10 10000

@@ -34,14 +34,12 @@ int main(int argc, char* argv[]) {
     ReadResolution((std::string(argv[1]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
     EventWeights::Register("MC_weight", MC_weight);
-    EventWeights::Register("double_weight", double_weight);
 
     Loader loader("tau_lfv");
 
-    for (int i = 0; i < signal_list.size(); i++) loader.Load((argv[1] + std::string("/") + signal_list.at(i) + std::string("/final_output_test_after_application/")).c_str(), "root", signal_list.at(i).c_str());
-    for (int i = 0; i < background_list.size(); i++) loader.Load((argv[1] + std::string("/") + background_list.at(i) + std::string("/final_output_test_after_application/")).c_str(), "root", background_list.at(i).c_str());
+    for (int i = 0; i < signal_list.size(); i++) loader.Load((argv[1] + std::string("/") + signal_list.at(i) + std::string("/final_output_after_application/")).c_str(), "root", signal_list.at(i).c_str());
+    for (int i = 0; i < background_list.size(); i++) loader.Load((argv[1] + std::string("/") + background_list.at(i) + std::string("/final_output_after_application/")).c_str(), "root", background_list.at(i).c_str());
     loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
-    loader.AddWeight("double_weight");
 
     // Create a new vector to hold the combined elements
     std::vector<std::string> all_label;
@@ -59,8 +57,8 @@ int main(int argc, char* argv[]) {
     // cut on deltaE
     loader.Cut(("(" + std::to_string(deltaE_peak - 15 * deltaE_left_sigma) + "< deltaE) && (deltaE < " + std::to_string(deltaE_peak - 5 * deltaE_left_sigma) + ")").c_str());
     loader.PrintInformation("========== -15 delta < deltaE < -5 delta ==========");
-    loader.Cut(("(" + std::to_string(M_peak - 5 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 5 * M_right_sigma) + ")").c_str());
-    loader.PrintInformation("========== -5 delta < M < 5 delta ==========");
+    loader.Cut(("(" + std::to_string(M_peak - sizeM * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + sizeM * M_right_sigma) + ")").c_str());
+    loader.PrintInformation(("========== -" + std::to_string(sizeM) + " delta < M < " + std::to_string(sizeM) + " delta ==========").c_str());
 
     loader.DrawPunziFOM(argv[2], 0.0, 1.0, 100, Nevt_SIGNAL, 1.28, 1, (std::string(argv[1])  + "/" + std::string(argv[3]) + "/PunziFOM.png").c_str());
 

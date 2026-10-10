@@ -31,12 +31,26 @@ std::default_random_engine generator(rd());
 
 std::vector<std::string> scaleFactors_pdf_names = {
     "signal_Belle_II_Belle_II_scaleFactors",
-    "bkg_Belle_II_Belle_II_scaleFactors"
+    "bkg_A_region1_Belle_II_scaleFactors",
+    "bkg_B_region1_Belle_II_scaleFactors",
+    "bkg_C_region1_Belle_II_scaleFactors",
+    "bkg_D_region1_Belle_II_scaleFactors",
+    "bkg_A_region2_Belle_II_scaleFactors",
+    "bkg_B_region2_Belle_II_scaleFactors",
+    "bkg_C_region2_Belle_II_scaleFactors",
+    "bkg_D_region2_Belle_II_scaleFactors"
 };
 
 std::vector<std::string> shapes_pdf_names = {
     "signal_Belle_II_Belle_II_shapes",
-    "bkg_Belle_II_Belle_II_shapes"
+    "bkg_A_region1_Belle_II_shapes",
+    "bkg_B_region1_Belle_II_shapes",
+    "bkg_C_region1_Belle_II_shapes",
+    "bkg_D_region1_Belle_II_shapes",
+    "bkg_A_region2_Belle_II_shapes",
+    "bkg_B_region2_Belle_II_shapes",
+    "bkg_C_region2_Belle_II_shapes",
+    "bkg_D_region2_Belle_II_shapes"
 };
 
 RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0, bool Minos = true) {
@@ -242,13 +256,20 @@ void PrintNevtFile(RooWorkspace* w, const char* filename = nullptr) {
 
             *x_val = binCenter; // set x value
 
+            // Sum all ABCD background samples into one yield per bin.
+            double signal_yield = 0.0;
+            double bkg_yield = 0.0;
             for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
                 RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
                 RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                if ((temp_func_scaleFactors == nullptr) || (temp_func_shapes == nullptr)) {
+                    printf("[ERROR] cannot find %s or %s.\n", scaleFactors_pdf_names.at(j).c_str(), shapes_pdf_names.at(j).c_str());
+                    exit(1);
+                }
 
                 double Nevt = temp_func_scaleFactors->getValV() * temp_func_shapes->getValV();
-                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "signal") != nullptr) Signal_Nevts.push_back(Nevt);
-                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "bkg") != nullptr) BKG_Nevts.push_back(Nevt);
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "signal") != nullptr) signal_yield += Nevt;
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "bkg") != nullptr) bkg_yield += Nevt;
                 else {
                     printf("[ERROR] unexpected sample\n");
                     exit(1);
@@ -259,6 +280,8 @@ void PrintNevtFile(RooWorkspace* w, const char* filename = nullptr) {
                     // exit(1);
                 }
             }
+            Signal_Nevts.push_back(signal_yield);
+            BKG_Nevts.push_back(bkg_yield);
 
         }
 
