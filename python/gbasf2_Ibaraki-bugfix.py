@@ -747,6 +747,9 @@ tauLFVCuts_control_vertex = tauLFVCuts_control_base + " and [daughter(1, pionID)
 tau_list = []
 var_list = []
 
+# name, PDG, mass, width, charge, spin
+pdg.add_particle('alpha0', 94144, 1.0, 0.004, 0, 0)
+
 if(args.prompt):
     # here, we only reconstruct tau -> mu mu mu
     ma.reconstructDecay("tau+:LFV_lll -> mu+:taulfv mu+:taulfv mu-:taulfv", tauLFVCuts3, 1, path=my_path)
@@ -765,8 +768,6 @@ if(args.prompt):
 
 # do the same thing for the vertex displacement
 if(args.vertex):
-    pdg.add_particle('alpha0', 94144, 1.0, 0.004, 0, 0)  # name, PDG, mass, width, charge, spin
-
     ma.reconstructDecay("alpha0:LFV_vertex -> mu+:all mu-:all", cut="", path=my_path)
     # treefit for alpha significantly improves m_alpha distribution
     vertex.treeFit(list_name="alpha0:LFV_vertex", conf_level=-1, updateAllDaughters=False, path=my_path)
