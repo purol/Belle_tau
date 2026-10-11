@@ -635,6 +635,9 @@ if BELLEONE:
     pass
 else:
     if((args.sample == "data") or (args.sample == "MC16rd")):
+        for particle in ['e-:all', 'mu-:all', 'pi-:all', 'K-:all', 'p-:all']:
+            ma.fillParticleList(particle, cut='', path=my_path)
+
         basf2.conditions.prepend_globaltag('performance_release08_20260623')
         if(args.momentum_scale == "center"):
             ma.scaleTrackMomenta(inputListNames=['e-:all', 'mu-:all', 'pi-:all', 'K-:all', 'p-:all'], payloadName='tracking_MomentumScaling', scalingFactorName='central', path=my_path)
