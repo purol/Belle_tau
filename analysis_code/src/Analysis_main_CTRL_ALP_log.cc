@@ -61,8 +61,6 @@ std::vector<std::string> cosToThrustOfEvent_CM = {
 int main(int argc, char* argv[]) {
     /*
     * argv[1]: dirname
-    * argv[2]: including string
-    * argv[3]: output path
     */
 
     EventWeights::Register("MC_weight", MC_weight);
@@ -70,7 +68,7 @@ int main(int argc, char* argv[]) {
     Loader loader("tau_lfv");
 
     // It is prompt decay analysis
-    loader.LoadWithCut(argv[1], argv[2], "label", "(29.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 30.5)");
+    loader.LoadWithCut(argv[1], "root", "label", "(29.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 30.5)");
     loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
 
     loader.RemoveVariable({ "nParticlesInList__botau__pl__clpipipi__bc" });
