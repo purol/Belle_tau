@@ -194,7 +194,7 @@ wait_job() {
   done
 }
 
-bash ${shell_DIR}/submitter_Analysis_CTRL.sh
+bash ${shell_DIR}/submitter_Analysis_CTRL_ALP.sh
 wait_job "Analyze"
 
 bash ${shell_DIR}/checker_Analysis.sh
