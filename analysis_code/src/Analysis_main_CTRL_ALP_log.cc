@@ -136,8 +136,8 @@ int main(int argc, char* argv[]) {
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_thrust_cut").c_str(), "", "");
     //loader.DrawTH1D("thrust", "thrust", "thrust.png");
-    loader.Cut("(0.86 < thrust) && (thrust < 0.97)");
-    loader.PrintInformation("========== 0.86 < thrust < 0.97 ==========");
+    loader.Cut("0.86 < thrust");
+    loader.PrintInformation("========== 0.86 < thrust ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_Eecl_cut").c_str(), "", "");
     loader.Cut("roeEextra__bocleanMask__bc < 5.0");
@@ -156,8 +156,8 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== missing Energy CMS > 0.0 GeV ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_strict_M_deltaE_selection").c_str(), "", "");
-    loader.Cut("(M > 0.9) && (deltaE > -0.3)");
-    loader.PrintInformation("========== (M > 0.9) and (deltaE > -0.3) ==========");
+    loader.Cut("(M < 1.2) && (deltaE > -0.3)");
+    loader.PrintInformation("========== (M < 1.2) and (deltaE > -0.3) ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_flighttime_cut").c_str(), "", "");
     loader.Cut("extraInfo__boALP_flightTime__bc > 0.0");
@@ -170,6 +170,9 @@ int main(int argc, char* argv[]) {
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_KS0_M_cut").c_str(), "", "");
     loader.Cut("(extraInfo__boALP_M__bc > 0.487611) && (extraInfo__boALP_M__bc < 0.507611)");
     loader.PrintInformation("========== deltaM of KS0 < 0.01 GeV ==========");
+
+    loader.Cut("cosTBTO__bocleanMask__bc < 0.99");
+    loader.PrintInformation("========== cosTBTO < 0.99 ==========");
 
     loader.Cut("missingEnergyOfEventCMS > 0.5");
     loader.PrintInformation("========== missing Energy CMS > 0.5 GeV ==========");
