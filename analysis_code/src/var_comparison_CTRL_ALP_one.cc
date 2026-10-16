@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
 
     // sample2 test (Here, we assume it is tau -> a mu)
     Loader loader_sample2_test("tau_lfv");
-    for (int i = 0; i < sample2_list.size(); i++) loader_sample2_test.Load(argv[6], "root", sample2_list.at(i).c_str());
+    for (int i = 0; i < sample2_list.size(); i++) loader_sample2_test.Load(argv[6], ("alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_").c_str(), sample2_list.at(i).c_str());
     loader_sample2_test.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader_sample2_test.Cut(GetBCSCut(deltaE_peak, deltaE_left_sigma, deltaE_right_sigma, M_peak, M_left_sigma, M_right_sigma).c_str());
     loader_sample2_test.Cut(("(" + std::to_string(mass - M_left_cut_value) + "< extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc <" + std::to_string(mass + M_right_cut_value) + ")").c_str());
