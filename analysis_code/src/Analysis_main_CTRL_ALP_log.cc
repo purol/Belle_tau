@@ -156,16 +156,16 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== missing Energy CMS > 0.0 GeV ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_strict_M_deltaE_selection").c_str(), "", "");
-    loader.Cut("(M < 1.2) && (deltaE > -0.3)");
-    loader.PrintInformation("========== (M < 1.2) and (deltaE > -0.3) ==========");
+    loader.Cut("(0.8 < M) && (M < 1.1) && (deltaE > -0.3) && (deltaE < -0.1)");
+    loader.PrintInformation("========== (0.8 < M < 1.1) and (-0.3 < deltaE < -0.1) ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_flighttime_cut").c_str(), "", "");
     loader.Cut("extraInfo__boALP_flightTime__bc > 0.0");
     loader.PrintInformation("========== flighttime of KS0 > 0 ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_significance_distance_cut").c_str(), "", "");
-    loader.Cut("extraInfo__boALP_significanceOfDistance__bc > 10.0");
-    loader.PrintInformation("========== significance of distance of KS0 > 10 ==========");
+    loader.Cut("extraInfo__boALP_significanceOfDistance__bc > 20.0");
+    loader.PrintInformation("========== significance of distance of KS0 > 20 ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_KS0_M_cut").c_str(), "", "");
     loader.Cut("(extraInfo__boALP_M__bc > 0.487611) && (extraInfo__boALP_M__bc < 0.507611)");
