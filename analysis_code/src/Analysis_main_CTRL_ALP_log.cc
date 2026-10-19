@@ -156,8 +156,8 @@ int main(int argc, char* argv[]) {
     loader.PrintInformation("========== missing Energy CMS > 0.0 GeV ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_strict_M_deltaE_selection").c_str(), "", "");
-    loader.Cut("(0.8 < M) && (M < 1.1) && (deltaE > -0.3) && (deltaE < -0.1)");
-    loader.PrintInformation("========== (0.8 < M < 1.1) and (-0.3 < deltaE < -0.1) ==========");
+    loader.Cut("(0.8 < M) && (M < 1.0) && (deltaE > -0.3) && (deltaE < -0.1)");
+    loader.PrintInformation("========== (0.8 < M < 1.0) and (-0.3 < deltaE < -0.1) ==========");
 
     //loader.PrintSeparateRootFile((std::string(argv[3]) + "/before_flighttime_cut").c_str(), "", "");
     loader.Cut("extraInfo__boALP_flightTime__bc > 0.0");
