@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string>
+#include <sstream>
 #include <vector>
 #include <deque>
 #include <cmath>
@@ -281,8 +282,8 @@ void Write_ABCD_histograms(const std::vector<ABCDValidation>& validation_) {
     }
 }
 
-void Add_ABCD_samples(RooStats::HistFactory::Channel& channel_, const char* filename_, TH1D* data_, const std::vector<ABCDValidation>& validation_, bool use_nonclosure_) {
-    // A = beta * r, B = beta, C = nu * r, D = nu, independently for each deltaE region.
+void Add_ABCD_samples(RooStats::HistFactory::Measurement& meas_, RooStats::HistFactory::Channel& channel_, const char* filename_, TH1D* data_, const std::vector<ABCDValidation>& validation_, bool use_nonclosure_) {
+    // A = T_AB * p, B = T_AB * (1 - p), C = T_CD * p, D = T_CD * (1 - p), independently for each deltaE region.
     // The signal sample supplies mu * signal in every bin, including B, C and D.
     // Do not add ActivateStatError: all eight bins already have their Poisson counting terms.
     std::vector<std::string> regions = { "A", "B", "C", "D" };
@@ -298,15 +299,24 @@ void Add_ABCD_samples(RooStats::HistFactory::Channel& channel_, const char* file
         if (N_B > 0.0) beta = N_B;
         if (N_D > 0.0) nu = N_D;
         if (N_C > 0.0) r = N_C / nu;
-        double beta_max = std::max(100.0, 10.0 * beta);
-        double nu_max = std::max(100.0, 10.0 * nu);
-        double r_max = std::max(100.0, 10.0 * r);
+        // Preserve the initial yields. beta, nu and r are only used to calculate the starting values.
+        double T_AB = beta * (1.0 + r);
+        double T_CD = nu * (1.0 + r);
+        double p = r / (1.0 + r);
+        double T_AB_max = std::max(100.0, 10.0 * T_AB);
+        double T_CD_max = std::max(100.0, 10.0 * T_CD);
+        // Define p before the samples. oneMinusP is a function of p, not another fit parameter.
+        std::ostringstream p_definition;
+        p_definition.precision(17);
+        p_definition << "ABCD_p" << suffix << "[" << p << ",0,1]";
+        meas_.AddPreprocessFunction("ABCD_oneMinusP" + suffix, "1-ABCD_p" + suffix, p_definition.str());
         for (int j = 0; j < (int)regions.size(); j++) {
             std::string name = "bkg_" + regions.at(j) + suffix;
             RooStats::HistFactory::Sample bkg(name.c_str(), ("bkg_ABCD_unit_" + regions.at(j) + suffix).c_str(), filename_);
-            if (j < 2) bkg.AddNormFactor("ABCD_beta" + suffix, beta, 0.0, beta_max);
-            else bkg.AddNormFactor("ABCD_nu" + suffix, nu, 0.0, nu_max);
-            if (j == 0 || j == 2) bkg.AddNormFactor("ABCD_r" + suffix, r, 0.0, r_max);
+            if (j < 2) bkg.AddNormFactor("ABCD_T_AB" + suffix, T_AB, 0.0, T_AB_max);
+            else bkg.AddNormFactor("ABCD_T_CD" + suffix, T_CD, 0.0, T_CD_max);
+            if (j == 0 || j == 2) bkg.AddNormFactor("ABCD_p" + suffix, p, 0.0, 1.0);
+            else bkg.AddNormFactor("ABCD_oneMinusP" + suffix, 1.0 - p, 0.0, 1.0);
             // Keep the nominal ABCD prediction. Validation enters only through this separate nuisance.
             // Applying the validation discrepancy to the application BDT range is an extra assumption.
             if (j == 0 && use_nonclosure_ && validation_.at(i - 1).discrepancy > 0.0) {
@@ -320,8 +330,8 @@ void Add_ABCD_samples(RooStats::HistFactory::Channel& channel_, const char* file
 
 void Set_ABCD_parameter_ranges(RooWorkspace* w_) {
     // HistFactory needs finite construction ranges. They must not act as artificial statistical constraints.
-    // Remove the upper bounds in the saved workspace, retaining the physical lower bound of zero.
-    std::vector<std::string> parameters = { "beta", "nu", "r" };
+    // Remove the total-yield upper bounds in the saved workspace, retaining the physical lower bound of zero.
+    std::vector<std::string> parameters = { "T_AB", "T_CD" };
     for (int i = 1; i <= 2; i++) {
         for (int j = 0; j < (int)parameters.size(); j++) {
             std::string name = "ABCD_" + parameters.at(j) + "_region" + std::to_string(i);
@@ -330,8 +340,19 @@ void Set_ABCD_parameter_ranges(RooWorkspace* w_) {
                 printf("[ABCD_method] missing likelihood parameter %s\n", name.c_str());
                 exit(1);
             }
+            parameter->setMin(0.0);
             parameter->removeMax();
+            parameter->setConstant(false);
         }
+        // The shared fraction remains a free parameter in the physical range [0, 1].
+        std::string name = "ABCD_p_region" + std::to_string(i);
+        RooRealVar* parameter = w_->var(name.c_str());
+        if (parameter == nullptr) {
+            printf("[ABCD_method] missing likelihood parameter %s\n", name.c_str());
+            exit(1);
+        }
+        parameter->setRange(0.0, 1.0);
+        parameter->setConstant(false);
     }
 }
 
@@ -545,7 +566,7 @@ int main(int argc, char* argv[]) {
     signal_Belle_II.SetNormalizeByTheory(false);
 
     channel_Belle_II.AddSample(signal_Belle_II);
-    Add_ABCD_samples(channel_Belle_II, (std::string(argv[6]) + "/histogram_output.root").c_str(), data_th1d, validation, use_ABCD_nonclosure);
+    Add_ABCD_samples(meas, channel_Belle_II, (std::string(argv[6]) + "/histogram_output.root").c_str(), data_th1d, validation, use_ABCD_nonclosure);
 
     // add channel to measurement
     meas.AddChannel(channel_Belle_II);
