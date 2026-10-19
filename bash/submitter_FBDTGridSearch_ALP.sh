@@ -66,7 +66,7 @@ do
   do
     for shrinkage in 0.01 0.1 0.2
     do
-      for subsample in 0.01 0.2 0.5
+      for subsample in 0.1 0.2 0.5
       do
         for binning in 6 8
         do
@@ -85,7 +85,7 @@ do
   do
     for shrinkage in 0.01 0.1 0.2
     do
-      for subsample in 0.01 0.2 0.5
+      for subsample in 0.1 0.2 0.5
       do
         for binning in 6 8
         do
