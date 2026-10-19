@@ -66,9 +66,9 @@ do
   do
     for shrinkage in 0.01 0.1 0.2
     do
-      for subsample in 0.1 0.2 0.5
+      for subsample in 0.2 0.5 0.8
       do
-        for binning in 6 8
+        for binning in 5 6 8
         do
           submit_GridSearch ${code} ${Analysis_Name} ${nTree} ${depth} ${shrinkage} ${subsample} ${binning} ${output} "input_variables_one"
         done
@@ -85,9 +85,9 @@ do
   do
     for shrinkage in 0.01 0.1 0.2
     do
-      for subsample in 0.1 0.2 0.5
+      for subsample in 0.2 0.5 0.8
       do
-        for binning in 6 8
+        for binning in 5 6 8
         do
           submit_GridSearch ${code} ${Analysis_Name} ${nTree} ${depth} ${shrinkage} ${subsample} ${binning} ${output} "input_variables_two"
         done
