@@ -379,19 +379,8 @@ void Set_ABCD_parameter_ranges(RooWorkspace* w_) {
                 printf("[ABCD_method] missing likelihood parameter %s\n", name.c_str());
                 exit(1);
             }
-            parameter->setMin(0.0);
             parameter->removeMax();
-            parameter->setConstant(false);
         }
-        // The shared fraction remains a free parameter in the physical range [0, 1].
-        std::string name = "ABCD_p_region" + std::to_string(i);
-        RooRealVar* parameter = w_->var(name.c_str());
-        if (parameter == nullptr) {
-            printf("[ABCD_method] missing likelihood parameter %s\n", name.c_str());
-            exit(1);
-        }
-        parameter->setRange(0.0, 1.0);
-        parameter->setConstant(false);
     }
 }
 
