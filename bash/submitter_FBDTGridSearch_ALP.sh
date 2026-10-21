@@ -82,13 +82,13 @@ done
 
 code="${Belle_tau_DIR}/analysis_code/bin/FBDT_GridSearch_one_ALP"
 output="GridSearch_one"
-for nTree in 500 750 1000
+for nTree in 500 750 1000 1250 1500
 do
   for subsample in 0.5 0.8 1.0
   do
     for binning in 4 5 6 8
     do
-      if [[ "${nTree}" != "1000" &&
+      if [[ "${nTree}" -le 750 &&
             "${subsample}" != "1.0" &&
             "${binning}" != "4" ]]; then
         continue
