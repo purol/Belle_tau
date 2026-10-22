@@ -101,6 +101,22 @@ do
   done
 done
 
+code="${Belle_tau_DIR}/analysis_code/bin/FBDT_AUC_train_one_ALP"
+output="GridSearch_one"
+for nTree in 1000 1500 2000
+do
+  for subsample in 0.5 0.8
+  do
+    for binning in 5 6 8
+    do
+      submit_GridSearch "${code}" "${Analysis_Name}" \
+        "${nTree}" 1 0.1 \
+        "${subsample}" "${binning}" \
+        "${output}" "input_variables_one"
+    done
+  done
+done
+
 code="${Belle_tau_DIR}/analysis_code/bin/FBDT_AUC_train_two_ALP"
 output="GridSearch_two"
 for nTree in 100 250 500 750
