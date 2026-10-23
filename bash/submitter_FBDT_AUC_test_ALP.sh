@@ -81,38 +81,22 @@ done
 
 code="${Belle_tau_DIR}/analysis_code/bin/FBDT_AUC_test_one_ALP"
 output="GridSearch_one"
-for nTree in 500 750 1000 1250 1500
+for nTree in 1000 1250 1500 2000
 do
-  for subsample in 0.5 0.8 1.0
+  for depth in 1
   do
-    for binning in 4 5 6 8
+    for shrinkage in 0.1 0.2
     do
-      if [[ "${nTree}" -le 750 &&
-            "${subsample}" != "1.0" &&
-            "${binning}" != "4" ]]; then
-        continue
-      fi
-
-      submit_GridSearch "${code}" "${Analysis_Name}" \
-        "${nTree}" 1 0.2 \
-        "${subsample}" "${binning}" \
-        "${output}" "input_variables_one"
-    done
-  done
-done
-
-code="${Belle_tau_DIR}/analysis_code/bin/FBDT_AUC_test_one_ALP"
-output="GridSearch_one"
-for nTree in 1000 1500 2000
-do
-  for subsample in 0.5 0.8
-  do
-    for binning in 5 6 8
-    do
-      submit_GridSearch "${code}" "${Analysis_Name}" \
-        "${nTree}" 1 0.1 \
-        "${subsample}" "${binning}" \
-        "${output}" "input_variables_one"
+      for subsample in 0.5 0.8
+      do
+        for binning in 5 6 8
+        do
+          submit_GridSearch "${code}" "${Analysis_Name}" \
+            "${nTree}" "${depth}" "${shrinkage}" \
+            "${subsample}" "${binning}" \
+            "${output}" "input_variables_one"
+        done
+      done
     done
   done
 done
