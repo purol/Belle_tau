@@ -5,9 +5,10 @@
 #include <vector>
 #include <string>
 #include <format>
+#include <cmath>
 
 #include <TLegend.h>
-#include <TGraph.h>
+#include <TGraphErrors.h>
 #include <TCanvas.h>
 
 typedef struct FBDTinfo {
@@ -17,7 +18,9 @@ typedef struct FBDTinfo {
     double subsample;
     unsigned int binning;
     double train_AUC;
+    double train_AUC_error;
     double test_AUC;
+    double test_AUC_error;
 } FBDTInfo;
 
 bool data_sorter(FBDTInfo const& lhs, FBDTInfo const& rhs) {
@@ -58,10 +61,12 @@ int main(int argc, char* argv[]) {
 
                 std::ifstream file(entry.path());
                 double train_AUC_;
+                double train_AUC_error_;
                 double test_AUC_;
-                file >> train_AUC_ >> test_AUC_;
+                double test_AUC_error_;
+                file >> train_AUC_ >> train_AUC_error_ >> test_AUC_ >> test_AUC_error_;
 
-                Datas.push_back({ nTrees_, depth_, shrinkage_, subsample_, binning_, train_AUC_, test_AUC_ });
+                Datas.push_back({ nTrees_, depth_, shrinkage_, subsample_, binning_, train_AUC_, train_AUC_error_, test_AUC_, test_AUC_error_ });
 
             }
         }
@@ -76,18 +81,22 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < Nlist; i++) Rank[i] = i + 1;
     double* train_AUCs = (double*)malloc(sizeof(double) * Nlist);
     for (int i = 0; i < Nlist; i++) train_AUCs[i] = Datas.at(i).train_AUC;
+    double* train_AUC_errors = (double*)malloc(sizeof(double) * Nlist);
+    for (int i = 0; i < Nlist; i++) train_AUC_errors[i] = Datas.at(i).train_AUC_error;
     double* test_AUCs = (double*)malloc(sizeof(double) * Nlist);
     for (int i = 0; i < Nlist; i++) test_AUCs[i] = Datas.at(i).test_AUC;
+    double* test_AUC_errors = (double*)malloc(sizeof(double) * Nlist);
+    for (int i = 0; i < Nlist; i++) test_AUC_errors[i] = Datas.at(i).test_AUC_error;
 
     // print result
     FILE* fp;
     fp = fopen((std::string(argv[2]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_total_auc.txt").c_str(), "w");
-    for (int i = 0; i < Nlist; i++) fprintf(fp, "%u_%u_%lf_%lf_%u %lf %lf\n", Datas.at(i).nTrees, Datas.at(i).depth, Datas.at(i).shrinkage, Datas.at(i).subsample, Datas.at(i).binning, Datas.at(i).train_AUC, Datas.at(i).test_AUC);
+    for (int i = 0; i < Nlist; i++) fprintf(fp, "%u_%u_%lf_%lf_%u %lf %lf %lf %lf\n", Datas.at(i).nTrees, Datas.at(i).depth, Datas.at(i).shrinkage, Datas.at(i).subsample, Datas.at(i).binning, Datas.at(i).train_AUC, Datas.at(i).train_AUC_error, Datas.at(i).test_AUC, Datas.at(i).test_AUC_error);
     fclose(fp);
 
     // draw plot
-    TGraph* gr_train = new TGraph(Nlist, Rank, train_AUCs);
-    TGraph* gr_test = new TGraph(Nlist, Rank, test_AUCs);
+    TGraphErrors* gr_train = new TGraphErrors(Nlist, Rank, train_AUCs, nullptr, train_AUC_errors);
+    TGraphErrors* gr_test = new TGraphErrors(Nlist, Rank, test_AUCs, nullptr, test_AUC_errors);
 
     gr_train->SetMarkerStyle(8); gr_train->SetMarkerSize(0.8);
     gr_test->SetMarkerStyle(8); gr_test->SetMarkerSize(0.8);
@@ -111,10 +120,13 @@ int main(int argc, char* argv[]) {
     // get best result
     bool find_good_FBDT = false;
     for (int i = 0; i < Nlist; i++) {
-        if ((Datas.at(i).train_AUC / Datas.at(i).test_AUC) < 1.05) {
+        double ratio = Datas.at(i).train_AUC / Datas.at(i).test_AUC;
+        double ratio_error = std::pow(Datas.at(i).train_AUC_error / Datas.at(i).train_AUC, 2) + std::pow(Datas.at(i).test_AUC_error / Datas.at(i).test_AUC, 2);
+        ratio_error = std::sqrt(ratio_error) * ratio;
+        if ((ratio - ratio_error) < 1.015) {
             FILE* fp;
             fp = fopen((std::string(argv[2]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_selected.txt").c_str(), "w");
-            fprintf(fp, "%u_%u_%lf_%lf_%u %lf %lf\n", Datas.at(i).nTrees, Datas.at(i).depth, Datas.at(i).shrinkage, Datas.at(i).subsample, Datas.at(i).binning, Datas.at(i).train_AUC, Datas.at(i).test_AUC);
+            fprintf(fp, "%u_%u_%lf_%lf_%u %lf %lf %lf %lf\n", Datas.at(i).nTrees, Datas.at(i).depth, Datas.at(i).shrinkage, Datas.at(i).subsample, Datas.at(i).binning, Datas.at(i).train_AUC, Datas.at(i).train_AUC_error, Datas.at(i).test_AUC, Datas.at(i).test_AUC_error);
             fclose(fp);
 
             find_good_FBDT = true;
