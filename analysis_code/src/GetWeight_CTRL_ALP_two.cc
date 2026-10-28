@@ -118,6 +118,7 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> target_info = split(argv[17], ':');
     double originalD = 10; // KS distance before weighting
     double minD = 10;
+    double min_retention = 0.3;
     int var1_index = -1;
     int var2_index = -1;
     {
@@ -231,6 +232,7 @@ int main(int argc, char* argv[]) {
         std::vector<TH1D*> hist_target_CTRL_weights;
         for (int k = 0; k < hist_ratios.size(); k++) {
             TH1D* hist_target_CTRL_weight = new TH1D(("hist_target_CTRL_weight_" + var1s.at(k) + var2s.at(k)).c_str(), (";" + target_info.at(0) + ";arbitrary unit").c_str(), std::stoi(target_info.at(3)), std::stod(target_info.at(1)), std::stod(target_info.at(2)));
+            hist_target_CTRL_weight->Sumw2();
             hist_target_CTRL_weights.push_back(hist_target_CTRL_weight);
         }
         TH1D* hist_target_ALP = new TH1D("hist_target_ALP", (";" + target_info.at(0) + ";arbitrary unit").c_str(), std::stoi(target_info.at(3)), std::stod(target_info.at(1)), std::stod(target_info.at(2)));
@@ -261,8 +263,26 @@ int main(int argc, char* argv[]) {
         loader_target_sample2.end();
 
         // find shortest KS distance
+        double N_CTRL = hist_target_CTRL->GetEntries();
         minD = originalD = hist_target_ALP->KolmogorovTest(hist_target_CTRL, "M");
         for (int k = 0; k < hist_ratios.size(); k++) {
+            // calculate effective statistics retention
+            double sum_weight = 0.0;
+            double sum_weight_squared = 0.0;
+            for (int i = 0; i <= hist_target_CTRL_weights.at(k)->GetNbinsX() + 1; i++) {
+                sum_weight += hist_target_CTRL_weights.at(k)->GetBinContent(i);
+                double error = hist_target_CTRL_weights.at(k)->GetBinError(i);
+                sum_weight_squared += error * error;
+            }
+
+            double retention = 0.0;
+            if (N_CTRL > 0.0 && sum_weight_squared > 0.0) {
+                double N_eff = sum_weight * sum_weight / sum_weight_squared;
+                retention = N_eff / N_CTRL;
+            }
+
+            if (retention <= min_retention) continue;
+
             double distance = hist_target_ALP->KolmogorovTest(hist_target_CTRL_weights.at(k), "M");
             if (distance < minD) {
                 minD = distance;
