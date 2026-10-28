@@ -85,7 +85,7 @@ input_variables_two=(
 
 export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/MC16ri/v000" # FBDT weight file path
 export nominal_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/MC16rd/v000" # nominal tau->mumumu analysis path
-Weight_candidate_vars=(
+export Weight_candidate_vars=(
     "KSFWVariables__bohso24__cm__spcleanMask__bc"
     "roeM__bocleanMask__bc"
     "roeEextra__bocleanMask__bc"
@@ -93,7 +93,7 @@ Weight_candidate_vars=(
     "harmonicMomentThrust4"
     "cosAngleBetweenMomentumAndVertexVector"
 ) # list of candidate variables
-Weight_candidate_binnings=(
+export Weight_candidate_binnings=(
     "-0.2"  "1.4" "8"
     "-0.1"  "4.5" "8"
     "-0.1"  "5.0" "8"
