@@ -34,36 +34,29 @@ int main(int argc, char* argv[]) {
     * argv[10]: sample2 list (separated by colon)
     * argv[11]: sample1 lable
     * argv[12]: sample2 lable
-    * argv[13]: two compare variables (separated by colon)
-    * argv[14]: {none|ratio}
-    * argv[15]: M_deltaE path for tau -> a mu decay
-    * argv[16]: M weight path
-    * argv[17]: mass
-    * argv[18]: lifetime
-    * argv[19]: A constant
-    * argv[20]: B constant
+    * argv[13]: {none|ratio}
+    * argv[14]: M_deltaE path for tau -> a mu decay
+    * argv[15]: M weight path
+    * argv[16]: mass
+    * argv[17]: lifetime
+    * argv[18]: A constant
+    * argv[19]: B constant
     */
 
-    if (argc != 21) {
-        printf("20 arguments are required.\n");
-        return 1;
-    }
-
-    std::vector<std::string> compare_variables = split(argv[13], ':');
-    if (compare_variables.size() != 2) {
-        printf("Two compare variables are required.\n");
+    if (argc != 20) {
+        printf("19 arguments are required.\n");
         return 1;
     }
 
     bool ThereIsRatio = false;
-    if(std::string(argv[14]) == "") ThereIsRatio = false;
-    else if(std::string(argv[14]) == "none") ThereIsRatio = false;
-    if(std::string(argv[14]) == "ratio") ThereIsRatio = true;
+    if(std::string(argv[13]) == "") ThereIsRatio = false;
+    else if(std::string(argv[13]) == "none") ThereIsRatio = false;
+    if(std::string(argv[13]) == "ratio") ThereIsRatio = true;
 
-    double mass = std::stod(argv[17]);
-    double life = std::stod(argv[18]);
-    int A = std::stoi(argv[19]);
-    int B = std::stoi(argv[20]);
+    double mass = std::stod(argv[16]);
+    double life = std::stod(argv[17]);
+    int A = std::stoi(argv[18]);
+    int B = std::stoi(argv[19]);
 
     double M_left_cut_value = 0;
     double M_right_cut_value = 0;
@@ -94,10 +87,20 @@ int main(int argc, char* argv[]) {
     double M_right_sigma;
     double theta;
 
-    ReadResolution((std::string(argv[15]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+    ReadResolution((std::string(argv[14]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    FILE* fp = fopen((std::string(argv[15]) + "/weight_one_2D_CTRL_" + std::string(argv[16]) + "_" + std::string(argv[17]) + "_" + std::string(argv[18]) + "_" + std::string(argv[19]) + "_info.txt").c_str(), "r");
+    std::vector<std::string> compare_variables;
+    double temp_double;
+    char temp_char[100];
+    fscanf(fp, "%lf", &temp_double);
+    fscanf(fp, "%lf", &temp_double);
+    fscanf(fp, "%s", temp_char); compare_variables.push_back(temp_char);
+    fscanf(fp, "%s", temp_char); compare_variables.push_back(temp_char);
+    fclose(fp);
 
     EventWeight CTRL_weight(
-        std::string(argv[16]) + "/weight_one_2D_CTRL_" + std::string(argv[17]) + "_" + std::string(argv[18]) + "_" + std::string(argv[19]) + "_" + std::string(argv[20]) + ".csv",
+        std::string(argv[15]) + "/weight_one_2D_CTRL_" + std::string(argv[16]) + "_" + std::string(argv[17]) + "_" + std::string(argv[18]) + "_" + std::string(argv[19]) + ".csv",
         { {compare_variables.at(0), compare_variables.at(0) + "_min", compare_variables.at(0) + "_max"}, {compare_variables.at(1), compare_variables.at(1) + "_min", compare_variables.at(1) + "_max"} },
         "weight",
         true
