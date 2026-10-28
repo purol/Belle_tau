@@ -35,7 +35,7 @@ submit_GetWeight() {
     "${Sample2Label}" \
     "./${VerName}/${Analysis_VerName}/${OutputPath}" \
     "${nominal_analysis_DIR}" \
-    "${TargetVar}"
+    "${TargetVar}:0:1:10000"
 
   bsub -q l \
   -J GetWeight \
@@ -48,9 +48,9 @@ submit_GetWeight() {
 code="${Belle_tau_DIR}/analysis_code/bin/GetWeight_CTRL_one"
 VarNames="${Weight_candidate_vars_STR}"
 VarBins="${Weight_candidate_binnings_STR}"
-submit_GetWeight "${code}" "${Analysis_Name}" "${VarNames}" "${VarBins}" "final_output_after_application" "final_output_after_application" "Weight" "${Signal_Type}" "SIGNAL" "${Signal_Legends}" "#tau#rightarrow#mu#mu#mu" "one" "BDT_output_1:0:1:10000"
+submit_GetWeight "${code}" "${Analysis_Name}" "${VarNames}" "${VarBins}" "final_output_after_application" "final_output_after_application" "Weight" "${Signal_Type}" "SIGNAL" "${Signal_Legends}" "#tau#rightarrow#mu#mu#mu" "one" "BDT_output_1"
 
 code="${Belle_tau_DIR}/analysis_code/bin/GetWeight_CTRL_two"
 VarNames="${Weight_candidate_vars_STR}"
 VarBins="${Weight_candidate_binnings_STR}"
-submit_GetWeight "${code}" "${Analysis_Name}" "${VarNames}" "${VarBins}" "final_output_after_application" "final_output_after_application" "Weight" "${Signal_Type}" "SIGNAL" "${Signal_Legends}" "#tau#rightarrow#mu#mu#mu" "two" "BDT_output_2:0:1:10000"
+submit_GetWeight "${code}" "${Analysis_Name}" "${VarNames}" "${VarBins}" "final_output_after_application" "final_output_after_application" "Weight" "${Signal_Type}" "SIGNAL" "${Signal_Legends}" "#tau#rightarrow#mu#mu#mu" "two" "BDT_output_2"
