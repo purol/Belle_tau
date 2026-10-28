@@ -59,10 +59,12 @@ std::string ReadSelect(const char* select_path, const char* select_file_name) {
     double subsample;
     double binning;
     double train_AUC;
+    double train_AUC_error;
     double test_AUC;
+    double test_AUC_error;
 
     FILE* fp = fopen((std::string(select_path) + "/" + std::string(select_file_name)).c_str(), "r");
-    fscanf(fp, "%lf_%lf_%lf_%lf_%lf %lf %lf\n", &nTrees, &depth, &shrinkage, &subsample, &binning, &train_AUC, &test_AUC);
+    fscanf(fp, "%lf_%lf_%lf_%lf_%lf %lf %lf %lf %lf\n", &nTrees, &depth, &shrinkage, &subsample, &binning, &train_AUC, &train_AUC_error, &test_AUC, &test_AUC_error);
     fclose(fp);
 
     std::string classifier = std::to_string(nTrees) + "_" + std::to_string(depth) + "_" + std::to_string(shrinkage) + "_" + std::to_string(subsample) + "_" + std::to_string(binning) + ".weightfile";

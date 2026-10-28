@@ -64,13 +64,38 @@ for nTree in 250 500 750
 do
   for depth in 1 2
   do
-    for shrinkage in 0.01 0.1 0.2
+    for shrinkage in 0.1 0.2
     do
-      for subsample in 0.01 0.2 0.5
+      for subsample in 0.2 0.5 0.8
       do
-        for binning in 6 8
+        for binning in 5 6 8
         do
-          submit_GridSearch ${code} ${Analysis_Name} ${nTree} ${depth} ${shrinkage} ${subsample} ${binning} ${output} "input_variables_one"
+          submit_GridSearch "${code}" "${Analysis_Name}" \
+            "${nTree}" "${depth}" "${shrinkage}" \
+            "${subsample}" "${binning}" \
+            "${output}" "input_variables_one"
+        done
+      done
+    done
+  done
+done
+
+code="${Belle_tau_DIR}/analysis_code/bin/FBDT_GridSearch_one_ALP"
+output="GridSearch_one"
+for nTree in 1000 1250 1500 2000
+do
+  for depth in 1
+  do
+    for shrinkage in 0.1 0.2
+    do
+      for subsample in 0.5 0.8
+      do
+        for binning in 5 6 8
+        do
+          submit_GridSearch "${code}" "${Analysis_Name}" \
+            "${nTree}" "${depth}" "${shrinkage}" \
+            "${subsample}" "${binning}" \
+            "${output}" "input_variables_one"
         done
       done
     done
@@ -83,11 +108,11 @@ for nTree in 100 250 500 750
 do
   for depth in 1 2
   do
-    for shrinkage in 0.01 0.1 0.2
+    for shrinkage in 0.1 0.2
     do
-      for subsample in 0.01 0.2 0.5
+      for subsample in 0.2 0.5 0.8
       do
-        for binning in 6 8
+        for binning in 5 6 8
         do
           submit_GridSearch ${code} ${Analysis_Name} ${nTree} ${depth} ${shrinkage} ${subsample} ${binning} ${output} "input_variables_two"
         done

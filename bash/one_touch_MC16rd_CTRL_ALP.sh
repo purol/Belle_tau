@@ -13,9 +13,9 @@ export Ntuple_DIR="/home/belle2/junewoo/storage_ghi/tau_Ntuple_CTRL" # Ntuple pa
 Background_Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CCBAR"
     "MUMU" "EE" "EEEE" "EEMUMU" "LLXX" "HHISR" "GG" 
     "TAUPAIR"
-    "KS0pinu_pure"
+    "pipipinu_pure"
     ) # name of directories under ${Ntuple_DIR} for background sample. Do not include colon.
-export Signal_Type="pipipinu" # name of directories under ${Ntuple_DIR} for prompt signal sample. Do not include colon.
+export Signal_Type="KS0pinu" # name of directories under ${Ntuple_DIR} for prompt signal sample. Do not include colon.
 export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample. Do not include colon.
 
 Background_Legends=("others" "others" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#bar{q}"
@@ -23,7 +23,7 @@ Background_Legends=("others" "others" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#bar{q}
     "#tau#bar{#tau}"
     "#tau#bar{#tau}"
     ) # legends of background sample for plots. Do not include colon.
-export Signal_Legends="#tau#rightarrow#pi#pi#pi#nu" # legends of prompt sample for plots. Do not include colon.
+export Signal_Legends="#tau#rightarrowK_{S}^{0}#pi#nu" # legends of prompt sample for plots. Do not include colon.
 export ALP_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
 
 export MC_version="MC16rd" # version of MC. This should be under ${Ntuple_DIR}/${Analysis_Name}/(type name)
@@ -194,7 +194,7 @@ wait_job() {
   done
 }
 
-bash ${shell_DIR}/submitter_Analysis_CTRL.sh
+bash ${shell_DIR}/submitter_Analysis_CTRL_ALP.sh
 wait_job "Analyze"
 
 bash ${shell_DIR}/checker_Analysis.sh
