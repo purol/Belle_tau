@@ -23,7 +23,6 @@
 
 #include "constants.h"
 
-
 inline std::string GetBCSCut(double deltaE_peak_, double deltaE_left_sigma_, double deltaE_right_sigma_, double M_peak_, double M_left_sigma_, double M_right_sigma_) {
     // Use the same candidate range for nominal and varied selections. Apply the final region after BCS.
     std::string cut_M = "((" + std::to_string(M_peak_ - sizeM_BCS * M_left_sigma_) + " < M) && (M < " + std::to_string(M_peak_ + sizeM_BCS * M_right_sigma_) + "))";

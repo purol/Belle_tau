@@ -85,8 +85,22 @@ input_variables_two=(
 
 export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/MC16ri/v000" # FBDT weight file path
 export nominal_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/MC16rd/v000" # nominal tau->mumumu analysis path
-export Two_weight_vars=("KSFWVariables__bohso24__cm__spcleanMask__bc" "roeM__bocleanMask__bc") # use exactly two variables
-export Two_vars_binnings=("-0.2" "1.4" "8" "-0.1" "4.5" "8") # min1 max1 numbin1 min2 max2 numbin2
+Weight_candidate_vars=(
+    "KSFWVariables__bohso24__cm__spcleanMask__bc"
+    "roeM__bocleanMask__bc"
+    "roeEextra__bocleanMask__bc"
+    "harmonicMomentThrust2"
+    "harmonicMomentThrust4"
+    "cosAngleBetweenMomentumAndVertexVector"
+) # list of candidate variables
+Weight_candidate_binnings=(
+    "-0.2"  "1.4" "8"
+    "-0.1"  "4.5" "8"
+    "-0.1"  "5.0" "8"
+    "-0.01" "1.01" "8"
+    "-0.01" "1.01" "8"
+    "-1.1"  "1.1" "8"
+) # min max Nbin for each candidate variable, in the same order
 # =================================================================================== #
 
 export shell_DIR="${Belle_tau_DIR}/bash"
@@ -153,11 +167,11 @@ Legends_STR_WITH_SIGNAL_ALP=$(IFS=:; echo "${Legends_With_SIGNAL_ALP[*]}")
 export Background_Legends_STR
 Background_Legends_STR=$(IFS=:; echo "${Background_Legends[*]}")
 
-export Two_weight_vars_STR
-Two_weight_vars_STR=$(IFS=:; echo "${Two_weight_vars[*]}")
+export Weight_candidate_vars_STR
+Weight_candidate_vars_STR=$(IFS=:; echo "${Weight_candidate_vars[*]}")
 
-export Two_vars_binnings_STR
-Two_vars_binnings_STR=$(IFS=:; echo "${Two_vars_binnings[*]}")
+export Weight_candidate_binnings_STR
+Weight_candidate_binnings_STR=$(IFS=:; echo "${Weight_candidate_binnings[*]}")
 
 wait_all_job() {
   while true; do
