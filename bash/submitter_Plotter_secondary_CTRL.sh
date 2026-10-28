@@ -67,6 +67,48 @@ submit_Plotter() {
 
 }
 
+submit_Plotter_weight() {
+  local command
+
+  local Code=$1 # ex. ./bin/Plotter
+  local VerName=$2 # ex. Alice
+  local VarName=$3 # ex. deltaE
+  local VarMin=$4
+  local VarMax=$5
+  local InputDir=$6 # ex. before_M_deltaE_selection
+  local OutputName=$7 # ex. deltaE
+  local OutputPath=$8 # ex. plot
+  local MCTypes=$9
+  local MCLegends=${10}
+  local WeightPath=${11}
+  local WeightName=${12}
+
+  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
+  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
+  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
+
+  printf -v command '%q ' \
+    "${Code}" \
+    "${VarName}" \
+    "./${VerName}/${Analysis_VerName}/" \
+    "/${InputDir}/" \
+    "./${VerName}/${Analysis_VerName}/${OutputPath}" \
+    "${OutputName}" \
+    "${MCTypes}" \
+    "${MCLegends}" \
+    "./${VerName}/${Analysis_VerName}/${WeightPath}" \
+    "${WeightName}" \
+    "${VarMin}" \
+    "${VarMax}"
+
+  bsub -q l \
+  -J Plotter \
+  -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" \
+  -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" \
+  "${command}"
+
+}
+
 submit_Plotter_2D(){
   local command
 
@@ -109,6 +151,14 @@ submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_a
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_MC"
 VarName="BDT_output_2"
 submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_2" "plot" "${Types_STR_WITH_SIGNAL}" "${Legends_STR_WITH_SIGNAL}"
+
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_MC_weight"
+VarName="BDT_output_1"
+submit_Plotter_weight "${code}" "${Analysis_Name}" "${VarName}" 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_1_weight" "plot" "${Types_STR_WITH_SIGNAL}" "${Legends_STR_WITH_SIGNAL}" "Weight" "weight_one_2D_CTRL"
+
+code="${Belle_tau_DIR}/analysis_code/bin/Plotter_MC_weight"
+VarName="BDT_output_2"
+submit_Plotter_weight "${code}" "${Analysis_Name}" "${VarName}" 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_2_weight" "plot" "${Types_STR_WITH_SIGNAL}" "${Legends_STR_WITH_SIGNAL}" "Weight" "weight_two_2D_CTRL"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_MC"
 VarName_1="M"

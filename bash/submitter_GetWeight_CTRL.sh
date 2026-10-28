@@ -1,6 +1,6 @@
 #!/bin/bash
 
-submit_Plotter() {
+submit_GetWeight() {
   local command
 
   local Code=${1} # ex. ./bin/Plotter
@@ -15,6 +15,7 @@ submit_Plotter() {
   local Sample1Label=${10}
   local Sample2Label=${11}
   local Flag=${12}
+  local TargetVar=${13}
 
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
@@ -33,7 +34,8 @@ submit_Plotter() {
     "${Sample1Label}" \
     "${Sample2Label}" \
     "./${VerName}/${Analysis_VerName}/${OutputPath}" \
-    "${nominal_analysis_DIR}"
+    "${nominal_analysis_DIR}" \
+    "${TargetVar}:0:1:10000"
 
   bsub -q l \
   -J GetWeight \
@@ -44,11 +46,11 @@ submit_Plotter() {
 }
  
 code="${Belle_tau_DIR}/analysis_code/bin/GetWeight_CTRL_one"
-VarNames="${Two_weight_vars_STR}"
-VarBins="${Two_vars_binnings_STR}"
-submit_Plotter "${code}" "${Analysis_Name}" "${VarNames}" "${VarBins}" "final_output_after_application" "final_output_after_application" "Weight" "${Signal_Type}" "SIGNAL" "${Signal_Legends}" "#tau#rightarrow#mu#mu#mu" "one"
+VarNames="${Weight_candidate_vars_STR}"
+VarBins="${Weight_candidate_binnings_STR}"
+submit_GetWeight "${code}" "${Analysis_Name}" "${VarNames}" "${VarBins}" "final_output_after_application" "final_output_after_application" "Weight" "${Signal_Type}" "SIGNAL" "${Signal_Legends}" "#tau#rightarrow#mu#mu#mu" "one" "BDT_output_1"
 
 code="${Belle_tau_DIR}/analysis_code/bin/GetWeight_CTRL_two"
-VarNames="${Two_weight_vars_STR}"
-VarBins="${Two_vars_binnings_STR}"
-submit_Plotter "${code}" "${Analysis_Name}" "${VarNames}" "${VarBins}" "final_output_after_application" "final_output_after_application" "Weight" "${Signal_Type}" "SIGNAL" "${Signal_Legends}" "#tau#rightarrow#mu#mu#mu" "two"
+VarNames="${Weight_candidate_vars_STR}"
+VarBins="${Weight_candidate_binnings_STR}"
+submit_GetWeight "${code}" "${Analysis_Name}" "${VarNames}" "${VarBins}" "final_output_after_application" "final_output_after_application" "Weight" "${Signal_Type}" "SIGNAL" "${Signal_Legends}" "#tau#rightarrow#mu#mu#mu" "two" "BDT_output_2"
