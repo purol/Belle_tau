@@ -227,9 +227,9 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-bash ${shell_DIR}/submitter_Plotter_secondary_CTRL_ALP.sh
-
 bash ${shell_DIR}/submitter_GetWeight_CTRL_ALP.sh
 wait_job "GetWeight"
+
+bash ${shell_DIR}/submitter_Plotter_secondary_CTRL_ALP.sh
 
 bash ${shell_DIR}/submitter_FBDT_comparison_CTRL_ALP.sh
