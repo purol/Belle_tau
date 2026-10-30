@@ -40,7 +40,6 @@ input_variables_one=(
     "foxWolframR3"
     "sphericity"
     "second_muon_p"
-    "cosAngleBetweenMomentumAndVertexVector"
     "missingMomentumOfEventCMS_Py"
     "missingMomentumOfEvent_Px"
     "third_muon_p"
@@ -77,7 +76,6 @@ input_variables_two=(
     "sphericity"
     "KSFWVariables__bohso24__cm__spcleanMask__bc"
     "first_muon_p"
-    "cosAngleBetweenMomentumAndVertexVector"
     "roeEextra__bocleanMask__bc"
 ) # list of input variables for the region 2
 

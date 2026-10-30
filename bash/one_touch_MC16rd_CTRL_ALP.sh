@@ -42,7 +42,6 @@ input_variables_one=(
     "foxWolframR3"
     "sphericity"
     "second_muon_p"
-    "cosAngleBetweenMomentumAndVertexVector"
     "missingMomentumOfEventCMS_Py"
     "missingMomentumOfEvent_Px"
     "third_muon_p"
@@ -79,7 +78,6 @@ input_variables_two=(
     "sphericity"
     "KSFWVariables__bohso24__cm__spcleanMask__bc"
     "first_muon_p"
-    "cosAngleBetweenMomentumAndVertexVector"
     "roeEextra__bocleanMask__bc"
 ) # list of input variables for the region 2
 
@@ -91,7 +89,6 @@ export Weight_candidate_vars=(
     "roeEextra__bocleanMask__bc"
     "harmonicMomentThrust2"
     "harmonicMomentThrust4"
-    "cosAngleBetweenMomentumAndVertexVector"
 ) # list of candidate variables
 export Weight_candidate_binnings=(
     "-0.2"  "1.4" "5"
@@ -99,7 +96,6 @@ export Weight_candidate_binnings=(
     "-0.1"  "5.0" "5"
     "-0.01" "1.01" "5"
     "-0.01" "1.01" "5"
-    "-1.1"  "1.1" "5"
 ) # min max Nbin for each candidate variable, in the same order
 # =================================================================================== #
 

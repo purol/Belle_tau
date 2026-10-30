@@ -91,7 +91,6 @@ export Weight_candidate_vars=(
     "roeEextra__bocleanMask__bc"
     "harmonicMomentThrust2"
     "harmonicMomentThrust4"
-    "cosAngleBetweenMomentumAndVertexVector"
 ) # list of candidate variables
 export Weight_candidate_binnings=(
     "-0.2"  "1.4" "8"
@@ -99,7 +98,6 @@ export Weight_candidate_binnings=(
     "-0.1"  "5.0" "8"
     "-0.01" "1.01" "8"
     "-0.01" "1.01" "8"
-    "-1.1"  "1.1" "8"
 ) # min max Nbin for each candidate variable, in the same order
 # =================================================================================== #
 
