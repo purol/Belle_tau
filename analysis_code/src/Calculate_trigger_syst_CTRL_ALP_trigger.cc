@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     * argv[8]: data list (separated by colon)
     * argv[9]: MC lable
     * argv[10]: data lable
-    * argv[11]: two transverse momentum variables (separated by colon)
+    * argv[11]: used variables (separated by colon)
     * argv[12]: binnings (separated by colon. min1:max1:numbin1:min2:max2:numbin2)
     */
 
