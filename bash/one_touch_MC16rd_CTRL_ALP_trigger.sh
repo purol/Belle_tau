@@ -17,6 +17,7 @@ Background_Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CCBAR"
     ) # name of directories under ${Ntuple_DIR} for background sample. Do not include colon.
 export Signal_Type="KS0pinu" # name of directories under ${Ntuple_DIR} for prompt signal sample. Do not include colon.
 export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample. Do not include colon.
+export data_Type="data"
 
 Background_Legends=("others" "others" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#bar{q}"
     "#mu#mu" "ee" "others" "ee#mu#mu" "others" "others" "others"
@@ -25,77 +26,16 @@ Background_Legends=("others" "others" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#bar{q}
     ) # legends of background sample for plots. Do not include colon.
 export Signal_Legends="#tau#rightarrowK_{S}^{0}#pi#nu" # legends of prompt sample for plots. Do not include colon.
 export ALP_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
+export data_Legends="data"
 
 export MC_version="MC16rd" # version of MC. This should be under ${Ntuple_DIR}/${Analysis_Name}/(type name)
-
-input_variables_one=(
-    "missingEnergyOfEventCMS"
-    "CleoConeCS__bo1__cm__spcleanMask__bc"
-    "KSFWVariables__bohso20__cm__spcleanMask__bc"
-    "harmonicMomentThrust2"
-    "cleoConeThrust0"
-    "harmonicMomentThrust1"
-    "roeE__bocleanMask__bc"
-    "harmonicMomentThrust4"
-    "cosTBTO__bocleanMask__bc"
-    "diff_cosToThrustOfEvent_CM"
-    "foxWolframR3"
-    "sphericity"
-    "second_muon_p"
-    "missingMomentumOfEventCMS_Py"
-    "missingMomentumOfEvent_Px"
-    "third_muon_p"
-    "avg_cosToThrustOfEvent_CM"
-    "roeM__bocleanMask__bc"
-    "foxWolframR4"
-    "KSFWVariables__bohso24__cm__spcleanMask__bc"
-    "roeEextra__bocleanMask__bc"
-    "KSFWVariables__bohso00__cm__spcleanMask__bc"
-    "first_muon_p"
-    "totalPhotonsEnergyOfEvent"
-) # list of input variables for the region 1
-input_variables_two=(
-    "visibleEnergyOfEventCMS"
-    "roeM__bocleanMask__bc"
-    "missingMomentumOfEvent"
-    "KSFWVariables__bohso22__cm__spcleanMask__bc"
-    "CleoConeCS__bo1__cm__spcleanMask__bc"
-    "roeE__bocleanMask__bc"
-    "harmonicMomentThrust1"
-    "harmonicMomentThrust2"
-    "diff_cosToThrustOfEvent_CM"
-    "cosTBTO__bocleanMask__bc"
-    "third_muon_p"
-    "harmonicMomentThrust4"
-    "KSFWVariables__bomm2__cm__spcleanMask__bc"
-    "avg_cosToThrustOfEvent_CM"
-    "cleoConeThrust0"
-    "second_muon_p"
-    "missingMomentumOfEventCMS_Px"
-    "missingMass2OfEvent"
-    "missingMomentumOfEventCMS_Py"
-    "foxWolframR3"
-    "sphericity"
-    "KSFWVariables__bohso24__cm__spcleanMask__bc"
-    "first_muon_p"
-    "roeEextra__bocleanMask__bc"
-) # list of input variables for the region 2
-
-export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki_ALP/MC16ri/v000" # FBDT weight file path
-export nominal_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki_ALP/MC16rd/v000" # nominal tau->mumumu analysis path
-export Weight_candidate_vars=(
-    "KSFWVariables__bohso24__cm__spcleanMask__bc"
-    "roeM__bocleanMask__bc"
-    "roeEextra__bocleanMask__bc"
-    "harmonicMomentThrust2"
-    "harmonicMomentThrust4"
+export Trigger_syst_vars=(
+    "highest_pt"
+    "lowest_pt"
 ) # list of candidate variables
-export Weight_candidate_binnings=(
-    "-0.2"  "1.4" "5"
-    "-0.1"  "4.5" "5"
-    "-0.1"  "5.0" "5"
-    "-0.01" "1.01" "5"
-    "-0.01" "1.01" "5"
+export Trigger_syst_binnings=(
+    "0.0"  "5.0" "4"
+    "0.0"  "5.0" "4"
 ) # min max Nbin for each candidate variable, in the same order
 # =================================================================================== #
 
@@ -117,6 +57,19 @@ Types_With_SIGNAL_ALP=(
   "${ALP_Type}"
 )
 
+Types_With_SIGNAL_data=(
+  "${Background_Types[@]}"
+  "${Signal_Type}"
+  "${data_Type}"
+)
+
+Types_With_SIGNAL_ALP_data=(
+  "${Background_Types[@]}"
+  "${Signal_Type}"
+  "${ALP_Type}"
+  "${data_Type}"
+)
+
 Legends_With_ALP=(
   "${Background_Legends[@]}"
   "${ALP_Legends}"
@@ -128,6 +81,19 @@ Legends_With_SIGNAL=(
 )
 
 Legends_With_SIGNAL_ALP=(
+  "${Background_Legends[@]}"
+  "${Signal_Legends}"
+  "${data_Legends}"
+)
+
+Legends_With_SIGNAL_data=(
+  "${Background_Legends[@]}"
+  "${Signal_Legends}"
+  "${ALP_Legends}"
+  "${data_Legends}"
+)
+
+Legends_With_SIGNAL_ALP_data=(
   "${Background_Legends[@]}"
   "${Signal_Legends}"
   "${ALP_Legends}"
@@ -142,14 +108,11 @@ Types_STR_WITH_SIGNAL=$(IFS=:; echo "${Types_With_SIGNAL[*]}")
 export Types_STR_WITH_SIGNAL_ALP
 Types_STR_WITH_SIGNAL_ALP=$(IFS=:; echo "${Types_With_SIGNAL_ALP[*]}")
 
-export input_variables_one_STR
-input_variables_one_STR=$(IFS=:; echo "${input_variables_one[*]}")
+export Types_STR_WITH_SIGNAL_DATA
+Types_STR_WITH_SIGNAL_DATA=$(IFS=:; echo "${Types_With_SIGNAL_data[*]}")
 
-export input_variables_two_STR
-input_variables_two_STR=$(IFS=:; echo "${input_variables_two[*]}")
-
-export Background_Types_STR
-Background_Types_STR=$(IFS=:; echo "${Background_Types[*]}")
+export Types_STR_WITH_SIGNAL_ALP_DATA
+Types_STR_WITH_SIGNAL_ALP_DATA=$(IFS=:; echo "${Types_With_SIGNAL_ALP_data[*]}")
 
 export Legends_STR_WITH_ALP
 Legends_STR_WITH_ALP=$(IFS=:; echo "${Legends_With_ALP[*]}")
@@ -160,14 +123,17 @@ Legends_STR_WITH_SIGNAL=$(IFS=:; echo "${Legends_With_SIGNAL[*]}")
 export Legends_STR_WITH_SIGNAL_ALP
 Legends_STR_WITH_SIGNAL_ALP=$(IFS=:; echo "${Legends_With_SIGNAL_ALP[*]}")
 
-export Background_Legends_STR
-Background_Legends_STR=$(IFS=:; echo "${Background_Legends[*]}")
+export Legends_STR_WITH_SIGNAL_DATA
+Legends_STR_WITH_SIGNAL_DATA=$(IFS=:; echo "${Legends_With_SIGNAL_data[*]}")
 
-export Weight_candidate_vars_STR
-Weight_candidate_vars_STR=$(IFS=:; echo "${Weight_candidate_vars[*]}")
+export Legends_STR_WITH_SIGNAL_ALP_DATA
+Legends_STR_WITH_SIGNAL_ALP_DATA=$(IFS=:; echo "${Legends_With_SIGNAL_ALP_data[*]}")
 
-export Weight_candidate_binnings_STR
-Weight_candidate_binnings_STR=$(IFS=:; echo "${Weight_candidate_binnings[*]}")
+export Trigger_syst_vars_STR
+Trigger_syst_vars_STR=$(IFS=:; echo "${Trigger_syst_vars[*]}")
+
+export Trigger_syst_binnings_STR
+Trigger_syst_binnings_STR=$(IFS=:; echo "${Trigger_syst_binnings[*]}")
 
 wait_all_job() {
   while true; do
@@ -212,3 +178,6 @@ if [[ $? -ne 0 ]]; then
   echo "Unsuccessful logs found. Stopping the one touch analysis."
   exit 1
 fi
+
+bash ${shell_DIR}/submitter_calculate_trigger_syst_CTRL_ALP_trigger.sh
+wait_job "TriggerSyst"

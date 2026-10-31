@@ -52,6 +52,12 @@ std::map<std::string, std::string> momentum_charge = {
     {"extraInfo__boThreeMuon_p__bc", "extraInfo__boThreeMuon_charge__bc"}
 };
 
+std::map<std::string, std::string> pt_pt = {
+    {"extraInfo__boOneMuon_pt__bc", "extraInfo__boOneMuon_pt__bc"},
+    {"extraInfo__boTwoMuon_pt__bc", "extraInfo__boTwoMuon_pt__bc"},
+    {"extraInfo__boThreeMuon_pt__bc", "extraInfo__boThreeMuon_pt__bc"}
+};
+
 std::vector<std::string> cosToThrustOfEvent_CM = {
     "extraInfo__boOneMuon_cosToThrustOfEvent__bc",
     "extraInfo__boTwoMuon_cosToThrustOfEvent__bc",
@@ -69,7 +75,7 @@ int main(int argc, char* argv[]) {
 
     Loader loader("tau_lfv");
 
-    // It is KS0 control sample analysis
+    // It is prompt decay analysis
     loader.LoadWithCut(argv[1], argv[2], "label", "(29.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 30.5)");
     loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
 
@@ -97,6 +103,9 @@ int main(int argc, char* argv[]) {
     loader.ConditionalPairDefineNewVariable(momentum_charge, 0, "first_muon_charge");
     loader.ConditionalPairDefineNewVariable(momentum_charge, 1, "second_muon_charge");
     loader.ConditionalPairDefineNewVariable(momentum_charge, 2, "third_muon_charge");
+    loader.ConditionalPairDefineNewVariable(pt_pt, 0, "highest_pt");
+    loader.ConditionalPairDefineNewVariable(pt_pt, 1, "second_pt");
+    loader.ConditionalPairDefineNewVariable(pt_pt, 2, "lowest_pt");
     loader.DefineNewVariable("charge*roeCharge__bocleanMask__bc", "charge_times_ROEcharge");
     loader.DefineNewVariable("(flightTime/flightTimeErr)", "flightTime_dividedby_flightTimeErr");
     loader.GetAverage(cosToThrustOfEvent_CM, "avg_cosToThrustOfEvent_CM");

@@ -42,7 +42,7 @@ submit_logger() {
 
 }
 
-IFS=':' read -r -a Types <<< "$Types_STR_WITH_SIGNAL"
+IFS=':' read -r -a Types <<< "$Types_STR_WITH_SIGNAL_DATA"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main_CTRL_ALP_trigger"
 for Type in "${Types[@]}"; do
