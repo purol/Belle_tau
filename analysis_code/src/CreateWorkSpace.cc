@@ -209,6 +209,24 @@ void FillHistogram_fluc_SR(const char* input_path_1_, const char* input_path_2_,
     }
 }
 
+void FillOneHistogram(const char* input_path_1_, const char* input_path_2_, TH1D* th1d_, std::vector<std::string> sample_list_) {
+    std::string cut_region = GetBCSCut(deltaE_peak_g, deltaE_left_sigma_g, deltaE_right_sigma_g, M_peak_g, M_left_sigma_g, M_right_sigma_g);
+
+    // fill histogram
+    Loader loader_MC("tau_lfv");
+    for (int i = 0; i < sample_list_.size(); i++) loader_MC.Load((input_path_1_ + std::string("/") + sample_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", sample_list_.at(i).c_str());
+    loader_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_MC.AddWeight("muonID_05_prompt", { {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_MC.AddWeight("muonID_05_prompt", { {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_MC.AddWeight("muonID_01_prompt", { {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+    loader_MC.Cut(cut_region.c_str());
+    loader_MC.RandomBCS();
+    loader_MC.IsBCSValid();
+    loader_MC.FillCustomizedTH1D(th1d_, { "M", "deltaE", "BDT_output_1", "BDT_output_2" }, { mapping_function });
+    loader_MC.end();
+
+}
+
 void ABCD_method(const char* input_path_1_, const char* input_path_2_, const char* FOM_1_path_, const char* FOM_2_path_, TH1D* data_th1d_, TH1D* validation_th1d_, TH1D* data_stat_err_, std::vector<std::string> data_list_) {
     data_th1d_->Reset();
     validation_th1d_->Reset();
@@ -355,6 +373,7 @@ int main(int argc, char* argv[]) {
     * argv[6]: output path
     * argv[7]: signal list (separated by colon)
     * argv[8]: background list (separated by colon)
+    * argv[9]: signal syst list (separated by colon, pos:neg)
     */
 
     bool use_ABCD_nonclosure = false;
@@ -373,6 +392,10 @@ int main(int argc, char* argv[]) {
     TH1D* data_validation_th1d = new TH1D("data_validation_th1d", ";bin index;", 8, 0.5, 8.5);
     TH1D* signal_MC_th1d = new TH1D("signal_MC_th1d", ";bin index;", 8, 0.5, 8.5);
     TH1D* bkg_MC_th1d = new TH1D("bkg_MC_th1d", ";bin index;", 8, 0.5, 8.5);
+
+    // signal MC with momentum up/down
+    TH1D* signal_pos_p_MC_th1d = new TH1D("signal_pos_p_MC_th1d", ";bin index;", 8, 0.5, 8.5);
+    TH1D* signal_neg_p_MC_th1d = new TH1D("signal_neg_p_MC_th1d", ";bin index;", 8, 0.5, 8.5);
 
     // relative error
     TH1D* data_th1d_stat_err = new TH1D("data_th1d_stat_err", ";bin index;", 8, 0.5, 8.5);
@@ -410,6 +433,7 @@ int main(int argc, char* argv[]) {
 
     std::vector<std::string> signal_list = split(argv[7], ':');
     std::vector<std::string> background_list = split(argv[8], ':');
+    std::vector<std::string> signal_posneg_p_list = split(argv[9], ':');
 
     double deltaE_peak;
     double deltaE_left_sigma;
@@ -440,6 +464,10 @@ int main(int argc, char* argv[]) {
 
     // we do not open the box, so I just use background MC
     FillHistogram(argv[1], argv[2], data_th1d, signal_MC_th1d, bkg_MC_th1d, data_th1d_stat_err, signal_MC_th1d_stat_err, bkg_MC_th1d_stat_err, background_list, signal_list, background_list);
+
+    // momentum scale histogram
+    FillOneHistogram(argv[1], argv[2], signal_pos_p_MC_th1d, { signal_posneg_p_list.at(0) });
+    FillOneHistogram(argv[1], argv[2], signal_neg_p_MC_th1d, { signal_posneg_p_list.at(1) });
 
     // muonID histogram
     ReadPCA((std::string(argv[1]) + "/muonID_PCA").c_str(), signal_MC_th1d, "muonID", &signal_MC_th1d_muonID);
@@ -493,6 +521,9 @@ int main(int argc, char* argv[]) {
     signal_MC_th1d->Write();
     bkg_MC_th1d->Write();
     Write_ABCD_histograms(validation);
+
+    signal_pos_p_MC_th1d->Write();
+    signal_neg_p_MC_th1d->Write();
 
     data_th1d_stat_err->Write();
     signal_MC_th1d_stat_err->Write();
@@ -551,6 +582,7 @@ int main(int argc, char* argv[]) {
     signal_Belle_II.AddOverallSys("cross_section", 1.0 - tau_crosssection_4S_reluncertainty, 1.0 + tau_crosssection_4S_reluncertainty);
     for (int i = 0; i < signal_MC_th1d_muonID.size() / 2; i++) signal_Belle_II.AddHistoSys(("muonID_" + std::to_string(i)).c_str(), ("signal_hist_muonID_n_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("signal_hist_muonID_p_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
     for (int i = 0; i < signal_MC_th1d_luminosity.size() / 2; i++) signal_Belle_II.AddHistoSys(("luminosity_" + std::to_string(i)).c_str(), ("signal_hist_luminosity_n_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "", ("signal_hist_luminosity_p_" + std::to_string(i)).c_str(), (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
+    signal_Belle_II.AddHistoSys("Momentum_scale", "signal_neg_p_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "", "signal_pos_p_MC_th1d", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
     signal_Belle_II.AddShapeSys("uncorrelated_error", RooStats::HistFactory::Constraint::Gaussian, "signal_MC_th1d_uncorr", (std::string(argv[6]) + "/histogram_output.root").c_str(), "");
     signal_Belle_II.SetNormalizeByTheory(false);
 

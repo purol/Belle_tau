@@ -15,7 +15,8 @@ submit_workspace() {
   "./${VerName}/${Analysis_VerName}/GridSearch_two/FOM.log" \
   "./${VerName}/${Analysis_VerName}/" \
   ${Signal_Type} \
-  ${Background_Types_STR}
+  ${Background_Types_STR} \
+  ${syst_Types_STR}
 }
 
 

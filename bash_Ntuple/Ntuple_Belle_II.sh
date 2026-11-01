@@ -123,6 +123,67 @@ for i in "${!on_list[@]}"; do
         --destination "${output_path}"
         sleep 0.5
     done
+
+    if [[ "${Type}" == "ALP" || "${Type}" == "SIGNAL" ]]; then
+        Type_path="${Ntuple_path}/${version}/${Type}_p_up"
+        output_path="${Type_path}/MC16rd"
+        log_path="${Type_path}/MC16rd/log"
+
+        mkdir -p "${Type_path}"
+        mkdir -p "${output_path}"
+        mkdir -p "${log_path}"
+
+        for file in $(find "${Skim_path}/MC16rd_on/${Type}/output" -maxdepth 1 -name "*.root")
+        do
+            echo $file
+            basename=$(basename -s .root $file)
+            set_alp_args "${Type}" "${basename}" || continue
+            bsub -q ${Queue} \
+            -o "${log_path}/${basename}.log" \
+            ${script} \
+            --sample "MC16rd" \
+            --type ${Flag} \
+            --energy "4S" \
+            --prompt \
+            --vertex \
+            "${alp_args[@]}" \
+            --momentum_scale "up" \
+            --KEKCC \
+            --inputfile ${file} \
+            --destination "${output_path}"
+            sleep 0.5
+        done
+
+        Type_path="${Ntuple_path}/${version}/${Type}_p_down"
+        output_path="${Type_path}/MC16rd"
+        log_path="${Type_path}/MC16rd/log"
+
+        mkdir -p "${Type_path}"
+        mkdir -p "${output_path}"
+        mkdir -p "${log_path}"
+
+        for file in $(find "${Skim_path}/MC16rd_on/${Type}/output" -maxdepth 1 -name "*.root")
+        do
+            echo $file
+            basename=$(basename -s .root $file)
+            set_alp_args "${Type}" "${basename}" || continue
+            bsub -q ${Queue} \
+            -o "${log_path}/${basename}.log" \
+            ${script} \
+            --sample "MC16rd" \
+            --type ${Flag} \
+            --energy "4S" \
+            --prompt \
+            --vertex \
+            "${alp_args[@]}" \
+            --momentum_scale "down" \
+            --KEKCC \
+            --inputfile ${file} \
+            --destination "${output_path}"
+            sleep 0.5
+        done
+    fi
+
 done 
 
 # MC16rd 4S off-resonance
@@ -170,6 +231,67 @@ for i in "${!on_list[@]}"; do
         --destination "${output_path}"
         sleep 0.5
     done
+
+    if [[ "${Type}" == "ALP" || "${Type}" == "SIGNAL" ]]; then
+        Type_path="${Ntuple_path}/${version}/${Type}_p_up"
+        output_path="${Type_path}/MC16rd"
+        log_path="${Type_path}/MC16rd/log"
+
+        mkdir -p "${Type_path}"
+        mkdir -p "${output_path}"
+        mkdir -p "${log_path}"
+
+        for file in $(find "${Skim_path}/MC16rd_off/${Type}/output" -maxdepth 1 -name "*.root")
+        do
+            echo $file
+            basename=$(basename -s .root $file)
+            set_alp_args "${Type}" "${basename}" || continue
+            bsub -q ${Queue} \
+            -o "${log_path}/${basename}.log" \
+            ${script} \
+            --sample "MC16rd" \
+            --type ${Flag} \
+            --energy "off" \
+            --prompt \
+            --vertex \
+            "${alp_args[@]}" \
+            --momentum_scale "up" \
+            --KEKCC \
+            --inputfile ${file} \
+            --destination "${output_path}"
+            sleep 0.5
+        done
+
+        Type_path="${Ntuple_path}/${version}/${Type}_p_down"
+        output_path="${Type_path}/MC16rd"
+        log_path="${Type_path}/MC16rd/log"
+
+        mkdir -p "${Type_path}"
+        mkdir -p "${output_path}"
+        mkdir -p "${log_path}"
+
+        for file in $(find "${Skim_path}/MC16rd_off/${Type}/output" -maxdepth 1 -name "*.root")
+        do
+            echo $file
+            basename=$(basename -s .root $file)
+            set_alp_args "${Type}" "${basename}" || continue
+            bsub -q ${Queue} \
+            -o "${log_path}/${basename}.log" \
+            ${script} \
+            --sample "MC16rd" \
+            --type ${Flag} \
+            --energy "off" \
+            --prompt \
+            --vertex \
+            "${alp_args[@]}" \
+            --momentum_scale "down" \
+            --KEKCC \
+            --inputfile ${file} \
+            --destination "${output_path}"
+            sleep 0.5
+        done
+    fi
+
 done 
 
 # MC16rd 4S 5S
@@ -217,4 +339,65 @@ for i in "${!on_list[@]}"; do
         --destination "${output_path}"
         sleep 0.5
     done
+
+    if [[ "${Type}" == "ALP" || "${Type}" == "SIGNAL" ]]; then
+        Type_path="${Ntuple_path}/${version}/${Type}_p_up"
+        output_path="${Type_path}/MC16rd"
+        log_path="${Type_path}/MC16rd/log"
+
+        mkdir -p "${Type_path}"
+        mkdir -p "${output_path}"
+        mkdir -p "${log_path}"
+
+        for file in $(find "${Skim_path}/MC16rd_5S/${Type}/output" -maxdepth 1 -name "*.root")
+        do
+            echo $file
+            basename=$(basename -s .root $file)
+            set_alp_args "${Type}" "${basename}" || continue
+            bsub -q ${Queue} \
+            -o "${log_path}/${basename}.log" \
+            ${script} \
+            --sample "MC16rd" \
+            --type ${Flag} \
+            --energy "5Sscan" \
+            --prompt \
+            --vertex \
+            "${alp_args[@]}" \
+            --momentum_scale "up" \
+            --KEKCC \
+            --inputfile ${file} \
+            --destination "${output_path}"
+            sleep 0.5
+        done
+
+        Type_path="${Ntuple_path}/${version}/${Type}_p_down"
+        output_path="${Type_path}/MC16rd"
+        log_path="${Type_path}/MC16rd/log"
+
+        mkdir -p "${Type_path}"
+        mkdir -p "${output_path}"
+        mkdir -p "${log_path}"
+
+        for file in $(find "${Skim_path}/MC16rd_5S/${Type}/output" -maxdepth 1 -name "*.root")
+        do
+            echo $file
+            basename=$(basename -s .root $file)
+            set_alp_args "${Type}" "${basename}" || continue
+            bsub -q ${Queue} \
+            -o "${log_path}/${basename}.log" \
+            ${script} \
+            --sample "MC16rd" \
+            --type ${Flag} \
+            --energy "5Sscan" \
+            --prompt \
+            --vertex \
+            "${alp_args[@]}" \
+            --momentum_scale "down" \
+            --KEKCC \
+            --inputfile ${file} \
+            --destination "${output_path}"
+            sleep 0.5
+        done
+    fi
+
 done 

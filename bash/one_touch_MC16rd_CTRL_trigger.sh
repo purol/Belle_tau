@@ -16,7 +16,7 @@ Background_Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CCBAR"
     "KS0pinu_pure"
     ) # name of directories under ${Ntuple_DIR} for background sample. Do not include colon.
 export Signal_Type="pipipinu" # name of directories under ${Ntuple_DIR} for prompt signal sample. Do not include colon.
-export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample. Do not include colon.
+export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for ALP signal sample. Do not include colon.
 export data_Type="data"
 
 Background_Legends=("others" "others" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#bar{q}"
@@ -57,19 +57,6 @@ Types_With_SIGNAL_ALP=(
   "${ALP_Type}"
 )
 
-Types_With_SIGNAL_data=(
-  "${Background_Types[@]}"
-  "${Signal_Type}"
-  "${data_Type}"
-)
-
-Types_With_SIGNAL_ALP_data=(
-  "${Background_Types[@]}"
-  "${Signal_Type}"
-  "${ALP_Type}"
-  "${data_Type}"
-)
-
 Legends_With_ALP=(
   "${Background_Legends[@]}"
   "${ALP_Legends}"
@@ -86,19 +73,6 @@ Legends_With_SIGNAL_ALP=(
   "${data_Legends}"
 )
 
-Legends_With_SIGNAL_data=(
-  "${Background_Legends[@]}"
-  "${Signal_Legends}"
-  "${ALP_Legends}"
-  "${data_Legends}"
-)
-
-Legends_With_SIGNAL_ALP_data=(
-  "${Background_Legends[@]}"
-  "${Signal_Legends}"
-  "${ALP_Legends}"
-)
-
 export Types_STR_WITH_ALP
 Types_STR_WITH_ALP=$(IFS=:; echo "${Types_With_ALP[*]}")
 
@@ -108,12 +82,6 @@ Types_STR_WITH_SIGNAL=$(IFS=:; echo "${Types_With_SIGNAL[*]}")
 export Types_STR_WITH_SIGNAL_ALP
 Types_STR_WITH_SIGNAL_ALP=$(IFS=:; echo "${Types_With_SIGNAL_ALP[*]}")
 
-export Types_STR_WITH_SIGNAL_DATA
-Types_STR_WITH_SIGNAL_DATA=$(IFS=:; echo "${Types_With_SIGNAL_data[*]}")
-
-export Types_STR_WITH_SIGNAL_ALP_DATA
-Types_STR_WITH_SIGNAL_ALP_DATA=$(IFS=:; echo "${Types_With_SIGNAL_ALP_data[*]}")
-
 export Legends_STR_WITH_ALP
 Legends_STR_WITH_ALP=$(IFS=:; echo "${Legends_With_ALP[*]}")
 
@@ -122,12 +90,6 @@ Legends_STR_WITH_SIGNAL=$(IFS=:; echo "${Legends_With_SIGNAL[*]}")
 
 export Legends_STR_WITH_SIGNAL_ALP
 Legends_STR_WITH_SIGNAL_ALP=$(IFS=:; echo "${Legends_With_SIGNAL_ALP[*]}")
-
-export Legends_STR_WITH_SIGNAL_DATA
-Legends_STR_WITH_SIGNAL_DATA=$(IFS=:; echo "${Legends_With_SIGNAL_data[*]}")
-
-export Legends_STR_WITH_SIGNAL_ALP_DATA
-Legends_STR_WITH_SIGNAL_ALP_DATA=$(IFS=:; echo "${Legends_With_SIGNAL_ALP_data[*]}")
 
 export Trigger_syst_vars_STR
 Trigger_syst_vars_STR=$(IFS=:; echo "${Trigger_syst_vars[*]}")

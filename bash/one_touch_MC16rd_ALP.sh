@@ -15,7 +15,11 @@ Background_Types=("BB" "UDSC"
     "TAUPAIR"
     ) # name of directories under ${Ntuple_DIR} for background sample. Do not include colon.
 export Signal_Type="SIGNAL" # name of directories under ${Ntuple_DIR} for prompt signal sample. Do not include colon.
-export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample. Do not include colon.
+export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for ALP signal sample. Do not include colon.
+export data_Type="data"
+export syst_Types=(
+    "ALP_p_up" "ALP_p_down"
+) # name of directories under ${Ntuple_DIR} for momentum scale systematic sample. Do not include colon.
 
 Background_Legends=("others" "q#bar{q}"
     "#mu#mu" "ee" "others" "ee#mu#mu" "others" "others" "others"
@@ -23,6 +27,7 @@ Background_Legends=("others" "q#bar{q}"
     ) # legends of background sample for plots. Do not include colon.
 export Signal_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
 export ALP_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
+export data_Legends="data"
 
 export MC_version="MC16rd" # version of MC. This should be under ${Ntuple_DIR}/${Analysis_Name}/(type name)
 
@@ -146,6 +151,9 @@ Legends_STR_WITH_SIGNAL_ALP=$(IFS=:; echo "${Legends_With_SIGNAL_ALP[*]}")
 
 export Background_Legends_STR
 Background_Legends_STR=$(IFS=:; echo "${Background_Legends[*]}")
+
+export syst_Types_STR
+syst_Types_STR=$(IFS=:; echo "${syst_Types[*]}")
 
 wait_all_job() {
   while true; do
