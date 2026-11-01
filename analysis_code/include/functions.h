@@ -36,12 +36,12 @@ void ReadResolution(const char* filename_, double* deltaE_peak_, double* deltaE_
     double mean_M;
     double sigma_left_M;
     double sigma_right_M;
-    double result_M;
+    int result_M;
 
     double mean_deltaE;
     double sigma_left_deltaE;
     double sigma_right_deltaE;
-    double result_deltaE;
+    int result_deltaE;
 
     double theta;
 
