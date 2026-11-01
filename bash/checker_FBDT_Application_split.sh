@@ -14,6 +14,16 @@ check_log_files(){
     done
   fi
 
+  LogDirName="./${VerName}/${Analysis_VerName}/${SampleName}/final_output_train_after_application/" 
+  if compgen -G "${LogDirName}/*.log" > /dev/null; then
+    for log_file in "${LogDirName}"/*.log; do
+      if ! grep -q "Successfully completed" "$log_file"; then
+        echo "Unsuccessful log found in: $log_file"
+        exit 1  # Return non-zero status to indicate failure
+      fi
+    done
+  fi
+
 }
 
 IFS=':' read -r -a Types <<< "$Types_STR_WITH_SIGNAL_ALP"
