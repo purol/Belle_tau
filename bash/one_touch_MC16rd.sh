@@ -153,6 +153,9 @@ Legends_STR_WITH_SIGNAL_ALP=$(IFS=:; echo "${Legends_With_SIGNAL_ALP[*]}")
 export Background_Legends_STR
 Background_Legends_STR=$(IFS=:; echo "${Background_Legends[*]}")
 
+export syst_Types_STR
+syst_Types_STR=$(IFS=:; echo "${syst_Types[*]}")
+
 wait_all_job() {
   while true; do
     # Get the number of jobs (excluding the header line)

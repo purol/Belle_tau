@@ -41,3 +41,10 @@ for Type in "${Types[@]}"; do
     sleep 0.5s
 done
 
+IFS=':' read -r -a Types <<< "$syst_Types_STR"
+
+code="${Belle_tau_DIR}/analysis_code/bin/FBDT_Application"
+for Type in "${Types[@]}"; do
+    submit_Application ${code} ${Analysis_Name} ${Type}
+    sleep 0.5s
+done
