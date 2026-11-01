@@ -42,7 +42,15 @@ submit_logger() {
 
 }
 
-IFS=':' read -r -a Types <<< "$Types_STR_WITH_SIGNAL_DATA"
+IFS=':' read -r -a Types <<< "$Types_STR_WITH_SIGNAL"
+
+code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main_CTRL_trigger"
+for Type in "${Types[@]}"; do
+    submit_analysis ${code} ${Analysis_Name} ${Type}
+    sleep 1.0s
+done
+
+IFS=':' read -r -a Types <<< "$data_Type"
 
 code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main_CTRL_trigger"
 for Type in "${Types[@]}"; do

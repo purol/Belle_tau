@@ -15,7 +15,11 @@ Background_Types=("BB" "UDSC"
     "TAUPAIR"
     ) # name of directories under ${Ntuple_DIR} for background sample. Do not include colon.
 export Signal_Type="SIGNAL" # name of directories under ${Ntuple_DIR} for prompt signal sample. Do not include colon.
-export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample. Do not include colon.
+export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for ALP signal sample. Do not include colon.
+export data_Type="data"
+export syst_Types=(
+    "SIGNAL_p_up" "SIGNAL_p_down"
+) # name of directories under ${Ntuple_DIR} for momentum scale systematic sample. Do not include colon.
 
 Background_Legends=("others" "q#bar{q}"
     "#mu#mu" "ee" "others" "ee#mu#mu" "others" "others" "others"
@@ -23,6 +27,7 @@ Background_Legends=("others" "q#bar{q}"
     ) # legends of background sample for plots. Do not include colon.
 export Signal_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
 export ALP_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
+export data_Legends="data"
 
 export MC_version="MC16rd" # version of MC. This should be under ${Ntuple_DIR}/${Analysis_Name}/(type name)
 input_variables_one=(

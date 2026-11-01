@@ -16,7 +16,14 @@ check_log_files(){
 
 }
 
-IFS=':' read -r -a Types <<< "$Types_STR_WITH_SIGNAL_ALP_DATA"
+IFS=':' read -r -a Types <<< "$Types_STR_WITH_SIGNAL_ALP"
+
+for Type in "${Types[@]}"; do
+    check_log_files ${Analysis_Name} ${Type}
+    sleep 0.5s
+done
+
+IFS=':' read -r -a Types <<< "$data_Type"
 
 for Type in "${Types[@]}"; do
     check_log_files ${Analysis_Name} ${Type}

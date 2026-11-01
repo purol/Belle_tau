@@ -15,7 +15,8 @@ Background_Types=("CHG" "MIX" "UUBAR" "DDBAR" "SSBAR" "CCBAR"
     "TAUPAIR"
     ) # name of directories under ${Ntuple_DIR} for background sample. Do not include colon.
 export Signal_Type="SIGNAL" # name of directories under ${Ntuple_DIR} for prompt signal sample. Do not include colon.
-export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for prompt ALP signal sample. Do not include colon.
+export ALP_Type="ALP" # name of directories under ${Ntuple_DIR} for ALP signal sample. Do not include colon.
+export data_Type="data"
 
 Background_Legends=("others" "others" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#bar{q}"
     "#mu#mu" "ee" "others" "ee#mu#mu" "others" "others" "others"
@@ -23,6 +24,7 @@ Background_Legends=("others" "others" "q#bar{q}" "q#bar{q}" "q#bar{q}" "q#bar{q}
     ) # legends of background sample for plots. Do not include colon.
 export Signal_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
 export ALP_Legends="SIGNAL" # legends of prompt sample for plots. Do not include colon.
+export data_Legends="data"
 
 export MC_version="MC16ri" # version of MC. This should be under ${Ntuple_DIR}/${Analysis_Name}/(type name)
 
