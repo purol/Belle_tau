@@ -25,6 +25,7 @@ submit_workspace() {
     "./${VerName}/${Analysis_VerName}/" \
     ${ALP_Type} \
     ${Background_Types_STR} \
+    ${syst_Types_STR} \
     "${mass}" \
     "${life}" \
     "${A}" \
