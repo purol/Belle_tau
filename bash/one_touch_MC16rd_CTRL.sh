@@ -91,15 +91,21 @@ export Weight_candidate_vars=(
     "KSFWVariables__bohso24__cm__spcleanMask__bc"
     "roeM__bocleanMask__bc"
     "roeEextra__bocleanMask__bc"
+    "harmonicMomentThrust1"
     "harmonicMomentThrust2"
     "harmonicMomentThrust4"
+    "missingMomentumOfEventCMS_Py"
+    "foxWolframR3"
 ) # list of candidate variables
 export Weight_candidate_binnings=(
-    "-0.2"  "1.4" "8"
-    "-0.1"  "4.5" "8"
-    "-0.1"  "5.0" "8"
-    "-0.01" "1.01" "8"
-    "-0.01" "1.01" "8"
+    "-0.2"  "1.4" "5"
+    "-0.1"  "4.5" "5"
+    "-0.1"  "5.0" "5"
+    "-0.01" "1.01" "5"
+    "-0.01" "1.01" "5"
+    "-0.01" "1.01" "5"
+    "-7.0" "7.0" "5"
+    "-0.01" "1.01" "5"
 ) # min max Nbin for each candidate variable, in the same order
 # =================================================================================== #
 
