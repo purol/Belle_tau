@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <sstream>
 #include <iomanip>
+#include <cmath>
 
 #include <TH1.h>
 #include <TH2.h>
@@ -88,8 +89,21 @@ int main(int argc, char* argv[]) {
 
     // efficiency matrix
     TH2D* eff_trigger_MC = new TH2D("eff_trigger_MC", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
-    TH2D* eff_trigger_data = new TH2D("eff_trigger_data", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
     TH2D* correlation_MC = new TH2D("correlation_MC", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+
+    // relative efficiency and data/MC ratio
+    TH2D* eff_E_MC = new TH2D("eff_E_MC", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* eff_E_data = new TH2D("eff_E_data", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* eff_C_MC = new TH2D("eff_C_MC", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* eff_C_data = new TH2D("eff_C_data", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* r_E = new TH2D("r_E", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* r_C = new TH2D("r_C", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* valid_E = new TH2D("valid_E", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* valid_C = new TH2D("valid_C", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+
+    // category yields and sum of squared weights
+    std::vector<TH2D*> category_histograms = { hist_00_MC, hist_01_MC, hist_10_MC, hist_11_MC, hist_01_data, hist_10_data, hist_11_data };
+    for (int i = 0; i < category_histograms.size(); i++) category_histograms.at(i)->Sumw2();
 
     // define conditions
     std::string ECL_pass = "(0.5 < L1PSNM__bohie__bc) || (0.5 < L1PSNM__bolml6__bc) || (0.5 < L1PSNM__bolml7__bc) || (0.5 < L1PSNM__bolml8__bc) || (0.5 < L1PSNM__bolml9__bc) || (0.5 < L1PSNM__bolml10__bc) || (0.5 < L1PSNM__bolml12__bc)";
@@ -173,7 +187,7 @@ int main(int argc, char* argv[]) {
             const double total = pass + fail;
 
             if (total <= 0.0) {
-                // just set eff = 1 +- 0
+                // just set eff = -1
 
                 eff_trigger_MC->SetBinContent(bin, -1.0);
                 eff_trigger_MC->SetBinError(bin, 0.0);
@@ -192,59 +206,77 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // estimate trigger eff for data
+    // get relative trigger eff
+    std::vector<TH2D*> relative_efficiencies = { eff_E_MC, eff_E_data, eff_C_MC, eff_C_data };
+    std::vector<TH2D*> pass_histograms = { hist_11_MC, hist_11_data, hist_11_MC, hist_11_data };
+    std::vector<TH2D*> fail_histograms = { hist_01_MC, hist_01_data, hist_10_MC, hist_10_data };
+    std::vector<TH2D*> ratios = { r_E, r_C };
+    std::vector<TH2D*> valid_bins = { valid_E, valid_C };
+
     for (int ix = 1; ix <= nbins1; ++ix) {
         for (int iy = 1; iy <= nbins2; ++iy) {
-            const int bin = eff_trigger_data->GetBin(ix, iy);
+            const int bin = eff_trigger_MC->GetBin(ix, iy);
 
-            const double a = hist_01_data->GetBinContent(bin);
-            const double b = hist_10_data->GetBinContent(bin);
-            const double c = hist_11_data->GetBinContent(bin);
-            const double rho = correlation_MC->GetBinContent(bin);
+            for (int i = 0; i < relative_efficiencies.size(); i++) {
+                const double pass = pass_histograms.at(i)->GetBinContent(bin);
+                const double fail = fail_histograms.at(i)->GetBinContent(bin);
+                const double total = pass + fail;
 
-            // just set eff = -1
-            if (!(a > 0.0 && b > 0.0 && c > 0.0 && rho > 0.0) || !std::isfinite(rho)) {
+                // just set eff = -1
+                if (!(pass >= 0.0 && fail >= 0.0 && total > 0.0) || !std::isfinite(total)) {
+                    relative_efficiencies.at(i)->SetBinContent(bin, -1.0);
+                    relative_efficiencies.at(i)->SetBinError(bin, 0.0);
+                    continue;
+                }
 
-                eff_trigger_data->SetBinContent(bin, -1.0);
-                eff_trigger_data->SetBinError(bin, 0.0);
-                continue;
+                const double var_pass = std::pow(pass_histograms.at(i)->GetBinError(bin), 2);
+                const double var_fail = std::pow(fail_histograms.at(i)->GetBinError(bin), 2);
+                const double eff = pass / total;
+                const double var_eff = ((1.0 - eff) * (1.0 - eff) * var_pass + eff * eff * var_fail) / (total * total);
+
+                relative_efficiencies.at(i)->SetBinContent(bin, eff);
+                relative_efficiencies.at(i)->SetBinError(bin, std::sqrt(var_eff));
             }
 
-            const double pass = a + b + c;
-            const double fail_est = rho * a * b / c;
-            const double total = pass + fail_est;
-            const double total2 = total * total;
+            // get data/MC ratio
+            for (int i = 0; i < ratios.size(); i++) {
+                const double eff_MC = relative_efficiencies.at(2 * i)->GetBinContent(bin);
+                const double eff_data = relative_efficiencies.at(2 * i + 1)->GetBinContent(bin);
 
-            const double eff = pass / total;
+                // just set ratio = 1 for invalid bins
+                ratios.at(i)->SetBinContent(bin, 1.0);
+                ratios.at(i)->SetBinError(bin, 0.0);
+                valid_bins.at(i)->SetBinContent(bin, 0.0);
+                if (!(eff_MC > 0.0 && eff_data >= 0.0)) continue;
 
-            const double d_da = (fail_est - pass * rho * b / c) / total2;
+                const double ratio = eff_data / eff_MC;
+                const double var_ratio = (std::pow(relative_efficiencies.at(2 * i + 1)->GetBinError(bin), 2) + ratio * ratio * std::pow(relative_efficiencies.at(2 * i)->GetBinError(bin), 2)) / (eff_MC * eff_MC);
+                if (!std::isfinite(ratio) || !std::isfinite(var_ratio)) continue;
 
-            const double d_db = (fail_est - pass * rho * a / c) / total2;
-
-            const double d_dc = (fail_est + pass * fail_est / c) / total2;
-
-            const double d_drho = -pass * a * b / c / total2;
-
-            const double var_eff = std::pow(d_da * hist_01_data->GetBinError(bin), 2) + std::pow(d_db * hist_10_data->GetBinError(bin), 2) + std::pow(d_dc * hist_11_data->GetBinError(bin), 2) + std::pow(d_drho * correlation_MC->GetBinError(bin), 2);
-
-            eff_trigger_data->SetBinContent(bin, eff);
-            eff_trigger_data->SetBinError(bin, std::sqrt(var_eff));
+                ratios.at(i)->SetBinContent(bin, ratio);
+                ratios.at(i)->SetBinError(bin, std::sqrt(var_ratio));
+                valid_bins.at(i)->SetBinContent(bin, 1.0);
+            }
         }
     }
 
     // print result
     FILE* fp = fopen((std::string(argv[5]) + "/" + std::string(argv[6]) + ".txt").c_str(), "w");
-    fprintf(fp, "weight,%s_min,%s_max,%s_min,%s_max", used_variables.at(0).c_str(), used_variables.at(0).c_str(), used_variables.at(1).c_str(), used_variables.at(1).c_str());
-    for (int i = 1; i <= nbins1; i++) {
-        for (int j = 1; j <= nbins2; j++) {
-            fprintf(fp, "\n");
-            const double low1 = eff_trigger_MC->GetXaxis()->GetBinLowEdge(i);
-            const double high1 = eff_trigger_MC->GetXaxis()->GetBinUpEdge(i);
-            const double low2 = eff_trigger_MC->GetYaxis()->GetBinLowEdge(j);
-            const double high2 = eff_trigger_MC->GetYaxis()->GetBinUpEdge(j);
-            double weight = 1.0;
-            if((eff_trigger_data->GetBinContent(i, j) >= 0) && (eff_trigger_MC->GetBinContent(i, j) >= 0)) weight = eff_trigger_data->GetBinContent(i, j) / eff_trigger_MC->GetBinContent(i, j);
-            fprintf(fp, "%.17g,%.17g,%.17g,%.17g,%.17g", weight, low1, high1, low2, high2);
+    if (fp == nullptr) {
+        printf("Cannot open output file.\n");
+        return 1;
+    }
+    fprintf(fp, "r_E,r_C,valid_E,valid_C,%s_min,%s_max,%s_min,%s_max", used_variables.at(0).c_str(), used_variables.at(0).c_str(), used_variables.at(1).c_str(), used_variables.at(1).c_str());
+    fprintf(fp, ",eff_E_MC,eff_E_data,eff_C_MC,eff_C_data");
+    fprintf(fp, ",sumw_00_MC,sumw2_00_MC,sumw_01_MC,sumw2_01_MC,sumw_10_MC,sumw2_10_MC,sumw_11_MC,sumw2_11_MC,sumw_01_data,sumw2_01_data,sumw_10_data,sumw2_10_data,sumw_11_data,sumw2_11_data");
+    for (int ix = 1; ix <= nbins1; ++ix) {
+        for (int iy = 1; iy <= nbins2; ++iy) {
+            const int bin = eff_trigger_MC->GetBin(ix, iy);
+            fprintf(fp, "\n%.17g,%.17g,%.0f,%.0f", r_E->GetBinContent(bin), r_C->GetBinContent(bin), valid_E->GetBinContent(bin), valid_C->GetBinContent(bin));
+            fprintf(fp, ",%.17g,%.17g", eff_trigger_MC->GetXaxis()->GetBinLowEdge(ix), eff_trigger_MC->GetXaxis()->GetBinUpEdge(ix));
+            fprintf(fp, ",%.17g,%.17g", eff_trigger_MC->GetYaxis()->GetBinLowEdge(iy), eff_trigger_MC->GetYaxis()->GetBinUpEdge(iy));
+            for (int i = 0; i < relative_efficiencies.size(); i++) fprintf(fp, ",%.17g", relative_efficiencies.at(i)->GetBinContent(bin));
+            for (int i = 0; i < category_histograms.size(); i++) fprintf(fp, ",%.17g,%.17g", category_histograms.at(i)->GetBinContent(bin), std::pow(category_histograms.at(i)->GetBinError(bin), 2));
         }
     }
     fclose(fp);
@@ -264,15 +296,25 @@ int main(int argc, char* argv[]) {
     c_eff_trigger_MC->SaveAs((std::string(argv[5]) + "/" + plot_name + "_eff_trigger_MC.png").c_str());
     delete c_eff_trigger_MC;
 
-    // trigger eff for data
-    TCanvas* c_eff_trigger_data = new TCanvas("c_eff_trigger_data", "", 900, 800);
-    c_eff_trigger_data->cd();
-    c_eff_trigger_data->SetRightMargin(0.18);
-    eff_trigger_data->SetStats(false);
-    eff_trigger_data->GetZaxis()->SetTitle("Trigger efficiency");
-    eff_trigger_data->Draw("COLZ");
-    c_eff_trigger_data->SaveAs((std::string(argv[5]) + "/" + plot_name + "_eff_trigger_data.png").c_str());
-    delete c_eff_trigger_data;
+    // ECL data/MC ratio
+    TCanvas* c_r_E = new TCanvas("c_r_E", "", 900, 800);
+    c_r_E->cd();
+    c_r_E->SetRightMargin(0.18);
+    r_E->SetStats(false);
+    r_E->GetZaxis()->SetTitle("ECL data/MC ratio");
+    r_E->Draw("COLZ");
+    c_r_E->SaveAs((std::string(argv[5]) + "/" + plot_name + "_r_E.png").c_str());
+    delete c_r_E;
+
+    // CDC data/MC ratio
+    TCanvas* c_r_C = new TCanvas("c_r_C", "", 900, 800);
+    c_r_C->cd();
+    c_r_C->SetRightMargin(0.18);
+    r_C->SetStats(false);
+    r_C->GetZaxis()->SetTitle("CDC data/MC ratio");
+    r_C->Draw("COLZ");
+    c_r_C->SaveAs((std::string(argv[5]) + "/" + plot_name + "_r_C.png").c_str());
+    delete c_r_C;
 
     // correlation for MC
     TCanvas* c_correlation_MC = new TCanvas("c_correlation_MC", "", 900, 800);
