@@ -89,7 +89,6 @@ int main(int argc, char* argv[]) {
 
     // efficiency matrix
     TH2D* eff_trigger_MC = new TH2D("eff_trigger_MC", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
-    TH2D* correlation_MC = new TH2D("correlation_MC", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
 
     // relative efficiency and data/MC ratio
     TH2D* eff_E_MC = new TH2D("eff_E_MC", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
@@ -168,13 +167,6 @@ int main(int argc, char* argv[]) {
     loader_11_data.Cut(CDC_pass.c_str());
     loader_11_data.FillTH2D(hist_11_data, used_variables.at(0).c_str(), used_variables.at(1).c_str());
     loader_11_data.end();
-
-    // correlation for MC
-    correlation_MC->Reset();
-    correlation_MC->Add(hist_11_MC);
-    correlation_MC->Multiply(hist_00_MC);
-    correlation_MC->Divide(hist_10_MC);
-    correlation_MC->Divide(hist_01_MC);
 
     // get trigger eff for MC
     for (int ix = 1; ix <= nbins1; ++ix) {
@@ -315,16 +307,6 @@ int main(int argc, char* argv[]) {
     r_C->Draw("COLZ");
     c_r_C->SaveAs((std::string(argv[5]) + "/" + plot_name + "_r_C.png").c_str());
     delete c_r_C;
-
-    // correlation for MC
-    TCanvas* c_correlation_MC = new TCanvas("c_correlation_MC", "", 900, 800);
-    c_correlation_MC->cd();
-    c_correlation_MC->SetRightMargin(0.18);
-    correlation_MC->SetStats(false);
-    correlation_MC->GetZaxis()->SetTitle("MC odds ratio");
-    correlation_MC->Draw("COLZ");
-    c_correlation_MC->SaveAs((std::string(argv[5]) + "/" + plot_name + "_correlation_MC.png").c_str());
-    delete c_correlation_MC;
 
     return 0;
 }
