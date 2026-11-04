@@ -90,25 +90,43 @@ int main(int argc, char* argv[]) {
     // efficiency matrix
     TH2D* eff_trigger_MC = new TH2D("eff_trigger_MC", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
 
-    // relative efficiency and data/MC ratio
-    TH2D* eff_E_MC = new TH2D("eff_E_MC", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
-    TH2D* eff_E_data = new TH2D("eff_E_data", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
-    TH2D* eff_C_MC = new TH2D("eff_C_MC", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
-    TH2D* eff_C_data = new TH2D("eff_C_data", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    // data/MC ratio
     TH2D* r_E = new TH2D("r_E", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
     TH2D* r_C = new TH2D("r_C", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
     TH2D* valid_E = new TH2D("valid_E", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
     TH2D* valid_C = new TH2D("valid_C", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
 
+    // alternative reference
+    TH2D* hist_E_alt_pass_MC = new TH2D("hist_E_alt_pass_MC", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* hist_E_alt_fail_MC = new TH2D("hist_E_alt_fail_MC", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* hist_E_alt_pass_data = new TH2D("hist_E_alt_pass_data", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* hist_E_alt_fail_data = new TH2D("hist_E_alt_fail_data", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* hist_C_alt_pass_MC = new TH2D("hist_C_alt_pass_MC", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* hist_C_alt_fail_MC = new TH2D("hist_C_alt_fail_MC", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* hist_C_alt_pass_data = new TH2D("hist_C_alt_pass_data", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* hist_C_alt_fail_data = new TH2D("hist_C_alt_fail_data", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* r_E_alt = new TH2D("r_E_alt", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* r_C_alt = new TH2D("r_C_alt", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* r_E_ref_shift = new TH2D("r_E_ref_shift", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* r_C_ref_shift = new TH2D("r_C_ref_shift", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* valid_E_ref = new TH2D("valid_E_ref", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+    TH2D* valid_C_ref = new TH2D("valid_C_ref", (histogram_title + ";arbitrary unit").c_str(), nbins1, min1, max1, nbins2, min2, max2);
+
     // category yields and sum of squared weights
     std::vector<TH2D*> category_histograms = { hist_00_MC, hist_01_MC, hist_10_MC, hist_11_MC, hist_01_data, hist_10_data, hist_11_data };
     for (int i = 0; i < category_histograms.size(); i++) category_histograms.at(i)->Sumw2();
+    std::vector<TH2D*> reference_histograms = { hist_E_alt_pass_MC, hist_E_alt_fail_MC, hist_E_alt_pass_data, hist_E_alt_fail_data, hist_C_alt_pass_MC, hist_C_alt_fail_MC, hist_C_alt_pass_data, hist_C_alt_fail_data };
+    for (int i = 0; i < reference_histograms.size(); i++) reference_histograms.at(i)->Sumw2();
 
     // define conditions
     std::string ECL_pass = "(0.5 < L1PSNM__bohie__bc) || (0.5 < L1PSNM__bolml6__bc) || (0.5 < L1PSNM__bolml7__bc) || (0.5 < L1PSNM__bolml8__bc) || (0.5 < L1PSNM__bolml9__bc) || (0.5 < L1PSNM__bolml10__bc) || (0.5 < L1PSNM__bolml12__bc)";
     std::string ECL_fail = "(0.5 > L1PSNM__bohie__bc) && (0.5 > L1PSNM__bolml6__bc) && (0.5 > L1PSNM__bolml7__bc) && (0.5 > L1PSNM__bolml8__bc) && (0.5 > L1PSNM__bolml9__bc) && (0.5 > L1PSNM__bolml10__bc) && (0.5 > L1PSNM__bolml12__bc)";
     std::string CDC_pass = "(0.5 < L1PSNM__boffy__bc) || (0.5 < L1PSNM__bofyo__bc) || (0.5 < L1PSNM__bostt__bc)";
     std::string CDC_fail = "(0.5 > L1PSNM__boffy__bc) && (0.5 > L1PSNM__bofyo__bc) && (0.5 > L1PSNM__bostt__bc)";
+
+    // unused trigger bits for alternative references
+    std::string ECL_reference_pass = "(0.5 < L1PSNM__bolml0__bc) || (0.5 < L1PSNM__bolml1__bc) || (0.5 < L1PSNM__bolml2__bc) || (0.5 < L1PSNM__bolml3__bc) || (0.5 < L1PSNM__bolml4__bc)";
+    std::string CDC_reference_pass = "(0.5 < L1PSNM__bofff__bc) || (0.5 < L1PSNM__boffo__bc)";
 
     // MC
     Loader loader_00_MC("tau_lfv");
@@ -168,6 +186,72 @@ int main(int argc, char* argv[]) {
     loader_11_data.FillTH2D(hist_11_data, used_variables.at(0).c_str(), used_variables.at(1).c_str());
     loader_11_data.end();
 
+    // alternative reference for ECL
+    Loader loader_E_alt_pass_MC("tau_lfv");
+    for (int i = 0; i < MC_list.size(); i++) loader_E_alt_pass_MC.Load((std::string(argv[1]) + "/" + MC_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", MC_list.at(i).c_str());
+    loader_E_alt_pass_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_E_alt_pass_MC.Cut(ECL_pass.c_str());
+    loader_E_alt_pass_MC.Cut(CDC_reference_pass.c_str());
+    loader_E_alt_pass_MC.FillTH2D(hist_E_alt_pass_MC, used_variables.at(0).c_str(), used_variables.at(1).c_str());
+    loader_E_alt_pass_MC.end();
+
+    Loader loader_E_alt_fail_MC("tau_lfv");
+    for (int i = 0; i < MC_list.size(); i++) loader_E_alt_fail_MC.Load((std::string(argv[1]) + "/" + MC_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", MC_list.at(i).c_str());
+    loader_E_alt_fail_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_E_alt_fail_MC.Cut(ECL_fail.c_str());
+    loader_E_alt_fail_MC.Cut(CDC_reference_pass.c_str());
+    loader_E_alt_fail_MC.FillTH2D(hist_E_alt_fail_MC, used_variables.at(0).c_str(), used_variables.at(1).c_str());
+    loader_E_alt_fail_MC.end();
+
+    Loader loader_E_alt_pass_data("tau_lfv");
+    for (int i = 0; i < data_list.size(); i++) loader_E_alt_pass_data.Load((std::string(argv[3]) + "/" + data_list.at(i) + "/" + std::string(argv[4])).c_str(), "root", data_list.at(i).c_str());
+    loader_E_alt_pass_data.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_E_alt_pass_data.Cut(ECL_pass.c_str());
+    loader_E_alt_pass_data.Cut(CDC_reference_pass.c_str());
+    loader_E_alt_pass_data.FillTH2D(hist_E_alt_pass_data, used_variables.at(0).c_str(), used_variables.at(1).c_str());
+    loader_E_alt_pass_data.end();
+
+    Loader loader_E_alt_fail_data("tau_lfv");
+    for (int i = 0; i < data_list.size(); i++) loader_E_alt_fail_data.Load((std::string(argv[3]) + "/" + data_list.at(i) + "/" + std::string(argv[4])).c_str(), "root", data_list.at(i).c_str());
+    loader_E_alt_fail_data.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_E_alt_fail_data.Cut(ECL_fail.c_str());
+    loader_E_alt_fail_data.Cut(CDC_reference_pass.c_str());
+    loader_E_alt_fail_data.FillTH2D(hist_E_alt_fail_data, used_variables.at(0).c_str(), used_variables.at(1).c_str());
+    loader_E_alt_fail_data.end();
+
+    // alternative reference for CDC
+    Loader loader_C_alt_pass_MC("tau_lfv");
+    for (int i = 0; i < MC_list.size(); i++) loader_C_alt_pass_MC.Load((std::string(argv[1]) + "/" + MC_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", MC_list.at(i).c_str());
+    loader_C_alt_pass_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_C_alt_pass_MC.Cut(CDC_pass.c_str());
+    loader_C_alt_pass_MC.Cut(ECL_reference_pass.c_str());
+    loader_C_alt_pass_MC.FillTH2D(hist_C_alt_pass_MC, used_variables.at(0).c_str(), used_variables.at(1).c_str());
+    loader_C_alt_pass_MC.end();
+
+    Loader loader_C_alt_fail_MC("tau_lfv");
+    for (int i = 0; i < MC_list.size(); i++) loader_C_alt_fail_MC.Load((std::string(argv[1]) + "/" + MC_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", MC_list.at(i).c_str());
+    loader_C_alt_fail_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_C_alt_fail_MC.Cut(CDC_fail.c_str());
+    loader_C_alt_fail_MC.Cut(ECL_reference_pass.c_str());
+    loader_C_alt_fail_MC.FillTH2D(hist_C_alt_fail_MC, used_variables.at(0).c_str(), used_variables.at(1).c_str());
+    loader_C_alt_fail_MC.end();
+
+    Loader loader_C_alt_pass_data("tau_lfv");
+    for (int i = 0; i < data_list.size(); i++) loader_C_alt_pass_data.Load((std::string(argv[3]) + "/" + data_list.at(i) + "/" + std::string(argv[4])).c_str(), "root", data_list.at(i).c_str());
+    loader_C_alt_pass_data.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_C_alt_pass_data.Cut(CDC_pass.c_str());
+    loader_C_alt_pass_data.Cut(ECL_reference_pass.c_str());
+    loader_C_alt_pass_data.FillTH2D(hist_C_alt_pass_data, used_variables.at(0).c_str(), used_variables.at(1).c_str());
+    loader_C_alt_pass_data.end();
+
+    Loader loader_C_alt_fail_data("tau_lfv");
+    for (int i = 0; i < data_list.size(); i++) loader_C_alt_fail_data.Load((std::string(argv[3]) + "/" + data_list.at(i) + "/" + std::string(argv[4])).c_str(), "root", data_list.at(i).c_str());
+    loader_C_alt_fail_data.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_C_alt_fail_data.Cut(CDC_fail.c_str());
+    loader_C_alt_fail_data.Cut(ECL_reference_pass.c_str());
+    loader_C_alt_fail_data.FillTH2D(hist_C_alt_fail_data, used_variables.at(0).c_str(), used_variables.at(1).c_str());
+    loader_C_alt_fail_data.end();
+
     // get trigger eff for MC
     for (int ix = 1; ix <= nbins1; ++ix) {
         for (int iy = 1; iy <= nbins2; ++iy) {
@@ -199,15 +283,18 @@ int main(int argc, char* argv[]) {
     }
 
     // get relative trigger eff
-    std::vector<TH2D*> relative_efficiencies = { eff_E_MC, eff_E_data, eff_C_MC, eff_C_data };
-    std::vector<TH2D*> pass_histograms = { hist_11_MC, hist_11_data, hist_11_MC, hist_11_data };
-    std::vector<TH2D*> fail_histograms = { hist_01_MC, hist_01_data, hist_10_MC, hist_10_data };
-    std::vector<TH2D*> ratios = { r_E, r_C };
-    std::vector<TH2D*> valid_bins = { valid_E, valid_C };
+    std::vector<TH2D*> pass_histograms = { hist_11_MC, hist_11_data, hist_11_MC, hist_11_data, hist_E_alt_pass_MC, hist_E_alt_pass_data, hist_C_alt_pass_MC, hist_C_alt_pass_data };
+    std::vector<TH2D*> fail_histograms = { hist_01_MC, hist_01_data, hist_10_MC, hist_10_data, hist_E_alt_fail_MC, hist_E_alt_fail_data, hist_C_alt_fail_MC, hist_C_alt_fail_data };
+    std::vector<TH2D*> ratios = { r_E, r_C, r_E_alt, r_C_alt };
+    std::vector<TH2D*> reference_shifts = { r_E_ref_shift, r_C_ref_shift };
+    std::vector<TH2D*> valid_reference_bins = { valid_E_ref, valid_C_ref };
 
     for (int ix = 1; ix <= nbins1; ++ix) {
         for (int iy = 1; iy <= nbins2; ++iy) {
             const int bin = eff_trigger_MC->GetBin(ix, iy);
+            std::vector<double> relative_efficiencies(pass_histograms.size(), -1.0);
+            std::vector<double> relative_efficiency_errors(pass_histograms.size(), 0.0);
+            std::vector<bool> valid_bins(ratios.size(), false);
 
             for (int i = 0; i < relative_efficiencies.size(); i++) {
                 const double pass = pass_histograms.at(i)->GetBinContent(bin);
@@ -215,60 +302,71 @@ int main(int argc, char* argv[]) {
                 const double total = pass + fail;
 
                 // just set eff = -1
-                if (!(pass >= 0.0 && fail >= 0.0 && total > 0.0) || !std::isfinite(total)) {
-                    relative_efficiencies.at(i)->SetBinContent(bin, -1.0);
-                    relative_efficiencies.at(i)->SetBinError(bin, 0.0);
-                    continue;
-                }
+                if (!(pass >= 0.0 && fail >= 0.0 && total > 0.0) || !std::isfinite(total)) continue;
 
                 const double var_pass = std::pow(pass_histograms.at(i)->GetBinError(bin), 2);
                 const double var_fail = std::pow(fail_histograms.at(i)->GetBinError(bin), 2);
                 const double eff = pass / total;
                 const double var_eff = ((1.0 - eff) * (1.0 - eff) * var_pass + eff * eff * var_fail) / (total * total);
 
-                relative_efficiencies.at(i)->SetBinContent(bin, eff);
-                relative_efficiencies.at(i)->SetBinError(bin, std::sqrt(var_eff));
+                relative_efficiencies.at(i) = eff;
+                relative_efficiency_errors.at(i) = std::sqrt(var_eff);
             }
 
             // get data/MC ratio
             for (int i = 0; i < ratios.size(); i++) {
-                const double eff_MC = relative_efficiencies.at(2 * i)->GetBinContent(bin);
-                const double eff_data = relative_efficiencies.at(2 * i + 1)->GetBinContent(bin);
+                const double eff_MC = relative_efficiencies.at(2 * i);
+                const double eff_data = relative_efficiencies.at(2 * i + 1);
 
                 // just set ratio = 1 for invalid bins
                 ratios.at(i)->SetBinContent(bin, 1.0);
                 ratios.at(i)->SetBinError(bin, 0.0);
-                valid_bins.at(i)->SetBinContent(bin, 0.0);
                 if (!(eff_MC > 0.0 && eff_data >= 0.0)) continue;
 
                 const double ratio = eff_data / eff_MC;
-                const double var_ratio = (std::pow(relative_efficiencies.at(2 * i + 1)->GetBinError(bin), 2) + ratio * ratio * std::pow(relative_efficiencies.at(2 * i)->GetBinError(bin), 2)) / (eff_MC * eff_MC);
+                const double var_ratio = (std::pow(relative_efficiency_errors.at(2 * i + 1), 2) + ratio * ratio * std::pow(relative_efficiency_errors.at(2 * i), 2)) / (eff_MC * eff_MC);
                 if (!std::isfinite(ratio) || !std::isfinite(var_ratio)) continue;
 
                 ratios.at(i)->SetBinContent(bin, ratio);
                 ratios.at(i)->SetBinError(bin, std::sqrt(var_ratio));
-                valid_bins.at(i)->SetBinContent(bin, 1.0);
+                valid_bins.at(i) = true;
+            }
+            valid_E->SetBinContent(bin, valid_bins.at(0));
+            valid_C->SetBinContent(bin, valid_bins.at(1));
+
+            // reference shift
+            for (int i = 0; i < reference_shifts.size(); i++) {
+                reference_shifts.at(i)->SetBinContent(bin, 0.0);
+                reference_shifts.at(i)->SetBinError(bin, 0.0);
+                valid_reference_bins.at(i)->SetBinContent(bin, 0.0);
+                if (!(valid_bins.at(i) && valid_bins.at(i + 2))) continue;
+
+                const double ratio_nominal = ratios.at(i)->GetBinContent(bin);
+                const double ratio_alternative = ratios.at(i + 2)->GetBinContent(bin);
+                const double shift = ratio_alternative - ratio_nominal;
+                if (!std::isfinite(shift)) continue;
+
+                reference_shifts.at(i)->SetBinContent(bin, shift);
+                valid_reference_bins.at(i)->SetBinContent(bin, 1.0);
             }
         }
     }
 
     // print result
-    FILE* fp = fopen((std::string(argv[5]) + "/" + std::string(argv[6]) + ".txt").c_str(), "w");
+    FILE* fp = fopen((std::string(argv[5]) + "/" + std::string(argv[6]) + ".csv").c_str(), "w");
     if (fp == nullptr) {
         printf("Cannot open output file.\n");
         return 1;
     }
     fprintf(fp, "r_E,r_C,valid_E,valid_C,%s_min,%s_max,%s_min,%s_max", used_variables.at(0).c_str(), used_variables.at(0).c_str(), used_variables.at(1).c_str(), used_variables.at(1).c_str());
-    fprintf(fp, ",eff_E_MC,eff_E_data,eff_C_MC,eff_C_data");
-    fprintf(fp, ",sumw_00_MC,sumw2_00_MC,sumw_01_MC,sumw2_01_MC,sumw_10_MC,sumw2_10_MC,sumw_11_MC,sumw2_11_MC,sumw_01_data,sumw2_01_data,sumw_10_data,sumw2_10_data,sumw_11_data,sumw2_11_data");
+    fprintf(fp, ",r_E_ref_shift,r_C_ref_shift,valid_E_ref,valid_C_ref");
     for (int ix = 1; ix <= nbins1; ++ix) {
         for (int iy = 1; iy <= nbins2; ++iy) {
             const int bin = eff_trigger_MC->GetBin(ix, iy);
             fprintf(fp, "\n%.17g,%.17g,%.0f,%.0f", r_E->GetBinContent(bin), r_C->GetBinContent(bin), valid_E->GetBinContent(bin), valid_C->GetBinContent(bin));
             fprintf(fp, ",%.17g,%.17g", eff_trigger_MC->GetXaxis()->GetBinLowEdge(ix), eff_trigger_MC->GetXaxis()->GetBinUpEdge(ix));
             fprintf(fp, ",%.17g,%.17g", eff_trigger_MC->GetYaxis()->GetBinLowEdge(iy), eff_trigger_MC->GetYaxis()->GetBinUpEdge(iy));
-            for (int i = 0; i < relative_efficiencies.size(); i++) fprintf(fp, ",%.17g", relative_efficiencies.at(i)->GetBinContent(bin));
-            for (int i = 0; i < category_histograms.size(); i++) fprintf(fp, ",%.17g,%.17g", category_histograms.at(i)->GetBinContent(bin), std::pow(category_histograms.at(i)->GetBinError(bin), 2));
+            fprintf(fp, ",%.17g,%.17g,%.0f,%.0f", r_E_ref_shift->GetBinContent(bin), r_C_ref_shift->GetBinContent(bin), valid_E_ref->GetBinContent(bin), valid_C_ref->GetBinContent(bin));
         }
     }
     fclose(fp);
@@ -298,6 +396,26 @@ int main(int argc, char* argv[]) {
     c_r_E->SaveAs((std::string(argv[5]) + "/" + plot_name + "_r_E.png").c_str());
     delete c_r_E;
 
+    // ECL reference shift
+    TCanvas* c_r_E_ref_shift = new TCanvas("c_r_E_ref_shift", "", 900, 800);
+    c_r_E_ref_shift->cd();
+    c_r_E_ref_shift->SetRightMargin(0.18);
+    r_E_ref_shift->SetStats(false);
+    r_E_ref_shift->GetZaxis()->SetTitle("ECL reference shift");
+    r_E_ref_shift->Draw("COLZ");
+    c_r_E_ref_shift->SaveAs((std::string(argv[5]) + "/" + plot_name + "_r_E_ref_shift.png").c_str());
+    delete c_r_E_ref_shift;
+
+    // ECL data/MC ratio with alternative reference
+    TCanvas* c_r_E_alt = new TCanvas("c_r_E_alt", "", 900, 800);
+    c_r_E_alt->cd();
+    c_r_E_alt->SetRightMargin(0.18);
+    r_E_alt->SetStats(false);
+    r_E_alt->GetZaxis()->SetTitle("ECL data/MC ratio (alternative reference)");
+    r_E_alt->Draw("COLZ");
+    c_r_E_alt->SaveAs((std::string(argv[5]) + "/" + plot_name + "_r_E_alt.png").c_str());
+    delete c_r_E_alt;
+
     // CDC data/MC ratio
     TCanvas* c_r_C = new TCanvas("c_r_C", "", 900, 800);
     c_r_C->cd();
@@ -307,6 +425,26 @@ int main(int argc, char* argv[]) {
     r_C->Draw("COLZ");
     c_r_C->SaveAs((std::string(argv[5]) + "/" + plot_name + "_r_C.png").c_str());
     delete c_r_C;
+
+    // CDC reference shift
+    TCanvas* c_r_C_ref_shift = new TCanvas("c_r_C_ref_shift", "", 900, 800);
+    c_r_C_ref_shift->cd();
+    c_r_C_ref_shift->SetRightMargin(0.18);
+    r_C_ref_shift->SetStats(false);
+    r_C_ref_shift->GetZaxis()->SetTitle("CDC reference shift");
+    r_C_ref_shift->Draw("COLZ");
+    c_r_C_ref_shift->SaveAs((std::string(argv[5]) + "/" + plot_name + "_r_C_ref_shift.png").c_str());
+    delete c_r_C_ref_shift;
+
+    // CDC data/MC ratio with alternative reference
+    TCanvas* c_r_C_alt = new TCanvas("c_r_C_alt", "", 900, 800);
+    c_r_C_alt->cd();
+    c_r_C_alt->SetRightMargin(0.18);
+    r_C_alt->SetStats(false);
+    r_C_alt->GetZaxis()->SetTitle("CDC data/MC ratio (alternative reference)");
+    r_C_alt->Draw("COLZ");
+    c_r_C_alt->SaveAs((std::string(argv[5]) + "/" + plot_name + "_r_C_alt.png").c_str());
+    delete c_r_C_alt;
 
     return 0;
 }
