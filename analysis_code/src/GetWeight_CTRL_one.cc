@@ -274,6 +274,7 @@ int main(int argc, char* argv[]) {
 
         fp = fopen((std::string(argv[11]) + "/weight_one_2D_CTRL_info.txt").c_str(), "w");
         fprintf(fp, "%lf\n%lf", originalD, minD);
+        fprintf(fp, "\n");
         fprintf(fp, "%s\n%s", compare_variables.at(0).c_str(), compare_variables.at(1).c_str());
         fclose(fp);
 
