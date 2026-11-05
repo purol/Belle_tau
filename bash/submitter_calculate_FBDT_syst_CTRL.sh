@@ -3,36 +3,46 @@
 submit_code() {
   local Code=$1 # ex. ./bin/Calculate_FBDT_syst_CTRL
   local VerName=$2 # ex. Alice
-  local SignalType=$3 # ex. SIGNAL
-  local MCList=$4
-  local dataList=$5
-  local OutputPath=$6 # ex. FBDTSyst
+  local InputDir1=$3 # ex. final_output_after_application
+  local InputDir2=$4 # ex. final_output_after_application
+  local OutputPath=$5 # ex. FBDTSyst
+  local SignalType=$6 # ex. SIGNAL
+  local MCList=$7
+  local dataList=$8
+  local WeightPath=$9 # ex. Weight
 
-  local ControlPath="./${VerName}/${Analysis_VerName}"
-  if ! compgen -G "${ControlPath}/${dataList}/final_output_after_application/*.root" > /dev/null; then
+  local Type
+  local -a Types dataTypes
+  IFS=':' read -r -a Types <<< "${dataList}"
+  for Type in "${Types[@]}"; do
+    if compgen -G "./${VerName}/${Analysis_VerName}/${Type}/${InputDir2}/*.root" > /dev/null; then
+      dataTypes+=("${Type}")
+    fi
+  done
+  if [ "${#dataTypes[@]}" -eq 0 ]; then
     echo "No control data for FBDT efficiency."
-    return 0
+    return
   fi
-  mkdir -p "${ControlPath}/${OutputPath}" || return 1
+  dataList=$(IFS=:; echo "${dataTypes[*]}")
+
+  mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
 
   bsub -q l \
   -J FBDTSyst \
-  -o "${ControlPath}/${OutputPath}/FBDTSyst.log" \
-  -e "${ControlPath}/${OutputPath}/FBDTSyst.err" \
+  -o "./${VerName}/${Analysis_VerName}/${OutputPath}/FBDTSyst.log" \
+  -e "./${VerName}/${Analysis_VerName}/${OutputPath}/FBDTSyst.err" \
   "${Code}" \
   "${nominal_analysis_DIR}" \
+  "${InputDir1}" \
+  "./${VerName}/${Analysis_VerName}" \
+  "${InputDir2}" \
+  "./${VerName}/${Analysis_VerName}/${OutputPath}" \
   "${SignalType}" \
-  "${ControlPath}" \
   "${MCList}" \
   "${dataList}" \
-  "${ControlPath}/${OutputPath}"
+  "./${VerName}/${Analysis_VerName}/${WeightPath}"
 }
 
 
-if [ "$#" -ne 0 ]; then
-  echo "Usage: $0"
-  exit 1
-fi
-
 code="${Belle_tau_DIR}/analysis_code/bin/Calculate_FBDT_syst_CTRL"
-submit_code "${code}" "${Analysis_Name}" "SIGNAL" "${Types_STR_WITH_SIGNAL}" "${data_Type}" "FBDTSyst"
+submit_code "${code}" "${Analysis_Name}" "final_output_after_application" "final_output_after_application" "FBDTSyst" "SIGNAL" "${Types_STR_WITH_SIGNAL}" "${data_Type}" "Weight"

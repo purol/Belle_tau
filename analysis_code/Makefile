@@ -40,5 +40,3 @@ $(TARGETS): $(BINDIR)/% : $(TMPDIR)/%.o
 $(OBJS): $(TMPDIR)/%.o : $(SRCDIR)/%.cc $(INCDIR)/constants.h $(INCDIR)/functions.h
 	@ echo '<< compiling $@ >>'
 	@ $(CXX) $(CFLAGS) $(INCLUDES) -L$(LIBDIR) -c $< -o $@
-
-$(TMPDIR)/Calculate_FBDT_syst_CTRL.o $(TMPDIR)/Calculate_FBDT_syst_CTRL_ALP.o: $(INCDIR)/FBDTEfficiency.h

@@ -2,10 +2,8 @@
 #define FBDTEFFICIENCY_H
 
 #include <stdio.h>
-#include <cerrno>
 #include <cmath>
 #include <cstdlib>
-#include <fstream>
 #include <functional>
 #include <iterator>
 #include <limits>
@@ -35,22 +33,27 @@ struct FBDTResult {
 };
 
 inline bool ReadFBDTWeightInfo(const std::string& filename_, std::string& var1_, std::string& var2_) {
-    std::ifstream input(filename_);
-    double original_D;
-    std::string minimum_D;
-    if (input >> original_D >> minimum_D) {
-        // GetWeight writes the minimum D and the first variable without a separator
-        char* first_variable;
-        errno = 0;
-        std::strtod(minimum_D.c_str(), &first_variable);
-        if (first_variable != minimum_D.c_str() && errno != ERANGE) {
-            var1_ = first_variable;
-            if (var1_.empty()) input >> var1_;
-            if (input >> var2_) return true;
-        }
+    FILE* fp = fopen(filename_.c_str(), "r");
+    if (fp == nullptr) {
+        printf("Cannot open %s\n", filename_.c_str());
+        return false;
     }
-    printf("Cannot read %s\n", filename_.c_str());
-    return false;
+    double original_D;
+    char minimum_D[1024] = "", first[1024], second[1024];
+    int nread = fscanf(fp, "%lf %1023s %1023s %1023s", &original_D, minimum_D, first, second);
+    fclose(fp);
+
+    // GetWeight can write the minimum D and the first variable without a separator
+    char* variable;
+    std::strtod(minimum_D, &variable);
+    const bool joined = (*variable != '\0');
+    if (variable == minimum_D || nread < (joined ? 3 : 4)) {
+        printf("Cannot read %s\n", filename_.c_str());
+        return false;
+    }
+    var1_ = joined ? variable : first;
+    var2_ = joined ? first : second;
+    return true;
 }
 
 inline bool GetFBDTDistribution(RooDataSet& dataset_, const std::string& BDT_name_, FBDTDistribution& distribution_) {
@@ -156,11 +159,7 @@ inline bool WriteFBDTResult(const std::string& filename_, const FBDTResult (&res
             fprintf(fp, ",%.17g,%.17g,%.17g,%.17g,%.17g,%.17g,%d\n", result.target_eff[j], result.eff_MC[j], result.eff_data[j], result.ratio[j], result.stat_err[j], std::fabs(result.ratio[j] - 1.0), valid);
         }
     }
-    const int write_error = ferror(fp);
-    if (fclose(fp) != 0 || write_error) {
-        printf("Cannot write %s\n", filename_.c_str());
-        return false;
-    }
+    fclose(fp);
     return true;
 }
 

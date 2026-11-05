@@ -27,49 +27,63 @@ double mapping_before_BDT(std::vector<double> variables_) {
 
 int main(int argc, char* argv[]) {
     /*
-    * argv[1]: nominal analysis path
-    * argv[2]: nominal signal sample
-    * argv[3]: control analysis path
-    * argv[4]: control MC list (separated by colon)
-    * argv[5]: control data list (separated by colon)
-    * argv[6]: output path
-    * argv[7]: mass
-    * argv[8]: lifetime
-    * argv[9]: A constant
-    * argv[10]: B constant
+    * argv[1]: input1 path1 (nominal signal MC)
+    * argv[2]: input1 path2 (nominal signal MC)
+    * argv[3]: input2 path1 (control sample)
+    * argv[4]: input2 path2 (control sample)
+    * argv[5]: output path
+    * argv[6]: nominal signal sample
+    * argv[7]: control MC list (separated by colon)
+    * argv[8]: control data list (separated by colon)
+    * argv[9]: weight path
+    * argv[10]: mass
+    * argv[11]: lifetime
+    * argv[12]: A constant
+    * argv[13]: B constant
     */
 
-    if (argc != 11) {
-        printf("10 arguments are required.\n");
+    if (argc != 14) {
+        printf("13 arguments are required.\n");
         return 1;
     }
 
     std::string nominal_path = argv[1];
     std::string control_path = argv[3];
-    std::vector<std::string> MC_list = split(argv[4], ':');
-    std::vector<std::string> data_list = split(argv[5], ':');
+    std::vector<std::string> MC_list = split(argv[7], ':');
+    std::vector<std::string> data_list = split(argv[8], ':');
 
-    double mass = std::stod(argv[7]);
-    double life = std::stod(argv[8]);
-    int A = std::stoi(argv[9]);
-    int B = std::stoi(argv[10]);
-    if (!(life > 0.0)) {
-        printf("Invalid ALP lifetime.\n");
-        return 1;
-    }
-
+    double mass = std::stod(argv[10]);
+    double life = std::stod(argv[11]);
+    int A = std::stoi(argv[12]);
+    int B = std::stoi(argv[13]);
     std::string suffix = std::format("_{:g}_{:g}_{}_{}", mass, life, A, B);
-    std::string weight_suffix = std::string("_") + argv[7] + "_" + argv[8] + "_" + argv[9] + "_" + argv[10];
+    std::string weight_suffix = std::string("_") + argv[10] + "_" + argv[11] + "_" + argv[12] + "_" + argv[13];
     std::string strA = (A < 0) ? "m" + std::to_string(-A) : std::to_string(A);
     std::string strB = (B < 0) ? "m" + std::to_string(-B) : std::to_string(B);
     std::string score_suffix = std::format("_{:g}_{:g}_{}_{}", mass, life, strA, strB);
     std::string signal_file = std::format("alpha_mass{:g}_life{:g}_A{}_B{}_", mass, life, A, B);
 
-    double width = 0.075;
-    if (life < 0.7) width = 0.025;
-    else if (life < 7.0) width = 0.03;
-    else if (life < 70.0) width = 0.035;
-    std::string cut_m_alpha = "(" + std::to_string(mass - width) + " < extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc < " + std::to_string(mass + width) + ")";
+    double M_left_cut_value = 0;
+    double M_right_cut_value = 0;
+    if ((0 < life) && (life < 0.7)) {
+        M_left_cut_value = 0.025;
+        M_right_cut_value = 0.025;
+    }
+    else if ((0.7 <= life) && (life < 7)) {
+        M_left_cut_value = 0.03;
+        M_right_cut_value = 0.03;
+    }
+    else if ((7 <= life) && (life < 70)) {
+        M_left_cut_value = 0.035;
+        M_right_cut_value = 0.035;
+
+    }
+    else if (70 <= life) {
+        M_left_cut_value = 0.075;
+        M_right_cut_value = 0.075;
+
+    }
+    std::string cut_m_alpha = "(" + std::to_string(mass - M_left_cut_value) + " < extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc < " + std::to_string(mass + M_right_cut_value) + ")";
 
     // get nominal BDT cuts and signal region
     ReadFOM((nominal_path + "/GridSearch_one/FOM" + suffix + ".log").c_str(), &parameters.BDT_cut_1);
@@ -92,7 +106,7 @@ int main(int argc, char* argv[]) {
     TH1D before_BDT("before_BDT", ";bin index;", 8, 0.5, 8.5);
     TH1D after_BDT("after_BDT", ";bin index;", 8, 0.5, 8.5);
     Loader loader_signal("tau_lfv");
-    loader_signal.Load((nominal_path + "/" + argv[2] + "/final_output_after_application").c_str(), signal_file.c_str(), argv[2]);
+    loader_signal.Load((nominal_path + "/" + argv[6] + "/" + argv[2]).c_str(), signal_file.c_str(), argv[6]);
     loader_signal.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader_signal.AddWeight("muonID_05_ALP", { {"index", "first_muon_index"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
     loader_signal.AddWeight("muonID_05_ALP", { {"index", "second_muon_index"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
@@ -114,7 +128,7 @@ int main(int argc, char* argv[]) {
     FBDTResult results[2];
     for (int i = 0; i < 2; i++) {
         std::string weight_name = "weight_" + regions.at(i) + "_2D_CTRL" + weight_suffix;
-        std::string weight_path = control_path + "/Weight/" + weight_name;
+        std::string weight_path = std::string(argv[9]) + "/" + weight_name;
         std::string var1, var2;
         if (!ReadFBDTWeightInfo(weight_path + "_info.txt", var1, var2)) return 1;
         EventWeight CTRL_weight(weight_path + ".csv",
@@ -129,7 +143,7 @@ int main(int argc, char* argv[]) {
         {
             RooDataSet control_MC("control_MC", "control_MC", RooArgSet(BDT, weight), RooFit::WeightVar("weight"));
             Loader loader_MC("tau_lfv");
-            for (int j = 0; j < MC_list.size(); j++) loader_MC.Load((control_path + "/" + MC_list.at(j) + "/final_output_after_application").c_str(), "root", MC_list.at(j).c_str());
+            for (int j = 0; j < MC_list.size(); j++) loader_MC.Load((control_path + "/" + MC_list.at(j) + "/" + argv[4]).c_str(), "root", MC_list.at(j).c_str());
             loader_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
             loader_MC.AddWeight(weight_name.c_str(), { {var1, var1}, {var2, var2} });
             loader_MC.FillDataSet(&control_MC, { &BDT }, { BDT_names.at(i) });
@@ -142,7 +156,7 @@ int main(int argc, char* argv[]) {
         {
             RooDataSet control_data("control_data", "control_data", RooArgSet(BDT, weight), RooFit::WeightVar("weight"));
             Loader loader_data("tau_lfv");
-            for (int j = 0; j < data_list.size(); j++) loader_data.Load((control_path + "/" + data_list.at(j) + "/final_output_after_application").c_str(), "root", data_list.at(j).c_str());
+            for (int j = 0; j < data_list.size(); j++) loader_data.Load((control_path + "/" + data_list.at(j) + "/" + argv[4]).c_str(), "root", data_list.at(j).c_str());
             loader_data.AddWeight(weight_name.c_str(), { {var1, var1}, {var2, var2} });
             loader_data.FillDataSet(&control_data, { &BDT }, { BDT_names.at(i) });
             loader_data.end();
@@ -156,6 +170,6 @@ int main(int argc, char* argv[]) {
     }
 
     // print result
-    if (!WriteFBDTResult(std::string(argv[6]) + "/FBDTSyst" + suffix + ".csv", results)) return 1;
+    if (!WriteFBDTResult(std::string(argv[5]) + "/FBDTSyst" + suffix + ".csv", results)) return 1;
     return 0;
 }
