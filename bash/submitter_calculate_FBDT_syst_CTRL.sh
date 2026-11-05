@@ -11,20 +11,6 @@ submit_code() {
   local dataList=$8
   local WeightPath=$9 # ex. Weight
 
-  local Type
-  local -a Types dataTypes
-  IFS=':' read -r -a Types <<< "${dataList}"
-  for Type in "${Types[@]}"; do
-    if compgen -G "./${VerName}/${Analysis_VerName}/${Type}/${InputDir2}/*.root" > /dev/null; then
-      dataTypes+=("${Type}")
-    fi
-  done
-  if [ "${#dataTypes[@]}" -eq 0 ]; then
-    echo "No control data for FBDT efficiency."
-    return
-  fi
-  dataList=$(IFS=:; echo "${dataTypes[*]}")
-
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
 
   bsub -q l \
