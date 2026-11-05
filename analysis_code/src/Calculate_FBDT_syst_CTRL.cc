@@ -11,15 +11,20 @@
 
 ABCDParameters parameters;
 
-double mapping_nominal(std::vector<double> variables_) {
-    return mapping_function_ABCD(variables_, parameters, false);
-}
+double mapping_signal_BDT(std::vector<double> variables_) {
+    const double deltaE = variables_.at(0);
+    if (!(parameters.deltaE_peak - 15 * parameters.deltaE_left_sigma < deltaE && deltaE <= parameters.deltaE_peak + 5 * parameters.deltaE_right_sigma)) return NAN;
 
-double mapping_before_BDT(std::vector<double> variables_) {
-    // count central M events before the BDT cut in A1 and A2
-    variables_.at(2) = 2.0;
-    variables_.at(3) = 2.0;
-    return mapping_function_ABCD(variables_, parameters, false);
+    const bool region_one = parameters.deltaE_peak - 5 * parameters.deltaE_left_sigma < deltaE;
+    const double BDT = region_one ? variables_.at(1) : variables_.at(2);
+    const double high_cut = region_one ? parameters.BDT_cut_1 : parameters.BDT_cut_2;
+    const double low_cut = region_one ? parameters.sideband_BDT_cut_1 : parameters.sideband_BDT_cut_2;
+
+    // high, low and remaining events in each deltaE region
+    const int first_bin = region_one ? 1 : 4;
+    if (high_cut < BDT) return first_bin;
+    if (low_cut < BDT && BDT < high_cut) return first_bin + 1;
+    return first_bin + 2;
 }
 
 int main(int argc, char* argv[]) {
@@ -52,7 +57,6 @@ int main(int argc, char* argv[]) {
     double theta;
 
     ReadResolution((nominal_path + "/M_deltaE_result.txt").c_str(), &parameters.deltaE_peak, &parameters.deltaE_left_sigma, &parameters.deltaE_right_sigma, &parameters.M_peak, &parameters.M_left_sigma, &parameters.M_right_sigma, &theta);
-    parameters.M_size = sizeM;
     std::string cut_region = GetBCSCut(parameters.deltaE_peak, parameters.deltaE_left_sigma, parameters.deltaE_right_sigma, parameters.M_peak, parameters.M_left_sigma, parameters.M_right_sigma);
     std::vector<std::string> BDT_names = { "BDT_output_1", "BDT_output_2" };
 
@@ -61,8 +65,7 @@ int main(int argc, char* argv[]) {
     EventWeights::Register("muonID_05_prompt", muonID_05_prompt);
 
     // signal MC
-    TH1D before_BDT("before_BDT", ";bin index;", 8, 0.5, 8.5);
-    TH1D after_BDT("after_BDT", ";bin index;", 8, 0.5, 8.5);
+    TH1D signal_BDT("signal_BDT", ";bin index;", 6, 0.5, 6.5);
     Loader loader_signal("tau_lfv");
     loader_signal.Load((nominal_path + "/" + argv[6] + "/" + argv[2]).c_str(), "root", argv[6]);
     loader_signal.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
@@ -72,8 +75,8 @@ int main(int argc, char* argv[]) {
     loader_signal.Cut(cut_region.c_str());
     loader_signal.RandomBCS();
     loader_signal.IsBCSValid();
-    loader_signal.FillCustomizedTH1D(&before_BDT, { "M", "deltaE", BDT_names.at(0), BDT_names.at(1) }, mapping_before_BDT);
-    loader_signal.FillCustomizedTH1D(&after_BDT, { "M", "deltaE", BDT_names.at(0), BDT_names.at(1) }, mapping_nominal);
+    loader_signal.Cut(("(" + std::to_string(parameters.M_peak - 20 * parameters.M_left_sigma) + "< M) && (M < " + std::to_string(parameters.M_peak + 20 * parameters.M_right_sigma) + ")").c_str());
+    loader_signal.FillCustomizedTH1D(&signal_BDT, { "deltaE", BDT_names.at(0), BDT_names.at(1) }, mapping_signal_BDT);
     loader_signal.end();
 
     // include BDT = 1 in the last bin
@@ -126,8 +129,8 @@ int main(int argc, char* argv[]) {
         loader_data.end();
 
         // high and low BDT efficiencies use the same pre-BDT denominator
-        const int bin_A = 4 * i + 1;
-        results[i] = CalculateFBDTEfficiency(&FBDT_MC, &FBDT_data, before_BDT.GetBinContent(bin_A), after_BDT.GetBinContent(bin_A), after_BDT.GetBinContent(bin_A + 2));
+        const int first_bin = 3 * i + 1;
+        results[i] = CalculateFBDTEfficiency(&FBDT_MC, &FBDT_data, signal_BDT.Integral(first_bin, first_bin + 2), signal_BDT.GetBinContent(first_bin), signal_BDT.GetBinContent(first_bin + 1));
     }
 
     // print result
