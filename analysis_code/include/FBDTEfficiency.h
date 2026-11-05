@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include <cmath>
-#include <cstdlib>
 #include <functional>
 #include <iterator>
 #include <limits>
@@ -38,21 +37,16 @@ inline bool ReadFBDTWeightInfo(const std::string& filename_, std::string& var1_,
         printf("Cannot open %s\n", filename_.c_str());
         return false;
     }
-    double original_D;
-    char minimum_D[1024] = "", first[1024], second[1024];
-    int nread = fscanf(fp, "%lf %1023s %1023s %1023s", &original_D, minimum_D, first, second);
+    double original_D, minimum_D;
+    char first[1024], second[1024];
+    int nread = fscanf(fp, "%lf %lf %1023s %1023s", &original_D, &minimum_D, first, second);
     fclose(fp);
-
-    // GetWeight can write the minimum D and the first variable without a separator
-    char* variable;
-    std::strtod(minimum_D, &variable);
-    const bool joined = (*variable != '\0');
-    if (variable == minimum_D || nread < (joined ? 3 : 4)) {
+    if (nread != 4) {
         printf("Cannot read %s\n", filename_.c_str());
         return false;
     }
-    var1_ = joined ? variable : first;
-    var2_ = joined ? first : second;
+    var1_ = first;
+    var2_ = second;
     return true;
 }
 
