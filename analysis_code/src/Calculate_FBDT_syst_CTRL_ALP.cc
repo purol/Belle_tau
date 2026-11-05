@@ -54,12 +54,6 @@ int main(int argc, char* argv[]) {
     double life = std::stod(argv[11]);
     int A = std::stoi(argv[12]);
     int B = std::stoi(argv[13]);
-    std::string suffix = std::format("_{:g}_{:g}_{}_{}", mass, life, A, B);
-    std::string weight_suffix = std::string("_") + argv[10] + "_" + argv[11] + "_" + argv[12] + "_" + argv[13];
-    std::string strA = (A < 0) ? "m" + std::to_string(-A) : std::to_string(A);
-    std::string strB = (B < 0) ? "m" + std::to_string(-B) : std::to_string(B);
-    std::string score_suffix = std::format("_{:g}_{:g}_{}_{}", mass, life, strA, strB);
-    std::string signal_file = std::format("alpha_mass{:g}_life{:g}_A{}_B{}_", mass, life, A, B);
 
     double M_left_cut_value = 0;
     double M_right_cut_value = 0;
@@ -84,15 +78,27 @@ int main(int argc, char* argv[]) {
     std::string cut_m_alpha = "(" + std::to_string(mass - M_left_cut_value) + " < extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc < " + std::to_string(mass + M_right_cut_value) + ")";
 
     // get nominal BDT cuts and signal region
-    ReadFOM((nominal_path + "/GridSearch_one/FOM" + suffix + ".log").c_str(), &parameters.BDT_cut_1);
-    ReadFOM((nominal_path + "/GridSearch_two/FOM" + suffix + ".log").c_str(), &parameters.BDT_cut_2);
-    ReadABCDBoundary((nominal_path + "/ABCD_boundary" + suffix + ".txt").c_str(), { parameters.BDT_cut_1, parameters.BDT_cut_2 }, &parameters.sideband_BDT_cut_1, &parameters.sideband_BDT_cut_2);
+    ReadFOM((nominal_path + "/GridSearch_one/FOM_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".log").c_str(), &parameters.BDT_cut_1);
+    ReadFOM((nominal_path + "/GridSearch_two/FOM_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".log").c_str(), &parameters.BDT_cut_2);
+    ReadABCDBoundary((nominal_path + "/ABCD_boundary_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".txt").c_str(), { parameters.BDT_cut_1, parameters.BDT_cut_2 }, &parameters.sideband_BDT_cut_1, &parameters.sideband_BDT_cut_2);
     double theta;
 
-    ReadResolution((nominal_path + "/" + signal_file + "M_deltaE_result.txt").c_str(), &parameters.deltaE_peak, &parameters.deltaE_left_sigma, &parameters.deltaE_right_sigma, &parameters.M_peak, &parameters.M_left_sigma, &parameters.M_right_sigma, &theta);
+    ReadResolution((nominal_path + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_M_deltaE_result.txt").c_str(), &parameters.deltaE_peak, &parameters.deltaE_left_sigma, &parameters.deltaE_right_sigma, &parameters.M_peak, &parameters.M_left_sigma, &parameters.M_right_sigma, &theta);
     parameters.M_size = sizeM;
     std::string cut_region = GetBCSCut(parameters.deltaE_peak, parameters.deltaE_left_sigma, parameters.deltaE_right_sigma, parameters.M_peak, parameters.M_left_sigma, parameters.M_right_sigma);
-    std::vector<std::string> BDT_names = { "BDT_output_1" + score_suffix, "BDT_output_2" + score_suffix };
+
+    std::string strMass = std::format("{:g}", mass);
+    std::string strLife = std::format("{:g}", life);
+    std::string strA;
+    std::string strB;
+    if (A >= 0) strA = std::to_string(A);
+    else strA = "m" + std::to_string(std::abs(A));
+    if (B >= 0) strB = std::to_string(B);
+    else strB = "m" + std::to_string(std::abs(B));
+
+    std::vector<std::string> BDT_names;
+    BDT_names.push_back("BDT_output_1_" + strMass + "_" + strLife + "_" + strA + "_" + strB);
+    BDT_names.push_back("BDT_output_2_" + strMass + "_" + strLife + "_" + strA + "_" + strB);
 
     EventWeights::Register("MC_weight", MC_weight);
     EventWeights::Register("muonID_01_ALP", muonID_01_ALP);
@@ -104,7 +110,7 @@ int main(int argc, char* argv[]) {
     TH1D before_BDT("before_BDT", ";bin index;", 8, 0.5, 8.5);
     TH1D after_BDT("after_BDT", ";bin index;", 8, 0.5, 8.5);
     Loader loader_signal("tau_lfv");
-    loader_signal.Load((nominal_path + "/" + argv[6] + "/" + argv[2]).c_str(), signal_file.c_str(), argv[6]);
+    loader_signal.Load((nominal_path + "/" + argv[6] + "/" + argv[2]).c_str(), ("alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_").c_str(), argv[6]);
     loader_signal.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader_signal.AddWeight("muonID_05_ALP", { {"index", "first_muon_index"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
     loader_signal.AddWeight("muonID_05_ALP", { {"index", "second_muon_index"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
@@ -131,7 +137,7 @@ int main(int argc, char* argv[]) {
     std::vector<double> nominal_low = { parameters.sideband_BDT_cut_1, parameters.sideband_BDT_cut_2 };
     FBDTResult results[2];
     for (int i = 0; i < 2; i++) {
-        std::string weight_name = "weight_" + regions.at(i) + "_2D_CTRL" + weight_suffix;
+        std::string weight_name = "weight_" + regions.at(i) + "_2D_CTRL_" + std::string(argv[10]) + "_" + std::string(argv[11]) + "_" + std::string(argv[12]) + "_" + std::string(argv[13]);
         std::string weight_path = std::string(argv[9]) + "/" + weight_name;
         FILE* fp = fopen((weight_path + "_info.txt").c_str(), "r");
         if (fp == nullptr) {
@@ -175,7 +181,7 @@ int main(int argc, char* argv[]) {
     }
 
     // print result
-    std::string output_filename = std::string(argv[5]) + "/FBDTSyst" + suffix + ".csv";
+    std::string output_filename = std::string(argv[5]) + "/FBDTSyst_" + std::format("{:g}", mass) + "_" + std::format("{:g}", life) + "_" + std::to_string(A) + "_" + std::to_string(B) + ".csv";
     FILE* fp = fopen(output_filename.c_str(), "w");
     if (fp == nullptr) {
         printf("Cannot open %s\n", output_filename.c_str());
