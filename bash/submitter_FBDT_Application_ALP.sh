@@ -24,7 +24,7 @@ submit_Application() {
       "${#input_variables_two[@]}" \
       "${input_variables_two[@]}" \
       "./${VerName}/${Analysis_VerName}/${SampleName}/final_output" \
-      ${filename} \
+      "${filename}.root" \
       "./${VerName}/${Analysis_VerName}/${SampleName}/final_output_after_application" \
       "${FBDT_weight_DIR}/GridSearch_one" \
       "${FBDT_weight_DIR}/GridSearch_two"
@@ -49,3 +49,10 @@ for Type in "${Types[@]}"; do
     sleep 0.5s
 done
 
+IFS=':' read -r -a Types <<< "$data_Type"
+
+code="${Belle_tau_DIR}/analysis_code/bin/FBDT_Application_ALP"
+for Type in "${Types[@]}"; do
+    submit_Application ${code} ${Analysis_Name} ${Type}
+    sleep 0.5s
+done
