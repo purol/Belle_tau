@@ -33,6 +33,8 @@ inline std::string GetBCSCut(double deltaE_peak_, double deltaE_left_sigma_, dou
 void ReadResolution(const char* filename_, double* deltaE_peak_, double* deltaE_left_sigma_, double* deltaE_right_sigma_, double* M_peak_, double* M_left_sigma_, double* M_right_sigma_, double* theta_) {
     FILE* fp = fopen(filename_, "r");
 
+    if (fp == nullptr) throw std::runtime_error("Cannot open resolution file: " + std::string(filename_));
+
     double mean_M;
     double sigma_left_M;
     double sigma_right_M;
@@ -45,9 +47,12 @@ void ReadResolution(const char* filename_, double* deltaE_peak_, double* deltaE_
 
     double theta;
 
-    fscanf(fp, "%lf %lf %lf %d\n", &mean_M, &sigma_left_M, &sigma_right_M, &result_M);
-    fscanf(fp, "%lf %lf %lf %d\n", &mean_deltaE, &sigma_left_deltaE, &sigma_right_deltaE, &result_deltaE);
-    fscanf(fp, "%lf\n", &theta);
+    if (fscanf(fp, "%lf %lf %lf %d", &mean_M, &sigma_left_M, &sigma_right_M, &result_M) != 4 ||
+        fscanf(fp, "%lf %lf %lf %d", &mean_deltaE, &sigma_left_deltaE, &sigma_right_deltaE, &result_deltaE) != 4 ||
+        fscanf(fp, "%lf", &theta) != 1) {
+        fclose(fp);
+        throw std::runtime_error("Invalid resolution file: " + std::string(filename_));
+    }
 
     fclose(fp);
 
