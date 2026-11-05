@@ -20,8 +20,10 @@ int main(int argc, char* argv[]) {
     * argv[7]: background list (separated by colon)
     * argv[8]: signal legend list (separated by colon)
     * argv[9]: background legend list (separated by colon)
-    * (argv[10]): min value
-    * (argv[11]): max value
+    * argv[10]: data list (separated by colon, empty if there is no data)
+    * argv[11]: data legend list (separated by colon, empty if there is no data)
+    * (argv[12]): min value
+    * (argv[13]): max value
     */
 
     std::string variable_name(argv[1]);
@@ -30,6 +32,9 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> background_list = split(argv[7], ':');
     std::vector<std::string> signal_legend_list = split(argv[8], ':');
     std::vector<std::string> background_legend_list = split(argv[9], ':');
+
+    std::vector<std::string> data_list = split(argv[10], ':');
+    std::vector<std::string> data_legend_list = split(argv[11], ':');
 
     double deltaE_peak;
     double deltaE_left_sigma;
@@ -47,6 +52,7 @@ int main(int argc, char* argv[]) {
 
     for (int i = 0; i < signal_list.size(); i++) loader.Load((argv[2] + std::string("/") + signal_list.at(i) + std::string("/") + std::string(argv[3])).c_str(), "root", signal_legend_list.at(i).c_str());
     for (int i = 0; i < background_list.size(); i++) loader.Load((argv[2] + std::string("/") + background_list.at(i) + std::string("/") + std::string(argv[3])).c_str(), "root", background_legend_list.at(i).c_str());
+    for (int i = 0; i < data_list.size(); i++) loader.Load((argv[2] + std::string("/") + data_list.at(i) + std::string("/") + std::string(argv[3])).c_str(), "root", data_legend_list.at(i).c_str());
     loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
 
     // Create a new vector to hold the combined elements
@@ -56,7 +62,7 @@ int main(int argc, char* argv[]) {
     all_label.insert(all_label.end(), background_legend_list.begin(), background_legend_list.end());
 
     loader.SetMC(all_label);
-    loader.SetData({});
+    loader.SetData(data_legend_list);
     loader.SetSignal(signal_legend_list);
     loader.SetBackground(background_legend_list);
 
@@ -66,8 +72,8 @@ int main(int argc, char* argv[]) {
     loader.Cut(("(" + std::to_string(M_peak - 20 * M_left_sigma) + "< M) && (M < " + std::to_string(M_peak + 20 * M_right_sigma) + ")").c_str());
     loader.PrintInformation("========== -20 delta < M < 20 delta ==========");
 
-    if(argc == 10) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), true, false);
-    else if (argc == 12) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), 50, std::stod(argv[10]), std::stod(argv[11]), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), true, false);
+    if(argc == 12) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), true, false);
+    else if (argc == 14) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), 50, std::stod(argv[12]), std::stod(argv[13]), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), true, false);
 
     loader.end();
 
