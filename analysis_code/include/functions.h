@@ -698,75 +698,6 @@ struct FBDTResult {
     double stat_err[2] = { NAN, NAN };
 };
 
-inline bool ReadFBDTWeightInfo(const std::string& filename_, std::string& var1_, std::string& var2_) {
-    FILE* fp = fopen(filename_.c_str(), "r");
-    if (fp == nullptr) {
-        printf("Cannot open %s\n", filename_.c_str());
-        return false;
-    }
-    double original_D, minimum_D;
-    char first[1024], second[1024];
-    int nread = fscanf(fp, "%lf %lf %1023s %1023s", &original_D, &minimum_D, first, second);
-    fclose(fp);
-    if (nread != 4) {
-        printf("Cannot read %s\n", filename_.c_str());
-        return false;
-    }
-    var1_ = first;
-    var2_ = second;
-    return true;
-}
-
-inline bool FillFBDTHistogram(RooDataSet& dataset_, TH1* hist_, const std::string& BDT_name_) {
-    for (int i = 0; i < dataset_.numEntries(); i++) {
-        const double BDT = dataset_.get(i)->getRealValue("score");
-        const double weight = dataset_.weight();
-        if (!std::isfinite(weight) || weight < 0.0 || !std::isfinite(BDT) || BDT < 0.0 || BDT > 1.0) {
-            printf("Invalid weight or BDT score in %s\n", BDT_name_.c_str());
-            return false;
-        }
-        if (weight == 0.0) continue;
-        hist_->Fill(BDT, weight);
-    }
-    return true;
-}
-
-inline int FindFBDTCutBin(const TH1* MC_, int upper_bin_, double target_) {
-    int cut_bin = upper_bin_;
-    double difference = std::fabs(target_);
-    double selected = 0.0;
-    for (int bin = upper_bin_ - 1; bin >= 1; bin--) {
-        selected += MC_->GetBinContent(bin);
-        if (std::fabs(selected - target_) < difference) {
-            cut_bin = bin;
-            difference = std::fabs(selected - target_);
-        }
-    }
-    return cut_bin;
-}
-
-inline void GetFBDTEfficiency(const TH1* hist_, int lower_bin_, int upper_bin_, double* eff_, double* variance_) {
-    const double total = hist_->Integral();
-    *eff_ = NAN;
-    *variance_ = NAN;
-    if (total <= 0.0) return;
-
-    double pass = 0.0;
-    double pass_sumw2 = 0.0;
-    double fail_sumw2 = 0.0;
-    for (int bin = 1; bin <= hist_->GetNbinsX(); bin++) {
-        if (lower_bin_ <= bin && bin < upper_bin_) {
-            pass += hist_->GetBinContent(bin);
-            pass_sumw2 += std::pow(hist_->GetBinError(bin), 2);
-        }
-        else {
-            fail_sumw2 += std::pow(hist_->GetBinError(bin), 2);
-        }
-    }
-    *eff_ = pass / total;
-    *variance_ = (std::pow(1.0 - *eff_, 2) * pass_sumw2 + std::pow(*eff_, 2) * fail_sumw2) / std::pow(total, 2);
-}
-
 inline FBDTResult CalculateFBDTEfficiency(const TH1* MC_, const TH1* data_, double nominal_low_cut_, double nominal_high_cut_, double before_BDT_, double high_yield_, double low_yield_) {
     FBDTResult result;
     result.nominal_low_cut = nominal_low_cut_;
@@ -779,45 +710,59 @@ inline FBDTResult CalculateFBDTEfficiency(const TH1* MC_, const TH1* data_, doub
     const double total_MC = MC_->Integral();
     if (total_MC <= 0.0) return result;
 
-    const int end_bin = MC_->GetNbinsX() + 1;
-    const int high_bin = FindFBDTCutBin(MC_, end_bin, total_MC * result.target_eff[0]);
-    const int low_bin = FindFBDTCutBin(MC_, high_bin, total_MC * result.target_eff[1]);
-    result.control_high_cut = MC_->GetBinLowEdge(high_bin);
-    result.control_low_cut = MC_->GetBinLowEdge(low_bin);
-
-    // get data/MC ratio
+    int upper_bin = MC_->GetNbinsX() + 1;
+    const TH1* histograms[2] = { MC_, data_ };
     for (int i = 0; i < 2; i++) {
-        const int lower_bin = (i == 0) ? high_bin : low_bin;
-        const int upper_bin = (i == 0) ? end_bin : high_bin;
-        double variance_MC, variance_data;
-        GetFBDTEfficiency(MC_, lower_bin, upper_bin, &result.eff_MC[i], &variance_MC);
-        GetFBDTEfficiency(data_, lower_bin, upper_bin, &result.eff_data[i], &variance_data);
-        if (result.eff_MC[i] > 0.0 && std::isfinite(result.eff_data[i])) {
-            const double ratio = result.eff_data[i] / result.eff_MC[i];
-            result.ratio[i] = ratio;
-            result.stat_err[i] = std::sqrt(variance_data + ratio * ratio * variance_MC) / result.eff_MC[i];
+        // find the closest control MC efficiency, starting from the higher BDT bins
+        const double target = total_MC * result.target_eff[i];
+        int lower_bin = upper_bin;
+        double best_difference = std::fabs(target);
+        double selected = 0.0;
+        for (int bin = upper_bin - 1; bin >= 1; bin--) {
+            selected += MC_->GetBinContent(bin);
+            const double difference = std::fabs(selected - target);
+            if (difference < best_difference) {
+                lower_bin = bin;
+                best_difference = difference;
+            }
         }
+        if (i == 0) result.control_high_cut = MC_->GetBinLowEdge(lower_bin);
+        else result.control_low_cut = MC_->GetBinLowEdge(lower_bin);
+
+        // get the efficiency and its variance for control MC and data
+        double eff[2] = { NAN, NAN };
+        double variance[2] = { NAN, NAN };
+        for (int j = 0; j < 2; j++) {
+            const TH1* hist = histograms[j];
+            const double total = hist->Integral();
+            if (total <= 0.0) continue;
+
+            double pass = 0.0;
+            double pass_sumw2 = 0.0;
+            double fail_sumw2 = 0.0;
+            for (int bin = 1; bin <= hist->GetNbinsX(); bin++) {
+                if (lower_bin <= bin && bin < upper_bin) {
+                    pass += hist->GetBinContent(bin);
+                    pass_sumw2 += std::pow(hist->GetBinError(bin), 2);
+                }
+                else {
+                    fail_sumw2 += std::pow(hist->GetBinError(bin), 2);
+                }
+            }
+            eff[j] = pass / total;
+            variance[j] = (std::pow(1.0 - eff[j], 2) * pass_sumw2 + std::pow(eff[j], 2) * fail_sumw2) / std::pow(total, 2);
+        }
+
+        result.eff_MC[i] = eff[0];
+        result.eff_data[i] = eff[1];
+        if (eff[0] > 0.0 && std::isfinite(eff[1])) {
+            const double ratio = eff[1] / eff[0];
+            result.ratio[i] = ratio;
+            result.stat_err[i] = std::sqrt(variance[1] + ratio * ratio * variance[0]) / eff[0];
+        }
+        upper_bin = lower_bin;
     }
     return result;
-}
-
-inline bool WriteFBDTResult(const std::string& filename_, const FBDTResult (&results_)[2]) {
-    FILE* fp = fopen(filename_.c_str(), "w");
-    if (fp == nullptr) {
-        printf("Cannot open %s\n", filename_.c_str());
-        return false;
-    }
-    fprintf(fp, "region,bdt_range,nominal_low_cut,nominal_high_cut,control_low_cut,control_high_cut,target_eff,control_eff_MC,control_eff_data,data_over_MC,stat_err,abs_syst,valid\n");
-    for (int i = 0; i < 2; i++) {
-        const FBDTResult& result = results_[i];
-        for (int j = 0; j < 2; j++) {
-            const bool valid = std::isfinite(result.ratio[j]) && std::isfinite(result.stat_err[j]);
-            fprintf(fp, "%d,%s,%.17g,%.17g,%.17g,%.17g", i + 1, (j == 0) ? "high" : "low", result.nominal_low_cut, result.nominal_high_cut, result.control_low_cut, result.control_high_cut);
-            fprintf(fp, ",%.17g,%.17g,%.17g,%.17g,%.17g,%.17g,%d\n", result.target_eff[j], result.eff_MC[j], result.eff_data[j], result.ratio[j], result.stat_err[j], std::fabs(result.ratio[j] - 1.0), valid);
-        }
-    }
-    fclose(fp);
-    return true;
 }
 
 #endif

@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "TH1D.h"
-#include "RooRealVar.h"
 
 #include "Loader.h"
 #include "constants.h"
@@ -90,8 +89,20 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < 2; i++) {
         std::string weight_name = "weight_" + regions.at(i) + "_2D_CTRL";
         std::string weight_path = std::string(argv[9]) + "/" + weight_name;
-        std::string var1, var2;
-        if (!ReadFBDTWeightInfo(weight_path + "_info.txt", var1, var2)) return 1;
+        FILE* fp = fopen((weight_path + "_info.txt").c_str(), "r");
+        if (fp == nullptr) {
+            printf("Cannot open %s_info.txt\n", weight_path.c_str());
+            return 1;
+        }
+        double original_D, minimum_D;
+        char first[1024], second[1024];
+        if (fscanf(fp, "%lf %lf %1023s %1023s", &original_D, &minimum_D, first, second) != 4) {
+            printf("Cannot read %s_info.txt\n", weight_path.c_str());
+            fclose(fp);
+            return 1;
+        }
+        fclose(fp);
+        std::string var1(first), var2(second);
 
         EventWeight CTRL_weight(
             weight_path + ".csv",
@@ -106,31 +117,20 @@ int main(int argc, char* argv[]) {
         FBDT_MC.Sumw2();
         FBDT_data.Sumw2();
 
-        RooRealVar BDT("score", "score", 0.5);
-        RooRealVar weight("weight", "weight", 1.0);
-
         // control MC
-        {
-            RooDataSet control_MC("control_MC", "control_MC", RooArgSet(BDT, weight), RooFit::WeightVar("weight"));
-            Loader loader_MC("tau_lfv");
-            for (int j = 0; j < MC_list.size(); j++) loader_MC.Load((control_path + "/" + MC_list.at(j) + "/" + argv[4]).c_str(), "root", MC_list.at(j).c_str());
-            loader_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
-            loader_MC.AddWeight(weight_name.c_str(), { {var1, var1}, {var2, var2} });
-            loader_MC.FillDataSet(&control_MC, { &BDT }, { BDT_names.at(i) });
-            loader_MC.end();
-            if (!FillFBDTHistogram(control_MC, &FBDT_MC, BDT_names.at(i))) return 1;
-        }
+        Loader loader_MC("tau_lfv");
+        for (int j = 0; j < MC_list.size(); j++) loader_MC.Load((control_path + "/" + MC_list.at(j) + "/" + argv[4]).c_str(), "root", MC_list.at(j).c_str());
+        loader_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+        loader_MC.AddWeight(weight_name.c_str(), { {var1, var1}, {var2, var2} });
+        loader_MC.FillTH1D(&FBDT_MC, BDT_names.at(i));
+        loader_MC.end();
 
         // control data
-        {
-            RooDataSet control_data("control_data", "control_data", RooArgSet(BDT, weight), RooFit::WeightVar("weight"));
-            Loader loader_data("tau_lfv");
-            for (int j = 0; j < data_list.size(); j++) loader_data.Load((control_path + "/" + data_list.at(j) + "/" + argv[4]).c_str(), "root", data_list.at(j).c_str());
-            loader_data.AddWeight(weight_name.c_str(), { {var1, var1}, {var2, var2} });
-            loader_data.FillDataSet(&control_data, { &BDT }, { BDT_names.at(i) });
-            loader_data.end();
-            if (!FillFBDTHistogram(control_data, &FBDT_data, BDT_names.at(i))) return 1;
-        }
+        Loader loader_data("tau_lfv");
+        for (int j = 0; j < data_list.size(); j++) loader_data.Load((control_path + "/" + data_list.at(j) + "/" + argv[4]).c_str(), "root", data_list.at(j).c_str());
+        loader_data.AddWeight(weight_name.c_str(), { {var1, var1}, {var2, var2} });
+        loader_data.FillTH1D(&FBDT_data, BDT_names.at(i));
+        loader_data.end();
 
         // high and low BDT efficiencies use the same pre-BDT denominator
         const int bin_A = 4 * i + 1;
@@ -138,6 +138,22 @@ int main(int argc, char* argv[]) {
     }
 
     // print result
-    if (!WriteFBDTResult(std::string(argv[5]) + "/FBDTSyst.csv", results)) return 1;
+    std::string output_filename = std::string(argv[5]) + "/FBDTSyst.csv";
+    FILE* fp = fopen(output_filename.c_str(), "w");
+    if (fp == nullptr) {
+        printf("Cannot open %s\n", output_filename.c_str());
+        return 1;
+    }
+    fprintf(fp, "region,bdt_range,nominal_low_cut,nominal_high_cut,control_low_cut,control_high_cut,target_eff,control_eff_MC,control_eff_data,data_over_MC,stat_err,abs_syst,valid\n");
+    for (int i = 0; i < 2; i++) {
+        const FBDTResult& result = results[i];
+        for (int j = 0; j < 2; j++) {
+            const bool valid = std::isfinite(result.ratio[j]) && std::isfinite(result.stat_err[j]);
+            fprintf(fp, "%d,%s,%.17g,%.17g,%.17g,%.17g", i + 1, (j == 0) ? "high" : "low", result.nominal_low_cut, result.nominal_high_cut, result.control_low_cut, result.control_high_cut);
+            fprintf(fp, ",%.17g,%.17g,%.17g,%.17g,%.17g,%.17g,%d\n", result.target_eff[j], result.eff_MC[j], result.eff_data[j], result.ratio[j], result.stat_err[j], std::fabs(result.ratio[j] - 1.0), valid);
+        }
+    }
+    fclose(fp);
+
     return 0;
 }
