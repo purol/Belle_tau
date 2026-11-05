@@ -364,6 +364,7 @@ int main(int argc, char* argv[]) {
 
     fp = fopen((std::string(argv[11]) + "/weight_two_2D_CTRL_info.txt").c_str(), "w");
     fprintf(fp, "%lf\n%lf", originalD, minD);
+    fprintf(fp, "\n");
     fprintf(fp, "%s\n%s", compare_variables.at(var1_index).c_str(), compare_variables.at(var2_index).c_str());
     fclose(fp);
 
