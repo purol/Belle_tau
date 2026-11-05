@@ -688,4 +688,61 @@ inline std::vector<double> GetValidationBoundary(RooDataSet& data_, ABCDParamete
     return boundaries;
 }
 
+struct FBDTResult {
+    double control_cut[2] = { NAN, NAN };
+    double target_eff[2] = { NAN, NAN };
+    double eff_MC[2] = { NAN, NAN };
+    double eff_data[2] = { NAN, NAN };
+    double ratio[2] = { NAN, NAN };
+    double stat_err[2] = { NAN, NAN };
+};
+
+inline FBDTResult CalculateFBDTEfficiency(const TH1* MC_, const TH1* data_, double before_BDT_, double high_yield_, double low_yield_) {
+    FBDTResult result;
+    if (before_BDT_ <= 0.0) return result;
+
+    // match high and low efficiencies to nominal signal MC
+    result.target_eff[0] = high_yield_ / before_BDT_;
+    result.target_eff[1] = low_yield_ / before_BDT_;
+    const double total_MC = MC_->Integral();
+    if (total_MC <= 0.0) return result;
+
+    const double total_data = data_->Integral();
+    int upper_bin = MC_->GetNbinsX() + 1;
+    for (int i = 0; i < 2; i++) {
+        // high first, then low below the high cut
+        const double target = total_MC * result.target_eff[i];
+        double sum = 0.0, best_sum = 0.0;
+        int cut_bin = upper_bin;
+        for (int bin = upper_bin - 1; bin >= 1; bin--) {
+            sum += MC_->GetBinContent(bin);
+            if (std::fabs(sum - target) < std::fabs(best_sum - target)) {
+                best_sum = sum;
+                cut_bin = bin;
+            }
+        }
+        result.control_cut[i] = MC_->GetBinLowEdge(cut_bin);
+        const double pass_MC = (cut_bin < upper_bin) ? MC_->Integral(cut_bin, upper_bin - 1) : 0.0;
+        const double pass_data = (cut_bin < upper_bin) ? data_->Integral(cut_bin, upper_bin - 1) : 0.0;
+        result.eff_MC[i] = pass_MC / total_MC;
+        if (total_data > 0.0) result.eff_data[i] = pass_data / total_data;
+
+        // propagate the weighted bin errors to data/MC
+        if (result.eff_MC[i] > 0.0 && std::isfinite(result.eff_data[i])) {
+            const double ratio = result.eff_data[i] / result.eff_MC[i];
+            double variance = 0.0;
+            for (int bin = 1; bin <= MC_->GetNbinsX(); bin++) {
+                const double pass = (cut_bin <= bin && bin < upper_bin) ? 1.0 : 0.0;
+                const double err_data = (pass - result.eff_data[i]) * data_->GetBinError(bin) / total_data;
+                const double err_MC = (pass - result.eff_MC[i]) * MC_->GetBinError(bin) / total_MC;
+                variance += std::pow(err_data, 2) + std::pow(ratio * err_MC, 2);
+            }
+            result.ratio[i] = ratio;
+            result.stat_err[i] = std::sqrt(variance) / result.eff_MC[i];
+        }
+        upper_bin = cut_bin;
+    }
+    return result;
+}
+
 #endif
