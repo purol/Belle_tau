@@ -51,7 +51,7 @@ mapfile -t all_variables < <(
 submit_Plotter() {
   local command
 
-  if [ "$#" -eq 10 ]; then
+  if [ "$#" -eq 12 ]; then
     local Code=$1 # ex. ./bin/Plotter
     local VerName=$2 # ex. Alice
     local VarName=$3 # ex. deltaE
@@ -62,36 +62,8 @@ submit_Plotter() {
     local BackgroundTypes=$8
     local SignalLegends=${9}
     local BackgroundLegends=${10}
-    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
-    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
-    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
-
-    printf -v command '%q ' \
-      "${Code}" \
-      "${VarName}" \
-      "./${VerName}/${Analysis_VerName}/" \
-      "/${InputDir}/" \
-      "./${VerName}/${Analysis_VerName}/${OutputPath}" \
-      "${OutputName}" \
-      "${SignalTypes}" \
-      "${BackgroundTypes}" \
-      "${SignalLegends}" \
-      "${BackgroundLegends}"
-
-    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" "${command}"
-  elif [ "$#" -eq 12 ]; then
-    local Code=$1 # ex. ./bin/Plotter
-    local VerName=$2 # ex. Alice
-    local VarName=$3 # ex. deltaE
-    local VarMin=$4
-    local VarMax=$5
-    local InputDir=$6 # ex. before_M_deltaE_selection
-    local OutputName=$7 # ex. deltaE
-    local OutputPath=$8 # ex. plot
-    local SignalTypes=$9
-    local BackgroundTypes=${10}
-    local SignalLegends=${11}
-    local BackgroundLegends=${12}
+    local DataTypes=${11}
+    local DataLegends=${12}
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
@@ -107,6 +79,42 @@ submit_Plotter() {
       "${BackgroundTypes}" \
       "${SignalLegends}" \
       "${BackgroundLegends}" \
+      "${DataTypes}" \
+      "${DataLegends}"
+
+    bsub -q l -J Plotter -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" "${command}"
+  elif [ "$#" -eq 14 ]; then
+    local Code=$1 # ex. ./bin/Plotter
+    local VerName=$2 # ex. Alice
+    local VarName=$3 # ex. deltaE
+    local VarMin=$4
+    local VarMax=$5
+    local InputDir=$6 # ex. before_M_deltaE_selection
+    local OutputName=$7 # ex. deltaE
+    local OutputPath=$8 # ex. plot
+    local SignalTypes=$9
+    local BackgroundTypes=${10}
+    local SignalLegends=${11}
+    local BackgroundLegends=${12}
+    local DataTypes=${13}
+    local DataLegends=${14}
+    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
+    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
+    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
+
+    printf -v command '%q ' \
+      "${Code}" \
+      "${VarName}" \
+      "./${VerName}/${Analysis_VerName}/" \
+      "/${InputDir}/" \
+      "./${VerName}/${Analysis_VerName}/${OutputPath}" \
+      "${OutputName}" \
+      "${SignalTypes}" \
+      "${BackgroundTypes}" \
+      "${SignalLegends}" \
+      "${BackgroundLegends}" \
+      "${DataTypes}" \
+      "${DataLegends}" \
       "${VarMin}" \
       "${VarMax}"
 
@@ -118,19 +126,19 @@ submit_Plotter() {
  
 #code="${Belle_tau_DIR}/analysis_code/bin/Plotter"
 #VarName="deltaE"
-#submit_Plotter ${code} ${Analysis_Name} ${VarName} -1.1 0.6 "before_M_deltaE_selection" "before_M_deltaE_selection_deltaE" "plot" "${Signal_Type}" "${Background_Types_STR}" "${Signal_Legends}" "${Background_Legends_STR}"
+#submit_Plotter ${code} ${Analysis_Name} ${VarName} -1.1 0.6 "before_M_deltaE_selection" "before_M_deltaE_selection_deltaE" "plot" "${Signal_Type}" "${Background_Types_STR}" "${Signal_Legends}" "${Background_Legends_STR}" "" ""
 
 #code="${Belle_tau_DIR}/analysis_code/bin/Plotter"
 #VarName="M"
-#submit_Plotter ${code} ${Analysis_Name} ${VarName} 1.3 2.1 "before_M_deltaE_selection" "before_M_deltaE_selection_M" "plot" "${Signal_Type}" "${Background_Types_STR}" "${Signal_Legends}" "${Background_Legends_STR}"
+#submit_Plotter ${code} ${Analysis_Name} ${VarName} 1.3 2.1 "before_M_deltaE_selection" "before_M_deltaE_selection_M" "plot" "${Signal_Type}" "${Background_Types_STR}" "${Signal_Legends}" "${Background_Legends_STR}" "" ""
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter"
 VarName="deltaE"
-submit_Plotter ${code} ${Analysis_Name} ${VarName} -0.5 0.4 "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_deltaE" "plot" "${Signal_Type}" "${Background_Types_STR}" "${Signal_Legends}" "${Background_Legends_STR}"
+submit_Plotter ${code} ${Analysis_Name} ${VarName} -0.5 0.4 "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_deltaE" "plot" "${Signal_Type}" "${Background_Types_STR}" "${Signal_Legends}" "${Background_Legends_STR}" "" ""
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter"
 VarName="M"
-submit_Plotter ${code} ${Analysis_Name} ${VarName} 1.5 1.9 "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M" "plot" "${Signal_Type}" "${Background_Types_STR}" "${Signal_Legends}" "${Background_Legends_STR}"
+submit_Plotter ${code} ${Analysis_Name} ${VarName} 1.5 1.9 "before_strict_M_deltaE_selection" "before_strict_M_deltaE_selection_M" "plot" "${Signal_Type}" "${Background_Types_STR}" "${Signal_Legends}" "${Background_Legends_STR}" "" ""
 
 Directories=(
     "before_PrimarymuonID_selection"
@@ -153,19 +161,19 @@ for ((i = 0; i < ${#Directories[@]}; i++)); do
   for ((j = 0; j < ${#input_variables[@]}; j++)); do
     code="${Belle_tau_DIR}/analysis_code/bin/Plotter"
     VarName="${input_variables[j]}"
-    submit_Plotter ${code} ${Analysis_Name} ${VarName} "${Directory}" "${Directory}_${VarName}" "plot" "${Signal_Type}" "${Background_Types_STR}" "${Signal_Legends}" "${Background_Legends_STR}"
+    submit_Plotter ${code} ${Analysis_Name} ${VarName} "${Directory}" "${Directory}_${VarName}" "plot" "${Signal_Type}" "${Background_Types_STR}" "${Signal_Legends}" "${Background_Legends_STR}" "" ""
   done
 
   for ((j = 0; j < ${#other_variables_log[@]}; j++)); do
     code="${Belle_tau_DIR}/analysis_code/bin/Plotter_log"
     VarName="${other_variables_log[j]}"
-    submit_Plotter ${code} ${Analysis_Name} ${VarName} "${Directory}" "${Directory}_${VarName}" "plot" "${Signal_Type}" "${Background_Types_STR}" "${Signal_Legends}" "${Background_Legends_STR}"
+    submit_Plotter ${code} ${Analysis_Name} ${VarName} "${Directory}" "${Directory}_${VarName}" "plot" "${Signal_Type}" "${Background_Types_STR}" "${Signal_Legends}" "${Background_Legends_STR}" "" ""
   done
 
   for ((j = 0; j < ${#other_variables_linear[@]}; j++)); do
     code="${Belle_tau_DIR}/analysis_code/bin/Plotter"
     VarName="${other_variables_linear[j]}"
-    submit_Plotter ${code} ${Analysis_Name} ${VarName} "${Directory}" "${Directory}_${VarName}" "plot" "${Signal_Type}" "${Background_Types_STR}" "${Signal_Legends}" "${Background_Legends_STR}"
+    submit_Plotter ${code} ${Analysis_Name} ${VarName} "${Directory}" "${Directory}_${VarName}" "plot" "${Signal_Type}" "${Background_Types_STR}" "${Signal_Legends}" "${Background_Legends_STR}" "" ""
   done
 
 done

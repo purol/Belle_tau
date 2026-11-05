@@ -30,6 +30,13 @@ for Type in "${Types[@]}"; do
     sleep 0.5s
 done
 
+IFS=':' read -r -a Types <<< "$data_Type"
+
+for Type in "${Types[@]}"; do
+    check_log_files ${Analysis_Name} ${Type}
+    sleep 0.5s
+done
+
 echo "All logs successfully completed."
 exit 0  # Return zero status to indicate success
 

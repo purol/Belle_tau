@@ -11,7 +11,7 @@ get_params() {
 submit_Plotter() {
   local command
 
-  if [ "$#" -eq 8 ]; then
+  if [ "$#" -eq 10 ]; then
     local Code=$1 # ex. ./bin/Plotter
     local VerName=$2 # ex. Alice
     local VarName=$3 # ex. deltaE
@@ -20,36 +20,8 @@ submit_Plotter() {
     local OutputPath=$6 # ex. plot
     local MCTypes=$7
     local MCLegends=${8}
-    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
-    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
-    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
-
-    printf -v command '%q ' \
-      "${Code}" \
-      "${VarName}" \
-      "./${VerName}/${Analysis_VerName}/" \
-      "/${InputDir}/" \
-      "./${VerName}/${Analysis_VerName}/${OutputPath}" \
-      "${OutputName}" \
-      "${MCTypes}" \
-      "${MCLegends}"
-
-    bsub -q l \
-    -J Plotter \
-    -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" \
-    -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" \
-    "${command}"
-  elif [ "$#" -eq 10 ]; then
-    local Code=$1 # ex. ./bin/Plotter
-    local VerName=$2 # ex. Alice
-    local VarName=$3 # ex. deltaE
-    local VarMin=$4
-    local VarMax=$5
-    local InputDir=$6 # ex. before_M_deltaE_selection
-    local OutputName=$7 # ex. deltaE
-    local OutputPath=$8 # ex. plot
-    local MCTypes=$9
-    local MCLegends=${10}
+    local DataTypes=${9}
+    local DataLegends=${10}
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
     mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
@@ -63,6 +35,42 @@ submit_Plotter() {
       "${OutputName}" \
       "${MCTypes}" \
       "${MCLegends}" \
+      "${DataTypes}" \
+      "${DataLegends}"
+
+    bsub -q l \
+    -J Plotter \
+    -o "./${VerName}/${Analysis_VerName}/${OutputPath}/log/${InputDir}_${OutputName}.log" \
+    -e "./${VerName}/${Analysis_VerName}/${OutputPath}/err/${InputDir}_${OutputName}.err" \
+    "${command}"
+  elif [ "$#" -eq 12 ]; then
+    local Code=$1 # ex. ./bin/Plotter
+    local VerName=$2 # ex. Alice
+    local VarName=$3 # ex. deltaE
+    local VarMin=$4
+    local VarMax=$5
+    local InputDir=$6 # ex. before_M_deltaE_selection
+    local OutputName=$7 # ex. deltaE
+    local OutputPath=$8 # ex. plot
+    local MCTypes=$9
+    local MCLegends=${10}
+    local DataTypes=${11}
+    local DataLegends=${12}
+    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
+    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
+    mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/err"
+
+    printf -v command '%q ' \
+      "${Code}" \
+      "${VarName}" \
+      "./${VerName}/${Analysis_VerName}/" \
+      "/${InputDir}/" \
+      "./${VerName}/${Analysis_VerName}/${OutputPath}" \
+      "${OutputName}" \
+      "${MCTypes}" \
+      "${MCLegends}" \
+      "${DataTypes}" \
+      "${DataLegends}" \
       "${VarMin}" \
       "${VarMax}"
 
@@ -90,6 +98,8 @@ submit_Plotter_weight() {
   local MCLegends=${10}
   local WeightPath=${11}
   local WeightName=${12}
+  local DataTypes=${13}
+  local DataLegends=${14}
 
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}"
   mkdir -p "./${VerName}/${Analysis_VerName}/${OutputPath}/log"
@@ -104,6 +114,8 @@ submit_Plotter_weight() {
     "${OutputName}" \
     "${MCTypes}" \
     "${MCLegends}" \
+    "${DataTypes}" \
+    "${DataLegends}" \
     "./${VerName}/${Analysis_VerName}/${WeightPath}" \
     "${WeightName}" \
     "${VarMin}" \
@@ -163,23 +175,23 @@ get_params "${FBDT_weight_DIR}/${ALP_Type}/final_output_test_after_application" 
 
   code="${Belle_tau_DIR}/analysis_code/bin/Plotter_MC"
   VarName="BDT_output_1_${mass}_${life}_${A}_${B_tag}"
-  submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_1_${mass}_${life}_${A}_${B_tag}" "plot" "${Types_STR_WITH_SIGNAL}" "${Legends_STR_WITH_SIGNAL}"
+  submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_1_${mass}_${life}_${A}_${B_tag}" "plot" "${Types_STR_WITH_SIGNAL}" "${Legends_STR_WITH_SIGNAL}" "${data_Type}" "${data_Legends}"
 
   code="${Belle_tau_DIR}/analysis_code/bin/Plotter_MC"
   VarName="BDT_output_2_${mass}_${life}_${A}_${B_tag}"
-  submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_2_${mass}_${life}_${A}_${B_tag}" "plot" "${Types_STR_WITH_SIGNAL}" "${Legends_STR_WITH_SIGNAL}"
+  submit_Plotter ${code} ${Analysis_Name} ${VarName} 0.0 1.0 "final_output_after_application" "final_output_after_application_BDT_output_2_${mass}_${life}_${A}_${B_tag}" "plot" "${Types_STR_WITH_SIGNAL}" "${Legends_STR_WITH_SIGNAL}" "${data_Type}" "${data_Legends}"
 done
 
 get_params "${nominal_analysis_DIR}/ALP/final_output_after_application/" | while read mass life A B; do
   code="${Belle_tau_DIR}/analysis_code/bin/Plotter_MC_weight"
   VarName="BDT_output_1_${mass}_${life}_${A}_${B}"
   VarName=${VarName//-/m}
-  submit_Plotter_weight "${code}" "${Analysis_Name}" "${VarName}" 0.0 1.0 "final_output_after_application" "final_output_after_application_${VarName}_weight" "plot" "${Types_STR_WITH_SIGNAL}" "${Legends_STR_WITH_SIGNAL}" "Weight" "weight_one_2D_CTRL_${mass}_${life}_${A}_${B}"
+  submit_Plotter_weight "${code}" "${Analysis_Name}" "${VarName}" 0.0 1.0 "final_output_after_application" "final_output_after_application_${VarName}_weight" "plot" "${Types_STR_WITH_SIGNAL}" "${Legends_STR_WITH_SIGNAL}" "Weight" "weight_one_2D_CTRL_${mass}_${life}_${A}_${B}" "${data_Type}" "${data_Legends}"
 
   code="${Belle_tau_DIR}/analysis_code/bin/Plotter_MC_weight"
   VarName="BDT_output_2_${mass}_${life}_${A}_${B}"
   VarName=${VarName//-/m}
-  submit_Plotter_weight "${code}" "${Analysis_Name}" "${VarName}" 0.0 1.0 "final_output_after_application" "final_output_after_application_${VarName}_weight" "plot" "${Types_STR_WITH_SIGNAL}" "${Legends_STR_WITH_SIGNAL}" "Weight" "weight_two_2D_CTRL_${mass}_${life}_${A}_${B}"
+  submit_Plotter_weight "${code}" "${Analysis_Name}" "${VarName}" 0.0 1.0 "final_output_after_application" "final_output_after_application_${VarName}_weight" "plot" "${Types_STR_WITH_SIGNAL}" "${Legends_STR_WITH_SIGNAL}" "Weight" "weight_two_2D_CTRL_${mass}_${life}_${A}_${B}" "${data_Type}" "${data_Legends}"
 done
 
 code="${Belle_tau_DIR}/analysis_code/bin/Plotter_2D_MC"

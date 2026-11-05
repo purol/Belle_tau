@@ -67,3 +67,17 @@ for Type in "${Types[@]}"; do
     submit_logger ${code} ${Analysis_Name} ${Type}
     sleep 1.0s
 done
+
+IFS=':' read -r -a Types <<< "$data_Type"
+
+code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main_CTRL"
+for Type in "${Types[@]}"; do
+    submit_analysis ${code} ${Analysis_Name} ${Type}
+    sleep 1.0s
+done
+
+code="${Belle_tau_DIR}/analysis_code/bin/Analysis_main_CTRL_log"
+for Type in "${Types[@]}"; do
+    submit_logger ${code} ${Analysis_Name} ${Type}
+    sleep 1.0s
+done
