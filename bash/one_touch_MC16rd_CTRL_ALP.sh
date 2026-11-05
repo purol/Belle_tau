@@ -235,9 +235,6 @@ bash ${shell_DIR}/submitter_GetWeight_CTRL_ALP.sh
 wait_job "GetWeight"
 
 bash ${shell_DIR}/submitter_calculate_FBDT_syst_CTRL_ALP.sh
-if [[ $? -ne 0 ]]; then
-  exit 1
-fi
 wait_job "FBDTSyst"
 
 bash ${shell_DIR}/submitter_Plotter_secondary_CTRL_ALP.sh
