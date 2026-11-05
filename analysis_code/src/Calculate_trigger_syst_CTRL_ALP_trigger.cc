@@ -130,14 +130,14 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < reference_histograms.size(); i++) reference_histograms.at(i)->Sumw2();
 
     // define conditions
-    std::string ECL_pass = "(0.5 < L1PSNM__bohie__bc) || (0.5 < L1PSNM__bolml6__bc) || (0.5 < L1PSNM__bolml7__bc) || (0.5 < L1PSNM__bolml8__bc) || (0.5 < L1PSNM__bolml9__bc) || (0.5 < L1PSNM__bolml10__bc) || (0.5 < L1PSNM__bolml12__bc)";
-    std::string ECL_fail = "(0.5 > L1PSNM__bohie__bc) && (0.5 > L1PSNM__bolml6__bc) && (0.5 > L1PSNM__bolml7__bc) && (0.5 > L1PSNM__bolml8__bc) && (0.5 > L1PSNM__bolml9__bc) && (0.5 > L1PSNM__bolml10__bc) && (0.5 > L1PSNM__bolml12__bc)";
-    std::string CDC_pass = "(0.5 < L1PSNM__boffy__bc) || (0.5 < L1PSNM__bofyo__bc) || (0.5 < L1PSNM__bostt__bc)";
-    std::string CDC_fail = "(0.5 > L1PSNM__boffy__bc) && (0.5 > L1PSNM__bofyo__bc) && (0.5 > L1PSNM__bostt__bc)";
+    std::string ECL_pass = "(0.5 < ifNANgiveX__boL1PSNM__bohie__bc__cm__mi1__bc) || (0.5 < ifNANgiveX__boL1PSNM__bolml6__bc__cm__mi1__bc) || (0.5 < ifNANgiveX__boL1PSNM__bolml7__bc__cm__mi1__bc) || (0.5 < ifNANgiveX__boL1PSNM__bolml8__bc__cm__mi1__bc) || (0.5 < ifNANgiveX__boL1PSNM__bolml9__bc__cm__mi1__bc) || (0.5 < ifNANgiveX__boL1PSNM__bolml10__bc__cm__mi1__bc) || (0.5 < ifNANgiveX__boL1PSNM__bolml12__bc__cm__mi1__bc)";
+    std::string ECL_fail = "(0.5 > ifNANgiveX__boL1PSNM__bohie__bc__cm__mi1__bc) && (0.5 > ifNANgiveX__boL1PSNM__bolml6__bc__cm__mi1__bc) && (0.5 > ifNANgiveX__boL1PSNM__bolml7__bc__cm__mi1__bc) && (0.5 > ifNANgiveX__boL1PSNM__bolml8__bc__cm__mi1__bc) && (0.5 > ifNANgiveX__boL1PSNM__bolml9__bc__cm__mi1__bc) && (0.5 > ifNANgiveX__boL1PSNM__bolml10__bc__cm__mi1__bc) && (0.5 > ifNANgiveX__boL1PSNM__bolml12__bc__cm__mi1__bc)";
+    std::string CDC_pass = "(0.5 < ifNANgiveX__boL1PSNM__boffy__bc__cm__mi1__bc) || (0.5 < ifNANgiveX__boL1PSNM__bofyo__bc__cm__mi1__bc) || (0.5 < ifNANgiveX__boL1PSNM__bostt__bc__cm__mi1__bc)";
+    std::string CDC_fail = "(0.5 > ifNANgiveX__boL1PSNM__boffy__bc__cm__mi1__bc) && (0.5 > ifNANgiveX__boL1PSNM__bofyo__bc__cm__mi1__bc) && (0.5 > ifNANgiveX__boL1PSNM__bostt__bc__cm__mi1__bc)";
 
     // trigger bits for alternative references
-    std::string ECL_reference_pass = "(0.5 < L1PSNM__bohie__bc)";
-    std::string CDC_reference_pass = "(0.5 < L1PSNM__bofff__bc) || (0.5 < L1PSNM__boffo__bc)";
+    std::string ECL_reference_pass = "(0.5 < ifNANgiveX__boL1PSNM__bohie__bc__cm__mi1__bc)";
+    std::string CDC_reference_pass = "(0.5 < ifNANgiveX__boL1PSNM__bofff__bc__cm__mi1__bc) || (0.5 < ifNANgiveX__boL1PSNM__boffo__bc__cm__mi1__bc)";
 
     // MC
     Loader loader_00_MC("tau_lfv");
