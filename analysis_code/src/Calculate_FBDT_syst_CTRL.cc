@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <cmath>
+#include <cstdlib>
 #include <format>
 #include <fstream>
 #include <iomanip>
@@ -7,7 +8,6 @@
 #include <limits>
 #include <map>
 #include <sstream>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -63,9 +63,6 @@ ScoreDistribution GetControlDistribution(const std::string& path_, const std::ve
     for (int i = 0; i < dataset.numEntries(); i++) {
         const double value = dataset.get(i)->getRealValue("score");
         const double w = dataset.weight();
-        if (!std::isfinite(w) || w < 0.0 || !std::isfinite(value) || value < 0.0 || value > 1.0) {
-            throw std::runtime_error("Invalid weight or BDT score in " + score_name_);
-        }
         if (w == 0.0) continue;
         Yield& bin = result.bins[value];
         bin.sum += w;
@@ -99,12 +96,11 @@ double FindControlCut(const ScoreDistribution& MC_, double upper_, double target
 }
 
 struct Efficiency {
-    double value = NAN;
-    double variance = NAN;
+    double value;
+    double variance;
 };
 
 Efficiency GetEfficiency(const ScoreDistribution& sample_, double lower_, double upper_) {
-    if (sample_.total <= 0.0 || !std::isfinite(lower_) || !std::isfinite(upper_)) return {};
     Yield pass;
     Yield fail;
     for (const auto& bin : sample_.bins) {
@@ -131,11 +127,6 @@ int main(int argc, char* argv[]) {
     * (argv[10]): B constant
     */
 
-    if (argc != 7 && argc != 11) {
-        printf("6 or 10 arguments are required.\n");
-        return 1;
-    }
-
     const std::string nominal_path = argv[1];
     const std::string control_path = argv[3];
     const bool is_ALP = (argc == 11);
@@ -150,7 +141,6 @@ int main(int argc, char* argv[]) {
         const double life = std::stod(argv[8]);
         const int A = std::stoi(argv[9]);
         const int B = std::stoi(argv[10]);
-        if (!(life > 0.0)) throw std::runtime_error("Invalid ALP lifetime");
         suffix = std::format("_{:g}_{:g}_{}_{}", mass, life, A, B);
         weight_suffix = std::string("_") + argv[7] + "_" + argv[8] + "_" + argv[9] + "_" + argv[10];
         const std::string strA = (A < 0) ? "m" + std::to_string(-A) : std::to_string(A);
@@ -158,10 +148,11 @@ int main(int argc, char* argv[]) {
         score_suffix = std::format("_{:g}_{:g}_{}_{}", mass, life, strA, strB);
         signal_file = std::format("alpha_mass{:g}_life{:g}_A{}_B{}_", mass, life, A, B);
         resolution_file = signal_file + resolution_file;
-        double width = 0.075;
-        if (life < 0.7) width = 0.025;
-        else if (life < 7.0) width = 0.03;
-        else if (life < 70.0) width = 0.035;
+        double width = 0.0;
+        if ((0.0 < life) && (life < 0.7)) width = 0.025;
+        else if ((0.7 <= life) && (life < 7.0)) width = 0.03;
+        else if ((7.0 <= life) && (life < 70.0)) width = 0.035;
+        else if (70.0 <= life) width = 0.075;
         cut_m_alpha = "(" + std::to_string(mass - width) + " < extraInfo__boALP_M__bc) && (extraInfo__boALP_M__bc < " + std::to_string(mass + width) + ")";
     }
 
@@ -224,12 +215,12 @@ int main(int argc, char* argv[]) {
         std::ifstream info(weight_path + "_info.txt");
         // GetWeight can write the minimum D and the first variable without a separator.
         std::string minimum_D;
-        if (!(info >> original_D >> minimum_D)) throw std::runtime_error("Cannot read " + weight_path + "_info.txt");
-        size_t pos;
-        std::stod(minimum_D, &pos);
-        var1 = minimum_D.substr(pos);
+        info >> original_D >> minimum_D;
+        char* first_variable;
+        std::strtod(minimum_D.c_str(), &first_variable);
+        var1 = first_variable;
         if (var1.empty()) info >> var1;
-        if (!(info >> var2)) throw std::runtime_error("Cannot read " + weight_path + "_info.txt");
+        info >> var2;
         EventWeight CTRL_weight(weight_path + ".csv",
             { {var1, var1 + "_min", var1 + "_max"}, {var2, var2 + "_min", var2 + "_max"} }, "weight", true);
         EventWeights::Register(weight_name, CTRL_weight);
@@ -238,16 +229,10 @@ int main(int argc, char* argv[]) {
 
         const int bin_A = 4 * i + 1;
         const double total = before_BDT.GetBinContent(bin_A);
-        double target_high = NAN, target_low = NAN;
-        double control_high = NAN, control_low = NAN;
-        if (total > 0.0) {
-            target_high = after_BDT.GetBinContent(bin_A) / total;
-            target_low = after_BDT.GetBinContent(bin_A + 2) / total;
-            if (MC.total > 0.0) {
-                control_high = FindControlCut(MC, above_max, target_high);
-                control_low = FindControlCut(MC, control_high, target_low);
-            }
-        }
+        const double target_high = after_BDT.GetBinContent(bin_A) / total;
+        const double target_low = after_BDT.GetBinContent(bin_A + 2) / total;
+        const double control_high = FindControlCut(MC, above_max, target_high);
+        const double control_low = FindControlCut(MC, control_high, target_low);
 
         for (int j = 0; j < 2; j++) {
             const bool high = (j == 0);
@@ -255,24 +240,20 @@ int main(int argc, char* argv[]) {
             const double upper = high ? above_max : control_high;
             const Efficiency eff_MC = GetEfficiency(MC, lower, upper);
             const Efficiency eff_data = GetEfficiency(data, lower, upper);
-            double ratio = NAN, error = NAN;
-            if (eff_MC.value > 0.0 && std::isfinite(eff_data.value)) {
-                ratio = eff_data.value / eff_MC.value;
-                error = std::sqrt(eff_data.variance + ratio * ratio * eff_MC.variance) / eff_MC.value;
-            }
+            const double ratio = eff_data.value / eff_MC.value;
+            const double error = std::sqrt(eff_data.variance + ratio * ratio * eff_MC.variance) / eff_MC.value;
             rows << i + 1 << ',' << (high ? "high" : "low") << ',' << nominal_low.at(i) << ',' << nominal_high.at(i)
                  << ',' << control_low << ',' << control_high << ',' << (high ? target_high : target_low)
                  << ',' << eff_MC.value << ',' << eff_data.value << ',' << ratio << ',' << error
-                 << ',' << std::fabs(ratio - 1.0) << ',' << (std::isfinite(ratio) && std::isfinite(error)) << '\n';
+                 << ',' << std::fabs(ratio - 1.0) << '\n';
         }
     }
 
     // print result
     const std::string filename = std::string(argv[6]) + "/FBDTSyst" + suffix + ".csv";
     std::ofstream output(filename);
-    output << "region,bdt_range,nominal_low_cut,nominal_high_cut,control_low_cut,control_high_cut,target_eff,control_eff_MC,control_eff_data,data_over_MC,stat_err,abs_syst,valid\n";
+    output << "region,bdt_range,nominal_low_cut,nominal_high_cut,control_low_cut,control_high_cut,target_eff,control_eff_MC,control_eff_data,data_over_MC,stat_err,abs_syst\n";
     output << rows.str();
     output.close();
-    if (!output) throw std::runtime_error("Cannot write " + filename);
     return 0;
 }

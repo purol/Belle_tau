@@ -236,7 +236,7 @@ fi
 bash ${shell_DIR}/submitter_GetWeight_CTRL.sh
 wait_job "GetWeight"
 
-bash ${shell_DIR}/submitter_calculate_FBDT_syst_CTRL.sh SIGNAL || exit 1
+bash ${shell_DIR}/submitter_calculate_FBDT_syst_CTRL.sh SIGNAL
 wait_job "FBDTSyst"
 
 bash ${shell_DIR}/submitter_Plotter_secondary_CTRL.sh

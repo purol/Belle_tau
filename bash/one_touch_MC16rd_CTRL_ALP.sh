@@ -234,7 +234,7 @@ fi
 bash ${shell_DIR}/submitter_GetWeight_CTRL_ALP.sh
 wait_job "GetWeight"
 
-bash ${shell_DIR}/submitter_calculate_FBDT_syst_CTRL.sh ALP || exit 1
+bash ${shell_DIR}/submitter_calculate_FBDT_syst_CTRL.sh ALP
 wait_job "FBDTSyst"
 
 bash ${shell_DIR}/submitter_Plotter_secondary_CTRL_ALP.sh
