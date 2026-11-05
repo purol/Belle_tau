@@ -689,8 +689,7 @@ inline std::vector<double> GetValidationBoundary(RooDataSet& data_, ABCDParamete
 }
 
 struct FBDTResult {
-    double nominal_low_cut, nominal_high_cut;
-    double control_low_cut = NAN, control_high_cut = NAN;
+    double control_cut[2] = { NAN, NAN };
     double target_eff[2] = { NAN, NAN };
     double eff_MC[2] = { NAN, NAN };
     double eff_data[2] = { NAN, NAN };
@@ -698,10 +697,8 @@ struct FBDTResult {
     double stat_err[2] = { NAN, NAN };
 };
 
-inline FBDTResult CalculateFBDTEfficiency(const TH1* MC_, const TH1* data_, double nominal_low_cut_, double nominal_high_cut_, double before_BDT_, double high_yield_, double low_yield_) {
+inline FBDTResult CalculateFBDTEfficiency(const TH1* MC_, const TH1* data_, double before_BDT_, double high_yield_, double low_yield_) {
     FBDTResult result;
-    result.nominal_low_cut = nominal_low_cut_;
-    result.nominal_high_cut = nominal_high_cut_;
     if (before_BDT_ <= 0.0) return result;
 
     // match high and low efficiencies to nominal signal MC
@@ -710,57 +707,40 @@ inline FBDTResult CalculateFBDTEfficiency(const TH1* MC_, const TH1* data_, doub
     const double total_MC = MC_->Integral();
     if (total_MC <= 0.0) return result;
 
+    const double total_data = data_->Integral();
     int upper_bin = MC_->GetNbinsX() + 1;
-    const TH1* histograms[2] = { MC_, data_ };
     for (int i = 0; i < 2; i++) {
-        // find the closest control MC efficiency, starting from the higher BDT bins
+        // high first, then low below the high cut
         const double target = total_MC * result.target_eff[i];
-        int lower_bin = upper_bin;
-        double best_difference = std::fabs(target);
-        double selected = 0.0;
+        double sum = 0.0, best_sum = 0.0;
+        int cut_bin = upper_bin;
         for (int bin = upper_bin - 1; bin >= 1; bin--) {
-            selected += MC_->GetBinContent(bin);
-            const double difference = std::fabs(selected - target);
-            if (difference < best_difference) {
-                lower_bin = bin;
-                best_difference = difference;
+            sum += MC_->GetBinContent(bin);
+            if (std::fabs(sum - target) < std::fabs(best_sum - target)) {
+                best_sum = sum;
+                cut_bin = bin;
             }
         }
-        if (i == 0) result.control_high_cut = MC_->GetBinLowEdge(lower_bin);
-        else result.control_low_cut = MC_->GetBinLowEdge(lower_bin);
+        result.control_cut[i] = MC_->GetBinLowEdge(cut_bin);
+        const double pass_MC = (cut_bin < upper_bin) ? MC_->Integral(cut_bin, upper_bin - 1) : 0.0;
+        const double pass_data = (cut_bin < upper_bin) ? data_->Integral(cut_bin, upper_bin - 1) : 0.0;
+        result.eff_MC[i] = pass_MC / total_MC;
+        if (total_data > 0.0) result.eff_data[i] = pass_data / total_data;
 
-        // get the efficiency and its variance for control MC and data
-        double eff[2] = { NAN, NAN };
-        double variance[2] = { NAN, NAN };
-        for (int j = 0; j < 2; j++) {
-            const TH1* hist = histograms[j];
-            const double total = hist->Integral();
-            if (total <= 0.0) continue;
-
-            double pass = 0.0;
-            double pass_sumw2 = 0.0;
-            double fail_sumw2 = 0.0;
-            for (int bin = 1; bin <= hist->GetNbinsX(); bin++) {
-                if (lower_bin <= bin && bin < upper_bin) {
-                    pass += hist->GetBinContent(bin);
-                    pass_sumw2 += std::pow(hist->GetBinError(bin), 2);
-                }
-                else {
-                    fail_sumw2 += std::pow(hist->GetBinError(bin), 2);
-                }
+        // propagate the weighted bin errors to data/MC
+        if (result.eff_MC[i] > 0.0 && std::isfinite(result.eff_data[i])) {
+            const double ratio = result.eff_data[i] / result.eff_MC[i];
+            double variance = 0.0;
+            for (int bin = 1; bin <= MC_->GetNbinsX(); bin++) {
+                const double pass = (cut_bin <= bin && bin < upper_bin) ? 1.0 : 0.0;
+                const double err_data = (pass - result.eff_data[i]) * data_->GetBinError(bin) / total_data;
+                const double err_MC = (pass - result.eff_MC[i]) * MC_->GetBinError(bin) / total_MC;
+                variance += std::pow(err_data, 2) + std::pow(ratio * err_MC, 2);
             }
-            eff[j] = pass / total;
-            variance[j] = (std::pow(1.0 - eff[j], 2) * pass_sumw2 + std::pow(eff[j], 2) * fail_sumw2) / std::pow(total, 2);
-        }
-
-        result.eff_MC[i] = eff[0];
-        result.eff_data[i] = eff[1];
-        if (eff[0] > 0.0 && std::isfinite(eff[1])) {
-            const double ratio = eff[1] / eff[0];
             result.ratio[i] = ratio;
-            result.stat_err[i] = std::sqrt(variance[1] + ratio * ratio * variance[0]) / eff[0];
+            result.stat_err[i] = std::sqrt(variance) / result.eff_MC[i];
         }
-        upper_bin = lower_bin;
+        upper_bin = cut_bin;
     }
     return result;
 }

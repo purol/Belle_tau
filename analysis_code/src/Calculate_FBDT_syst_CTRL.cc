@@ -104,18 +104,11 @@ int main(int argc, char* argv[]) {
         fclose(fp);
         std::string var1(first), var2(second);
 
-        EventWeight CTRL_weight(
-            weight_path + ".csv",
-            { {var1, var1 + "_min", var1 + "_max"}, {var2, var2 + "_min", var2 + "_max"} },
-            "weight",
-            true
-        );
+        EventWeight CTRL_weight(weight_path + ".csv", { {var1, var1 + "_min", var1 + "_max"}, {var2, var2 + "_min", var2 + "_max"} }, "weight", true);
         EventWeights::Register(weight_name, CTRL_weight);
 
         TH1D FBDT_MC("FBDT_MC", ";BDT output;arbitrary unit", 100, BDT_bins);
         TH1D FBDT_data("FBDT_data", ";BDT output;arbitrary unit", 100, BDT_bins);
-        FBDT_MC.Sumw2();
-        FBDT_data.Sumw2();
 
         // control MC
         Loader loader_MC("tau_lfv");
@@ -134,7 +127,7 @@ int main(int argc, char* argv[]) {
 
         // high and low BDT efficiencies use the same pre-BDT denominator
         const int bin_A = 4 * i + 1;
-        results[i] = CalculateFBDTEfficiency(&FBDT_MC, &FBDT_data, nominal_low.at(i), nominal_high.at(i), before_BDT.GetBinContent(bin_A), after_BDT.GetBinContent(bin_A), after_BDT.GetBinContent(bin_A + 2));
+        results[i] = CalculateFBDTEfficiency(&FBDT_MC, &FBDT_data, before_BDT.GetBinContent(bin_A), after_BDT.GetBinContent(bin_A), after_BDT.GetBinContent(bin_A + 2));
     }
 
     // print result
@@ -149,7 +142,7 @@ int main(int argc, char* argv[]) {
         const FBDTResult& result = results[i];
         for (int j = 0; j < 2; j++) {
             const bool valid = std::isfinite(result.ratio[j]) && std::isfinite(result.stat_err[j]);
-            fprintf(fp, "%d,%s,%.17g,%.17g,%.17g,%.17g", i + 1, (j == 0) ? "high" : "low", result.nominal_low_cut, result.nominal_high_cut, result.control_low_cut, result.control_high_cut);
+            fprintf(fp, "%d,%s,%.17g,%.17g,%.17g,%.17g", i + 1, (j == 0) ? "high" : "low", nominal_low.at(i), nominal_high.at(i), result.control_cut[1], result.control_cut[0]);
             fprintf(fp, ",%.17g,%.17g,%.17g,%.17g,%.17g,%.17g,%d\n", result.target_eff[j], result.eff_MC[j], result.eff_data[j], result.ratio[j], result.stat_err[j], std::fabs(result.ratio[j] - 1.0), valid);
         }
     }
