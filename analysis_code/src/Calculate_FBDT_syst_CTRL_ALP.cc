@@ -10,7 +10,6 @@
 #include "constants.h"
 #include "MyObtainWeight.h"
 #include "functions.h"
-#include "FBDTEfficiency.h"
 
 ABCDParameters parameters;
 
@@ -90,8 +89,8 @@ int main(int argc, char* argv[]) {
     ReadFOM((nominal_path + "/GridSearch_two/FOM" + suffix + ".log").c_str(), &parameters.BDT_cut_2);
     ReadABCDBoundary((nominal_path + "/ABCD_boundary" + suffix + ".txt").c_str(), { parameters.BDT_cut_1, parameters.BDT_cut_2 }, &parameters.sideband_BDT_cut_1, &parameters.sideband_BDT_cut_2);
     double theta;
-    ReadResolution((nominal_path + "/" + signal_file + "M_deltaE_result.txt").c_str(), &parameters.deltaE_peak, &parameters.deltaE_left_sigma, &parameters.deltaE_right_sigma,
-        &parameters.M_peak, &parameters.M_left_sigma, &parameters.M_right_sigma, &theta);
+
+    ReadResolution((nominal_path + "/" + signal_file + "M_deltaE_result.txt").c_str(), &parameters.deltaE_peak, &parameters.deltaE_left_sigma, &parameters.deltaE_right_sigma, &parameters.M_peak, &parameters.M_left_sigma, &parameters.M_right_sigma, &theta);
     parameters.M_size = sizeM;
     std::string cut_region = GetBCSCut(parameters.deltaE_peak, parameters.deltaE_left_sigma, parameters.deltaE_right_sigma, parameters.M_peak, parameters.M_left_sigma, parameters.M_right_sigma);
     std::vector<std::string> BDT_names = { "BDT_output_1" + score_suffix, "BDT_output_2" + score_suffix };
@@ -121,6 +120,11 @@ int main(int argc, char* argv[]) {
     loader_signal.FillCustomizedTH1D(&after_BDT, { "M", "deltaE", BDT_names.at(0), BDT_names.at(1) }, mapping_nominal);
     loader_signal.end();
 
+    // include BDT = 1 in the last bin
+    double BDT_bins[101];
+    for (int i = 0; i < 100; i++) BDT_bins[i] = i / 100.0;
+    BDT_bins[100] = std::nextafter(1.0, 2.0);
+
     // get control efficiencies
     std::vector<std::string> regions = { "one", "two" };
     std::vector<double> nominal_high = { parameters.BDT_cut_1, parameters.BDT_cut_2 };
@@ -131,15 +135,24 @@ int main(int argc, char* argv[]) {
         std::string weight_path = std::string(argv[9]) + "/" + weight_name;
         std::string var1, var2;
         if (!ReadFBDTWeightInfo(weight_path + "_info.txt", var1, var2)) return 1;
-        EventWeight CTRL_weight(weight_path + ".csv",
-            { {var1, var1 + "_min", var1 + "_max"}, {var2, var2 + "_min", var2 + "_max"} }, "weight", true);
+
+        EventWeight CTRL_weight(
+            weight_path + ".csv",
+            { {var1, var1 + "_min", var1 + "_max"}, {var2, var2 + "_min", var2 + "_max"} },
+            "weight",
+            true
+        );
         EventWeights::Register(weight_name, CTRL_weight);
+
+        TH1D FBDT_MC("FBDT_MC", ";BDT output;arbitrary unit", 100, BDT_bins);
+        TH1D FBDT_data("FBDT_data", ";BDT output;arbitrary unit", 100, BDT_bins);
+        FBDT_MC.Sumw2();
+        FBDT_data.Sumw2();
 
         RooRealVar BDT("score", "score", 0.5);
         RooRealVar weight("weight", "weight", 1.0);
 
         // control MC
-        FBDTDistribution MC;
         {
             RooDataSet control_MC("control_MC", "control_MC", RooArgSet(BDT, weight), RooFit::WeightVar("weight"));
             Loader loader_MC("tau_lfv");
@@ -148,11 +161,10 @@ int main(int argc, char* argv[]) {
             loader_MC.AddWeight(weight_name.c_str(), { {var1, var1}, {var2, var2} });
             loader_MC.FillDataSet(&control_MC, { &BDT }, { BDT_names.at(i) });
             loader_MC.end();
-            if (!GetFBDTDistribution(control_MC, BDT_names.at(i), MC)) return 1;
+            if (!FillFBDTHistogram(control_MC, &FBDT_MC, BDT_names.at(i))) return 1;
         }
 
         // control data
-        FBDTDistribution data;
         {
             RooDataSet control_data("control_data", "control_data", RooArgSet(BDT, weight), RooFit::WeightVar("weight"));
             Loader loader_data("tau_lfv");
@@ -160,13 +172,12 @@ int main(int argc, char* argv[]) {
             loader_data.AddWeight(weight_name.c_str(), { {var1, var1}, {var2, var2} });
             loader_data.FillDataSet(&control_data, { &BDT }, { BDT_names.at(i) });
             loader_data.end();
-            if (!GetFBDTDistribution(control_data, BDT_names.at(i), data)) return 1;
+            if (!FillFBDTHistogram(control_data, &FBDT_data, BDT_names.at(i))) return 1;
         }
 
         // high and low BDT efficiencies use the same pre-BDT denominator
         const int bin_A = 4 * i + 1;
-        results[i] = CalculateFBDTEfficiency(MC, data, nominal_low.at(i), nominal_high.at(i),
-            before_BDT.GetBinContent(bin_A), after_BDT.GetBinContent(bin_A), after_BDT.GetBinContent(bin_A + 2));
+        results[i] = CalculateFBDTEfficiency(&FBDT_MC, &FBDT_data, nominal_low.at(i), nominal_high.at(i), before_BDT.GetBinContent(bin_A), after_BDT.GetBinContent(bin_A), after_BDT.GetBinContent(bin_A + 2));
     }
 
     // print result
