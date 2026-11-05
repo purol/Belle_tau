@@ -1,40 +1,38 @@
 #!/bin/bash
 
-submit_FBDT_syst() {
-  local SignalType=$1
-  local OutputName="FBDTSyst"
-  shift
-  if [ "$#" -eq 4 ]; then
-    OutputName="FBDTSyst_$1_$2_$3_$4"
+submit_code() {
+  local Code=$1 # ex. ./bin/Calculate_FBDT_syst_CTRL
+  local VerName=$2 # ex. Alice
+  local SignalType=$3 # ex. SIGNAL
+  local MCList=$4
+  local dataList=$5
+  local OutputPath=$6 # ex. FBDTSyst
+
+  local ControlPath="./${VerName}/${Analysis_VerName}"
+  if ! compgen -G "${ControlPath}/${dataList}/final_output_after_application/*.root" > /dev/null; then
+    echo "No control data for FBDT efficiency."
+    return 0
   fi
+  mkdir -p "${ControlPath}/${OutputPath}" || return 1
 
   bsub -q l \
   -J FBDTSyst \
-  -o "${output_path}/${OutputName}.log" \
-  -e "${output_path}/${OutputName}.err" \
-  "${code}" \
+  -o "${ControlPath}/${OutputPath}/FBDTSyst.log" \
+  -e "${ControlPath}/${OutputPath}/FBDTSyst.err" \
+  "${Code}" \
   "${nominal_analysis_DIR}" \
   "${SignalType}" \
-  "${control_path}" \
-  "${Types_STR_WITH_SIGNAL}" \
-  "${data_Type}" \
-  "${output_path}" \
-  "$@"
+  "${ControlPath}" \
+  "${MCList}" \
+  "${dataList}" \
+  "${ControlPath}/${OutputPath}"
 }
 
-control_path="./${Analysis_Name}/${Analysis_VerName}"
-output_path="${control_path}/FBDTSyst"
-code="${Belle_tau_DIR}/analysis_code/bin/Calculate_FBDT_syst_CTRL"
 
-mkdir -p "${output_path}"
-
-if [ "$1" = "SIGNAL" ]; then
-  submit_FBDT_syst "SIGNAL"
-elif [ "$1" = "ALP" ]; then
-  # get ALP parameters from nominal signal files
-  find "${nominal_analysis_DIR}/${ALP_Type}/final_output_after_application" -maxdepth 1 -name '*.root' -printf '%f\n' | \
-    sed -nE 's/.*alpha_mass([0-9.eE+-]+)_life([0-9.eE+-]+)_A([-+0-9]+)_B([-+0-9]+)_.*/\1 \2 \3 \4/p' | sort -u | \
-  while read -r mass life A B; do
-    submit_FBDT_syst "${ALP_Type}" "${mass}" "${life}" "${A}" "${B}"
-  done
+if [ "$#" -ne 0 ]; then
+  echo "Usage: $0"
+  exit 1
 fi
+
+code="${Belle_tau_DIR}/analysis_code/bin/Calculate_FBDT_syst_CTRL"
+submit_code "${code}" "${Analysis_Name}" "SIGNAL" "${Types_STR_WITH_SIGNAL}" "${data_Type}" "FBDTSyst"
