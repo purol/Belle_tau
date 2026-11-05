@@ -135,8 +135,8 @@ int main(int argc, char* argv[]) {
     std::string CDC_pass = "(0.5 < L1PSNM__boffy__bc) || (0.5 < L1PSNM__bofyo__bc) || (0.5 < L1PSNM__bostt__bc)";
     std::string CDC_fail = "(0.5 > L1PSNM__boffy__bc) && (0.5 > L1PSNM__bofyo__bc) && (0.5 > L1PSNM__bostt__bc)";
 
-    // unused trigger bits for alternative references
-    std::string ECL_reference_pass = "(0.5 < L1PSNM__bolml0__bc) || (0.5 < L1PSNM__bolml1__bc) || (0.5 < L1PSNM__bolml2__bc) || (0.5 < L1PSNM__bolml3__bc) || (0.5 < L1PSNM__bolml4__bc)";
+    // trigger bits for alternative references
+    std::string ECL_reference_pass = "(0.5 < L1PSNM__bohie__bc)";
     std::string CDC_reference_pass = "(0.5 < L1PSNM__bofff__bc) || (0.5 < L1PSNM__boffo__bc)";
 
     // MC
@@ -375,6 +375,7 @@ int main(int argc, char* argv[]) {
     }
     fprintf(fp, "r_E,r_C,valid_E,valid_C,%s_min,%s_max,%s_min,%s_max,%s_min,%s_max", used_variables.at(0).c_str(), used_variables.at(0).c_str(), used_variables.at(1).c_str(), used_variables.at(1).c_str(), distance_variable.c_str(), distance_variable.c_str());
     fprintf(fp, ",r_E_ref_shift,r_C_ref_shift,valid_E_ref,valid_C_ref");
+    fprintf(fp, ",r_E_stat_err,r_C_stat_err,r_E_alt,r_E_alt_stat_err,r_C_alt,r_C_alt_stat_err");
     for (int ix = 1; ix <= nbins1; ++ix) {
         for (int iy = 1; iy <= nbins2; ++iy) {
             for (int iz = 1; iz <= nbins3; ++iz) {
@@ -384,6 +385,9 @@ int main(int argc, char* argv[]) {
                 fprintf(fp, ",%.17g,%.17g", eff_trigger_MC->GetYaxis()->GetBinLowEdge(iy), eff_trigger_MC->GetYaxis()->GetBinUpEdge(iy));
                 fprintf(fp, ",%.17g,%.17g", eff_trigger_MC->GetZaxis()->GetBinLowEdge(iz), eff_trigger_MC->GetZaxis()->GetBinUpEdge(iz));
                 fprintf(fp, ",%.17g,%.17g,%.0f,%.0f", r_E_ref_shift->GetBinContent(bin), r_C_ref_shift->GetBinContent(bin), valid_E_ref->GetBinContent(bin), valid_C_ref->GetBinContent(bin));
+                fprintf(fp, ",%.17g,%.17g", r_E->GetBinError(bin), r_C->GetBinError(bin));
+                fprintf(fp, ",%.17g,%.17g", r_E_alt->GetBinContent(bin), r_E_alt->GetBinError(bin));
+                fprintf(fp, ",%.17g,%.17g", r_C_alt->GetBinContent(bin), r_C_alt->GetBinError(bin));
             }
         }
     }
