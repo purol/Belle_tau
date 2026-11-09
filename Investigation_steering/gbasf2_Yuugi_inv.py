@@ -1,0 +1,1137 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# Control investigation (light-2609-luna): --control applies the final
+# Analysis_main_CTRL / CTRL_ALP cuts and random BCS separately for each channel.
+# On MC, candidates with roeM(cleanMask) >= 1 GeV trigger a truth/ROE log dump.
+# --dump_mc_secondaries also includes detector secondaries in the MC tree.
+# Example: basf2 gbasf2_Yuugi_inv.py -- --sample MC16rd --type signal --energy 4S \
+#          --control --KEKCC --inputfile /path/to/input.root --destination /path/to/output
+
+import os
+import sys
+from itertools import product
+
+import basf2
+from ROOT import Belle2
+import modularAnalysis as ma
+import variables as va
+import variables.collections as vc
+import variables.utils as vu
+from variables import variables as vm
+import vertex
+
+import stdPi0s
+import stdV0s
+import stdPhotons
+
+import pdg
+
+from glob import glob
+
+import argparse
+import re
+
+basf2.logging.max_repetitions = 10
+
+def convert_name(name: str) -> str:
+    # Step 1: replace "+:" or "-:" with "_"
+    name = re.sub(r'[+-]:', '_', name)
+
+    # Step 2: replace "(" and "," with "_"
+    name = name.replace("(", "_").replace(",", "_")
+
+    # Step 3: remove ")"
+    name = name.replace(")", "")
+
+    # Step 4: remove spaces around underscores (optional cleanup)
+    name = re.sub(r'\s*_\s*', '_', name)
+
+    return name
+
+# global variables
+BELLEONE = False
+
+def AssignIndex(sample_name, event_name, energy_name):
+    sample_index = -100
+    type_index = -100
+    energy_index = -100
+
+    if(sample_name=="data"):
+        sample_index = -1
+    elif(sample_name=="MC15ri"):
+        sample_index = 1
+    elif(sample_name=="MC15rd"):
+        sample_index = 2
+    elif(sample_name=="MC16ri"):
+        sample_index = 3
+    elif(sample_name=="MC16rd"):
+        sample_index = 4
+    elif(sample_name=="Belle_data"):
+        sample_index = 5
+    elif(sample_name=="Belle_MC"):
+        sample_index = 6
+    else:
+        print("enter the proper sample type")
+        exit(1)
+
+    if(event_name=="data"):
+        type_index = -1
+    elif(event_name=="signal"):
+        type_index = 0
+    elif(event_name=="charged"):
+        type_index = 1
+    elif(event_name=="mixed"):
+        type_index = 2
+    elif(event_name=="uubar"):
+        type_index = 3
+    elif(event_name=="ddbar"):
+        type_index = 4
+    elif(event_name=="ssbar"):
+        type_index = 5
+    elif(event_name=="ccbar"):
+        type_index = 6
+    elif(event_name=="mumu"):
+        type_index = 7
+    elif(event_name=="ee"):
+        type_index = 8
+    elif(event_name=="eeee"):
+        type_index = 9
+    elif(event_name=="eemumu"):
+        type_index = 10
+    elif(event_name=="eepipi"):
+        type_index = 11
+    elif(event_name=="eeKK"):
+        type_index = 12
+    elif(event_name=="eepp"):
+        type_index = 13
+    elif(event_name=="pipiISR"):
+        type_index = 14
+    elif(event_name=="KKISR"):
+        type_index = 15
+    elif(event_name=="gg"):
+        type_index = 16
+    elif(event_name=="eetautau"):
+        type_index = 17
+    elif(event_name=="K0K0barISR"):
+        type_index = 18
+    elif(event_name=="mumumumu"):
+        type_index = 19
+    elif(event_name=="mumutautau"):
+        type_index = 20
+    elif(event_name=="tautautautau"):
+        type_index = 21
+    elif(event_name=="taupair"):
+        type_index = 22
+    elif(event_name=="pipipi0ISR"):
+        type_index = 23
+    elif(event_name=="BBs"):
+        type_index = 24
+    elif(event_name=="BsBs"):
+        type_index = 25
+    elif(event_name=="uds"):
+        type_index = 26
+    elif(event_name=="bsbs"):
+        type_index = 27
+    elif(event_name=="nonbsbs"):
+        type_index = 28
+    elif(event_name=="eecc"):
+        type_index = 29
+    elif(event_name=="eess"):
+        type_index = 30
+    elif(event_name=="eeuu"):
+        type_index = 31
+    elif(event_name=="ALP"):
+        type_index = 32
+    elif(event_name=="BB"):
+        type_index = 33
+    elif(event_name=="hhISR"):
+        type_index = 34
+    elif(event_name=="llXX"):
+        type_index = 35
+    elif(event_name=="udsc"):
+        type_index = 36
+    else:
+        print("enter the proper event type")
+        exit(1)
+
+    if(energy_name=="4S"):
+        energy_index = 1
+    elif(energy_name=="off"):
+        energy_index = 2
+    elif(energy_name=="10657"):
+        energy_index = 3
+    elif(energy_name=="10706"):
+        energy_index = 4
+    elif(energy_name=="10751"):
+        energy_index = 5
+    elif(energy_name=="10810"):
+        energy_index = 6
+    elif(energy_name=="5Sscan"):
+        energy_index = 7
+
+    return sample_index, type_index, energy_index
+
+def GetROEVariables(maskname):
+    var_names = ["roeE", "roeM", "roeP", "roeMbc", "roeDeltae"] + \
+                ["nROE_Charged", "nROE_Photons", "nROE_NeutralHadrons"] + \
+                ["roeEextra"] + \
+                ["nROE_ECLClusters"] + \
+                ["roeCharge"]
+    
+    def format_variable(var_name):
+        if '(' in var_name and ')' in var_name:
+            prefix, suffix = var_name.split('(', 1)
+            return f"{prefix}({suffix.strip(')')}, {maskname})"
+        else:
+            return f"{var_name}({maskname})"
+
+    return [format_variable(var_name) for var_name in var_names]
+
+def GetContinuumSuppressionVariables(maskname):
+    var_names = ["R2", "thrustBm", "thrustOm", "cosTBTO", "cosTBz"] + \
+                ["KSFWVariables(pt_sum)", "KSFWVariables(mm2)"] + \
+                ["KSFWVariables(hso00)", "KSFWVariables(hso01)", "KSFWVariables(hso02)", "KSFWVariables(hso03)", "KSFWVariables(hso04)"] + \
+                ["KSFWVariables(hso10)", "KSFWVariables(hso12)", "KSFWVariables(hso14)"] + \
+                ["KSFWVariables(hso20)", "KSFWVariables(hso22)", "KSFWVariables(hso24)"] + \
+                ["KSFWVariables(hoo0)", "KSFWVariables(hoo1)", "KSFWVariables(hoo2)", "KSFWVariables(hoo3)", "KSFWVariables(hoo4)"] + \
+                ["CleoConeCS(1)", "CleoConeCS(2)", "CleoConeCS(3)", "CleoConeCS(4)", "CleoConeCS(5)", "CleoConeCS(6)", "CleoConeCS(7)", "CleoConeCS(8)", "CleoConeCS(9)"]
+
+    def format_variable(var_name):
+        if '(' in var_name and ')' in var_name:
+            prefix, suffix = var_name.split('(', 1)
+            return f"{prefix}({suffix.strip(')')}, {maskname})"
+        else:
+            return f"{var_name}({maskname})"
+
+    return [format_variable(var_name) for var_name in var_names]
+
+def FillSeveralPhotons(path):
+    list_names = []
+    
+    base_cut = '[inCDCAcceptance]'
+
+    energy_cuts = ['[[clusterReg==1 and E>0.10] or [clusterReg==2 and E>0.06] or [clusterReg==3 and E>0.15]]', \
+                   '[E>0.2]']
+
+    distance_cuts = ['[True]', \
+                     '[minC2TDist > 50]']
+
+    timing_cuts = ['[True]', \
+                   '[abs(clusterTiming) < 200]', \
+                   '[[abs(clusterTiming) < 200] and [abs(clusterTiming/clusterErrorTiming)<2.0]]']
+
+    combinations = [
+        f"{base_cut} and {energy} and {distance} and {timing}"
+        for energy, distance, timing in product(energy_cuts, distance_cuts, timing_cuts)
+    ]
+
+    for index, photon_cut in enumerate(combinations):
+        ma.fillParticleList("gamma:cut_v" + str(index), cut=photon_cut, path=path)
+        list_names.append("gamma:cut_v" + str(index))
+
+    return list_names
+
+def BasicAnalysisForTau(tau_list, sample_index, type_index, energy_index, mass_ALP, life_ALP, use_mcalp, is_real_data, path):
+    # we do not use treefit for tau, because it makes m_tau distribution strange for tau -> alpha mu analysis 
+    # vertex.treeFit(list_name=tau_list, conf_level=-1, updateAllDaughters=False, path=path)
+
+    # mask for ROE
+    track_selection = "[inCDCAcceptance] and [pt > 0.075] and [dr < 1] and [abs(dz) < 3]"
+    cluster_selection = '[inCDCAcceptance] and [E > 0.2]'
+
+    # --- build ROE ---
+    cleanMask = ("cleanMask", track_selection, cluster_selection)
+    ma.buildRestOfEvent(tau_list, fillWithMostLikely=True, path=path)
+    ma.appendROEMasks(tau_list, [cleanMask], path=path)
+
+    # --- build Continuum suppression ---
+    ma.buildContinuumSuppression(list_name=tau_list, roe_mask = "cleanMask", path=path)
+
+    # true match
+    ma.matchMCTruth(tau_list, path=path)
+
+    # add event type / sample type
+    vm.addAlias("MySampleType", "constant(" + str(sample_index) + ")")
+    vm.addAlias("MyEventType", "constant(" + str(type_index) + ")")
+    vm.addAlias("MyEnergyType", "constant(" + str(energy_index) + ")")
+
+    # add ALP variable
+    vm.addAlias("MyALPMass", "constant(" + str(mass_ALP) + ")")
+    vm.addAlias("MyALPLife", "constant(" + str(life_ALP) + ")")
+
+    # get information for Dalitz Plot
+    if is_real_data:
+        ma.variablesToExtraInfo(tau_list, {"constant(0)": "MCPromptFlag"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list, {"constant(-1)": "MCPromptinvMOneTwo"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list, {"constant(-1)": "MCPromptinvMOneThree"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list, {"constant(-1)": "MCPromptinvMTwoThree"}, option=2, path=path)
+
+        ma.variablesToExtraInfo(tau_list, {"constant(0)": "MCALPFlag"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list, {"constant(-1)": "MCALPinvMOneTwo"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list, {"constant(-1)": "MCALPinvMOneThree"}, option=2, path=path)
+        ma.variablesToExtraInfo(tau_list, {"constant(-1)": "MCALPinvMTwoThree"}, option=2, path=path)
+
+    else:
+        ma.fillParticleListFromMC('mu+:MCParticle', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+        if use_mcalp:
+            ma.reconstructMCDecay(decayString="alpha0:MCParticle =direct=> mu+:MCParticle mu-:MCParticle ?gamma", cut="", path=path)
+            ma.reconstructMCDecay(decayString="tau+:MCALP =direct=> alpha0:MCParticle mu+:MCParticle ?gamma", cut="", path=path)
+            ma.rankByLowest(particleList="tau+:MCALP", variable="random", outputVariable='random_MCALP', overwriteRank = True, path=path)
+            ma.applyCuts(list_name = "tau+:MCALP", cut = "extraInfo(random_MCALP) == 1", path=path)
+
+            ma.variablesToExtraInfo(tau_list,{"constant(0)": "MCPromptFlag"}, option=2, path=path)
+            ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCPromptinvMOneTwo"}, option=2, path=path)
+            ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCPromptinvMOneThree"}, option=2, path=path)
+            ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCPromptinvMTwoThree"}, option=2, path=path)
+        
+            ma.variablesToExtraInfo(tau_list,{"nParticlesInList(tau+:MCALP)": "MCALPFlag"}, option=2, path=path)
+            ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCALP, daughterInvM(0:0,0:1))": "MCALPinvMOneTwo"}, option=2, path=path)
+            ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCALP, daughterInvM(0:0,1))": "MCALPinvMOneThree"}, option=2, path=path)
+            ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCALP, daughterInvM(0:1,1))": "MCALPinvMTwoThree"}, option=2, path=path)
+        else:
+            ma.reconstructMCDecay(decayString="tau+:MCPrompt =direct=> mu+:MCParticle mu-:MCParticle mu+:MCParticle ?gamma", cut="", path=path)
+            ma.rankByLowest(particleList="tau+:MCPrompt", variable="random", outputVariable='random_MC', overwriteRank = True, path=path)
+            ma.applyCuts(list_name = "tau+:MCPrompt", cut = "extraInfo(random_MC) == 1", path=path)
+
+            ma.variablesToExtraInfo(tau_list,{"nParticlesInList(tau+:MCPrompt)": "MCPromptFlag"}, option=2, path=path)
+            ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCPrompt, daughterInvM(0,1))": "MCPromptinvMOneTwo"}, option=2, path=path)
+            ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCPrompt, daughterInvM(0,2))": "MCPromptinvMOneThree"}, option=2, path=path)
+            ma.variablesToExtraInfo(tau_list,{"averageValueInList(tau+:MCPrompt, daughterInvM(1,2))": "MCPromptinvMTwoThree"}, option=2, path=path)
+
+            ma.variablesToExtraInfo(tau_list,{"constant(0)":  "MCALPFlag"}, option=2, path=path)
+            ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCALPinvMOneTwo"}, option=2, path=path)
+            ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCALPinvMOneThree"}, option=2, path=path)
+            ma.variablesToExtraInfo(tau_list,{"constant(-1)": "MCALPinvMTwoThree"}, option=2, path=path)
+
+def DefineVariables(tau_list, photon_names, IsItPrompt, path):
+    # define vars
+    sig_vars = ["Mbc", "deltaE"] + \
+               ["M", "E", "px", "py", "pz", "pt", "theta", "phi"] + \
+               ["useCMSFrame(E)", "useCMSFrame(px)", "useCMSFrame(py)", "useCMSFrame(pz)", "useCMSFrame(pt)", "useCMSFrame(theta)", "useCMSFrame(phi)"] + \
+               ["extraInfo(decayModeID)"] + \
+               GetContinuumSuppressionVariables("cleanMask") + \
+               ["cosAngleBetweenMomentumAndVertexVector", "charge", \
+                "flightTime", "flightTimeErr", "angleToClosestInList(pi+:evtshape_kinematics)"] + \
+               vc.vertex
+    if(IsItPrompt):
+        roe_path_prompt = basf2.Path()
+        deadEndPath_prompt = basf2.Path()
+        ma.signalSideParticleFilter(tau_list, '', roe_path_prompt, deadEndPath_prompt)
+        ma.fillSignalSideParticleList(tau_list + "_ROE", "^" + tau_list, roe_path_prompt)
+
+        # for leptonic tag
+        ma.cutAndCopyList("e+:taulfv_eID5", "e+:taulfv", cut="electronID > 0.5", path=roe_path_prompt)
+        ma.cutAndCopyList("e+:taulfv_eID9", "e+:taulfv", cut="electronID > 0.9", path=roe_path_prompt)
+        ma.cutAndCopyList("e+:taulfv_eID95", "e+:taulfv", cut="electronID > 0.95", path=roe_path_prompt)
+
+        ma.cutAndCopyList("e+:taulfv_brem_eID5", "e+:taulfv_brem", cut="electronID > 0.5", path=roe_path_prompt)
+        ma.cutAndCopyList("e+:taulfv_brem_eID9", "e+:taulfv_brem", cut="electronID > 0.9", path=roe_path_prompt)
+        ma.cutAndCopyList("e+:taulfv_brem_eID95", "e+:taulfv_brem", cut="electronID > 0.95", path=roe_path_prompt)
+
+        ma.cutAndCopyList("mu+:taulfv_muID5", "mu+:taulfv", cut="muonID > 0.5", path=roe_path_prompt)
+        ma.cutAndCopyList("mu+:taulfv_muID9", "mu+:taulfv", cut="muonID > 0.9", path=roe_path_prompt)
+        ma.cutAndCopyList("mu+:taulfv_muID95", "mu+:taulfv", cut="muonID > 0.95", path=roe_path_prompt)
+
+        ma.reconstructDecay(decayString="vpho:eID5 -> " + tau_list + "_ROE" + " e-:taulfv_eID5", cut="", path=roe_path_prompt)
+        ma.reconstructDecay(decayString="vpho:eID9 -> " + tau_list + "_ROE" + " e-:taulfv_eID9", cut="", path=roe_path_prompt)
+        ma.reconstructDecay(decayString="vpho:eID95 -> " + tau_list + "_ROE" + " e-:taulfv_eID95", cut="", path=roe_path_prompt)
+
+        ma.reconstructDecay(decayString="vpho:brem_eID5 -> " + tau_list + "_ROE" + " e-:taulfv_brem_eID5", cut="", path=roe_path_prompt)
+        ma.reconstructDecay(decayString="vpho:brem_eID9 -> " + tau_list + "_ROE" + " e-:taulfv_brem_eID9", cut="", path=roe_path_prompt)
+        ma.reconstructDecay(decayString="vpho:brem_eID95 -> " + tau_list + "_ROE" + " e-:taulfv_brem_eID95", cut="", path=roe_path_prompt)
+
+        ma.reconstructDecay(decayString="vpho:muID5 -> " + tau_list + "_ROE" + " mu-:taulfv_muID5", cut="", path=roe_path_prompt)
+        ma.reconstructDecay(decayString="vpho:muID9 -> " + tau_list + "_ROE" + " mu-:taulfv_muID9", cut="", path=roe_path_prompt)
+        ma.reconstructDecay(decayString="vpho:muID95 -> " + tau_list + "_ROE" + " mu-:taulfv_muID95", cut="", path=roe_path_prompt)
+
+        ma.rankByLowest(particleList="vpho:eID5", variable="random", numBest = 1, path=roe_path_prompt)
+        ma.rankByLowest(particleList="vpho:eID9", variable="random", numBest = 1, path=roe_path_prompt)
+        ma.rankByLowest(particleList="vpho:eID95", variable="random", numBest = 1, path=roe_path_prompt)
+
+        ma.rankByLowest(particleList="vpho:brem_eID5", variable="random", numBest = 1, path=roe_path_prompt)
+        ma.rankByLowest(particleList="vpho:brem_eID9", variable="random", numBest = 1, path=roe_path_prompt)
+        ma.rankByLowest(particleList="vpho:brem_eID95", variable="random", numBest = 1, path=roe_path_prompt)
+
+        ma.rankByLowest(particleList="vpho:muID5", variable="random", numBest = 1, path=roe_path_prompt)
+        ma.rankByLowest(particleList="vpho:muID9", variable="random", numBest = 1, path=roe_path_prompt)
+        ma.rankByLowest(particleList="vpho:muID95", variable="random", numBest = 1, path=roe_path_prompt)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:eID5)":"n_vpho_eID5"}, path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:eID9)":"n_vpho_eID9"}, path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:eID95)":"n_vpho_eID95"}, path=roe_path_prompt)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:brem_eID5)":"n_vpho_brem_eID5"}, path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:brem_eID9)":"n_vpho_brem_eID9"}, path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:brem_eID95)":"n_vpho_brem_eID95"}, path=roe_path_prompt)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:muID5)":"n_vpho_muID5"}, path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:muID9)":"n_vpho_muID9"}, path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:muID95)":"n_vpho_muID95"}, path=roe_path_prompt)
+
+        variable_list = ["dr", "dz"] + \
+                        ["muonID", "muonID_noSVD", "electronID", "pionID", "pionIDNN"] + \
+                        ["charge", "mcPDG", "PDG"] + \
+                        ["minET2ETIsoScoreAsWeightedAvg(mu+:taulfv, 0, ECL, KLM)"] + \
+                        ["E", "p", "px", "py", "pz", "pt"] + \
+                        ["theta", "phi"] + \
+                        ["useCMSFrame(E)", "useCMSFrame(px)", "useCMSFrame(py)", "useCMSFrame(pz)", "useCMSFrame(pt)"] + \
+                        ["useCMSFrame(theta)", "useCMSFrame(phi)"] + \
+                        ["cosToThrustOfEvent"]
+        variable_list_converted = [convert_name(var) for var in variable_list]
+
+        variable_list_one_muon = ["daughter(0," + var + ")" for var in variable_list]
+        variable_list_two_muon = ["daughter(1," + var + ")" for var in variable_list]
+        variable_list_three_muon = ["daughter(2," + var + ")" for var in variable_list]
+
+        variable_list_converted_one_muon = ["OneMuon_" + var for var in variable_list_converted]
+        variable_list_converted_two_muon = ["TwoMuon_" + var for var in variable_list_converted]
+        variable_list_converted_three_muon = ["ThreeMuon_" + var for var in variable_list_converted]
+        
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", dict(zip(variable_list_one_muon, variable_list_converted_one_muon)), path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", dict(zip(variable_list_two_muon, variable_list_converted_two_muon)), path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", dict(zip(variable_list_three_muon, variable_list_converted_three_muon)), path=roe_path_prompt)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nROE_RemainingTracks(cleanMask)":"nROE_RemainingTracks_cleanMask"}, path=roe_path_prompt)
+
+        variable_list = ["E", "p", "px", "py", "pz", "pt"] + \
+                        ["cosTheta", "theta", "phi"] + \
+                        ["M"] + \
+                        ["x", "y", "z", "dx", "dy", "dz"] + \
+                        ["flightTime", "flightTimeErr", "distance", "significanceOfDistance"] + \
+                        ["chiProb"]
+        variable_list_converted = [convert_name(var) for var in variable_list]
+
+        variable_list_ALP = ["constant(-1)" for var in variable_list]
+
+        variable_list_converted_ALP = ["ALP_" + var for var in variable_list_converted]
+
+        for original_variable, converted_name in zip(variable_list_ALP, variable_list_converted_ALP):
+            ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {original_variable: converted_name}, path=roe_path_prompt)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"daughterInvM(0,1)": "invMOneTwo"}, path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"daughterInvM(0,2)": "invMOneThree"}, path=roe_path_prompt)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"daughterInvM(1,2)": "invMTwoThree"}, path=roe_path_prompt)
+        variable_list_ALP = variable_list_ALP + ["daughterInvM(0,1)", "daughterInvM(0,2)", "daughterInvM(1,2)"]
+        variable_list_converted_ALP = variable_list_converted_ALP + ["invMOneTwo", "invMOneThree", "invMTwoThree"]
+
+        path.for_each('RestOfEvent', 'RestOfEvents', roe_path_prompt)
+
+        daughter_vars = ["extraInfo(" + var + ")" for var in variable_list_converted_one_muon + variable_list_converted_two_muon + variable_list_converted_three_muon + variable_list_converted_ALP]
+    else:
+        roe_path_ALP = basf2.Path()
+        deadEndPath_ALP = basf2.Path()
+        ma.signalSideParticleFilter(tau_list, '', roe_path_ALP, deadEndPath_ALP)
+        ma.fillSignalSideParticleList(tau_list + "_ROE", "^" + tau_list, roe_path_ALP)
+
+        # for leptonic tag
+        ma.cutAndCopyList("e+:taulfv_eID5", "e+:taulfv", cut="electronID > 0.5", path=roe_path_ALP)
+        ma.cutAndCopyList("e+:taulfv_eID9", "e+:taulfv", cut="electronID > 0.9", path=roe_path_ALP)
+        ma.cutAndCopyList("e+:taulfv_eID95", "e+:taulfv", cut="electronID > 0.95", path=roe_path_ALP)
+
+        ma.cutAndCopyList("e+:taulfv_brem_eID5", "e+:taulfv_brem", cut="electronID > 0.5", path=roe_path_ALP)
+        ma.cutAndCopyList("e+:taulfv_brem_eID9", "e+:taulfv_brem", cut="electronID > 0.9", path=roe_path_ALP)
+        ma.cutAndCopyList("e+:taulfv_brem_eID95", "e+:taulfv_brem", cut="electronID > 0.95", path=roe_path_ALP)
+
+        ma.cutAndCopyList("mu+:taulfv_muID5", "mu+:taulfv", cut="muonID > 0.5", path=roe_path_ALP)
+        ma.cutAndCopyList("mu+:taulfv_muID9", "mu+:taulfv", cut="muonID > 0.9", path=roe_path_ALP)
+        ma.cutAndCopyList("mu+:taulfv_muID95", "mu+:taulfv", cut="muonID > 0.95", path=roe_path_ALP)
+
+        ma.reconstructDecay(decayString="vpho:eID5 -> " + tau_list + "_ROE" + " e-:taulfv_eID5", cut="", path=roe_path_ALP)
+        ma.reconstructDecay(decayString="vpho:eID9 -> " + tau_list + "_ROE" + " e-:taulfv_eID9", cut="", path=roe_path_ALP)
+        ma.reconstructDecay(decayString="vpho:eID95 -> " + tau_list + "_ROE" + " e-:taulfv_eID95", cut="", path=roe_path_ALP)
+
+        ma.reconstructDecay(decayString="vpho:brem_eID5 -> " + tau_list + "_ROE" + " e-:taulfv_brem_eID5", cut="", path=roe_path_ALP)
+        ma.reconstructDecay(decayString="vpho:brem_eID9 -> " + tau_list + "_ROE" + " e-:taulfv_brem_eID9", cut="", path=roe_path_ALP)
+        ma.reconstructDecay(decayString="vpho:brem_eID95 -> " + tau_list + "_ROE" + " e-:taulfv_brem_eID95", cut="", path=roe_path_ALP)
+
+        ma.reconstructDecay(decayString="vpho:muID5 -> " + tau_list + "_ROE" + " mu-:taulfv_muID5", cut="", path=roe_path_ALP)
+        ma.reconstructDecay(decayString="vpho:muID9 -> " + tau_list + "_ROE" + " mu-:taulfv_muID9", cut="", path=roe_path_ALP)
+        ma.reconstructDecay(decayString="vpho:muID95 -> " + tau_list + "_ROE" + " mu-:taulfv_muID95", cut="", path=roe_path_ALP)
+
+        ma.rankByLowest(particleList="vpho:eID5", variable="random", numBest = 1, path=roe_path_ALP)
+        ma.rankByLowest(particleList="vpho:eID9", variable="random", numBest = 1, path=roe_path_ALP)
+        ma.rankByLowest(particleList="vpho:eID95", variable="random", numBest = 1, path=roe_path_ALP)
+
+        ma.rankByLowest(particleList="vpho:brem_eID5", variable="random", numBest = 1, path=roe_path_ALP)
+        ma.rankByLowest(particleList="vpho:brem_eID9", variable="random", numBest = 1, path=roe_path_ALP)
+        ma.rankByLowest(particleList="vpho:brem_eID95", variable="random", numBest = 1, path=roe_path_ALP)
+
+        ma.rankByLowest(particleList="vpho:muID5", variable="random", numBest = 1, path=roe_path_ALP)
+        ma.rankByLowest(particleList="vpho:muID9", variable="random", numBest = 1, path=roe_path_ALP)
+        ma.rankByLowest(particleList="vpho:muID95", variable="random", numBest = 1, path=roe_path_ALP)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:eID5)":"n_vpho_eID5"}, path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:eID9)":"n_vpho_eID9"}, path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:eID95)":"n_vpho_eID95"}, path=roe_path_ALP)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:brem_eID5)":"n_vpho_brem_eID5"}, path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:brem_eID9)":"n_vpho_brem_eID9"}, path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:brem_eID95)":"n_vpho_brem_eID95"}, path=roe_path_ALP)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:muID5)":"n_vpho_muID5"}, path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:muID9)":"n_vpho_muID9"}, path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nParticlesInList(vpho:muID95)":"n_vpho_muID95"}, path=roe_path_ALP)
+
+        variable_list = ["dr", "dz"] + \
+                        ["muonID", "muonID_noSVD", "electronID", "pionID", "pionIDNN"] + \
+                        ["charge", "mcPDG", "PDG"] + \
+                        ["minET2ETIsoScoreAsWeightedAvg(mu+:taulfv, 0, ECL, KLM)"] + \
+                        ["E", "p", "px", "py", "pz", "pt"] + \
+                        ["theta", "phi"] + \
+                        ["useCMSFrame(E)", "useCMSFrame(px)", "useCMSFrame(py)", "useCMSFrame(pz)", "useCMSFrame(pt)"] + \
+                        ["useCMSFrame(theta)", "useCMSFrame(phi)"] + \
+                        ["cosToThrustOfEvent"]
+        variable_list_converted = [convert_name(var) for var in variable_list]
+
+        variable_list_one_muon = ["daughter(0, daughter(0, " + var + "))" for var in variable_list]
+        variable_list_two_muon = ["daughter(0, daughter(1, " + var + "))" for var in variable_list]
+        variable_list_three_muon = ["daughter(1," + var + ")" for var in variable_list]
+
+        variable_list_converted_one_muon = ["OneMuon_" + var for var in variable_list_converted]
+        variable_list_converted_two_muon = ["TwoMuon_" + var for var in variable_list_converted]
+        variable_list_converted_three_muon = ["ThreeMuon_" + var for var in variable_list_converted]
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", dict(zip(variable_list_one_muon, variable_list_converted_one_muon)), path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", dict(zip(variable_list_two_muon, variable_list_converted_two_muon)), path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", dict(zip(variable_list_three_muon, variable_list_converted_three_muon)), path=roe_path_ALP)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"nROE_RemainingTracks(cleanMask)":"nROE_RemainingTracks_cleanMask"}, path=roe_path_ALP)
+
+        variable_list = ["E", "p", "px", "py", "pz", "pt"] + \
+                        ["cosTheta", "theta", "phi"] + \
+                        ["M"] + \
+                        ["x", "y", "z", "dx", "dy", "dz"] + \
+                        ["flightTime", "flightTimeErr", "distance", "significanceOfDistance"] + \
+                        ["chiProb"]
+        variable_list_converted = [convert_name(var) for var in variable_list]
+
+        variable_list_ALP = ["daughter(0, " + var + ")" for var in variable_list]
+
+        variable_list_converted_ALP = ["ALP_" + var for var in variable_list_converted]
+
+        for original_variable, converted_name in zip(variable_list_ALP, variable_list_converted_ALP):
+            ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {original_variable: converted_name}, path=roe_path_ALP)
+
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"daughterInvM(0:0,0:1)": "invMOneTwo"}, path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"daughterInvM(0:0,1)": "invMOneThree"}, path=roe_path_ALP)
+        ma.variableToSignalSideExtraInfo(tau_list + "_ROE", {"daughterInvM(0:1,1)": "invMTwoThree"}, path=roe_path_ALP)
+        variable_list_ALP = variable_list_ALP + ["daughterInvM(0:0,0:1)", "daughterInvM(0:0,1)", "daughterInvM(0:1,1)"]
+        variable_list_converted_ALP = variable_list_converted_ALP + ["invMOneTwo", "invMOneThree", "invMTwoThree"]
+
+        path.for_each('RestOfEvent', 'RestOfEvents', roe_path_ALP)
+
+        daughter_vars = ["extraInfo(" + var + ")" for var in variable_list_converted_one_muon + variable_list_converted_two_muon + variable_list_converted_three_muon + variable_list_converted_ALP]
+    if BELLEONE:
+        daughter_vars = [
+            v.replace("muonID", "muIDBelle")
+             .replace("electronID", "eIDBelle")
+             .replace("pionID", "atcPIDBelle(2,3)")
+            for v in daughter_vars if ("pionIDNN" not in v) and ("minET2ETIsoScoreAsWeightedAvg" not in v)
+        ]
+    else:
+        pass
+    tag_vars = vc.recoil_kinematics + GetROEVariables("cleanMask") + ["extraInfo(nROE_RemainingTracks_cleanMask)"] + ["extraInfo(" + var + ")" for var in ["n_vpho_eID5", "n_vpho_eID9", "n_vpho_eID95", "n_vpho_brem_eID5", "n_vpho_brem_eID9", "n_vpho_brem_eID95", "n_vpho_muID5", "n_vpho_muID9", "n_vpho_muID95"]]
+    event_vars = ["beamE"] + vc.event_shape + vc.event_kinematics + ["cosToThrustOfEvent"] + ["eventExtraInfo(EventCode)"] + ["nParticlesInList(pi+:evtshape_kinematics)", "nParticlesInList(gamma:evtshape_kinematics)"] + \
+                 ["totalEnergyOfParticlesInList(gamma:evtshape_kinematics)"] + \
+                 ["MySampleType", "MyEventType", "MyEnergyType"] + ["MyALPMass", "MyALPLife"] + \
+                 ["extraInfo(MCALPFlag)", "extraInfo(MCALPinvMOneTwo)", "extraInfo(MCALPinvMOneThree)", "extraInfo(MCALPinvMTwoThree)"] + \
+                 ["extraInfo(MCPromptFlag)", "extraInfo(MCPromptinvMOneTwo)", "extraInfo(MCPromptinvMOneThree)", "extraInfo(MCPromptinvMTwoThree)"]
+    triggers = ["L1FTDL(fff)", "L1FTDL(ffo)", "L1FTDL(fyo)", "L1FTDL(ffy)", "L1FTDL(stt)", "L1FTDL(hie)", "L1FTDL(lml0)", "L1FTDL(lml1)", "L1FTDL(lml2)", "L1FTDL(lml3)", \
+                "L1FTDL(lml4)", "L1FTDL(lml5)", "L1FTDL(lml6)", "L1FTDL(lml7)", "L1FTDL(lml8)", "L1FTDL(lml9)", "L1FTDL(lml10)", "L1FTDL(lml11)", "L1FTDL(lml12)", "L1FTDL(lml13)", \
+                "L1PSNM(fff)", "L1PSNM(ffo)", "L1PSNM(fyo)", "L1PSNM(ffy)", "L1PSNM(stt)", "L1PSNM(hie)", "L1PSNM(lml0)", "L1PSNM(lml1)", "L1PSNM(lml2)", "L1PSNM(lml3)", \
+                "L1PSNM(lml4)", "L1PSNM(lml5)", "L1PSNM(lml6)", "L1PSNM(lml7)", "L1PSNM(lml8)", "L1PSNM(lml9)", "L1PSNM(lml10)", "L1PSNM(lml11)", "L1PSNM(lml12)", "L1PSNM(lml13)"]
+    triggers = ["ifNANgiveX(" + trig + ",-1)" for trig in triggers]
+    MC_vars = ["isSignal", "isSignalAcceptMissingNeutrino"] + ['extraInfo(DecayHash)', 'extraInfo(DecayHashExtended)'] + ['tauPlusMCMode', 'tauMinusMCMode']
+
+    # add variables about other photon candidates
+    for photon_name in photon_names:
+        event_vars.append("nParticlesInList(" + photon_name + ")")
+        event_vars.append("totalEnergyOfParticlesInList(" + photon_name + ")")
+
+    # return the list of variables
+    return sig_vars + daughter_vars + tag_vars + event_vars + triggers + MC_vars
+
+def ApplyControlSelection(tau_list, channel, path):
+    """Apply the final Analysis_main_CTRL[_ALP] selection, then random BCS.
+
+    Call after DefineVariables: the daughter and remaining-track extraInfo
+    values must already have been filled by the candidate's ROE loop.
+    Keep the original < 1.5 track cut (including zero-track candidates).
+    """
+    if channel not in ("CTRL", "CTRL_ALP"):
+        raise ValueError(f"Unknown control channel: {channel}")
+
+    daughters = ("OneMuon", "TwoMuon", "ThreeMuon")
+    momenta = [f"extraInfo({name}_p)" for name in daughters]
+    cosines = [f"extraInfo({name}_cosToThrustOfEvent)" for name in daughters]
+    pairs = ((0, 1), (0, 2), (1, 2))
+    trigger_bits = ("ffy", "fyo", "stt", "hie", "lml6", "lml7",
+                    "lml8", "lml9", "lml10", "lml12")
+    cuts = [
+        " or ".join(f"[ifNANgiveX(L1PSNM({bit}), -1) > 0.5]" for bit in trigger_bits),
+        *[f"extraInfo({name}_pionID) > 0.9" for name in daughters],
+        # Second-highest lab p > 0.3 means at least two of the three pass.
+        " or ".join(f"[{momenta[i]} > 0.3 and {momenta[j]} > 0.3]" for i, j in pairs),
+        "0.3 < missingMomentumOfEventCMS_theta < 2.7",
+        "roeEextra(cleanMask) < 5.0",
+        # GetDiff(..., 0) in Loader is the largest absolute pairwise difference.
+        *[f"abs(formula({cosines[i]} - {cosines[j]})) < 1.6" for i, j in pairs],
+        f"abs(formula(({'+'.join(cosines)}) / 3.0)) > 0.5",
+        "missingEnergyOfEventCMS > 0.5",
+        "extraInfo(nROE_RemainingTracks_cleanMask) < 1.5",
+    ]
+    if channel == "CTRL":
+        cuts += [
+            "19.5 < extraInfo(decayModeID) < 20.5",
+            "0.9 < M < 1.7", "-0.3 < deltaE < 0.0",
+            "0.86 < thrust < 0.97",
+        ]
+    else:
+        cuts += [
+            "29.5 < extraInfo(decayModeID) < 30.5",
+            "0.8 < M < 1.0", "-0.3 < deltaE < -0.1",
+            "thrust > 0.86",
+            "extraInfo(ALP_flightTime) > 0.0",
+            "extraInfo(ALP_significanceOfDistance) > 20.0",
+            "0.487611 < extraInfo(ALP_M) < 0.507611",
+            "cosTBTO(cleanMask) < 0.99",
+            "thrustOm(cleanMask) > 0.95",
+        ]
+
+    ma.applyCuts(tau_list, " and ".join(f"[{cut}]" for cut in cuts), path=path)
+    ma.variablesToExtraInfo(
+        tau_list, {f"nParticlesInList({tau_list})": "inv_nCandidatesBeforeBCS"},
+        option=2, path=path,
+    )
+    # light-2609-luna ranks both charges together. Select separately by channel.
+    # This is uniform random BCS, but does not reproduce Loader's RNG sequence.
+    ma.rankByLowest(
+        tau_list, "random", numBest=1, outputVariable="inv_control_random_rank",
+        allowMultiRank=False, overwriteRank=True, path=path,
+    )
+
+
+class PrintROETruth(basf2.Module):
+    """Print the actual cleanMask particles, without changing their hypotheses."""
+
+    def initialize(self):
+        self.roe = Belle2.PyStoreObj("RestOfEvent")
+        self.signal_list = Belle2.PyStoreObj("tau+:inv_current")
+        self.metadata = Belle2.PyStoreObj("EventMetaData")
+
+    @staticmethod
+    def ancestors(mc):
+        """Include the matched particle itself, then follow its mother chain."""
+        chain = []
+        seen = set()
+        while mc and mc.getArrayIndex() not in seen:
+            seen.add(mc.getArrayIndex())
+            chain.append(mc)
+            mc = mc.getMother()
+        return chain
+
+    @classmethod
+    def tau_ancestor(cls, mc):
+        return next((p for p in cls.ancestors(mc) if abs(p.getPDG()) == 15), None)
+
+    @staticmethod
+    def four_momentum(particle):
+        p4 = particle.get4Vector()
+        return f"(E,px,py,pz)=({p4.E():.6g},{p4.Px():.6g},{p4.Py():.6g},{p4.Pz():.6g})"
+
+    @classmethod
+    def truth_info(cls, particle, signal_tau_index):
+        mc = particle.getMCParticle()
+        if not mc:
+            return "origin=unmatched MC=none"
+        chain = cls.ancestors(mc)
+        tau = cls.tau_ancestor(mc)
+        if tau is None:
+            origin = "no_tau_ancestor"
+        elif signal_tau_index is None:
+            origin = "tau_side_unresolved"
+        elif tau.getArrayIndex() == signal_tau_index:
+            origin = "signal_tau"
+        else:
+            origin = "other_tau"
+        # MC tree's 'list index' is 1-based; MC array indices are 0-based.
+        ancestry = " <- ".join(f"{p.getPDG()}@{p.getIndex()}" for p in chain)
+        return (
+            f"origin={origin} mcPDG={mc.getPDG()} mcIndex0={mc.getArrayIndex()} "
+            f"mcIndex1={mc.getIndex()} primary={int(mc.hasStatus(Belle2.MCParticle.c_PrimaryParticle))} "
+            f"truth_{cls.four_momentum(mc)} ancestry(PDG@mcIndex1)={ancestry}"
+        )
+
+    def event(self):
+        if not self.roe.isValid() or not self.signal_list.isValid():
+            basf2.B2FATAL("ROE truth dump requires the current ROE and its signal-side list.")
+            return
+        signal_list = self.signal_list.obj()
+        if signal_list.getListSize() != 1:
+            basf2.B2FATAL("Expected exactly one signal candidate for the current ROE.")
+            return
+        signal = signal_list.getParticle(0)
+        daughters = list(signal.getFinalStateDaughters())
+        daughter_taus = [self.tau_ancestor(p.getMCParticle()) for p in daughters]
+        tau_indices = {p.getArrayIndex() for p in daughter_taus if p is not None}
+        # Do not assign a tag side using charge alone or a mixed/unmatched candidate.
+        signal_tau_index = None
+        if daughters and all(p is not None for p in daughter_taus) and len(tau_indices) == 1:
+            signal_tau_index = next(iter(tau_indices))
+
+        meta = self.metadata.obj()
+        values = ("M", "deltaE", "roeM(cleanMask)", "roeEextra(cleanMask)",
+                  "extraInfo(nROE_RemainingTracks_cleanMask)", "nROE_Charged(cleanMask)",
+                  "nROE_Photons(cleanMask)", "nROE_NeutralHadrons(cleanMask)",
+                  "isSignalAcceptMissingNeutrino", "mcErrors", "tauPlusMCMode", "tauMinusMCMode",
+                  "extraInfo(inv_nCandidatesBeforeBCS)", "extraInfo(inv_control_random_rank)")
+        lines = [
+            f"[HIGH_ROE] exp={meta.getExperiment()} run={meta.getRun()} "
+            f"event={meta.getEvent()} production={meta.getProduction()} "
+            f"candidateIndex0={signal.getArrayIndex()} decayModeID={signal.getExtraInfo('decayModeID'):g} "
+            f"charge={signal.getCharge():g}",
+            "  " + " ".join(f"{name}={vm.evaluate(name, signal):.6g}" for name in values),
+            f"  signalTauIndex0={signal_tau_index} daughterTauIndices0={sorted(tau_indices)}",
+            "  Four-momenta are lab-frame GeV; ancestry uses the MC tree's 1-based list indices.",
+        ]
+        for i, daughter in enumerate(daughters):
+            lines.append(f"  SIG daughter={i} recoPDG={daughter.getPDGCode()} "
+                         f"{self.four_momentum(daughter)} {self.truth_info(daughter, signal_tau_index)}")
+
+        for particle in self.roe.obj().getParticles("cleanMask"):
+            source = particle.getParticleSource()
+            source_name = {
+                Belle2.Particle.c_Track: "Track",
+                Belle2.Particle.c_ECLCluster: "ECLCluster",
+                Belle2.Particle.c_KLMCluster: "KLMCluster",
+            }.get(source, str(source))
+            # buildRestOfEvent uses useKLMEnergy=False: KLM objects are present
+            # in the ROE but do not contribute to roeM's four-vector.
+            contributes = source != Belle2.Particle.c_KLMCluster
+            timing = ""
+            if source == Belle2.Particle.c_ECLCluster:
+                timing = f" clusterTiming={vm.evaluate('clusterTiming', particle):.6g}"
+            lines.append(
+                f"  ROE source={source_name} particleIndex0={particle.getArrayIndex()} "
+                f"mdstIndex0={particle.getMdstArrayIndex()} recoPDG={particle.getPDGCode()} "
+                f"inRoeMass={int(contributes)} {self.four_momentum(particle)}{timing} "
+                f"{self.truth_info(particle, signal_tau_index)}"
+            )
+        # A unique event header keeps the existing log repetition limit from
+        # suppressing identical constituent lines in different events.
+        basf2.B2INFO("\n".join(lines))
+
+
+def AddHighROEDiagnostics(control_lists, include_secondaries, path):
+    """Dump one MC tree per event and one ROE report per selected candidate."""
+    high_lists = []
+    for channel, tau_list in control_lists:
+        high_list = f"tau+:inv_highROE_{channel}"
+        # This must be AFTER each channel's final cuts and BCS.
+        ma.cutAndCopyList(high_list, tau_list, "roeM(cleanMask) >= 1.0", path=path)
+        high_lists.append(high_list)
+
+    dump_path = basf2.create_path()
+    roe_path = basf2.create_path()
+    dead_end = basf2.create_path()
+    ma.signalSideParticleListsFilter(high_lists, "", roe_path, dead_end)
+    ma.fillSignalSideParticleList("tau+:inv_current", "^tau+", path=roe_path)
+    # Extract the existing ROE particles, so their most-likely mass hypotheses
+    # and cleanMask membership are preserved. Include all default ROE species.
+    roe_lists = [f"{species}:inv_roe" for species in ("e+", "mu+", "pi+", "K+", "p+", "gamma", "K_L0")]
+    ma.extractParticlesFromROE(roe_lists, maskName="cleanMask", path=roe_path)
+    for roe_list in roe_lists:
+        ma.matchMCTruth(roe_list, path=roe_path)
+    printer = PrintROETruth()
+    printer.set_log_level(basf2.LogLevel.INFO)
+    roe_path.add_module(printer)
+    dump_path.for_each("RestOfEvent", "RestOfEvents", roe_path)
+    # Outside for_each: print the event's tree only once, even if both channels pass.
+    ma.printMCParticles(
+        onlyPrimaries=not include_secondaries, maxLevel=-1,
+        showProperties=True, showMomenta=True, showStatus=True, path=dump_path,
+    )
+    dump_path.modules()[-1].set_log_level(basf2.LogLevel.INFO)
+    count = " + ".join(f"nParticlesInList({name})" for name in high_lists)
+    gate = path.add_module("VariableToReturnValue", variable=f"formula({count})")
+    gate.if_value(">0", dump_path, basf2.AfterConditionPath.CONTINUE)
+
+
+def MakeNtupleandHashmap(tau_list, variable_list, Ntuple_name, hashmap_name, path):
+    # names
+    output_file = Ntuple_name + ".root"
+    hashmapName = hashmap_name + ".root"
+
+    # hashmap
+    path.add_module('ParticleMCDecayString', listName=tau_list, fileName=hashmapName)
+
+    # Ntuple output
+    ma.variablesToNtuple(decayString=tau_list ,variables=variable_list, filename=output_file, treename="tau_lfv", path=path)
+
+def AnalysisGenCut(tau_lists, MDeltaCuts, Ntuple_name, path):
+    # names
+    output_file = Ntuple_name + ".root"
+
+    # Load particles from MC at first
+    ma.fillParticleListFromMC('pi+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('K+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('e+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('mu+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('p+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('nu_e:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('nu_mu:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('nu_tau:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('gamma:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC("Xi-:PrimaryMC", cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('Z0:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('D0:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('D+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('pi+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('K+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('e+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('mu+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+    ma.fillParticleListFromMC('p+:PrimaryMC_good', cut = 'mcPrimary and [-5.0 < dz < 5.0] and [dr < 3.0]', addDaughters=True, skipNonPrimaryDaughters=True, path=path)
+
+    # convert mass hypothesis
+    ma.copyList(outputListName="pi+:PrimaryMC_muMass", inputListName="pi+:PrimaryMC", path=path)
+    ma.copyList(outputListName="K+:PrimaryMC_muMass",inputListName="K+:PrimaryMC",path=path)
+    ma.copyList(outputListName="e+:PrimaryMC_muMass",inputListName="e+:PrimaryMC",path=path)
+    ma.copyList(outputListName="p+:PrimaryMC_muMass",inputListName="p+:PrimaryMC",path=path)
+    ma.copyList(outputListName="Xi-:PrimaryMC_muMass",inputListName="Xi-:PrimaryMC",path=path)
+    path.add_module("ParticleMassUpdater", particleLists=["pi+:PrimaryMC_muMass","K+:PrimaryMC_muMass","e+:PrimaryMC_muMass","p+:PrimaryMC_muMass", "Xi-:PrimaryMC_muMass"], pdgCode=13)
+
+    # reconstruct tau
+    cut_mumumu = "[0.5 < M < 6.0] and [-4.0 < deltaE < 1.5]"
+    ma.reconstructDecay(decayString="tau+:fake1 -> pi+:PrimaryMC_muMass pi-:PrimaryMC_muMass pi+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake2 -> pi+:PrimaryMC_muMass pi-:PrimaryMC_muMass mu+:PrimaryMC", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake3 -> pi+:PrimaryMC_muMass mu-:PrimaryMC pi+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake4 -> pi+:PrimaryMC_muMass mu-:PrimaryMC mu+:PrimaryMC", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake5 -> mu+:PrimaryMC pi-:PrimaryMC_muMass mu+:PrimaryMC", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake6 -> mu+:PrimaryMC mu-:PrimaryMC mu+:PrimaryMC", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake7 -> pi+:PrimaryMC_muMass pi-:PrimaryMC_muMass K+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake8 -> pi+:PrimaryMC_muMass K-:PrimaryMC_muMass pi+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake9 -> pi+:PrimaryMC_muMass K-:PrimaryMC_muMass K+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake10 -> K+:PrimaryMC_muMass pi-:PrimaryMC_muMass K+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake11 -> K+:PrimaryMC_muMass K-:PrimaryMC_muMass K+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake12 -> pi+:PrimaryMC_muMass pi-:PrimaryMC_muMass e+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake13 -> pi+:PrimaryMC_muMass e-:PrimaryMC_muMass pi+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake14 -> pi+:PrimaryMC_muMass e-:PrimaryMC_muMass e+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake15 -> e+:PrimaryMC_muMass pi-:PrimaryMC_muMass e+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake16 -> e+:PrimaryMC_muMass e-:PrimaryMC_muMass e+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake17 -> pi+:PrimaryMC_muMass pi-:PrimaryMC_muMass p+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake18 -> pi+:PrimaryMC_muMass anti-p-:PrimaryMC_muMass pi+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake19 -> pi+:PrimaryMC_muMass anti-p-:PrimaryMC_muMass p+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake20 -> p+:PrimaryMC_muMass pi-:PrimaryMC_muMass p+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake21 -> p+:PrimaryMC_muMass anti-p-:PrimaryMC_muMass p+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake22 -> mu+:PrimaryMC mu-:PrimaryMC p+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake23 -> mu+:PrimaryMC anti-p-:PrimaryMC_muMass mu+:PrimaryMC", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake24 -> mu+:PrimaryMC anti-p-:PrimaryMC_muMass p+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake25 -> p+:PrimaryMC_muMass mu-:PrimaryMC p+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake26 -> mu+:PrimaryMC anti-p-:PrimaryMC_muMass pi+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake27 -> mu+:PrimaryMC pi-:PrimaryMC_muMass p+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake28 -> p+:PrimaryMC_muMass mu-:PrimaryMC pi+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake29 -> pi+:PrimaryMC_muMass K-:PrimaryMC_muMass p+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake30 -> pi+:PrimaryMC_muMass anti-p-:PrimaryMC_muMass K+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake31 -> K+:PrimaryMC_muMass pi-:PrimaryMC_muMass p+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake32 -> K+:PrimaryMC_muMass K-:PrimaryMC_muMass mu+:PrimaryMC", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake33 -> K+:PrimaryMC_muMass mu-:PrimaryMC K+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake34 -> K+:PrimaryMC_muMass mu-:PrimaryMC mu+:PrimaryMC", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake35 -> mu+:PrimaryMC K-:PrimaryMC_muMass mu+:PrimaryMC", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake36 -> K+:PrimaryMC_muMass mu-:PrimaryMC pi+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake37 -> K+:PrimaryMC_muMass pi-:PrimaryMC_muMass mu+:PrimaryMC", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake38 -> mu+:PrimaryMC K-:PrimaryMC_muMass pi+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake39 -> p+:PrimaryMC_muMass anti-p-:PrimaryMC_muMass K+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake40 -> p+:PrimaryMC_muMass K-:PrimaryMC_muMass p+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake41 -> K+:PrimaryMC_muMass anti-p-:PrimaryMC_muMass K+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake42 -> K+:PrimaryMC_muMass K-:PrimaryMC_muMass p+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake43 -> K+:PrimaryMC_muMass e-:PrimaryMC_muMass K+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake44 -> K+:PrimaryMC_muMass K-:PrimaryMC_muMass e+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake45 -> K+:PrimaryMC_muMass e-:PrimaryMC_muMass e+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake46 -> e+:PrimaryMC_muMass K-:PrimaryMC_muMass e+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake47 -> anti-Xi+:PrimaryMC_muMass pi-:PrimaryMC_muMass pi+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.reconstructDecay(decayString="tau+:fake48 -> pi+:PrimaryMC_muMass Xi-:PrimaryMC_muMass pi+:PrimaryMC_muMass", cut=cut_mumumu, path=path)
+    ma.copyLists(outputListName="tau+:fake", inputListNames=[f"tau+:fake{i}" for i in range(1, 49)], path=path)
+
+    # define several gen tau candidates
+    for idx, MDeltaCut in enumerate(MDeltaCuts):
+        ma.cutAndCopyList(outputListName = "tau+:fake_strict" + str(idx), inputListName = "tau+:fake", cut = MDeltaCut, path=path)
+        ma.rankByLowest(particleList="tau+:fake_strict" + str(idx), variable="abs(deltaE)", outputVariable='bcs_deltaE', overwriteRank = True, path=path)
+        ma.rankByLowest(particleList="tau+:fake_strict" + str(idx), variable="abs(dM)", outputVariable='bcs_dM', overwriteRank = True, path=path)
+        ma.cutAndCopyList(outputListName = "tau+:BCS_strict_deltaE" + str(idx), inputListName = "tau+:fake_strict" + str(idx), cut = "extraInfo(bcs_deltaE) == 1", path=path)
+        ma.cutAndCopyList(outputListName = "tau+:BCS_strict_dM" + str(idx), inputListName = "tau+:fake_strict" + str(idx), cut = "extraInfo(bcs_dM) == 1", path=path)
+
+    # event kinematics
+    ma.buildEventKinematicsFromMC(inputListNames=None, selectionCut='', path=path)
+    ma.buildEventShape(inputListNames=["pi+:PrimaryMC", "K+:PrimaryMC", "e+:PrimaryMC", "mu+:PrimaryMC", "p+:PrimaryMC", "gamma:PrimaryMC"], default_cleanup=False, path=path)
+    ma.buildRestOfEventFromMC("Z0:PrimaryMC", inputParticlelists=["pi+:PrimaryMC", "K+:PrimaryMC", "e+:PrimaryMC", "mu+:PrimaryMC", "p+:PrimaryMC", "gamma:PrimaryMC"], path=path)
+    ma.appendROEMasks(list_name="Z0:PrimaryMC", mask_tuples=[("cleanMask_gencut","","")], path=path)
+    ma.buildContinuumSuppression(list_name="Z0:PrimaryMC", roe_mask="cleanMask_gencut", path=path)
+
+    # define roe path for Z0 and variables
+    roe_path_Z = basf2.Path()
+    deadEndPath_Z = basf2.Path()
+    ma.signalSideParticleFilter("Z0:PrimaryMC", '', roe_path_Z, deadEndPath_Z)
+    ma.fillSignalSideParticleList("Z0:PrimaryMC_ROE", "^Z0:PrimaryMC", roe_path_Z)
+
+    for idx, MDeltaCut in enumerate(MDeltaCuts):
+        tau_exist_path = basf2.create_path()
+        tau_nonexist_path = basf2.create_path()
+        ma.variableToSignalSideExtraInfo("Z0:PrimaryMC_ROE", {'formula(averageValueInList(tau+:fake_strict' + str(idx) + ', formula((M-averageValueInList(tau+:fake_strict' + str(idx) + ',M))**2))**0.5)': 'std_M' + str(idx)}, path=tau_exist_path)
+        ma.variableToSignalSideExtraInfo("Z0:PrimaryMC_ROE", {'formula(averageValueInList(tau+:fake_strict' + str(idx) + ', formula((deltaE-averageValueInList(tau+:fake_strict' + str(idx) + ',deltaE))**2))**0.5)': 'std_deltaE' + str(idx)}, path=tau_exist_path)
+        ma.variableToSignalSideExtraInfo('Z0:PrimaryMC_ROE', {'constant(-1)': 'std_M' + str(idx)}, path=tau_nonexist_path)
+        ma.variableToSignalSideExtraInfo('Z0:PrimaryMC_ROE', {'constant(-1)': 'std_deltaE' + str(idx)}, path=tau_nonexist_path)
+        tau_gencut_module = roe_path_Z.add_module("VariableToReturnValue", variable="nParticlesInList(tau+:fake_strict" + str(idx) + ")")
+        tau_gencut_module.if_value(">=1", tau_exist_path, basf2.AfterConditionPath.CONTINUE)
+        tau_gencut_module.if_value("<1", tau_nonexist_path, basf2.AfterConditionPath.CONTINUE)
+
+    path.for_each('RestOfEvent', 'RestOfEvents', roe_path_Z)
+
+    # define variables for 2nd order logistic regression
+    va.variables.addAlias("Ntrack_gencut","formula(nParticlesInList(pi+:PrimaryMC) + nParticlesInList(K+:PrimaryMC) + nParticlesInList(e+:PrimaryMC) + nParticlesInList(mu+:PrimaryMC) + nParticlesInList(p+:PrimaryMC))")
+    va.variables.addAlias("pt_sum_gencut","averageValueInList(Z0:PrimaryMC,KSFWVariables(pt_sum))")
+    va.variables.addAlias("cosTBz_gencut","averageValueInList(Z0:PrimaryMC,cosTBz)")
+
+    variable_list = []
+    variable_list = variable_list + ["formula(nParticlesInList(pi+:PrimaryMC) + nParticlesInList(K+:PrimaryMC) + nParticlesInList(e+:PrimaryMC) + nParticlesInList(mu+:PrimaryMC) + nParticlesInList(p+:PrimaryMC))"]
+    variable_list = variable_list + ["formula(nParticlesInList(pi+:PrimaryMC_good) + nParticlesInList(K+:PrimaryMC_good) + nParticlesInList(e+:PrimaryMC_good) + nParticlesInList(mu+:PrimaryMC_good) + nParticlesInList(p+:PrimaryMC_good))"]
+    variable_list = variable_list + ["nParticlesInList(pi+:PrimaryMC)", "nParticlesInList(mu+:PrimaryMC)"]
+    variable_list = variable_list + ["nParticlesInList(D0:PrimaryMC)", "nParticlesInList(D+:PrimaryMC)"]
+    variable_list = variable_list + ["formula(nParticlesInList(nu_e:PrimaryMC) + nParticlesInList(nu_mu:PrimaryMC) + nParticlesInList(nu_tau:PrimaryMC))"]
+    variable_list = variable_list + vc.mc_event_kinematics
+    variable_list = variable_list + vc.event_shape
+    variable_list = variable_list + ["R2", "cosTBTO", "cosTBz", "thrustBm", "thrustOm", "CleoConeCS(1)", "CleoConeCS(2)", "CleoConeCS(3)", "CleoConeCS(4)", "CleoConeCS(5)", "CleoConeCS(6)", "CleoConeCS(7)", "CleoConeCS(8)", "CleoConeCS(9)", "KSFWVariables(mm2)", "KSFWVariables(pt_sum)", "KSFWVariables(hso00)", "KSFWVariables(hso01)", "KSFWVariables(hso02)", "KSFWVariables(hso03)", "KSFWVariables(hso04)", "KSFWVariables(hso10)", "KSFWVariables(hso12)", "KSFWVariables(hso14)", "KSFWVariables(hso20)", "KSFWVariables(hso22)", "KSFWVariables(hso24)", "KSFWVariables(hoo0)", "KSFWVariables(hoo1)", "KSFWVariables(hoo2)", "KSFWVariables(hoo3)", "KSFWVariables(hoo4)"]
+
+    for idx, MDeltaCut in enumerate(MDeltaCuts):
+        listName = "tau+:fake_strict" + str(idx)
+        variable_list = variable_list + ["nParticlesInList(" + listName + ")"]
+        variable_list = variable_list + ["averageValueInList(" + listName + ", M)", "averageValueInList(" + listName + ", deltaE)"]
+        variable_list = variable_list + ["extraInfo(std_M" + str(idx) +  ")", "extraInfo(std_deltaE" + str(idx) +  ")"]
+
+        listName = "tau+:BCS_strict_deltaE" + str(idx)
+        variable_list = variable_list + ["sumValueInList(" + listName + ", dM)", "sumValueInList(" + listName + ", M)", "sumValueInList(" + listName + ", deltaE)", "sumValueInList(" + listName + ", p)", "sumValueInList(" + listName + ", Mbc)"]
+        variable_list = variable_list + ["sumValueInList(" + listName + ",R2)", "sumValueInList(" + listName + ",cosTBTO)", "sumValueInList(" + listName + ",cosTBz)", "sumValueInList(" + listName + ",thrustBm)", "sumValueInList(" + listName + ",thrustOm)"]
+        variable_list = variable_list + ["sumValueInList(" + listName + ",daughterHighest(p))", "sumValueInList(" + listName + ",daughterLowest(p))", "sumValueInList(" + listName + ",daughterHighest(E))", "sumValueInList(" + listName + ",daughterLowest(E))"]
+
+        listName = "tau+:BCS_strict_dM" + str(idx)
+        variable_list = variable_list + ["sumValueInList(" + listName + ", dM)", "sumValueInList(" + listName + ", M)", "sumValueInList(" + listName + ", deltaE)", "sumValueInList(" + listName + ", p)", "sumValueInList(" + listName + ", Mbc)"]
+        variable_list = variable_list + ["sumValueInList(" + listName + ",R2)", "sumValueInList(" + listName + ",cosTBTO)", "sumValueInList(" + listName + ",cosTBz)", "sumValueInList(" + listName + ",thrustBm)", "sumValueInList(" + listName + ",thrustOm)"]
+        variable_list = variable_list + ["sumValueInList(" + listName + ",daughterHighest(p))", "sumValueInList(" + listName + ",daughterLowest(p))", "sumValueInList(" + listName + ",daughterHighest(E))", "sumValueInList(" + listName + ",daughterLowest(E))"]
+    
+    variable_list = variable_list + ["Ntrack_gencut", "pt_sum_gencut", "cosTBz_gencut"]
+    for tau_list in tau_lists:
+        variable_list.append("nParticlesInList(" + tau_list + ")")
+
+    # make Ntuple
+    ma.variablesToNtuple(decayString="Z0:PrimaryMC", variables=variable_list, filename=output_file, treename="gen_info", path=path)
+
+# get data type
+parser = argparse.ArgumentParser(description='Sample type')
+
+# data or MC
+parser.add_argument('--sample', required=True, type=str, help='type of sample. list) data, MC15ri, MC15rd, MC16ri, MC16rd, Belle_data, Belle_MC')
+parser.add_argument('--type', required=True, type=str, help='type of event. list) data, signal, charged, mixed, uubar, ddbar, ssbar, ccbar, mumu, ee, eeee, eemumu, eepipi, eeKK, eepp, pipiISR, KKISR, gg, eetautau, K0K0barISR, mumumumu, mumutautau, tautautautau, taupair, pipipi0ISR, BBs, BsBs, uds, bsbs, nonbsbs, eecc, eess, eeuu')
+parser.add_argument('--energy', required=True, type=str, help='energy of sample. list) 4S, off, 10657, 10706, 10751, 10810, 5Sscan')
+parser.add_argument('--prompt', action='store_true', help='If you want to reconstruct the prompt tau-> mu mu mu, use this flag')
+parser.add_argument('--vertex', action='store_true', help='If you want to reconstruct the tau->(alpha -> mu mu) mu, use this flag')
+parser.add_argument('--control', action='store_true', help='Reconstruct pipipi and KS0pi, apply final CTRL/CTRL_ALP cuts and per-channel random BCS, and dump high-ROE-mass MC events')
+parser.add_argument('--dump_mc_secondaries', action='store_true', help='Include detector secondaries in the high-ROE-mass MC decay tree (control MC only)')
+parser.add_argument('--gencut', action='store_true', help='This flag allows you to gen cut study')
+parser.add_argument('--mass_ALP', default=-1.0, type=float, help='mass of ALP in GeV. This option is meaningful only for ALP signal')
+parser.add_argument('--life_ALP', default=-1.0, type=float, help='c times lifetime of ALP in mm. This option is meaningful only for ALP signal')
+
+# input file/output path when it is running on KEKCC
+parser.add_argument('--KEKCC', action='store_true', help='run on KEKCC, not GRID')
+parser.add_argument('--inputfile', required=False, type=str, help='destination of output files for local run. `--KEKCC` should be on. ex) /home/belle2/junewoo/storage_b1/input_Jpsi/B02XJpsi_SKIM_00012_job227326565_00.udst.root')
+parser.add_argument('--destination', required=False, type=str, help='destination of output files for local run. `--KEKCC` should be on. ex) /home/belle2/junewoo/storage_b1/output')
+
+# momentum scale for data
+parser.add_argument('--momentum_scale', default='center', type=str, help='Momentum scale for data. This option is ignored if it is not Belle II data. list) center, up, down')
+
+args = parser.parse_args()
+
+# set BELLEONE flag if it is Belle_data or Belle_MC
+if "Belle_" in args.sample:
+    BELLEONE = True
+else:
+    BELLEONE = False
+
+# assign sample index and type index
+sample_index, type_index, energy_index = AssignIndex(sample_name=args.sample, event_name=args.type, energy_name=args.energy)
+is_real_data=args.sample in ("data", "Belle_data")
+
+if BELLEONE:
+    # check https://questions.belle2.org/question/14927/global-tag-use-for-flavor-tagging-for-light-2305-korat/
+    basf2.conditions.prepend_globaltag("analysis_tools_light-2012-minos")
+else:
+    basf2.conditions.prepend_globaltag(ma.getAnalysisGlobaltag())
+    basf2.conditions.prepend_globaltag("pid_nn_release08_v1")
+
+# set random seed
+basf2.set_random_seed(42)
+    
+# Read uDST
+my_path = basf2.create_path()
+
+inputfile = ""
+basename = ""
+name = ""
+if(args.KEKCC):
+    inputfile = args.inputfile
+    if not inputfile.endswith(".root"): sys.exit(2)
+    else:
+        basename = os.path.basename(inputfile)
+        name = os.path.splitext(basename)[0]
+else:
+    # just any file
+    inputfile="/group/belle2/dataprod/MC/SkimTraining/mixed_BGx1.mdst_000001_prod00009434_task10020000001.root"
+
+if BELLEONE:
+    ma.inputMdst(environmentType='Belle',filename=inputfile,path=my_path)
+else:
+    ma.inputMdst(environmentType='default',filename=inputfile,path=my_path)
+
+# track momentum scale
+if BELLEONE:
+    pass
+else:
+    if((args.sample == "data") or (args.sample == "MC16rd")):
+        for particle in ['e-:all', 'mu-:all', 'pi-:all', 'K-:all', 'p+:all']:
+            ma.fillParticleList(particle, cut='', path=my_path)
+    
+        basf2.conditions.prepend_globaltag('performance_release08_20260623')
+        if(args.momentum_scale == "center"):
+            ma.scaleTrackMomenta(inputListNames=['e-:all', 'mu-:all', 'pi-:all', 'K-:all', 'p+:all'], payloadName='tracking_MomentumScaling', scalingFactorName='central', path=my_path)
+            ma.correctTrackEnergy(inputListNames=['e-:all', 'mu-:all', 'pi-:all', 'K-:all', 'p+:all'], payloadName='tracking_EnergyLoss', correctionName='central', path=my_path)
+        elif(args.momentum_scale == "up"):
+            ma.scaleTrackMomenta(inputListNames=['e-:all', 'mu-:all', 'pi-:all', 'K-:all', 'p+:all'], payloadName='tracking_MomentumScaling', scalingFactorName='total_up', path=my_path)
+            ma.correctTrackEnergy(inputListNames=['e-:all', 'mu-:all', 'pi-:all', 'K-:all', 'p+:all'], payloadName='tracking_EnergyLoss', correctionName='total_up', path=my_path)
+        elif(args.momentum_scale == "down"):
+            ma.scaleTrackMomenta(inputListNames=['e-:all', 'mu-:all', 'pi-:all', 'K-:all', 'p+:all'], payloadName='tracking_MomentumScaling', scalingFactorName='total_down', path=my_path)
+            ma.correctTrackEnergy(inputListNames=['e-:all', 'mu-:all', 'pi-:all', 'K-:all', 'p+:all'], payloadName='tracking_EnergyLoss', correctionName='total_down', path=my_path)
+        else:
+            print("unexpected momentum scale option")
+            exit(1)
+
+# set output file and path
+outputpath = args.destination
+output_file = "Ntuple"
+hashmapName = "hashmap_tau"
+if(args.KEKCC):
+    output_file = outputpath + "/" + name + "_" + output_file
+    hashmapName = outputpath + "/" + name + "_" + hashmapName
+else:
+    output_file = output_file
+    hashmapName = hashmapName
+
+# get MC decay mode
+ma.labelTauPairMC(path=my_path)
+
+# fill photon for Event shape and kinematics
+ma.fillParticleList("pi+:evtshape_kinematics", cut='[dr < 1] and [abs(dz) < 3]', path=my_path)
+ma.fillParticleList("gamma:case_base", cut='[inCDCAcceptance] and [clusterNHits > 1.5]', path=my_path)
+ma.reconstructDecay(decayString="pi0:case_1 -> gamma:case_base gamma:case_base", cut="0.115 < M < 0.152", path=my_path)
+ma.cutAndCopyList("gamma:case_1", "gamma:case_base", cut="[isDescendantOfList(pi0:case_1, 1)] and [E>0.1]", path=my_path)
+ma.cutAndCopyList("gamma:case_2", "gamma:case_base", cut="[E>0.2]", path=my_path)
+ma.copyLists(outputListName="gamma:evtshape_kinematics", inputListNames=["gamma:case_1", "gamma:case_2"], path=my_path)
+
+# fill photon for brem correction
+ma.cutAndCopyList("gamma:for_brem", "gamma:case_base", cut="[isDescendantOfList(pi0:case_1, 1) == 0] and [E>0.02]", path=my_path)
+
+# fill particles for tau reconstruction
+trackCuts = "[-3.0 < dz < 3.0] and [dr < 1.0]"
+ma.fillParticleList(decayString="e+:taulfv", cut=trackCuts, path=my_path)
+ma.correctBremsBelle('e+:taulfv_brem', 'e+:taulfv', 'gamma:for_brem', multiplePhotons=True, angleThreshold=0.15, path=my_path)
+ma.fillParticleList(decayString="mu+:taulfv", cut=trackCuts, path=my_path)
+ma.fillParticleList(decayString="pi+:taulfv", cut=trackCuts, path=my_path)
+
+# fill photons with several cuts
+photon_names = FillSeveralPhotons(my_path)
+
+# calculate isolation
+if BELLEONE:
+    pass
+else:
+    my_path.add_module("TrackIsoCalculator", decayString="mu+:taulfv", particleListReference="mu+:taulfv", detectorNames=["ECL", "KLM"], useHighestProbMassForExt=False)
+
+# --- build Event Kinematics ---
+ma.buildEventKinematics(inputListNames = ["pi+:evtshape_kinematics", "gamma:evtshape_kinematics"], path=my_path)
+    
+# --- build Event shape ---
+ma.buildEventShape(inputListNames=['pi+:evtshape_kinematics', 'gamma:evtshape_kinematics'], path=my_path)
+
+# define default cut criteria
+tauLFVCuts3 = "nParticlesInList(pi+:taulfv) < 7 and 1.3 < M < 2.2 and -1.0 < deltaE < 0.5"
+tauLFVCuts_control_base = "nParticlesInList(pi+:taulfv) < 7 and 0.5 < M < 2.0 and -1.0 < deltaE < 0.5"
+tauLFVCuts_control_prompt = tauLFVCuts_control_base + " and [daughter(0, pionID) > 0.5] and [daughter(1, pionID) > 0.5] and [daughter(2, pionID) > 0.5]"
+tauLFVCuts_control_vertex = tauLFVCuts_control_base + " and [daughter(1, pionID) > 0.1]"
+
+# define tau particle list and variable list
+tau_list = []
+var_list = []
+
+# name, PDG, mass, width, charge, spin
+pdg.add_particle('alpha0', 94144, 1.0, 0.004, 0, 0)
+
+if(args.prompt):
+    # here, we only reconstruct tau -> mu mu mu
+    ma.reconstructDecay("tau+:LFV_lll -> mu+:taulfv mu+:taulfv mu-:taulfv", tauLFVCuts3, 1, path=my_path)
+
+    # Treefit only for prompt decay
+    vertex.treeFit(list_name="tau+:LFV_lll", conf_level=-1, updateAllDaughters=False, path=my_path)
+
+    # basic analysis for tau: buildROE, continuum suppression, truth match, assign event type / sample type
+    BasicAnalysisForTau("tau+:LFV_lll", sample_index=sample_index, type_index=type_index, energy_index=energy_index, mass_ALP=args.mass_ALP, life_ALP=args.life_ALP, use_mcalp=False, is_real_data=is_real_data, path=my_path)
+
+    # define variables
+    var_list = DefineVariables("tau+:LFV_lll", photon_names=photon_names, IsItPrompt=True, path=my_path)
+
+    # add in tau list
+    tau_list = tau_list + ["tau+:LFV_lll"]
+
+# do the same thing for the vertex displacement
+if(args.vertex):
+    ma.reconstructDecay("alpha0:LFV_vertex -> mu+:all mu-:all", cut="", path=my_path)
+    # treefit for alpha significantly improves m_alpha distribution
+    vertex.treeFit(list_name="alpha0:LFV_vertex", conf_level=-1, updateAllDaughters=False, path=my_path)
+    ma.reconstructDecay("tau+:LFV_vertex -> alpha0:LFV_vertex mu+:taulfv", tauLFVCuts3, 10, path=my_path)
+    BasicAnalysisForTau("tau+:LFV_vertex", sample_index=sample_index, type_index=type_index, energy_index=energy_index, mass_ALP=args.mass_ALP, life_ALP=args.life_ALP, use_mcalp=True, is_real_data=is_real_data, path=my_path)
+    var_list = DefineVariables("tau+:LFV_vertex", photon_names=photon_names, IsItPrompt=False, path=my_path)
+    tau_list = tau_list + ["tau+:LFV_vertex"]
+
+# do the same thing for the control sample
+if(args.control):
+    ma.reconstructDecay("tau+:LFV_control -> pi+:taulfv pi-:taulfv pi+:taulfv", tauLFVCuts_control_prompt, 20, path=my_path)
+    vertex.treeFit(list_name="tau+:LFV_control", conf_level=-1, updateAllDaughters=False, path=my_path)
+    BasicAnalysisForTau("tau+:LFV_control", sample_index=sample_index, type_index=type_index, energy_index=energy_index, mass_ALP=args.mass_ALP, life_ALP=args.life_ALP, use_mcalp=False, is_real_data=is_real_data, path=my_path)
+    var_list = DefineVariables("tau+:LFV_control", photon_names=photon_names, IsItPrompt=True, path=my_path)
+    ApplyControlSelection("tau+:LFV_control", channel="CTRL", path=my_path)
+    tau_list = tau_list + ["tau+:LFV_control"]
+
+    stdV0s.stdKshorts(path=my_path)
+    ma.reconstructDecay("tau+:LFV_control_KS -> K_S0:merged pi+:taulfv", tauLFVCuts_control_vertex, 30, path=my_path)
+    BasicAnalysisForTau("tau+:LFV_control_KS", sample_index=sample_index, type_index=type_index, energy_index=energy_index, mass_ALP=args.mass_ALP, life_ALP=args.life_ALP, use_mcalp=True, is_real_data=is_real_data, path=my_path)
+    var_list = DefineVariables("tau+:LFV_control_KS", photon_names=photon_names, IsItPrompt=False, path=my_path)
+    ApplyControlSelection("tau+:LFV_control_KS", channel="CTRL_ALP", path=my_path)
+    tau_list = tau_list + ["tau+:LFV_control_KS"]
+
+    if not is_real_data:
+        AddHighROEDiagnostics(
+            [("CTRL", "tau+:LFV_control"), ("CTRL_ALP", "tau+:LFV_control_KS")],
+            include_secondaries=args.dump_mc_secondaries, path=my_path,
+        )
+
+if tau_list:
+    ma.copyLists(outputListName="tau+:LFV_comb", inputListNames=tau_list, path=my_path)
+    if(args.gencut): # make Ntuple for gencut
+        ma.cutAndCopyList("tau+:LFV_comb_1", "tau+:LFV_comb", cut="[1.60 < M < 1.94] and [-0.45 < deltaE < 0.39] and [roeEextra(cleanMask) < 5.0]", path=my_path)
+        MDeltaCuts = ["", "[1.0 < M < 4.0] and [-1.0 < deltaE < 1.0]", "[1.0 < M < 2.5] and [-1.0 < deltaE < 1.0]"]
+        AnalysisGenCut(tau_lists = ["tau+:LFV_comb_1"], MDeltaCuts = MDeltaCuts, Ntuple_name = output_file, path=my_path)
+    else: # Make Ntuple and hashmap
+        MakeNtupleandHashmap("tau+:LFV_comb", variable_list=var_list, Ntuple_name=output_file, hashmap_name=hashmapName, path=my_path)
+             
+# progress
+basf2.process(my_path)
+
+# Print call statistics
+print(basf2.statistics)
