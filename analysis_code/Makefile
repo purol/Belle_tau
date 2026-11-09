@@ -21,6 +21,9 @@ OBJS = $(MAINS:$(SRCDIR)/%.cc=$(TMPDIR)/%.o)
 
 all: $(BINDIR) $(TMPDIR) $(TARGETS)
 
+$(TMPDIR)/Analysis_main_CTRL.o $(TMPDIR)/Analysis_main_CTRL_ALP.o \
+$(TMPDIR)/Analysis_main_CTRL_log.o $(TMPDIR)/Analysis_main_CTRL_ALP_log.o: $(INCDIR)/LarvaYuugiCompatibility.h
+
 $(BINDIR):
 	@mkdir -p $(BINDIR)
 

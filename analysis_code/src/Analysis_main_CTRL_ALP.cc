@@ -6,6 +6,7 @@
 #include "TFile.h"
 
 #include "Loader.h"
+#include "LarvaYuugiCompatibility.h"
 #include "constants.h"
 #include "MyObtainWeight.h"
 #include "MyModule.h"
@@ -77,6 +78,7 @@ int main(int argc, char* argv[]) {
 
     // It is prompt decay analysis
     loader.LoadWithCut(argv[1], argv[2], "label", "(29.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 30.5)");
+    ApplyTemporaryLarvaYuugiCompatibility(loader);
     loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
 
     loader.RemoveVariable({ "nParticlesInList__botau__pl__clpipipi__bc" });
