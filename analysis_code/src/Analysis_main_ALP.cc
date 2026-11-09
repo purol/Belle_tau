@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
     Loader loader("tau_lfv");
 
     // It is ALP decay analysis
-    loader.LoadWithCut(argv[1], argv[2], "label", "(9.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 10.5)");
+    loader.LoadWithCut(argv[1], argv[2], "label", "(9.5 < extraInfo__bodecayModeID__bc) && (extraInfo__bodecayModeID__bc < 10.5) && (extraInfo__boOneMuon_p__bc >= 0) && (extraInfo__boTwoMuon_p__bc >= 0) && (extraInfo__boThreeMuon_p__bc >= 0)");
     loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
 
     loader.ConditionalPairDefineNewVariable(momentum_muonmomentum, 0, "first_muon_p");
