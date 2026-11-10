@@ -57,8 +57,8 @@ gbasf2 ./python/gbasf2_Yuugi.py --force -p EE_CTRL16_2 -i /belle/collection/MC/M
 gbasf2 ./python/gbasf2_Yuugi.py --force -p GG_CTRL16_2 -i /belle/collection/MC/MC16rd_prompt_gg_Run2_4S_v1 -s light-2609-luna --cputime 1600 --basf2opt="-- --sample MC16rd --type gg --energy 4S --control"
 gbasf2 ./python/gbasf2_Yuugi.py --force -p EEEE_CTRL16_2 -i /belle/collection/MC/MC16rd_prompt_eeee_Run2_4S_v1 -s light-2609-luna --cputime 1600 --basf2opt="-- --sample MC16rd --type eeee --energy 4S --control"
 gbasf2 ./python/gbasf2_Yuugi.py --force -p EEMUMU_CTRL16_2 -i /belle/collection/MC/MC16rd_prompt_eemumu_Run2_4S_v1 -s light-2609-luna --cputime 1600 --basf2opt="-- --sample MC16rd --type eemumu --energy 4S --control"
-gbasf2 ./python/gbasf2_Yuugi.py --force -p hhISR_CTRL16_2 -i /belle/collection/MC/MC16rd_prompt_llXX_Run2_4S_v1 -s light-2609-luna --cputime 1600 --basf2opt="-- --sample MC16rd --type hhISR --energy 4S --control"
-gbasf2 ./python/gbasf2_Yuugi.py --force -p llXX_CTRL16_2 -i /belle/collection/MC/MC16rd_prompt_hhISR_Run2_4S_v1 -s light-2609-luna --cputime 1600 --basf2opt="-- --sample MC16rd --type llXX --energy 4S --control"
+gbasf2 ./python/gbasf2_Yuugi.py --force -p hhISR_CTRL16_2 -i /belle/collection/MC/MC16rd_prompt_hhISR_Run2_4S_v1 -s light-2609-luna --cputime 1600 --basf2opt="-- --sample MC16rd --type hhISR --energy 4S --control"
+gbasf2 ./python/gbasf2_Yuugi.py --force -p llXX_CTRL16_2 -i /belle/collection/MC/MC16rd_prompt_llXX_Run2_4S_v1 -s light-2609-luna --cputime 1600 --basf2opt="-- --sample MC16rd --type llXX --energy 4S --control"
 
 # prompt off
 gbasf2 ./python/gbasf2_Yuugi.py --force -p UUBAR_CTRL16_OF_2 -i /belle/collection/MC/MC16rd_prompt_uubar_Run2_4S_offres_v1 -s light-2609-luna --cputime 800 --basf2opt="-- --sample MC16rd --type uubar --energy off --control"
