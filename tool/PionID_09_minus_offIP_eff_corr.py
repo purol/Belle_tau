@@ -20,7 +20,7 @@ ratio_cfg = {
     "mc_collection": "MC16rd_proc16+prompt",
     "track_variables": ["p", "cosTheta"],
     "precut": "charge < 0",
-    "model_names": ["Dst"],
+    "model_names": ["Dst", "KShort", "Lambda0"],
     "output": "PionEff09_off_minus.csv",
     "binning": [[0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0],
                [-0.866, -0.682, -0.4226, -0.1045, 0.225, 0.5, 0.766, 0.8829, 0.9563]]
