@@ -4,6 +4,8 @@ import math
 # Run: python PionID_eff_corr.py
 # Read and write CSV files in the current directory. Existing outputs are overwritten.
 
+# MC16rd: MySampleType = 4
+sample_bounds = (3.5, 4.5)
 # PDG code: pi- = -211, pi+ = +211
 pid_bounds = {"minus": (-211.5, -210.5), "plus": (210.5, 211.5)}
 # ALP table: offIP for index 0/1, onIP for index 2
@@ -24,6 +26,8 @@ def CombineTables(tables_, threshold_, ip_modes_, isItALP = False):
             for original in tables_[threshold_, ip_mode, charge]:
                 # Keep the original correction factors and uncertainties.
                 row = {
+                    "sample_min": sample_bounds[0],
+                    "sample_max": sample_bounds[1],
                     "PID_min": pid_min,
                     "PID_max": pid_max,
                     **original,
