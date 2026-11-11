@@ -64,7 +64,8 @@ submit_Plotter() {
       "${DataTypes}" \
       "${DataLegends}" \
       "${VarMin}" \
-      "${VarMax}"
+      "${VarMax}" \
+      "CTRL"
 
     bsub -q l \
     -J Plotter \
