@@ -41,6 +41,9 @@ int main(int argc, char* argv[]) {
     */
 
     EventWeights::Register("MC_weight", MC_weight);
+    EventWeights::Register("KS0_tracking_run1", KS0_tracking_MC16rd_run1);
+    EventWeights::Register("KS0_tracking_run2", KS0_tracking_MC16rd_run2);
+    EventWeights::Register("pionID_09_ALP", pionID_09_ALP);
 
     std::vector<std::string> MC_list = split(argv[7], ':');
     std::vector<std::string> data_list = split(argv[8], ':');
@@ -143,6 +146,11 @@ int main(int argc, char* argv[]) {
     Loader loader_00_MC("tau_lfv");
     for (int i = 0; i < MC_list.size(); i++) loader_00_MC.Load((std::string(argv[1]) + "/" + MC_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", MC_list.at(i).c_str());
     loader_00_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_00_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "first_muon_index"},  {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_00_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "second_muon_index"},  {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_00_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "third_muon_index"},  {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+    loader_00_MC.AddWeight("KS0_tracking_run1", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
+    loader_00_MC.AddWeight("KS0_tracking_run2", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
     loader_00_MC.Cut(ECL_fail.c_str());
     loader_00_MC.Cut(CDC_fail.c_str());
     loader_00_MC.FillTH3D(hist_00_MC, used_variables.at(0).c_str(), used_variables.at(1).c_str(), distance_variable.c_str());
@@ -151,6 +159,11 @@ int main(int argc, char* argv[]) {
     Loader loader_01_MC("tau_lfv");
     for (int i = 0; i < MC_list.size(); i++) loader_01_MC.Load((std::string(argv[1]) + "/" + MC_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", MC_list.at(i).c_str());
     loader_01_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_01_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "first_muon_index"},  {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_01_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "second_muon_index"},  {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_01_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "third_muon_index"},  {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+    loader_01_MC.AddWeight("KS0_tracking_run1", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
+    loader_01_MC.AddWeight("KS0_tracking_run2", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
     loader_01_MC.Cut(ECL_fail.c_str());
     loader_01_MC.Cut(CDC_pass.c_str());
     loader_01_MC.FillTH3D(hist_01_MC, used_variables.at(0).c_str(), used_variables.at(1).c_str(), distance_variable.c_str());
@@ -159,6 +172,11 @@ int main(int argc, char* argv[]) {
     Loader loader_10_MC("tau_lfv");
     for (int i = 0; i < MC_list.size(); i++) loader_10_MC.Load((std::string(argv[1]) + "/" + MC_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", MC_list.at(i).c_str());
     loader_10_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_10_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "first_muon_index"},  {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_10_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "second_muon_index"},  {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_10_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "third_muon_index"},  {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+    loader_10_MC.AddWeight("KS0_tracking_run1", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
+    loader_10_MC.AddWeight("KS0_tracking_run2", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
     loader_10_MC.Cut(ECL_pass.c_str());
     loader_10_MC.Cut(CDC_fail.c_str());
     loader_10_MC.FillTH3D(hist_10_MC, used_variables.at(0).c_str(), used_variables.at(1).c_str(), distance_variable.c_str());
@@ -167,6 +185,11 @@ int main(int argc, char* argv[]) {
     Loader loader_11_MC("tau_lfv");
     for (int i = 0; i < MC_list.size(); i++) loader_11_MC.Load((std::string(argv[1]) + "/" + MC_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", MC_list.at(i).c_str());
     loader_11_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_11_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "first_muon_index"},  {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_11_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "second_muon_index"},  {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_11_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "third_muon_index"},  {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+    loader_11_MC.AddWeight("KS0_tracking_run1", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
+    loader_11_MC.AddWeight("KS0_tracking_run2", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
     loader_11_MC.Cut(ECL_pass.c_str());
     loader_11_MC.Cut(CDC_pass.c_str());
     loader_11_MC.FillTH3D(hist_11_MC, used_variables.at(0).c_str(), used_variables.at(1).c_str(), distance_variable.c_str());
@@ -201,6 +224,11 @@ int main(int argc, char* argv[]) {
     Loader loader_E_alt_pass_MC("tau_lfv");
     for (int i = 0; i < MC_list.size(); i++) loader_E_alt_pass_MC.Load((std::string(argv[1]) + "/" + MC_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", MC_list.at(i).c_str());
     loader_E_alt_pass_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_E_alt_pass_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "first_muon_index"},  {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_E_alt_pass_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "second_muon_index"},  {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_E_alt_pass_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "third_muon_index"},  {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+    loader_E_alt_pass_MC.AddWeight("KS0_tracking_run1", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
+    loader_E_alt_pass_MC.AddWeight("KS0_tracking_run2", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
     loader_E_alt_pass_MC.Cut(ECL_pass.c_str());
     loader_E_alt_pass_MC.Cut(CDC_reference_pass.c_str());
     loader_E_alt_pass_MC.FillTH3D(hist_E_alt_pass_MC, used_variables.at(0).c_str(), used_variables.at(1).c_str(), distance_variable.c_str());
@@ -209,6 +237,11 @@ int main(int argc, char* argv[]) {
     Loader loader_E_alt_fail_MC("tau_lfv");
     for (int i = 0; i < MC_list.size(); i++) loader_E_alt_fail_MC.Load((std::string(argv[1]) + "/" + MC_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", MC_list.at(i).c_str());
     loader_E_alt_fail_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_E_alt_fail_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "first_muon_index"},  {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_E_alt_fail_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "second_muon_index"},  {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_E_alt_fail_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "third_muon_index"},  {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+    loader_E_alt_fail_MC.AddWeight("KS0_tracking_run1", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
+    loader_E_alt_fail_MC.AddWeight("KS0_tracking_run2", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
     loader_E_alt_fail_MC.Cut(ECL_fail.c_str());
     loader_E_alt_fail_MC.Cut(CDC_reference_pass.c_str());
     loader_E_alt_fail_MC.FillTH3D(hist_E_alt_fail_MC, used_variables.at(0).c_str(), used_variables.at(1).c_str(), distance_variable.c_str());
@@ -234,6 +267,11 @@ int main(int argc, char* argv[]) {
     Loader loader_C_alt_pass_MC("tau_lfv");
     for (int i = 0; i < MC_list.size(); i++) loader_C_alt_pass_MC.Load((std::string(argv[1]) + "/" + MC_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", MC_list.at(i).c_str());
     loader_C_alt_pass_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_C_alt_pass_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "first_muon_index"},  {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_C_alt_pass_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "second_muon_index"},  {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_C_alt_pass_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "third_muon_index"},  {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+    loader_C_alt_pass_MC.AddWeight("KS0_tracking_run1", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
+    loader_C_alt_pass_MC.AddWeight("KS0_tracking_run2", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
     loader_C_alt_pass_MC.Cut(CDC_pass.c_str());
     loader_C_alt_pass_MC.Cut(ECL_reference_pass.c_str());
     loader_C_alt_pass_MC.FillTH3D(hist_C_alt_pass_MC, used_variables.at(0).c_str(), used_variables.at(1).c_str(), distance_variable.c_str());
@@ -242,6 +280,11 @@ int main(int argc, char* argv[]) {
     Loader loader_C_alt_fail_MC("tau_lfv");
     for (int i = 0; i < MC_list.size(); i++) loader_C_alt_fail_MC.Load((std::string(argv[1]) + "/" + MC_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", MC_list.at(i).c_str());
     loader_C_alt_fail_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_C_alt_fail_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "first_muon_index"},  {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_C_alt_fail_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "second_muon_index"},  {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_C_alt_fail_MC.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "third_muon_index"},  {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+    loader_C_alt_fail_MC.AddWeight("KS0_tracking_run1", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
+    loader_C_alt_fail_MC.AddWeight("KS0_tracking_run2", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
     loader_C_alt_fail_MC.Cut(CDC_fail.c_str());
     loader_C_alt_fail_MC.Cut(ECL_reference_pass.c_str());
     loader_C_alt_fail_MC.FillTH3D(hist_C_alt_fail_MC, used_variables.at(0).c_str(), used_variables.at(1).c_str(), distance_variable.c_str());

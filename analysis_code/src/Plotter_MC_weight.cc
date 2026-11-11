@@ -24,11 +24,21 @@ int main(int argc, char* argv[]) {
     * argv[11]: weight name (without extension)
     * (argv[12]): min value
     * (argv[13]): max value
+    * (argv[14]): control sample (CTRL or CTRL_ALP, requires min and max values)
     */
 
-    if (argc != 12 && argc != 14) {
-        printf("11 or 13 arguments are required.\n");
+    if (argc != 12 && argc != 14 && argc != 15) {
+        printf("11, 13 or 14 arguments are required.\n");
         return 1;
+    }
+
+    std::string control_sample;
+    if (argc == 15) {
+        control_sample = argv[14];
+        if (control_sample != "CTRL" && control_sample != "CTRL_ALP") {
+            printf("Control sample should be CTRL or CTRL_ALP.\n");
+            return 1;
+        }
     }
 
     std::string variable_name(argv[1]);
@@ -65,6 +75,10 @@ int main(int argc, char* argv[]) {
     );
     EventWeights::Register("CTRL_weight", CTRL_weight);
     EventWeights::Register("MC_weight", MC_weight);
+    EventWeights::Register("pionID_09_prompt", pionID_09_prompt);
+    EventWeights::Register("pionID_09_ALP", pionID_09_ALP);
+    EventWeights::Register("KS0_tracking_run1", KS0_tracking_MC16rd_run1);
+    EventWeights::Register("KS0_tracking_run2", KS0_tracking_MC16rd_run2);
 
     Loader loader("tau_lfv");
 
@@ -73,11 +87,24 @@ int main(int argc, char* argv[]) {
     loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader.AddWeight("CTRL_weight", { {compare_variables.at(0), compare_variables.at(0)}, {compare_variables.at(1), compare_variables.at(1)} });
 
+    if (control_sample == "CTRL") {
+        loader.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+        loader.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+        loader.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+    }
+    else if (control_sample == "CTRL_ALP") {
+        loader.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "first_muon_index"},  {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+        loader.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "second_muon_index"},  {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+        loader.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "third_muon_index"},  {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+        loader.AddWeight("KS0_tracking_run1", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
+        loader.AddWeight("KS0_tracking_run2", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
+    }
+
     loader.SetMC(MC_legend_list);
     loader.SetData(data_legend_list);
 
-    if(argc == 12) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), false, false);
-    else if (argc == 14) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), 50, std::stod(argv[12]), std::stod(argv[13]), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), false, false);
+    if (argc == 12) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), false, false);
+    else if (argc == 14 || argc == 15) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), 50, std::stod(argv[12]), std::stod(argv[13]), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), false, false);
 
     loader.end();
 

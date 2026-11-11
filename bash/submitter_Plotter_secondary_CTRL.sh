@@ -64,7 +64,8 @@ submit_Plotter() {
       "${DataTypes}" \
       "${DataLegends}" \
       "${VarMin}" \
-      "${VarMax}"
+      "${VarMax}" \
+      "CTRL"
 
     bsub -q l \
     -J Plotter \
@@ -111,7 +112,8 @@ submit_Plotter_weight() {
     "./${VerName}/${Analysis_VerName}/${WeightPath}" \
     "${WeightName}" \
     "${VarMin}" \
-    "${VarMax}"
+    "${VarMax}" \
+    "CTRL"
 
   bsub -q l \
   -J Plotter \

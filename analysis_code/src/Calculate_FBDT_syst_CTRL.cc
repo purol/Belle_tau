@@ -59,6 +59,7 @@ int main(int argc, char* argv[]) {
     EventWeights::Register("MC_weight", MC_weight);
     EventWeights::Register("muonID_01_prompt", muonID_01_prompt);
     EventWeights::Register("muonID_05_prompt", muonID_05_prompt);
+    EventWeights::Register("pionID_09_prompt", pionID_09_prompt);
 
     // signal MC
     TH1D before_BDT("before_BDT", ";bin index;", 8, 0.5, 8.5);
@@ -66,9 +67,9 @@ int main(int argc, char* argv[]) {
     Loader loader_signal("tau_lfv");
     loader_signal.Load((nominal_path + "/" + argv[6] + "/" + argv[2]).c_str(), "root", argv[6]);
     loader_signal.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
-    loader_signal.AddWeight("muonID_05_prompt", { {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
-    loader_signal.AddWeight("muonID_05_prompt", { {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
-    loader_signal.AddWeight("muonID_01_prompt", { {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+    loader_signal.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_signal.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_signal.AddWeight("muonID_01_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
     loader_signal.Cut(cut_region.c_str());
     loader_signal.RandomBCS();
     loader_signal.IsBCSValid();
@@ -115,6 +116,9 @@ int main(int argc, char* argv[]) {
         Loader loader_MC("tau_lfv");
         for (int j = 0; j < MC_list.size(); j++) loader_MC.Load((control_path + "/" + MC_list.at(j) + "/" + argv[4]).c_str(), "root", MC_list.at(j).c_str());
         loader_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+        loader_MC.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+        loader_MC.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+        loader_MC.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
         loader_MC.AddWeight(weight_name.c_str(), { {var1, var1}, {var2, var2} });
         loader_MC.FillTH1D(&FBDT_MC, BDT_names.at(i));
         loader_MC.end();
