@@ -152,6 +152,7 @@ EventWeight MC_weight(
 EventWeight muonID_01_ALP(
     "//home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/MuonEff01_ALP.csv",
     {
+        {"sample", "sample_min", "sample_max"},
         {"index", "index_min", "index_max"},
         {"PID", "PID_min", "PID_max"},
         {"momentum", "p_min", "p_max"},
@@ -168,6 +169,7 @@ EventWeight muonID_01_ALP(
 EventWeight muonID_05_ALP(
     "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/MuonEff05_ALP.csv",
     {
+        {"sample", "sample_min", "sample_max"},
         {"index", "index_min", "index_max"},
         {"PID", "PID_min", "PID_max"},
         { "momentum", "p_min", "p_max" },
@@ -184,6 +186,7 @@ EventWeight muonID_05_ALP(
 EventWeight muonID_01_prompt(
     "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/MuonEff01_prompt.csv",
     {
+        {"sample", "sample_min", "sample_max"},
         {"PID", "PID_min", "PID_max"},
         { "momentum", "p_min", "p_max" },
         {"Theta", "Theta_min", "Theta_max"}
@@ -199,6 +202,7 @@ EventWeight muonID_01_prompt(
 EventWeight muonID_05_prompt(
     "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/MuonEff05_prompt.csv",
     {
+        {"sample", "sample_min", "sample_max"},
         {"PID", "PID_min", "PID_max"},
         { "momentum", "p_min", "p_max" },
         {"Theta", "Theta_min", "Theta_max"}
@@ -214,6 +218,7 @@ EventWeight muonID_05_prompt(
 EventWeight pionID_09_prompt(
     "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/PionEff09_prompt.csv",
     {
+        {"sample", "sample_min", "sample_max"},
         {"PID", "PID_min", "PID_max"},
         { "momentum", "p_min", "p_max" },
         {"Theta", "Theta_min", "Theta_max"}
@@ -229,6 +234,7 @@ EventWeight pionID_09_prompt(
 EventWeight pionID_09_ALP(
     "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/PionEff09_ALP.csv",
     {
+        {"sample", "sample_min", "sample_max"},
         {"index", "index_min", "index_max"},
         {"PID", "PID_min", "PID_max"},
         { "momentum", "p_min", "p_max" },
