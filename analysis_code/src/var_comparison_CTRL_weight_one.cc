@@ -76,6 +76,9 @@ int main(int argc, char* argv[]) {
     );
     EventWeights::Register("CTRL_weight", CTRL_weight);
     EventWeights::Register("MC_weight", MC_weight);
+    EventWeights::Register("muonID_01_prompt", muonID_01_prompt);
+    EventWeights::Register("muonID_05_prompt", muonID_05_prompt);
+    EventWeights::Register("pionID_09_prompt", pionID_09_prompt);
 
     std::string variable_name(argv[1]);
 
@@ -95,6 +98,9 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < sample1_list.size(); i++) loader_sample1_test.Load(argv[5], "root", sample1_list.at(i).c_str());
     loader_sample1_test.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader_sample1_test.AddWeight("CTRL_weight", { {compare_variables.at(0), compare_variables.at(0)}, {compare_variables.at(1), compare_variables.at(1)} });
+    loader_sample1_test.AddWeight("pionID_09_prompt", { {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_sample1_test.AddWeight("pionID_09_prompt", { {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_sample1_test.AddWeight("pionID_09_prompt", { {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
     loader_sample1_test.FillTH1D(sample1_test_th, variable_name);
     loader_sample1_test.FillTH1D(sample1_test_th_KS, variable_name);
     loader_sample1_test.end();
@@ -103,6 +109,9 @@ int main(int argc, char* argv[]) {
     Loader loader_sample2_test("tau_lfv");
     for (int i = 0; i < sample2_list.size(); i++) loader_sample2_test.Load(argv[6], "root", sample2_list.at(i).c_str());
     loader_sample2_test.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_sample2_test.AddWeight("muonID_05_prompt", { {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_sample2_test.AddWeight("muonID_05_prompt", { {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_sample2_test.AddWeight("muonID_01_prompt", { {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
     loader_sample2_test.Cut(GetBCSCut(deltaE_peak, deltaE_left_sigma, deltaE_right_sigma, M_peak, M_left_sigma, M_right_sigma).c_str());
     loader_sample2_test.RandomBCS();
     loader_sample2_test.IsBCSValid();
