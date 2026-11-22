@@ -1,11 +1,5 @@
 #!/bin/bash
 
-ControlSample=$1 # CTRL or CTRL_ALP
-if [ "${ControlSample}" != "CTRL" ] && [ "${ControlSample}" != "CTRL_ALP" ]; then
-  printf "Control sample should be CTRL or CTRL_ALP.\n"
-  exit 1
-fi
-
 merge_unique_arrays() {
   local -A seen
   local out=()
@@ -86,10 +80,7 @@ submit_Plotter() {
       "${SignalLegends}" \
       "${BackgroundLegends}" \
       "${DataTypes}" \
-      "${DataLegends}" \
-      "${ControlSample}" \
-      "${CTRL_trigger_analysis_DIR}/Trigger/TriggerSyst.csv" \
-      "${Trigger_syst_vars_STR}"
+      "${DataLegends}"
 
     bsub -q l \
     -J Plotter \
@@ -129,10 +120,7 @@ submit_Plotter() {
       "${DataTypes}" \
       "${DataLegends}" \
       "${VarMin}" \
-      "${VarMax}" \
-      "${ControlSample}" \
-      "${CTRL_trigger_analysis_DIR}/Trigger/TriggerSyst.csv" \
-      "${Trigger_syst_vars_STR}"
+      "${VarMax}"
 
     bsub -q l \
     -J Plotter \

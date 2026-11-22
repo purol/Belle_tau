@@ -233,7 +233,7 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-bash ${shell_DIR}/submitter_Plotter_CTRL.sh "CTRL_ALP"
+bash ${shell_DIR}/submitter_Plotter_CTRL.sh
 
 bash ${shell_DIR}/submitter_FBDT_Application_ALP.sh
 wait_job "FBDTAPP"
