@@ -38,10 +38,12 @@ int main(int argc, char* argv[]) {
     * argv[11]: output path
     * argv[12]: M_deltaE path for tau -> mu mu mu decay
     * argv[13]: target variable name (name:min:max:bin)
+    * argv[14]: trigger weight path (CSV)
+    * argv[15]: trigger variables (separated by colon)
     */
 
-    if (argc != 14) {
-        printf("13 arguments are required.\n");
+    if (argc != 16) {
+        printf("15 arguments are required.\n");
         return 1;
     }
 
@@ -77,6 +79,20 @@ int main(int argc, char* argv[]) {
     double theta;
 
     ReadResolution((std::string(argv[12]) + "/M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
+
+    // get trigger correction
+    std::vector<std::string> trigger_variables = split(argv[15], ':');
+    if (trigger_variables.size() != 2 || trigger_variables.at(0).empty() || trigger_variables.at(1).empty() || trigger_variables.at(0) == trigger_variables.at(1)) {
+        printf("Two different trigger variables are required.\n");
+        return 1;
+    }
+    EventWeight trigger_weight(
+        argv[14],
+        { {"sample", "sample_min", "sample_max"}, {trigger_variables.at(0), trigger_variables.at(0) + "_min", trigger_variables.at(0) + "_max"}, {trigger_variables.at(1), trigger_variables.at(1) + "_min", trigger_variables.at(1) + "_max"} },
+        "weight",
+        true
+    );
+    EventWeights::Register("trigger_weight", trigger_weight);
 
     EventWeights::Register("MC_weight", MC_weight);
     EventWeights::Register("muonID_01_prompt", muonID_01_prompt);
@@ -137,6 +153,7 @@ int main(int argc, char* argv[]) {
         Loader loader_sample1("tau_lfv");
         for (int i = 0; i < sample1_list.size(); i++) loader_sample1.Load((std::string(argv[1]) + "/" + sample1_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", sample1_list.at(i).c_str());
         loader_sample1.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+        loader_sample1.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)} });
         loader_sample1.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
         loader_sample1.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
         loader_sample1.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
@@ -147,6 +164,7 @@ int main(int argc, char* argv[]) {
         Loader loader_sample2("tau_lfv");
         for (int i = 0; i < sample2_list.size(); i++) loader_sample2.Load((std::string(argv[3]) + "/" + sample2_list.at(i) + "/" + std::string(argv[4])).c_str(), "root", sample2_list.at(i).c_str());
         loader_sample2.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+        loader_sample2.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)} });
         loader_sample2.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
         loader_sample2.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
         loader_sample2.AddWeight("muonID_01_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
@@ -218,6 +236,7 @@ int main(int argc, char* argv[]) {
         Loader loader_target_sample1("tau_lfv");
         for (int i = 0; i < sample1_list.size(); i++) loader_target_sample1.Load((std::string(argv[1]) + "/" + sample1_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", sample1_list.at(i).c_str());
         loader_target_sample1.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+        loader_target_sample1.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)} });
         loader_target_sample1.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
         loader_target_sample1.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
         loader_target_sample1.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
@@ -233,6 +252,7 @@ int main(int argc, char* argv[]) {
         Loader loader_target_sample2("tau_lfv");
         for (int i = 0; i < sample2_list.size(); i++) loader_target_sample2.Load((std::string(argv[3]) + "/" + sample2_list.at(i) + "/" + std::string(argv[4])).c_str(), "root", sample2_list.at(i).c_str());
         loader_target_sample2.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+        loader_target_sample2.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)} });
         loader_target_sample2.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
         loader_target_sample2.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
         loader_target_sample2.AddWeight("muonID_01_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
@@ -312,6 +332,7 @@ int main(int argc, char* argv[]) {
     Loader loader_sample1("tau_lfv");
     for (int i = 0; i < sample1_list.size(); i++) loader_sample1.Load((std::string(argv[1]) + "/" + sample1_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", sample1_list.at(i).c_str());
     loader_sample1.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_sample1.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)} });
     loader_sample1.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
     loader_sample1.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
     loader_sample1.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
@@ -322,6 +343,7 @@ int main(int argc, char* argv[]) {
     Loader loader_sample2("tau_lfv");
     for (int i = 0; i < sample2_list.size(); i++) loader_sample2.Load((std::string(argv[3]) + "/" + sample2_list.at(i) + "/" + std::string(argv[4])).c_str(), "root", sample2_list.at(i).c_str());
     loader_sample2.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_sample2.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)} });
     loader_sample2.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
     loader_sample2.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
     loader_sample2.AddWeight("muonID_01_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });

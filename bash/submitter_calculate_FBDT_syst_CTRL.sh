@@ -26,7 +26,9 @@ submit_code() {
   "${SignalType}" \
   "${MCList}" \
   "${dataList}" \
-  "./${VerName}/${Analysis_VerName}/${WeightPath}"
+  "./${VerName}/${Analysis_VerName}/${WeightPath}" \
+  "${CTRL_trigger_analysis_DIR}/Trigger/TriggerSyst.csv" \
+  "${Trigger_syst_vars_STR}"
 }
 
 

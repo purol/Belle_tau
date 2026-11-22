@@ -87,6 +87,7 @@ input_variables_two=(
 
 export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/MC16ri/v000" # FBDT weight file path
 export nominal_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki/MC16rd/v000" # nominal tau->mumumu analysis path
+export CTRL_trigger_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki_CTRL_trigger/MC16rd/v000" # CTRL_trigger analysis path
 export Weight_candidate_vars=(
     "KSFWVariables__bohso24__cm__spcleanMask__bc"
     "roeM__bocleanMask__bc"
@@ -106,6 +107,14 @@ export Weight_candidate_binnings=(
     "-0.01" "1.01" "5"
     "-7.0" "7.0" "5"
     "-0.01" "1.01" "5"
+) # min max Nbin for each candidate variable, in the same order
+export Trigger_syst_vars=(
+    "highest_pt"
+    "lowest_pt"
+) # list of candidate variables
+export Trigger_syst_binnings=(
+    "0.0"  "5.0" "8"
+    "0.0"  "5.0" "8"
 ) # min max Nbin for each candidate variable, in the same order
 # =================================================================================== #
 
@@ -178,6 +187,9 @@ Weight_candidate_vars_STR=$(IFS=:; echo "${Weight_candidate_vars[*]}")
 
 export Weight_candidate_binnings_STR
 Weight_candidate_binnings_STR=$(IFS=:; echo "${Weight_candidate_binnings[*]}")
+
+export Trigger_syst_vars_STR
+Trigger_syst_vars_STR=$(IFS=:; echo "${Trigger_syst_vars[*]}")
 
 wait_all_job() {
   while true; do

@@ -344,18 +344,22 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    // MC16rd: MySampleType = 4
+    const double sample_min = 3.5;
+    const double sample_max = 4.5;
+
     // print result
     FILE* fp = fopen((std::string(argv[5]) + "/" + std::string(argv[6]) + ".csv").c_str(), "w");
     if (fp == nullptr) {
         printf("Cannot open output file.\n");
         return 1;
     }
-    fprintf(fp, "weight,weight_stat_err,weight_syst_err,valid_weight,valid_method,%s_min,%s_max,%s_min,%s_max,%s_min,%s_max", used_variables.at(0).c_str(), used_variables.at(0).c_str(), used_variables.at(1).c_str(), used_variables.at(1).c_str(), distance_variable.c_str(), distance_variable.c_str());
+    fprintf(fp, "sample_min,sample_max,weight,weight_stat_err,weight_syst_err,valid_weight,valid_method,%s_min,%s_max,%s_min,%s_max,%s_min,%s_max", used_variables.at(0).c_str(), used_variables.at(0).c_str(), used_variables.at(1).c_str(), used_variables.at(1).c_str(), distance_variable.c_str(), distance_variable.c_str());
     for (int ix = 1; ix <= nbins1; ++ix) {
         for (int iy = 1; iy <= nbins2; ++iy) {
             for (int iz = 1; iz <= nbins3; ++iz) {
                 const int bin = eff_trigger_MC->GetBin(ix, iy, iz);
-                fprintf(fp, "\n%.17g,%.17g,%.17g,%.0f,%.0f", weight_trigger->GetBinContent(bin), weight_trigger->GetBinError(bin), weight_syst_err->GetBinContent(bin), valid_weight->GetBinContent(bin), valid_method->GetBinContent(bin));
+                fprintf(fp, "\n%.17g,%.17g,%.17g,%.17g,%.17g,%.0f,%.0f", sample_min, sample_max, weight_trigger->GetBinContent(bin), weight_trigger->GetBinError(bin), weight_syst_err->GetBinContent(bin), valid_weight->GetBinContent(bin), valid_method->GetBinContent(bin));
                 fprintf(fp, ",%.17g,%.17g", eff_trigger_MC->GetXaxis()->GetBinLowEdge(ix), eff_trigger_MC->GetXaxis()->GetBinUpEdge(ix));
                 fprintf(fp, ",%.17g,%.17g", eff_trigger_MC->GetYaxis()->GetBinLowEdge(iy), eff_trigger_MC->GetYaxis()->GetBinUpEdge(iy));
                 fprintf(fp, ",%.17g,%.17g", eff_trigger_MC->GetZaxis()->GetBinLowEdge(iz), eff_trigger_MC->GetZaxis()->GetBinUpEdge(iz));
