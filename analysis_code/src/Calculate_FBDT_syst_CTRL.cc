@@ -83,6 +83,7 @@ int main(int argc, char* argv[]) {
     Loader loader_signal("tau_lfv");
     loader_signal.Load((nominal_path + "/" + argv[6] + "/" + argv[2]).c_str(), "root", argv[6]);
     loader_signal.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_signal.AddWeight("trigger_weight", { {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)} });
     loader_signal.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
     loader_signal.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
     loader_signal.AddWeight("muonID_01_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });

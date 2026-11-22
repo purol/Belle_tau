@@ -46,6 +46,8 @@ submit_Plotter() {
       "#tau#rightarrow#alpha#mu" \
       "none" \
       "${nominal_analysis_DIR}" \
+      "${CTRL_trigger_analysis_DIR}/Trigger/TriggerSyst.csv" \
+      "${Trigger_syst_vars_STR}" \
       "${mass}" \
       "${life}" \
       "${A}" \
@@ -100,6 +102,8 @@ submit_Plotter_weight() {
       "none" \
       "${nominal_analysis_DIR}" \
       "./${VerName}/${Analysis_VerName}/${WeightPath}" \
+      "${CTRL_trigger_analysis_DIR}/Trigger/TriggerSyst.csv" \
+      "${Trigger_syst_vars_STR}" \
       "${mass}" \
       "${life}" \
       "${A}" \

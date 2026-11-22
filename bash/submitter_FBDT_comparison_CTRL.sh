@@ -33,7 +33,9 @@ submit_Plotter() {
     "${Signal_Legends}" \
     "#tau#rightarrow#mu#mu#mu" \
     "none" \
-    "${nominal_analysis_DIR}"
+    "${nominal_analysis_DIR}" \
+    "${CTRL_trigger_analysis_DIR}/Trigger/TriggerSyst.csv" \
+    "${Trigger_syst_vars_STR}"
 
   bsub -q l \
   -J Compare \
@@ -77,7 +79,9 @@ submit_Plotter_weight() {
     "#tau#rightarrow#mu#mu#mu" \
     "none" \
     "${nominal_analysis_DIR}" \
-    "./${VerName}/${Analysis_VerName}/${WeightPath}"
+    "./${VerName}/${Analysis_VerName}/${WeightPath}" \
+    "${CTRL_trigger_analysis_DIR}/Trigger/TriggerSyst.csv" \
+    "${Trigger_syst_vars_STR}"
 
   bsub -q l \
   -J Compare \
