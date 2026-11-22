@@ -85,6 +85,7 @@ input_variables_two=(
 
 export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki_ALP/MC16ri/v000" # FBDT weight file path
 export nominal_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki_ALP/MC16rd/v000" # nominal tau->mumumu analysis path
+export CTRL_trigger_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki_CTRL_ALP_trigger/MC16rd/v000" # CTRL_ALP_trigger analysis path
 export Weight_candidate_vars=(
     "KSFWVariables__bohso24__cm__spcleanMask__bc"
     "roeM__bocleanMask__bc"
