@@ -47,11 +47,13 @@ submit_GetWeight() {
       "${Sample2Label}" \
       "./${VerName}/${Analysis_VerName}/${OutputPath}" \
       "${nominal_analysis_DIR}" \
+      "${BDTName_ALP}:0:1:10000" \
+      "${CTRL_trigger_analysis_DIR}/Trigger/TriggerSyst.csv" \
+      "${Trigger_syst_vars_STR}" \
       "${mass}" \
       "${life}" \
       "${A}" \
-      "${B}" \
-      "${BDTName_ALP}:0:1:10000"
+      "${B}"
 
     bsub -q l \
     -J GetWeight \

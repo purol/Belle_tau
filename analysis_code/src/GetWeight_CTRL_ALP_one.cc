@@ -38,15 +38,17 @@ int main(int argc, char* argv[]) {
     * argv[10]: sample2 lable
     * argv[11]: output path
     * argv[12]: M_deltaE path for tau -> a mu decay
-    * argv[13]: mass
-    * argv[14]: lifetime
-    * argv[15]: A constant
-    * argv[16]: B constant
-    * argv[17]: target variable name (name:min:max:bin)
+    * argv[13]: target variable name (name:min:max:bin)
+    * argv[14]: trigger weight path (CSV)
+    * argv[15]: trigger variables (separated by colon)
+    * argv[16]: mass
+    * argv[17]: lifetime
+    * argv[18]: A constant
+    * argv[19]: B constant
     */
 
-    if (argc != 18) {
-        printf("17 arguments are required.\n");
+    if (argc != 20) {
+        printf("19 arguments are required.\n");
         return 1;
     }
 
@@ -73,10 +75,10 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    double mass = std::stod(argv[13]);
-    double life = std::stod(argv[14]);
-    int A = std::stoi(argv[15]);
-    int B = std::stoi(argv[16]);
+    double mass = std::stod(argv[16]);
+    double life = std::stod(argv[17]);
+    int A = std::stoi(argv[18]);
+    int B = std::stoi(argv[19]);
 
     double M_left_cut_value = 0;
     double M_right_cut_value = 0;
@@ -109,6 +111,21 @@ int main(int argc, char* argv[]) {
 
     ReadResolution((std::string(argv[12]) + "/alpha_mass" + std::format("{:g}", mass) + "_life" + std::format("{:g}", life) + "_A" + std::to_string(A) + "_B" + std::to_string(B) + "_M_deltaE_result.txt").c_str(), &deltaE_peak, &deltaE_left_sigma, &deltaE_right_sigma, &M_peak, &M_left_sigma, &M_right_sigma, &theta);
 
+    // get trigger correction
+    std::vector<std::string> trigger_variables = split(argv[15], ':');
+    if (trigger_variables.size() != 2 || trigger_variables.at(0).empty() || trigger_variables.at(1).empty() || trigger_variables.at(0) == trigger_variables.at(1)) {
+        printf("Two different trigger variables are required.\n");
+        return 1;
+    }
+    trigger_variables.push_back("extraInfo__boALP_distance__bc");
+    EventWeight trigger_weight(
+        argv[14],
+        { {trigger_variables.at(0), trigger_variables.at(0) + "_min", trigger_variables.at(0) + "_max"}, {trigger_variables.at(1), trigger_variables.at(1) + "_min", trigger_variables.at(1) + "_max"}, {trigger_variables.at(2), trigger_variables.at(2) + "_min", trigger_variables.at(2) + "_max"} },
+        "weight",
+        false
+    );
+    EventWeights::Register("trigger_weight", trigger_weight);
+
     EventWeights::Register("MC_weight", MC_weight);
     EventWeights::Register("muonID_01_ALP", muonID_01_ALP);
     EventWeights::Register("muonID_05_ALP", muonID_05_ALP);
@@ -120,7 +137,7 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> sample2_list = split(argv[8], ':');
 
     // get the best variable combination
-    std::vector<std::string> target_info = split(argv[17], ':');
+    std::vector<std::string> target_info = split(argv[13], ':');
     double originalD = 10; // KS distance before weighting
     double minD = 10;
     double min_retention = 0.3;
@@ -170,6 +187,7 @@ int main(int argc, char* argv[]) {
         Loader loader_sample1("tau_lfv");
         for (int i = 0; i < sample1_list.size(); i++) loader_sample1.Load((std::string(argv[1]) + "/" + sample1_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", sample1_list.at(i).c_str());
         loader_sample1.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+        loader_sample1.AddWeight("trigger_weight", { {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)}, {trigger_variables.at(2), trigger_variables.at(2)} });
         loader_sample1.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "first_muon_index"},  {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
         loader_sample1.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "second_muon_index"},  {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
         loader_sample1.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "third_muon_index"},  {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
@@ -256,6 +274,7 @@ int main(int argc, char* argv[]) {
         Loader loader_target_sample1("tau_lfv");
         for (int i = 0; i < sample1_list.size(); i++) loader_target_sample1.Load((std::string(argv[1]) + "/" + sample1_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", sample1_list.at(i).c_str());
         loader_target_sample1.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+        loader_target_sample1.AddWeight("trigger_weight", { {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)}, {trigger_variables.at(2), trigger_variables.at(2)} });
         loader_target_sample1.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "first_muon_index"},  {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
         loader_target_sample1.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "second_muon_index"},  {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
         loader_target_sample1.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "third_muon_index"},  {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
@@ -324,13 +343,13 @@ int main(int argc, char* argv[]) {
 
     // if there is no improvement, just write unity
     if ((var1_index < 0) || (var2_index < 0)) {
-        FILE* fp = fopen((std::string(argv[11]) + "/weight_one_2D_CTRL_" + std::string(argv[13]) + "_" + std::string(argv[14]) + "_" + std::string(argv[15]) + "_" + std::string(argv[16]) + ".csv").c_str(), "w");
+        FILE* fp = fopen((std::string(argv[11]) + "/weight_one_2D_CTRL_" + std::string(argv[16]) + "_" + std::string(argv[17]) + "_" + std::string(argv[18]) + "_" + std::string(argv[19]) + ".csv").c_str(), "w");
         fprintf(fp, "weight,%s_min,%s_max,%s_min,%s_max", compare_variables.at(0).c_str(), compare_variables.at(0).c_str(), compare_variables.at(1).c_str(), compare_variables.at(1).c_str());
         fprintf(fp, "\n");
         fprintf(fp, "%.17g,%.17g,%.17g,%.17g,%.17g", 1.0, binning_values.at(0), binning_values.at(1), binning_values.at(3), binning_values.at(4));
         fclose(fp);
 
-        fp = fopen((std::string(argv[11]) + "/weight_one_2D_CTRL_" + std::string(argv[13]) + "_" + std::string(argv[14]) + "_" + std::string(argv[15]) + "_" + std::string(argv[16]) + "_info.txt").c_str(), "w");
+        fp = fopen((std::string(argv[11]) + "/weight_one_2D_CTRL_" + std::string(argv[16]) + "_" + std::string(argv[17]) + "_" + std::string(argv[18]) + "_" + std::string(argv[19]) + "_info.txt").c_str(), "w");
         fprintf(fp, "%lf\n%lf", originalD, minD);
         fprintf(fp, "\n");
         fprintf(fp, "%s\n%s", compare_variables.at(0).c_str(), compare_variables.at(1).c_str());
@@ -355,6 +374,7 @@ int main(int argc, char* argv[]) {
     Loader loader_sample1("tau_lfv");
     for (int i = 0; i < sample1_list.size(); i++) loader_sample1.Load((std::string(argv[1]) + "/" + sample1_list.at(i) + "/" + std::string(argv[2])).c_str(), "root", sample1_list.at(i).c_str());
     loader_sample1.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+    loader_sample1.AddWeight("trigger_weight", { {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)}, {trigger_variables.at(2), trigger_variables.at(2)} });
     loader_sample1.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "first_muon_index"},  {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
     loader_sample1.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "second_muon_index"},  {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
     loader_sample1.AddWeight("pionID_09_ALP", { {"sample", "MySampleType"}, {"index", "third_muon_index"},  {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
@@ -417,7 +437,7 @@ int main(int argc, char* argv[]) {
     // this is needed to preserve N_CTRL_total
     hist_ratio->Scale(N_CTRL_total / N_ALP_used_for_weight);
 
-    FILE* fp = fopen((std::string(argv[11]) + "/weight_one_2D_CTRL_" + std::string(argv[13]) + "_" + std::string(argv[14]) + "_" + std::string(argv[15]) + "_" + std::string(argv[16]) + ".csv").c_str(), "w");
+    FILE* fp = fopen((std::string(argv[11]) + "/weight_one_2D_CTRL_" + std::string(argv[16]) + "_" + std::string(argv[17]) + "_" + std::string(argv[18]) + "_" + std::string(argv[19]) + ".csv").c_str(), "w");
     fprintf(fp, "weight,%s_min,%s_max,%s_min,%s_max", compare_variables.at(var1_index).c_str(), compare_variables.at(var1_index).c_str(), compare_variables.at(var2_index).c_str(), compare_variables.at(var2_index).c_str());
     for (int i = 1; i <= nbins1; i++) {
         for (int j = 1; j <= nbins2; j++) {
@@ -432,7 +452,7 @@ int main(int argc, char* argv[]) {
     }
     fclose(fp);
 
-    fp = fopen((std::string(argv[11]) + "/weight_one_2D_CTRL_" + std::string(argv[13]) + "_" + std::string(argv[14]) + "_" + std::string(argv[15]) + "_" + std::string(argv[16]) + "_info.txt").c_str(), "w");
+    fp = fopen((std::string(argv[11]) + "/weight_one_2D_CTRL_" + std::string(argv[16]) + "_" + std::string(argv[17]) + "_" + std::string(argv[18]) + "_" + std::string(argv[19]) + "_info.txt").c_str(), "w");
     fprintf(fp, "%lf\n%lf", originalD, minD);
     fprintf(fp, "\n");
     fprintf(fp, "%s\n%s", compare_variables.at(var1_index).c_str(), compare_variables.at(var2_index).c_str());
@@ -460,7 +480,7 @@ int main(int argc, char* argv[]) {
     c_temp->cd(2); gPad->SetRightMargin(0.16); hist_CTRL_ALP->Draw("COLZ");
     c_temp->cd(3); gPad->SetRightMargin(0.16); hist_ratio->Draw("COLZ");
 
-    c_temp->SaveAs((std::string(argv[11]) + "/comparison_one_2D_CTRL_" + std::string(argv[13]) + "_" + std::string(argv[14]) + "_" + std::string(argv[15]) + "_" + std::string(argv[16]) + ".png").c_str());
+    c_temp->SaveAs((std::string(argv[11]) + "/comparison_one_2D_CTRL_" + std::string(argv[16]) + "_" + std::string(argv[17]) + "_" + std::string(argv[18]) + "_" + std::string(argv[19]) + ".png").c_str());
 
     return 0;
 }

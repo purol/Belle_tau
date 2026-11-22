@@ -186,6 +186,9 @@ Weight_candidate_vars_STR=$(IFS=:; echo "${Weight_candidate_vars[*]}")
 export Weight_candidate_binnings_STR
 Weight_candidate_binnings_STR=$(IFS=:; echo "${Weight_candidate_binnings[*]}")
 
+export Trigger_syst_vars_STR
+Trigger_syst_vars_STR=$(IFS=:; echo "${Trigger_syst_vars[*]}")
+
 wait_all_job() {
   while true; do
     # Get the number of jobs (excluding the header line)
