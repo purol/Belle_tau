@@ -25,15 +25,17 @@ int main(int argc, char* argv[]) {
     * (argv[12]): min value
     * (argv[13]): max value
     * (argv[14]): control sample (CTRL or CTRL_ALP, requires min and max values)
+    * (argv[15]): trigger weight path (CSV, requires control sample)
+    * (argv[16]): trigger variables (separated by colon)
     */
 
-    if (argc != 12 && argc != 14 && argc != 15) {
-        printf("11, 13 or 14 arguments are required.\n");
+    if (argc != 12 && argc != 14 && argc != 15 && argc != 17) {
+        printf("11, 13, 14 or 16 arguments are required.\n");
         return 1;
     }
 
     std::string control_sample;
-    if (argc == 15) {
+    if (argc == 15 || argc == 17) {
         control_sample = argv[14];
         if (control_sample != "CTRL" && control_sample != "CTRL_ALP") {
             printf("Control sample should be CTRL or CTRL_ALP.\n");
@@ -67,6 +69,36 @@ int main(int argc, char* argv[]) {
     compare_variables.push_back(temp_char_two);
     fclose(fp);
 
+    // get trigger correction
+    std::vector<std::string> trigger_variables;
+    if (argc == 17) {
+        trigger_variables = split(argv[16], ':');
+        if (trigger_variables.size() != 2 || trigger_variables.at(0).empty() || trigger_variables.at(1).empty() || trigger_variables.at(0) == trigger_variables.at(1)) {
+            printf("Two different trigger variables are required.\n");
+            return 1;
+        }
+
+        if (control_sample == "CTRL") {
+            EventWeight trigger_weight(
+                argv[15],
+                { {"sample", "sample_min", "sample_max"}, {trigger_variables.at(0), trigger_variables.at(0) + "_min", trigger_variables.at(0) + "_max"}, {trigger_variables.at(1), trigger_variables.at(1) + "_min", trigger_variables.at(1) + "_max"} },
+                "weight",
+                true
+            );
+            EventWeights::Register("trigger_weight", trigger_weight);
+        }
+        else if (control_sample == "CTRL_ALP") {
+            trigger_variables.push_back("extraInfo__boALP_distance__bc");
+            EventWeight trigger_weight(
+                argv[15],
+                { {"sample", "sample_min", "sample_max"}, {trigger_variables.at(0), trigger_variables.at(0) + "_min", trigger_variables.at(0) + "_max"}, {trigger_variables.at(1), trigger_variables.at(1) + "_min", trigger_variables.at(1) + "_max"}, {trigger_variables.at(2), trigger_variables.at(2) + "_min", trigger_variables.at(2) + "_max"} },
+                "weight",
+                true
+            );
+            EventWeights::Register("trigger_weight", trigger_weight);
+        }
+    }
+
     EventWeight CTRL_weight(
         std::string(argv[10]) + "/" + std::string(argv[11]) + ".csv",
         { {compare_variables.at(0), compare_variables.at(0) + "_min", compare_variables.at(0) + "_max"}, {compare_variables.at(1), compare_variables.at(1) + "_min", compare_variables.at(1) + "_max"} },
@@ -85,6 +117,15 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < MC_list.size(); i++) loader.Load((argv[2] + std::string("/") + MC_list.at(i) + std::string("/") + std::string(argv[3])).c_str(), "root", MC_legend_list.at(i).c_str());
     for (int i = 0; i < data_list.size(); i++) loader.Load((argv[2] + std::string("/") + data_list.at(i) + std::string("/") + std::string(argv[3])).c_str(), "root", data_legend_list.at(i).c_str());
     loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+
+    if (argc == 17) {
+        if (control_sample == "CTRL") {
+            loader.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)} });
+        }
+        else if (control_sample == "CTRL_ALP") {
+            loader.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)}, {trigger_variables.at(2), trigger_variables.at(2)} });
+        }
+    }
     loader.AddWeight("CTRL_weight", { {compare_variables.at(0), compare_variables.at(0)}, {compare_variables.at(1), compare_variables.at(1)} });
 
     if (control_sample == "CTRL") {
@@ -104,7 +145,7 @@ int main(int argc, char* argv[]) {
     loader.SetData(data_legend_list);
 
     if (argc == 12) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), false, false);
-    else if (argc == 14 || argc == 15) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), 50, std::stod(argv[12]), std::stod(argv[13]), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), false, false);
+    else if (argc == 14 || argc == 15 || argc == 17) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), 50, std::stod(argv[12]), std::stod(argv[13]), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), false, false);
 
     loader.end();
 

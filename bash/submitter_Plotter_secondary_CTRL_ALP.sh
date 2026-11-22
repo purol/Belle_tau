@@ -73,7 +73,9 @@ submit_Plotter() {
       "${DataLegends}" \
       "${VarMin}" \
       "${VarMax}" \
-      "CTRL_ALP"
+      "CTRL_ALP" \
+      "${CTRL_trigger_analysis_DIR}/Trigger/TriggerSyst.csv" \
+      "${Trigger_syst_vars_STR}"
 
     bsub -q l \
     -J Plotter \
@@ -121,7 +123,9 @@ submit_Plotter_weight() {
     "${WeightName}" \
     "${VarMin}" \
     "${VarMax}" \
-    "CTRL_ALP"
+    "CTRL_ALP" \
+    "${CTRL_trigger_analysis_DIR}/Trigger/TriggerSyst.csv" \
+    "${Trigger_syst_vars_STR}"
 
   bsub -q l \
   -J Plotter \

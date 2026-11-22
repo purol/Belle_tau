@@ -23,15 +23,17 @@ int main(int argc, char* argv[]) {
     * (argv[10]): min value
     * (argv[11]): max value
     * (argv[12]): control sample (CTRL or CTRL_ALP, requires min and max values)
+    * (argv[13]): trigger weight path (CSV, requires control sample)
+    * (argv[14]): trigger variables (separated by colon)
     */
 
-    if (argc != 10 && argc != 12 && argc != 13) {
-        printf("9, 11 or 12 arguments are required.\n");
+    if (argc != 10 && argc != 12 && argc != 13 && argc != 15) {
+        printf("9, 11, 12 or 14 arguments are required.\n");
         return 1;
     }
 
     std::string control_sample;
-    if (argc == 13) {
+    if (argc == 13 || argc == 15) {
         control_sample = argv[12];
         if (control_sample != "CTRL" && control_sample != "CTRL_ALP") {
             printf("Control sample should be CTRL or CTRL_ALP.\n");
@@ -47,6 +49,36 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> data_list = split(argv[8], ':');
     std::vector<std::string> data_legend_list = split(argv[9], ':');
 
+    // get trigger correction
+    std::vector<std::string> trigger_variables;
+    if (argc == 15) {
+        trigger_variables = split(argv[14], ':');
+        if (trigger_variables.size() != 2 || trigger_variables.at(0).empty() || trigger_variables.at(1).empty() || trigger_variables.at(0) == trigger_variables.at(1)) {
+            printf("Two different trigger variables are required.\n");
+            return 1;
+        }
+
+        if (control_sample == "CTRL") {
+            EventWeight trigger_weight(
+                argv[13],
+                { {"sample", "sample_min", "sample_max"}, {trigger_variables.at(0), trigger_variables.at(0) + "_min", trigger_variables.at(0) + "_max"}, {trigger_variables.at(1), trigger_variables.at(1) + "_min", trigger_variables.at(1) + "_max"} },
+                "weight",
+                true
+            );
+            EventWeights::Register("trigger_weight", trigger_weight);
+        }
+        else if (control_sample == "CTRL_ALP") {
+            trigger_variables.push_back("extraInfo__boALP_distance__bc");
+            EventWeight trigger_weight(
+                argv[13],
+                { {"sample", "sample_min", "sample_max"}, {trigger_variables.at(0), trigger_variables.at(0) + "_min", trigger_variables.at(0) + "_max"}, {trigger_variables.at(1), trigger_variables.at(1) + "_min", trigger_variables.at(1) + "_max"}, {trigger_variables.at(2), trigger_variables.at(2) + "_min", trigger_variables.at(2) + "_max"} },
+                "weight",
+                true
+            );
+            EventWeights::Register("trigger_weight", trigger_weight);
+        }
+    }
+
     EventWeights::Register("MC_weight", MC_weight);
     EventWeights::Register("pionID_09_prompt", pionID_09_prompt);
     EventWeights::Register("pionID_09_ALP", pionID_09_ALP);
@@ -58,6 +90,15 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < MC_list.size(); i++) loader.Load((argv[2] + std::string("/") + MC_list.at(i) + std::string("/") + std::string(argv[3])).c_str(), "root", MC_legend_list.at(i).c_str());
     for (int i = 0; i < data_list.size(); i++) loader.Load((argv[2] + std::string("/") + data_list.at(i) + std::string("/") + std::string(argv[3])).c_str(), "root", data_legend_list.at(i).c_str());
     loader.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
+
+    if (argc == 15) {
+        if (control_sample == "CTRL") {
+            loader.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)} });
+        }
+        else if (control_sample == "CTRL_ALP") {
+            loader.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)}, {trigger_variables.at(2), trigger_variables.at(2)} });
+        }
+    }
 
     if (control_sample == "CTRL") {
         loader.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
@@ -76,7 +117,7 @@ int main(int argc, char* argv[]) {
     loader.SetData(data_legend_list);
 
     if(argc == 10) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), false, false);
-    else if (argc == 12 || argc == 13) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), 50, std::stod(argv[10]), std::stod(argv[11]), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), false, false);
+    else if (argc == 12 || argc == 13 || argc == 15) loader.DrawStack(variable_name.c_str(), (";" + std::string(argv[5]) + ";arbitrary unit").c_str(), 50, std::stod(argv[10]), std::stod(argv[11]), (argv[4] + std::string("/") + argv[5] + ".png").c_str(), false, false);
 
     loader.end();
 
