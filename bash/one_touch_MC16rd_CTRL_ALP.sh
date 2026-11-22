@@ -106,6 +106,14 @@ export Weight_candidate_binnings=(
     "-7.0" "7.0" "5"
     "-0.01" "1.01" "5"
 ) # min max Nbin for each candidate variable, in the same order
+export Trigger_syst_vars=(
+    "highest_pt"
+    "lowest_pt"
+) # list of candidate variables
+export Trigger_syst_binnings=(
+    "0.0"  "5.0" "4"
+    "0.0"  "5.0" "4"
+) # min max Nbin for each candidate variable, in the same order
 # =================================================================================== #
 
 export shell_DIR="${Belle_tau_DIR}/bash"
