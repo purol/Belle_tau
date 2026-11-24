@@ -4,7 +4,7 @@
 #  PREDEFINED VARIABLES
 #  You SHOULD change these values 
 
-export Analysis_Name="Larva_CTRL" # name of analysis
+export Analysis_Name="Yuugi_CTRL" # name of analysis
 export Analysis_VerName="v000" # version of analysis
 
 export Belle_tau_DIR="/home/belle2/junewoo/storage_b2/tau_workspace/Belle_tau" # analysis code path
@@ -83,9 +83,9 @@ input_variables_two=(
     "roeEextra__bocleanMask__bc"
 ) # list of input variables for the region 2
 
-export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki_ALP/MC16ri/v000" # FBDT weight file path
-export nominal_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki_ALP/MC16rd/v000" # nominal tau->mumumu analysis path
-export CTRL_trigger_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Ibaraki_CTRL_ALP_trigger/MC16rd/v000" # CTRL_ALP_trigger analysis path
+export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Yuugi_ALP/MC16ri/v000" # FBDT weight file path
+export nominal_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Yuugi_ALP/MC16rd/v000" # nominal tau->mumumu analysis path
+export CTRL_trigger_analysis_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Yuugi_CTRL_ALP_trigger/MC16rd/v000" # CTRL_ALP_trigger analysis path
 export Weight_candidate_vars=(
     "KSFWVariables__bohso24__cm__spcleanMask__bc"
     "roeM__bocleanMask__bc"
