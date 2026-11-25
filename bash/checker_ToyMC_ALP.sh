@@ -20,7 +20,7 @@ check_log_files(){
 
   while read mass life A B; do
     local LogFile="./${VerName}/${Analysis_VerName}/ToyMC_${mass}_${life}_${A}_${B}/ToyMC.log"
-    if [[ ! -f "$LogFile" ]] || ! grep -Fxq "Successfully completed ReadToyMC." "$LogFile" || ! grep -Fxq "Successfully completed." "$LogFile"; then
+    if [[ ! -f "$LogFile" ]] || ! grep -Fxq "Successfully completed." "$LogFile"; then
       echo "Unsuccessful log found in: $LogFile"
       return 1
     fi

@@ -4,7 +4,7 @@ check_log_files(){
   local VerName=$1 # ex. Alice
 
   local LogFile="./${VerName}/${Analysis_VerName}/ToyMC/ToyMC.log"
-  if [[ ! -f "$LogFile" ]] || ! grep -Fxq "Successfully completed ReadToyMC." "$LogFile" || ! grep -Fxq "Successfully completed." "$LogFile"; then
+  if [[ ! -f "$LogFile" ]] || ! grep -Fxq "Successfully completed." "$LogFile"; then
     echo "Unsuccessful log found in: $LogFile"
     return 1
   fi

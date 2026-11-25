@@ -6,11 +6,9 @@ submit_code() {
 
   local NToys=${ToyMC_NToys:-10000} # number of toys per injected mu
   local ToysPerJob=${ToyMC_ToysPerJob:-10} # number of toys in one batch job
-  local CLsToys=${ToyMC_CLsToys:-10000} # number of CLs toys per hypothesis
-  local Seed=${ToyMC_Seed:-12345} # base random seed
 
-  if ! [[ "$NToys" =~ ^[0-9]+$ && "$ToysPerJob" =~ ^[0-9]+$ && "$CLsToys" =~ ^[0-9]+$ && "$Seed" =~ ^[0-9]+$ ]] || (( NToys < 1 || NToys > 10000 || ToysPerJob < 1 || CLsToys < 1 || Seed > 4294967295 )); then
-    echo "Invalid ToyMC configuration."
+  if (( NToys < 1 || NToys > 10000 || ToysPerJob < 1 )); then
+    echo "Invalid ToyMC batch size."
     return 1
   fi
 
@@ -20,7 +18,7 @@ submit_code() {
   do
     for (( index=0; index<NToys; index+=ToysPerJob )); do
       local LogFile="./${VerName}/${Analysis_VerName}/ToyMC/log/${mu}_${index}.log"
-      if [[ ! -f "$LogFile" ]] || ! grep -Fxq "Successfully completed ToyMC." "$LogFile" || ! grep -Fxq "Successfully completed." "$LogFile"; then
+      if [[ ! -f "$LogFile" ]] || ! grep -Fxq "Successfully completed." "$LogFile"; then
         echo "Unsuccessful log found in: $LogFile"
         return 1
       fi

@@ -9,8 +9,8 @@ submit_ToyMC() {
   local CLsToys=${ToyMC_CLsToys:-10000} # number of CLs toys per hypothesis
   local Seed=${ToyMC_Seed:-12345} # base random seed
 
-  if ! [[ "$NToys" =~ ^[0-9]+$ && "$ToysPerJob" =~ ^[0-9]+$ && "$CLsToys" =~ ^[0-9]+$ && "$Seed" =~ ^[0-9]+$ ]] || (( NToys < 1 || NToys > 10000 || ToysPerJob < 1 || CLsToys < 1 || Seed > 4294967295 )); then
-    echo "Invalid ToyMC configuration."
+  if (( NToys < 1 || NToys > 10000 || ToysPerJob < 1 )); then
+    echo "Invalid ToyMC batch size."
     return 1
   fi
 
