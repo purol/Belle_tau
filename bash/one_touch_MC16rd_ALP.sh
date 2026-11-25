@@ -85,6 +85,10 @@ input_variables_two=(
 ) # list of input variables for the region 2
 
 export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Yuugi_ALP/MC16ri/v000" # FBDT weight file path
+export ToyMC_NToys=10000 # number of toys per injected mu (0 to 5 in steps of 0.25)
+export ToyMC_ToysPerJob=10 # number of toys in one batch job; adjust to the queue time limit
+export ToyMC_CLsToys=10000 # number of CLs toys per hypothesis and scan point
+export ToyMC_Seed=12345 # base random seed
 # =================================================================================== #
 
 
@@ -237,6 +241,26 @@ bash ${shell_DIR}/submitter_GetCorrelation_ALP.sh
 
 bash ${shell_DIR}/submitter_Create_workspace_ALP.sh
 wait_job "CRTWS"
+
+bash ${shell_DIR}/submitter_ToyMC_ALP.sh
+if [[ $? -ne 0 ]]; then
+  echo "Failed to submit ToyMC jobs. Stopping the one touch analysis."
+  exit 1
+fi
+wait_job "TAUTOY"
+
+bash ${shell_DIR}/submitter_ReadToyMC_ALP.sh
+if [[ $? -ne 0 ]]; then
+  echo "Failed to submit ReadToyMC jobs. Stopping the one touch analysis."
+  exit 1
+fi
+wait_job "READTOY"
+
+bash ${shell_DIR}/checker_ToyMC_ALP.sh
+if [[ $? -ne 0 ]]; then
+  echo "Unsuccessful logs found. Stopping the one touch analysis."
+  exit 1
+fi
 
 bash ${shell_DIR}/submitter_CLs_ALP.sh
 wait_job "TAUCLS"

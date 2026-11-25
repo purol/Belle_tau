@@ -37,3 +37,44 @@ Once the Ntuples are prepared, the `one_touch.sh` script automates the entire do
 ## Engineering Achievements
 - **Processed 10 Billion+ Events:** Successfully managed and analyzed Petabyte-scale raw data, ensuring memory safety and computational efficiency using a custom C++ memory-optimized Loader class.
 - **Massive Pipeline Automation:** Replaced highly manual, step-by-step physics analysis procedures with a single robust bash pipeline. This **12-hour continuous workflow completely eliminated the need for manual monitoring** and significantly improved operational efficiency.
+
+## Toy MC Study (MC16rd)
+
+`bash/one_touch_MC16rd.sh` and `bash/one_touch_MC16rd_ALP.sh` run a toy study after workspace creation. The existing positional arguments, `bsub -q s` submission, job waiting and log checking are also used for this stage. ALP studies run independently for every `(mass, life, A, B)` workspace.
+
+- Injected signal strength: `0, 0.25, ..., 5`.
+- Outer toys: `ToyMC_NToys=10000` per injected strength.
+- Batch size: `ToyMC_ToysPerJob=10`; adjust after timing representative workspaces against the queue time limit.
+- Inner CLs toys: `ToyMC_CLsToys=10000` for each hypothesis at each tested strength.
+- Base seed: `ToyMC_Seed=12345`; the workspace name, injected strength and absolute toy index determine each nonzero toy seed independently of batch size.
+
+Build the executables before running the pipeline:
+
+```bash
+make -C analysis_code ./bin/Run_ToyMC ./bin/ReadToyMC ./bin/Run_CLs
+```
+
+The standalone executables use positional arguments:
+
+```bash
+# input path, workspace file, output path, injected mu, first toy index,
+# toys in this job, CLs toys per hypothesis, initial scan step, base seed
+./analysis_code/bin/Run_ToyMC ./Yuugi/v000 workspace.root ./Yuugi/v000/ToyMC/out 1.25 0 10 10000 0.1 12345
+
+# ToyMC root path, output path, expected toys per injected mu
+./analysis_code/bin/ReadToyMC ./Yuugi/v000/ToyMC/out ./Yuugi/v000/ToyMC 10000
+```
+
+Generation uses the full eight-bin HistFactory model, including signal in the control regions. Background truth is the `mu=0` fit to `obsData` with systematic nuisances held nominal. The resulting ABCD values and nominal systematic truth are shared across all injection points. Global observables fluctuate for each toy; nuisances are profiled in the fits. This measures coverage at that specified nuisance truth, not uniformly over all possible nuisance values. `generation_truth`, the workspace checksum, bin counts and toy global observables are saved for inspection and replay.
+
+Each outer toy is fitted and then treated as the observation for a 90% frequentist CLs upper limit. Conditional generation fits and likelihood-ratio fits share the empty-bin handling in `analysis_code/include/ABCD_fit.h`. The UL scan brackets the `CLs=0.1` crossing and refines it to `0.0025 + 0.005 * mu_high`; injection is limited to five, but the UL scan can extend to the workspace POI maximum. Reaching that maximum without a crossing is a failure, not a clipped upper limit. Finite inner-toy statistics remain a separate source of uncertainty; the per-point CLs errors and local UL error estimate are stored and can be checked with increased `ToyMC_CLsToys`.
+
+Outputs are written under `ToyMC/` or `ToyMC_<mass>_<life>_<A>_<B>/`:
+
+- `out/ToyMC_<mu>_<first_index>.root`: toy fits, ULs, statuses, seeds and scan points.
+- `ToyMC.root` and `ToyMC.txt`: merged results, fitted mean and its standard error, bias, UL median and central 68%/95% intervals, coverage and failure fractions.
+- `fitted_mu_mean.png`, `fitted_mu_bias.png`, `upper_limit.png`, `coverage_valid.png`, `coverage_bounds.png`, `fit_failure.png` and `ul_failure.png`.
+
+`ul_status` is zero on success; values 1--5 indicate a fit/generation failure, invalid CLs/conditional fit, failed inner fit, missing crossing before the POI maximum, or scan nonconvergence. Failed calculations remain in the output. `coverage` is reported only when every toy at that injection has a valid UL. Otherwise it is NaN, `coverage_valid` describes the successful subset, and `coverage_low/high` bound the full-ensemble coverage by treating unresolved toys as all excluded/all covered. These bounds describe missing results, not a statistical confidence interval. `ambiguous` counts valid limits whose final numerical bracket contains the injected strength. The nonnegative POI boundary can produce a positive fitted mean at zero injection.
+
+The merge rejects missing, duplicated, unfinished or mixed-configuration batches. Existing logs are truncated before resubmission, and merge jobs require successful batch logs. Re-running the same batch replaces its ROOT output; changing the batch layout or statistical configuration requires a fresh output directory to avoid mixing stale files. Statistical fit/UL failures are reported in the study rather than silently removed or treated as job crashes.
