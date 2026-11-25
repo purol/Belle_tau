@@ -109,6 +109,7 @@ int main(int argc, char* argv[]) {
 			TTree* tree = dynamic_cast<TTree*>(input.Get("toys"));
 			if (!tree || completed < 1 || tree->GetEntries() != completed || !input.Get("scan")) throw std::runtime_error("incomplete toy batch: " + name);
 			std::string current = Read_Name(input, "workspace") + "\n" + Read_Name(input, "workspace_md5") + "\n" + Read_Name(input, "truth_method") + "\n" + Read_Name(input, "global_names");
+			current += "\n" + Read_Name(input, "histogram_file") + "\n" + Read_Name(input, "histogram_md5");
 			current += "\n" + std::to_string(Read_Parameter<int>(input, "cls_toys"));
 			current += "\n" + std::to_string(Read_Parameter<Long64_t>(input, "base_seed"));
 			for (const char* parameter : { "scan_step", "confidence_level", "mu_abs_tolerance", "mu_rel_tolerance" }) current += "\n" + std::to_string(Read_Parameter<double>(input, parameter));

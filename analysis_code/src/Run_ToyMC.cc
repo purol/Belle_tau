@@ -13,7 +13,10 @@
 #include <TParameter.h>
 #include <TStopwatch.h>
 #include <TMD5.h>
+#include <TH1.h>
 #include <RooRandom.h>
+#include <RooDataSet.h>
+#include <RooCategory.h>
 #include <RooFitResult.h>
 #include <RooMinimizer.h>
 #include <RooMsgService.h>
@@ -165,6 +168,34 @@ unsigned int Get_ToySeed(const std::string& workspace, unsigned int seed, int mu
 	return (unsigned int)(((std::uint64_t)hash + seed + mu_index * 10000ULL + toy_index) % 4294967295ULL + 1ULL);
 }
 
+void Check_MC_histogram(const TH1* histogram, const RooAbsBinning& binning) {
+	if (!histogram || histogram->GetDimension() != 1 || histogram->GetNbinsX() != 8) throw std::runtime_error("expected an eight-bin MC histogram");
+	for (int i = 0; i < 8; i++) {
+		double value = histogram->GetBinContent(i + 1);
+		if (!std::isfinite(value) || value < 0.0) throw std::runtime_error(std::string("negative or nonfinite MC expectation in ") + histogram->GetName());
+		if (std::abs(histogram->GetXaxis()->GetBinLowEdge(i + 1) - binning.binLow(i)) > 1e-9 || std::abs(histogram->GetXaxis()->GetBinUpEdge(i + 1) - binning.binHigh(i)) > 1e-9) throw std::runtime_error("MC histogram binning does not match the workspace");
+	}
+}
+
+std::unique_ptr<RooDataSet> Generate_MC_toy(RooWorkspace* w, RooStats::ModelConfig* model, const TH1* background, const TH1* signal, double mu, double* counts) {
+	RooRealVar* observable = w->var("obs_x_Belle_II");
+	RooCategory* channel = w->cat("channelCat");
+	channel->setLabel("Belle_II");
+	RooRealVar weight("toy_weight", "toy_weight", 1.0);
+	RooArgSet row(*model->GetObservables());
+	row.add(weight);
+	std::unique_ptr<RooDataSet> data(new RooDataSet("toyData", "toyData", row, RooFit::WeightVar(weight)));
+	for (int i = 0; i < 8; i++) {
+		// Preserve the MC nonclosure. Do not derive A from B, C and D.
+		double expected = background->GetBinContent(i + 1) + mu * signal->GetBinContent(i + 1);
+		if (!std::isfinite(expected) || expected < 0.0) throw std::runtime_error("invalid injected MC expectation");
+		counts[i] = expected == 0.0 ? 0.0 : RooRandom::randomGenerator()->PoissonD(expected);
+		observable->setVal(observable->getBinning().binCenter(i));
+		data->add(row, counts[i]);
+	}
+	return data;
+}
+
 int main(int argc, char* argv[]) {
 	/*
 	* argv[1]: input path
@@ -200,38 +231,41 @@ int main(int argc, char* argv[]) {
 		RooWorkspace* w = dynamic_cast<RooWorkspace*>(input->Get("combined"));
 		if (!w) throw std::runtime_error("missing combined workspace");
 		RooStats::ModelConfig* model = dynamic_cast<RooStats::ModelConfig*>(w->obj("ModelConfig"));
-		if (!model || !model->GetPdf() || !model->GetObservables() || !model->GetNuisanceParameters() || !model->GetParametersOfInterest() || model->GetParametersOfInterest()->getSize() != 1 || !model->GetParametersOfInterest()->find("mu") || !w->data("obsData") || !w->var("mu")) throw std::runtime_error("incomplete ModelConfig");
+		if (!model || !model->GetPdf() || !model->GetObservables() || !model->GetNuisanceParameters() || !model->GetParametersOfInterest() || model->GetParametersOfInterest()->getSize() != 1 || !model->GetParametersOfInterest()->find("mu") || !w->var("mu")) throw std::runtime_error("incomplete ModelConfig");
 		RooRealVar* poi = w->var("mu");
 		if (poi->getMin() != 0.0 || !std::isfinite(poi->getMax()) || poi->getMax() < 5.0) throw std::runtime_error("expected a nonnegative mu with finite maximum at least five");
 		ToyMCProfileLikelihoodTestStat generation_stat(*model->GetPdf(), *w);
+		RooCategory* channel = w->cat("channelCat");
+		if (!channel || channel->numTypes() != 1 || !channel->hasLabel("Belle_II") || model->GetObservables()->getSize() != 2 || !model->GetObservables()->find("channelCat") || !model->GetObservables()->find("obs_x_Belle_II")) throw std::runtime_error("expected the single-channel Belle_II model");
 
 		/* ======================== GENERATION TRUTH ======================== */
 
-		w->saveSnapshot("ToyMC_nominal", w->allVars());
-		// Determine background truth once per job at mu = 0, holding systematic nuisances nominal.
-		// Every injection and batch uses the same deterministic fit to the original obsData.
-		for (RooAbsArg* arg : *model->GetNuisanceParameters()) {
-			RooRealVar* parameter = dynamic_cast<RooRealVar*>(arg);
-			if (parameter && std::string(parameter->GetName()).find("ABCD_T_") != 0 && std::string(parameter->GetName()).find("ABCD_p_region") != 0) parameter->setConstant(true);
-		}
-		poi->setVal(0.0);
-		poi->setConstant(true);
-		ToyFitResult truth_fit = Fit_Toy(w, model, *w->data("obsData"), false);
-		if (truth_fit.status != 0) throw std::runtime_error("background truth fit failed");
-		w->loadSnapshot("ToyMC_nominal");
-		for (int i = 1; i <= 2; i++) {
-			for (const std::string& name : { "ABCD_T_AB", "ABCD_T_CD", "ABCD_p" }) {
-				RooRealVar* parameter = w->var((name + "_region" + std::to_string(i)).c_str());
-				parameter->setVal(truth_fit.parameters->getRealValue(parameter->GetName()));
+		// The workspace and nominal MC histograms are written together by CreateWorkSpace.
+		std::string histogram_name = argv[2];
+		if (histogram_name != "workspace.root" && (histogram_name.find("workspace_") != 0 || histogram_name.size() < 15 || histogram_name.substr(histogram_name.size() - 5) != ".root")) throw std::runtime_error("expected workspace.root or workspace_<parameters>.root");
+		histogram_name.replace(0, 9, "histogram_output");
+		std::string histogram_path = std::string(argv[1]) + "/" + histogram_name;
+		std::unique_ptr<TFile> histograms(TFile::Open(histogram_path.c_str()));
+		if (!histograms || histograms->IsZombie()) throw std::runtime_error("cannot open MC histogram file: " + histogram_path);
+		TH1* background = dynamic_cast<TH1*>(histograms->Get("bkg_MC_th1d"));
+		TH1* signal = dynamic_cast<TH1*>(histograms->Get("signal_MC_th1d"));
+		Check_MC_histogram(background, w->var("obs_x_Belle_II")->getBinning());
+		Check_MC_histogram(signal, w->var("obs_x_Belle_II")->getBinning());
+		RooArgSet generation_truth;
+		for (int i = 1; i <= 8; i++) {
+			for (TH1* histogram : { background, signal }) {
+				std::string name = std::string(histogram->GetName()) + "_bin" + std::to_string(i);
+				RooRealVar* expectation = new RooRealVar(name.c_str(), name.c_str(), histogram->GetBinContent(i));
+				expectation->setConstant(true);
+				generation_truth.addOwned(*expectation);
 			}
 		}
 		poi->setVal(1.0);
 		poi->setConstant(false);
-		w->saveSnapshot("ToyMC_truth", w->allVars());
+		// ABCD values are only fit starting values. No fit to obsData defines generation truth.
+		w->saveSnapshot("ToyMC_nominal", w->allVars());
 		RooStats::ToyMCSampler sampler(generation_stat, 1);
 		sampler.SetPdf(*model->GetPdf());
-		sampler.SetObservables(*model->GetObservables());
-		sampler.SetGenerateBinned(true);
 		if (model->GetGlobalObservables()) sampler.SetGlobalObservables(*model->GetGlobalObservables());
 
 		/* ======================== OUTPUT ======================== */
@@ -243,14 +277,21 @@ int main(int argc, char* argv[]) {
 		std::unique_ptr<TMD5> checksum(TMD5::FileChecksum((std::string(argv[1]) + "/" + argv[2]).c_str()));
 		if (!checksum) throw std::runtime_error("cannot checksum workspace");
 		TNamed("workspace_md5", checksum->AsString()).Write();
-		TNamed("truth_method", "mu=0 ABCD fit to obsData; nominal systematic truth; fluctuated global observables").Write();
+		std::unique_ptr<TMD5> histogram_checksum(TMD5::FileChecksum(histogram_path.c_str()));
+		if (!histogram_checksum) throw std::runtime_error("cannot checksum MC histograms");
+		TNamed("histogram_file", histogram_name.c_str()).Write();
+		TNamed("histogram_md5", histogram_checksum->AsString()).Write();
+		TNamed("truth_method", "independent Poisson(bkg_MC_th1d + mu * signal_MC_th1d); nominal systematic truth; fluctuated global observables").Write();
 		TParameter<int>("cls_toys", cls_toys).Write();
 		TParameter<Long64_t>("base_seed", (Long64_t)seed_value).Write();
 		TParameter<double>("scan_step", scan_step).Write();
 		TParameter<double>("confidence_level", ConfidenceLevel).Write();
 		TParameter<double>("mu_abs_tolerance", MuAbsTolerance).Write();
 		TParameter<double>("mu_rel_tolerance", MuRelTolerance).Write();
-		w->getSnapshot("ToyMC_truth")->Write("generation_truth");
+		generation_truth.Write("generation_truth");
+		w->getSnapshot("ToyMC_nominal")->Write("nominal_parameters");
+		background->Write("bkg_MC_th1d");
+		signal->Write("signal_MC_th1d");
 		int toy_index, fit_status, covQual, ul_status, covered, at_boundary, inner_failures;
 		unsigned int seed;
 		double mu_fitted, mu_error, edm, mu_up, mu_up_low, mu_up_high, mu_up_error, seconds;
@@ -306,19 +347,12 @@ int main(int argc, char* argv[]) {
 			seed = Get_ToySeed(argv[2], (unsigned int)seed_value, mu_index, toy_index);
 			RooRandom::randomGenerator()->SetSeed(seed);
 			try {
-				w->loadSnapshot("ToyMC_truth");
+				w->loadSnapshot("ToyMC_nominal");
 				poi->setVal(mu_injected);
-				RooArgSet truth(*model->GetParametersOfInterest());
-				truth.add(*model->GetNuisanceParameters());
-				std::unique_ptr<RooAbsData> data(sampler.GenerateToyData(truth));
-				if (!data) throw std::runtime_error("toy generation failed");
+				// Only auxiliary observations use the workspace PDF; event counts use the MC expectations.
+				if (model->GetGlobalObservables() && !model->GetGlobalObservables()->empty()) sampler.GenerateGlobalObservables(*model->GetPdf());
+				std::unique_ptr<RooDataSet> data = Generate_MC_toy(w, model, background, signal, mu_injected, counts);
 				if (model->GetGlobalObservables()) for (RooAbsArg* arg : *model->GetGlobalObservables()) global_values.push_back(((RooRealVar*)arg)->getVal());
-				for (int j = 0; j < data->numEntries(); j++) {
-					const RooArgSet* row = data->get(j);
-					int bin = w->var("obs_x_Belle_II")->getBinning().binNumber(row->getRealValue("obs_x_Belle_II"));
-					if (bin < 0 || bin >= 8) throw std::runtime_error("invalid toy bin");
-					counts[bin] += data->weight();
-				}
 				// Keep the toy auxiliary observations. Use an injection-independent starting mu.
 				poi->setVal(1.0);
 				w->saveSnapshot("ToyMC_start", w->allVars());

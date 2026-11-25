@@ -43,6 +43,10 @@ submit_ToyMC() {
       echo "Missing ToyMC workspace."
       return 1
     fi
+    if [[ ! -f "./${VerName}/${Analysis_VerName}/histogram_output_${mass}_${life}_${A}_${B}.root" ]]; then
+      echo "Missing ToyMC MC histograms."
+      return 1
+    fi
     mkdir -p "./${VerName}/${Analysis_VerName}/ToyMC_${mass}_${life}_${A}_${B}/out"
     mkdir -p "./${VerName}/${Analysis_VerName}/ToyMC_${mass}_${life}_${A}_${B}/log"
 
