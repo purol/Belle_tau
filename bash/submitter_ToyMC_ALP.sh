@@ -30,6 +30,21 @@ submit_ToyMC() {
   fi
 
   while read mass life A B; do
+    local InjectionStep=0.3 # injected mu step; 11 points from zero
+    if awk -v life="$life" 'BEGIN { exit !(life >= 700) }'; then
+      InjectionStep=4
+    elif awk -v life="$life" 'BEGIN { exit !(life >= 500 && life < 700) }'; then
+      InjectionStep=2
+    elif awk -v life="$life" 'BEGIN { exit !(life >= 200 && life < 500) }'; then
+      InjectionStep=1
+    elif awk -v life="$life" 'BEGIN { exit !(life >= 50 && life < 200) }'; then
+      InjectionStep=0.6
+    elif awk -v life="$life" 'BEGIN { exit !(life >= 10 && life < 50) }'; then
+      InjectionStep=0.4
+    fi
+    local MuMax
+    MuMax=$(awk -v step="$InjectionStep" 'BEGIN { print 10 * step }')
+
     local ScanStep=0.1 # initial upper limit scan step
     if awk -v life="$life" 'BEGIN { exit !(life >= 700) }'; then
       ScanStep=20
@@ -50,7 +65,7 @@ submit_ToyMC() {
     mkdir -p "./${VerName}/${Analysis_VerName}/ToyMC_${mass}_${life}_${A}_${B}/out"
     mkdir -p "./${VerName}/${Analysis_VerName}/ToyMC_${mass}_${life}_${A}_${B}/log"
 
-    for mu in $(seq 0 0.25 5.0)
+    for mu in $(seq 0 ${InjectionStep} ${MuMax})
     do
       for (( index=0; index<NToys; index+=ToysPerJob )); do
         local Count=$ToysPerJob
@@ -70,7 +85,8 @@ submit_ToyMC() {
         ${Count} \
         ${CLsToys} \
         ${ScanStep} \
-        ${Seed}
+        ${Seed} \
+      ${InjectionStep}
         if [[ $? -ne 0 ]]; then
           echo "Failed to submit ToyMC job."
           return 1

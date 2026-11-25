@@ -85,9 +85,9 @@ input_variables_two=(
 ) # list of input variables for the region 2
 
 export FBDT_weight_DIR="/home/belle2/junewoo/storage_ghi/tau_Analysis/Yuugi_ALP/MC16ri/v000" # FBDT weight file path
-export ToyMC_NToys=10000 # number of toys per injected mu (0 to 5 in steps of 0.25)
+export ToyMC_NToys=100 # number of toys per injected mu (11 points; range depends on ALP lifetime)
 export ToyMC_ToysPerJob=10 # number of toys in one batch job; adjust to the queue time limit
-export ToyMC_CLsToys=10000 # number of CLs toys per hypothesis and scan point
+export ToyMC_CLsToys=1000 # number of CLs toys per hypothesis and scan point
 export ToyMC_Seed=12345 # base random seed
 # =================================================================================== #
 

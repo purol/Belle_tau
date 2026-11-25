@@ -227,7 +227,7 @@ ToyLimitResult Get_ToyLimit(RooWorkspace* w, RooStats::ModelConfig* model, RooAb
 unsigned int Get_ToySeed(const std::string& workspace, unsigned int seed, int mu_index, int toy_index) {
 	std::uint32_t hash = 2166136261u;
 	for (unsigned char c : workspace) hash = (hash ^ c) * 16777619u;
-	// Nonzero seeds, independent of batch size and unique within one 21 x 10000 study.
+	// Nonzero seeds, independent of batch size and unique within one 11 x 10000 study.
 	return (unsigned int)(((std::uint64_t)hash + seed + mu_index * 10000ULL + toy_index) % 4294967295ULL + 1ULL);
 }
 
@@ -270,24 +270,27 @@ int main(int argc, char* argv[]) {
 	* argv[7]: number of CLs toys per hypothesis
 	* argv[8]: initial upper limit scan step
 	* argv[9]: random seed
+	* argv[10]: injected mu step
 	*/
 
-	if (argc != 10) {
-		printf("[ERROR] expected input path, workspace, output path, injected mu, first index, number of toys, CLs toys, scan step and seed\n");
+	if (argc != 11) {
+		printf("[ERROR] expected input path, workspace, output path, injected mu, first index, number of toys, CLs toys, scan step, seed and injected mu step\n");
 		return 1;
 	}
+	double injection_step = std::stod(argv[10]);
+	double mu_max = 10.0 * injection_step;
 	double mu_injected = std::stod(argv[4]);
-	if (!std::isfinite(mu_injected) || mu_injected < 0.0 || mu_injected > 5.0) {
-		printf("[ERROR] injected mu must be between zero and five\n");
+	if (!std::isfinite(injection_step) || injection_step <= 0.0 || !std::isfinite(mu_max) || !std::isfinite(mu_injected) || mu_injected < 0.0 || mu_injected > mu_max) {
+		printf("[ERROR] invalid injected mu or step\n");
 		return 1;
 	}
-	int mu_index = (int)std::lround(mu_injected * 4.0);
+	int mu_index = (int)std::lround(mu_injected / injection_step);
 	int first_index = std::stoi(argv[5]);
 	int n_toys = std::stoi(argv[6]);
 	int cls_toys = std::stoi(argv[7]);
 	double scan_step = std::stod(argv[8]);
 	unsigned long long seed_value = std::stoull(argv[9]);
-	if (!std::isfinite(mu_injected) || mu_index < 0 || mu_index > 20 || std::abs(mu_injected - mu_index * 0.25) > 1e-8 || first_index < 0 || n_toys < 1 || first_index > 10000 - n_toys || cls_toys < 1 || !std::isfinite(scan_step) || scan_step <= 0.0 || seed_value > 4294967295ULL) {
+	if (!std::isfinite(mu_injected) || mu_index < 0 || mu_index > 10 || std::abs(mu_injected - mu_index * injection_step) > 1e-8 || first_index < 0 || n_toys < 1 || first_index > 10000 - n_toys || cls_toys < 1 || !std::isfinite(scan_step) || scan_step <= 0.0 || seed_value > 4294967295ULL) {
 		printf("[ERROR] invalid toy configuration\n");
 		return 1;
 	}
@@ -313,8 +316,8 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 	RooRealVar* poi = w->var("mu");
-	if (poi->getMin() != 0.0 || !std::isfinite(poi->getMax()) || poi->getMax() < 5.0) {
-		printf("[ERROR] expected a nonnegative mu with finite maximum at least five\n");
+	if (poi->getMin() != 0.0 || !std::isfinite(poi->getMax()) || poi->getMax() < mu_max) {
+		printf("[ERROR] expected a nonnegative mu with finite maximum covering the injection range\n");
 		return 1;
 	}
 	// The saved workspace uses two ABCD regions.

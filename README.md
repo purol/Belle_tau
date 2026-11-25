@@ -42,11 +42,11 @@ Once the Ntuples are prepared, the `one_touch.sh` script automates the entire do
 
 `bash/one_touch_MC16rd.sh` and `bash/one_touch_MC16rd_ALP.sh` run a toy study after workspace creation. The existing positional arguments, `bsub -q s` submission, job waiting and log checking are also used for this stage. ALP studies run independently for every `(mass, life, A, B)` workspace.
 
-- Injected signal strength: `0, 0.25, ..., 5`.
-- Outer toys: `ToyMC_NToys=10000` per injected strength.
+- Injected signal strength: 11 points from zero. MC16rd uses step `0.5` (0--5). ALP lifetimes `0.1/1`, `10`, `100`, `250`, `500`, `1000` use steps `0.3`, `0.4`, `0.6`, `1`, `2`, `4` respectively (maxima 3, 4, 6, 10, 20, 40). The injection step is separate from the initial UL scan step.
+- Outer toys: `ToyMC_NToys=100` per injected strength in one_touch (standalone submitter default: 10000).
 - Batch size: `ToyMC_ToysPerJob=10`; adjust after timing representative workspaces against the queue time limit.
-- Inner CLs toys: `ToyMC_CLsToys=10000` for each hypothesis at each tested strength.
-- Base seed: `ToyMC_Seed=12345`; the workspace name, injected strength and absolute toy index determine each nonzero toy seed independently of batch size.
+- Inner CLs toys: `ToyMC_CLsToys=1000` for each hypothesis at each tested strength in one_touch (standalone submitter default: 10000).
+- Base seed: `ToyMC_Seed=12345`; the workspace name, injection-point index and absolute toy index determine each nonzero toy seed independently of batch size.
 
 Build the executables before running the pipeline:
 
@@ -58,18 +58,18 @@ The standalone executables use positional arguments:
 
 ```bash
 # input path, workspace file, output path, injected mu, first toy index,
-# toys in this job, CLs toys per hypothesis, initial scan step, base seed
-./analysis_code/bin/Run_ToyMC ./Yuugi/v000 workspace.root ./Yuugi/v000/ToyMC/out 1.25 0 10 10000 0.1 12345
+# toys in this job, CLs toys per hypothesis, initial scan step, base seed, injected mu step
+./analysis_code/bin/Run_ToyMC ./Yuugi/v000 workspace.root ./Yuugi/v000/ToyMC/out 1.5 0 10 1000 0.1 12345 0.5
 
-# ToyMC root path, output path, expected toys per injected mu
-./analysis_code/bin/ReadToyMC ./Yuugi/v000/ToyMC/out ./Yuugi/v000/ToyMC 10000
+# ToyMC root path, output path, expected toys per injected mu, injected mu step
+./analysis_code/bin/ReadToyMC ./Yuugi/v000/ToyMC/out ./Yuugi/v000/ToyMC 100 0.5
 ```
 
-Generation uses the eight bin contents of `bkg_MC_th1d` and `signal_MC_th1d` directly: each count is an independent `Poisson(background_MC + injected_mu * signal_MC)` draw, including signal in the control regions. There is no preliminary fit to `obsData` and no adjustment of the MC background to enforce the ABCD relation. MC nonclosure is therefore preserved. The existing positional arguments are unchanged: `workspace.root` uses `histogram_output.root` from the same input directory, and `workspace_<mass>_<life>_<A>_<B>.root` uses the matching `histogram_output_<mass>_<life>_<A>_<B>.root`. Missing histograms, incompatible binning, and negative or nonfinite expectations are errors; zero-expectation bins generate zero events.
+Generation uses the eight bin contents of `bkg_MC_th1d` and `signal_MC_th1d` directly: each count is an independent `Poisson(background_MC + injected_mu * signal_MC)` draw, including signal in the control regions. There is no preliminary fit to `obsData` and no adjustment of the MC background to enforce the ABCD relation. MC nonclosure is therefore preserved. The existing argument positions are preserved; the injection step is appended: `workspace.root` uses `histogram_output.root` from the same input directory, and `workspace_<mass>_<life>_<A>_<B>.root` uses the matching `histogram_output_<mass>_<life>_<A>_<B>.root`. Missing histograms, incompatible binning, and negative or nonfinite expectations are errors; zero-expectation bins generate zero events.
 
 Systematic truth remains at the workspace nominal values. Global observables fluctuate for each toy; nuisances are profiled in the fits. The ABCD workspace is used for fitting and the internal CLs hypothesis toys, not for generating the outer study's event counts. Coverage thus tests the ABCD analysis against the specified MC background, including any nonclosure. The output stores toy counts, seeds, fit results and CLs scan points. File checksums and run metadata are not stored or compared.
 
-Each outer toy is fitted and then treated as the observation for a 90% frequentist CLs upper limit. Conditional generation fits and likelihood-ratio fits share the empty-bin handling in `analysis_code/include/ABCD_fit.h`. The UL scan brackets the `CLs=0.1` crossing and refines it to `0.0025 + 0.005 * mu_high`; injection is limited to five, but the UL scan can extend to the workspace POI maximum. Reaching that maximum without a crossing is a failure, not a clipped upper limit. Finite inner-toy statistics remain a separate source of uncertainty; the per-point CLs errors and local UL error estimate are stored and can be checked with increased `ToyMC_CLsToys`.
+Each outer toy is fitted and then treated as the observation for a 90% frequentist CLs upper limit. Conditional generation fits and likelihood-ratio fits share the empty-bin handling in `analysis_code/include/ABCD_fit.h`. The UL scan brackets the `CLs=0.1` crossing and refines it to `0.0025 + 0.005 * mu_high`; the injection range is zero to ten times the injection step, and the UL scan can extend to the workspace POI maximum. Reaching that maximum without a crossing is a failure, not a clipped upper limit. Finite inner-toy statistics remain a separate source of uncertainty; the per-point CLs errors and local UL error estimate are stored and can be checked with increased `ToyMC_CLsToys`.
 
 Outputs are written under `ToyMC/` or `ToyMC_<mass>_<life>_<A>_<B>/`:
 
@@ -79,4 +79,4 @@ Outputs are written under `ToyMC/` or `ToyMC_<mass>_<life>_<A>_<B>/`:
 
 `ul_status` is zero on success; values 1--5 indicate a fit/generation failure, invalid CLs/conditional fit, failed inner fit, missing crossing before the POI maximum, or scan nonconvergence. Failed calculations remain in the output. `coverage` is reported only when every toy at that injection has a valid UL. Otherwise it is NaN, `coverage_valid` describes the successful subset, and `coverage_low/high` bound the full-ensemble coverage by treating unresolved toys as all excluded/all covered. These bounds describe missing results, not a statistical confidence interval. `ambiguous` counts valid limits whose final numerical bracket contains the injected strength. The nonnegative POI boundary can produce a positive fitted mean at zero injection.
 
-The merge checks the toy count and duplicate toy indices. Batch and merge job logs are checked by the shell scripts. Use one output directory per workspace and run configuration; input-file and configuration matching is not checked by the reader. Existing logs are truncated before resubmission, and re-running the same batch replaces its ROOT output. Statistical fit/UL failures remain in the result and failure fractions.
+The merge checks the toy count and duplicate toy indices. Batch and merge job logs are checked by the shell scripts. Use a new output directory or Analysis_VerName when changing the injection grid so old batches are not mixed with new results. Use one output directory per workspace and run configuration; input-file and configuration matching is not checked by the reader. Existing logs are truncated before resubmission, and re-running the same batch replaces its ROOT output. Statistical fit/UL failures remain in the result and failure fractions.

@@ -6,6 +6,9 @@ submit_ToyMC() {
 
   local NToys=${ToyMC_NToys:-10000} # number of toys per injected mu
   local ToysPerJob=${ToyMC_ToysPerJob:-10} # number of toys in one batch job
+  local InjectionStep=0.5 # injected mu step; 11 points from zero
+  local MuMax
+  MuMax=$(awk -v step="$InjectionStep" 'BEGIN { print 10 * step }')
   local CLsToys=${ToyMC_CLsToys:-10000} # number of CLs toys per hypothesis
   local Seed=${ToyMC_Seed:-12345} # base random seed
 
@@ -27,7 +30,7 @@ submit_ToyMC() {
   mkdir -p "./${VerName}/${Analysis_VerName}/ToyMC/out"
   mkdir -p "./${VerName}/${Analysis_VerName}/ToyMC/log"
 
-  for mu in $(seq 0 0.25 5.0)
+  for mu in $(seq 0 ${InjectionStep} ${MuMax})
   do
     for (( index=0; index<NToys; index+=ToysPerJob )); do
       local Count=$ToysPerJob
@@ -47,7 +50,8 @@ submit_ToyMC() {
       ${Count} \
       ${CLsToys} \
       ${ScanStep} \
-      ${Seed}
+      ${Seed} \
+      ${InjectionStep}
       if [[ $? -ne 0 ]]; then
         echo "Failed to submit ToyMC job."
         return 1

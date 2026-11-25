@@ -33,17 +33,17 @@ struct ToySummary {
 	std::set<int> indices;
 };
 
-void Draw_ToyGraph(TGraphErrors& graph, const char* path, const char* filename, bool diagonal = false, double reference = 0.0) {
+void Draw_ToyGraph(TGraphErrors& graph, const char* path, const char* filename, double mu_max, bool diagonal = false, double reference = 0.0) {
 	TCanvas c("c", "c", 696, 472);
 	graph.SetMarkerStyle(20);
 	graph.SetLineWidth(2);
 	TText message;
 	if (graph.GetN() > 0) graph.Draw("AP");
 	else {
-		c.DrawFrame(0.0, 0.0, 5.0, 1.05, graph.GetTitle());
+		c.DrawFrame(0.0, 0.0, mu_max, 1.05, graph.GetTitle());
 		message.DrawTextNDC(0.25, 0.5, "No successful calculations");
 	}
-	TLine line(0.0, reference, 5.0, diagonal ? 5.0 : reference);
+	TLine line(0.0, reference, mu_max, diagonal ? mu_max : reference);
 	line.SetLineStyle(2);
 	line.Draw();
 	c.SaveAs((std::string(path) + "/" + filename + ".png").c_str());
@@ -55,10 +55,11 @@ int main(int argc, char* argv[]) {
 	* argv[1]: ToyMC root path
 	* argv[2]: output path
 	* argv[3]: expected number of toys per injected mu
+	* argv[4]: injected mu step
 	*/
 
-	if (argc != 4) {
-		printf("[ERROR] expected ToyMC root path, output path and number of toys per injected mu\n");
+	if (argc != 5) {
+		printf("[ERROR] expected ToyMC root path, output path, number of toys per injected mu and injected mu step\n");
 		return 1;
 	}
 	int expected = std::stoi(argv[3]);
@@ -66,8 +67,14 @@ int main(int argc, char* argv[]) {
 		printf("[ERROR] invalid expected toy count\n");
 		return 1;
 	}
+	double injection_step = std::stod(argv[4]);
+	double mu_max = 10.0 * injection_step;
+	if (!std::isfinite(injection_step) || injection_step <= 0.0 || !std::isfinite(mu_max)) {
+		printf("[ERROR] invalid injected mu step\n");
+		return 1;
+	}
 	gROOT->SetBatch(true);
-	std::vector<ToySummary> summaries(21);
+	std::vector<ToySummary> summaries(11);
 	TChain toys("toys");
 	TChain scans("scan");
 	std::string files = std::string(argv[1]) + "/ToyMC_*.root";
@@ -91,11 +98,15 @@ int main(int argc, char* argv[]) {
 			printf("[ERROR] cannot read toy entry %lld\n", i);
 			return 1;
 		}
-		if (!std::isfinite(injected) || injected < 0.0 || injected > 5.0 || index < 0 || index >= expected) {
+		if (!std::isfinite(injected) || injected < 0.0 || injected > mu_max || index < 0 || index >= expected) {
 			printf("[ERROR] invalid injected mu or toy index\n");
 			return 1;
 		}
-		int mu_index = (int)std::lround(injected * 4.0);
+		int mu_index = (int)std::lround(injected / injection_step);
+		if (mu_index < 0 || mu_index > 10 || std::abs(injected - mu_index * injection_step) > 1e-8) {
+			printf("[ERROR] injected mu does not match the requested step\n");
+			return 1;
+		}
 		ToySummary& summary = summaries.at(mu_index);
 		if (!summary.indices.insert(index).second) {
 			printf("[ERROR] duplicate toy %d at injected mu %lf\n", index, injected);
@@ -115,9 +126,9 @@ int main(int argc, char* argv[]) {
 			summary.upper_limits.push_back(upper);
 		}
 	}
-	for (int i = 0; i <= 20; i++) {
+	for (int i = 0; i < 11; i++) {
 		if (summaries.at(i).total != expected) {
-			printf("[ERROR] missing toys at injected mu %lf\n", i * 0.25);
+			printf("[ERROR] missing toys at injected mu %lf\n", i * injection_step);
 			return 1;
 		}
 	}
@@ -179,9 +190,9 @@ int main(int argc, char* argv[]) {
 	text << "# Mean and UL quantiles use successful calculations. coverage is NaN if any UL failed.\n";
 	text << "# coverage_low/high bound full-ensemble coverage by treating failed ULs as all excluded/all covered.\n";
 	text << "# mu total fits limits mean mean_error bias ul_median ul_2.5% ul_16% ul_84% ul_97.5% coverage coverage_error coverage_valid coverage_valid_error coverage_low coverage_high fit_failure ul_failure boundaries ambiguous\n";
-	for (int i = 0; i <= 20; i++) {
+	for (int i = 0; i < 11; i++) {
 		ToySummary& summary = summaries.at(i);
-		mu = i * 0.25;
+		mu = i * injection_step;
 		total = summary.total;
 		fits = summary.fits;
 		limits = summary.limits;
@@ -233,13 +244,13 @@ int main(int argc, char* argv[]) {
 		printf("[ERROR] failed to write summary text\n");
 		return 1;
 	}
-	Draw_ToyGraph(mean_graph, argv[2], "fitted_mu_mean", true);
-	Draw_ToyGraph(bias_graph, argv[2], "fitted_mu_bias");
+	Draw_ToyGraph(mean_graph, argv[2], "fitted_mu_mean", mu_max, true);
+	Draw_ToyGraph(bias_graph, argv[2], "fitted_mu_bias", mu_max);
 	coverage_graph.SetMinimum(0.0);
 	coverage_graph.SetMaximum(1.05);
-	Draw_ToyGraph(coverage_graph, argv[2], "coverage_valid", false, 0.9);
-	Draw_ToyGraph(fit_failure_graph, argv[2], "fit_failure");
-	Draw_ToyGraph(ul_failure_graph, argv[2], "ul_failure");
+	Draw_ToyGraph(coverage_graph, argv[2], "coverage_valid", mu_max, false, 0.9);
+	Draw_ToyGraph(fit_failure_graph, argv[2], "fit_failure", mu_max);
+	Draw_ToyGraph(ul_failure_graph, argv[2], "ul_failure", mu_max);
 	TCanvas c("bands", "bands", 696, 472);
 	band2.SetFillColor(kYellow);
 	band1.SetFillColor(kGreen + 1);
@@ -250,7 +261,7 @@ int main(int argc, char* argv[]) {
 		band1.Draw("LX SAME");
 	}
 	else {
-		c.DrawFrame(0.0, 0.0, 5.0, 1.0, band2.GetTitle());
+		c.DrawFrame(0.0, 0.0, mu_max, 1.0, band2.GetTitle());
 		message.DrawTextNDC(0.25, 0.5, "No successful upper limits");
 	}
 	TLegend legend(0.15, 0.7, 0.45, 0.88);
@@ -263,7 +274,7 @@ int main(int argc, char* argv[]) {
 	coverage_bounds.SetMaximum(1.05);
 	coverage_bounds.SetMarkerStyle(20);
 	coverage_bounds.Draw("AP");
-	TLine line(0.0, 0.9, 5.0, 0.9);
+	TLine line(0.0, 0.9, mu_max, 0.9);
 	line.SetLineStyle(2);
 	line.Draw();
 	c.SaveAs((std::string(argv[2]) + "/coverage_bounds.png").c_str());
