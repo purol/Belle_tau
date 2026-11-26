@@ -34,8 +34,8 @@ export Trigger_syst_vars=(
     "lowest_pt"
 ) # list of candidate variables
 export Trigger_syst_binnings=(
-    "0.0"  "5.0" "4"
-    "0.0"  "5.0" "4"
+    "0.0"  "6.0" "5"
+    "0.0"  "2.0" "5"
 ) # min max Nbin for each candidate variable, in the same order
 # =================================================================================== #
 
