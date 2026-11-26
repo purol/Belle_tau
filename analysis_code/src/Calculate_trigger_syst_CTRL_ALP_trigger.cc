@@ -25,6 +25,60 @@ std::string toStringWithPrecision(double value, int precision) {
     return out.str();
 }
 
+void DrawValidTH2D(TH2D* histogram_, TH2D* valid_ = nullptr) {
+    TH2D* plot = static_cast<TH2D*>(histogram_->Clone((std::string(histogram_->GetName()) + "_plot").c_str()));
+    plot->SetDirectory(nullptr);
+
+    // get range from valid bins
+    double min_value = 0.0;
+    double max_value = 0.0;
+    bool found_valid = false;
+    std::vector<int> invalid_bins;
+    for (int ix = 1; ix <= histogram_->GetNbinsX(); ix++) {
+        for (int iy = 1; iy <= histogram_->GetNbinsY(); iy++) {
+            const int bin = histogram_->GetBin(ix, iy);
+            const double value = histogram_->GetBinContent(bin);
+            const bool valid = std::isfinite(value) && value >= 0.0 && (valid_ == nullptr || valid_->GetBinContent(bin) > 0.5);
+            if (!valid) {
+                invalid_bins.push_back(bin);
+                continue;
+            }
+
+            if (!found_valid) {
+                min_value = value;
+                max_value = value;
+                found_valid = true;
+            }
+            else {
+                if (value < min_value) min_value = value;
+                if (value > max_value) max_value = value;
+            }
+        }
+    }
+
+    // include valid zero bins and allow a constant value
+    if (found_valid) {
+        double margin = 0.05 * (max_value - min_value);
+        if (margin == 0.0) margin = 0.01 * (std::fabs(max_value) + 1.0);
+        min_value -= margin;
+        max_value += margin;
+    }
+    else {
+        min_value = 0.0;
+        max_value = 1.0;
+    }
+
+    // COLZ leaves bins below the minimum blank
+    for (int i = 0; i < invalid_bins.size(); i++) {
+        plot->SetBinContent(invalid_bins.at(i), min_value - (max_value - min_value));
+        plot->SetBinError(invalid_bins.at(i), 0.0);
+    }
+    plot->SetMinimum(min_value);
+    plot->SetMaximum(max_value);
+    plot->DrawCopy("COLZ");
+    delete plot;
+}
+
 int main(int argc, char* argv[]) {
     /*
     * argv[1]: input1 path1 (MC)
@@ -405,6 +459,8 @@ int main(int argc, char* argv[]) {
         TH2D* weight_trigger_slice = new TH2D(("weight_trigger" + distance_name).c_str(), slice_title.c_str(), nbins1, bins1.data(), nbins2, bins2.data());
         TH2D* closure_MC_slice = new TH2D(("closure_MC" + distance_name).c_str(), slice_title.c_str(), nbins1, bins1.data(), nbins2, bins2.data());
         TH2D* weight_syst_err_slice = new TH2D(("weight_syst_err" + distance_name).c_str(), slice_title.c_str(), nbins1, bins1.data(), nbins2, bins2.data());
+        TH2D* valid_weight_slice = new TH2D(("valid_weight" + distance_name).c_str(), slice_title.c_str(), nbins1, bins1.data(), nbins2, bins2.data());
+        TH2D* valid_method_slice = new TH2D(("valid_method" + distance_name).c_str(), slice_title.c_str(), nbins1, bins1.data(), nbins2, bins2.data());
         for (int ix = 1; ix <= nbins1; ix++) {
             for (int iy = 1; iy <= nbins2; iy++) {
                 const int bin = eff_trigger_MC->GetBin(ix, iy, iz);
@@ -421,6 +477,8 @@ int main(int argc, char* argv[]) {
                 closure_MC_slice->SetBinError(slice_bin, closure_MC->GetBinError(bin));
                 weight_syst_err_slice->SetBinContent(slice_bin, weight_syst_err->GetBinContent(bin));
                 weight_syst_err_slice->SetBinError(slice_bin, weight_syst_err->GetBinError(bin));
+                valid_weight_slice->SetBinContent(slice_bin, valid_weight->GetBinContent(bin));
+                valid_method_slice->SetBinContent(slice_bin, valid_method->GetBinContent(bin));
             }
         }
 
@@ -428,9 +486,11 @@ int main(int argc, char* argv[]) {
         TCanvas* c_eff_trigger_MC = new TCanvas("c_eff_trigger_MC", "", 900, 800);
         c_eff_trigger_MC->cd();
         c_eff_trigger_MC->SetRightMargin(0.18);
+        c_eff_trigger_MC->SetFillColor(0);
+        c_eff_trigger_MC->SetFrameFillColor(0);
         eff_trigger_MC_slice->SetStats(false);
         eff_trigger_MC_slice->GetZaxis()->SetTitle("Trigger efficiency");
-        eff_trigger_MC_slice->Draw("COLZ");
+        DrawValidTH2D(eff_trigger_MC_slice);
         c_eff_trigger_MC->SaveAs((std::string(argv[5]) + "/" + plot_name + "_eff_trigger_MC" + distance_name + ".png").c_str());
         delete c_eff_trigger_MC;
 
@@ -438,9 +498,11 @@ int main(int argc, char* argv[]) {
         TCanvas* c_eff_trigger_1ineff_MC = new TCanvas("c_eff_trigger_1ineff_MC", "", 900, 800);
         c_eff_trigger_1ineff_MC->cd();
         c_eff_trigger_1ineff_MC->SetRightMargin(0.18);
+        c_eff_trigger_1ineff_MC->SetFillColor(0);
+        c_eff_trigger_1ineff_MC->SetFrameFillColor(0);
         eff_trigger_1ineff_MC_slice->SetStats(false);
         eff_trigger_1ineff_MC_slice->GetZaxis()->SetTitle("Trigger efficiency (1-inefficiency, MC)");
-        eff_trigger_1ineff_MC_slice->Draw("COLZ");
+        DrawValidTH2D(eff_trigger_1ineff_MC_slice);
         c_eff_trigger_1ineff_MC->SaveAs((std::string(argv[5]) + "/" + plot_name + "_eff_trigger_1ineff_MC" + distance_name + ".png").c_str());
         delete c_eff_trigger_1ineff_MC;
 
@@ -448,9 +510,11 @@ int main(int argc, char* argv[]) {
         TCanvas* c_eff_trigger_1ineff_data = new TCanvas("c_eff_trigger_1ineff_data", "", 900, 800);
         c_eff_trigger_1ineff_data->cd();
         c_eff_trigger_1ineff_data->SetRightMargin(0.18);
+        c_eff_trigger_1ineff_data->SetFillColor(0);
+        c_eff_trigger_1ineff_data->SetFrameFillColor(0);
         eff_trigger_1ineff_data_slice->SetStats(false);
         eff_trigger_1ineff_data_slice->GetZaxis()->SetTitle("Trigger efficiency (1-inefficiency, data)");
-        eff_trigger_1ineff_data_slice->Draw("COLZ");
+        DrawValidTH2D(eff_trigger_1ineff_data_slice);
         c_eff_trigger_1ineff_data->SaveAs((std::string(argv[5]) + "/" + plot_name + "_eff_trigger_1ineff_data" + distance_name + ".png").c_str());
         delete c_eff_trigger_1ineff_data;
 
@@ -458,9 +522,11 @@ int main(int argc, char* argv[]) {
         TCanvas* c_weight_trigger = new TCanvas("c_weight_trigger", "", 900, 800);
         c_weight_trigger->cd();
         c_weight_trigger->SetRightMargin(0.18);
+        c_weight_trigger->SetFillColor(0);
+        c_weight_trigger->SetFrameFillColor(0);
         weight_trigger_slice->SetStats(false);
         weight_trigger_slice->GetZaxis()->SetTitle("Trigger data/MC ratio");
-        weight_trigger_slice->Draw("COLZ");
+        DrawValidTH2D(weight_trigger_slice, valid_weight_slice);
         c_weight_trigger->SaveAs((std::string(argv[5]) + "/" + plot_name + "_weight_trigger" + distance_name + ".png").c_str());
         delete c_weight_trigger;
 
@@ -468,9 +534,11 @@ int main(int argc, char* argv[]) {
         TCanvas* c_closure_MC = new TCanvas("c_closure_MC", "", 900, 800);
         c_closure_MC->cd();
         c_closure_MC->SetRightMargin(0.18);
+        c_closure_MC->SetFillColor(0);
+        c_closure_MC->SetFrameFillColor(0);
         closure_MC_slice->SetStats(false);
         closure_MC_slice->GetZaxis()->SetTitle("True / 1-inefficiency efficiency");
-        closure_MC_slice->Draw("COLZ");
+        DrawValidTH2D(closure_MC_slice);
         c_closure_MC->SaveAs((std::string(argv[5]) + "/" + plot_name + "_closure_MC" + distance_name + ".png").c_str());
         delete c_closure_MC;
 
@@ -478,9 +546,11 @@ int main(int argc, char* argv[]) {
         TCanvas* c_weight_syst_err = new TCanvas("c_weight_syst_err", "", 900, 800);
         c_weight_syst_err->cd();
         c_weight_syst_err->SetRightMargin(0.18);
+        c_weight_syst_err->SetFillColor(0);
+        c_weight_syst_err->SetFrameFillColor(0);
         weight_syst_err_slice->SetStats(false);
         weight_syst_err_slice->GetZaxis()->SetTitle("Absolute systematic error on weight");
-        weight_syst_err_slice->Draw("COLZ");
+        DrawValidTH2D(weight_syst_err_slice, valid_method_slice);
         c_weight_syst_err->SaveAs((std::string(argv[5]) + "/" + plot_name + "_weight_syst_err" + distance_name + ".png").c_str());
         delete c_weight_syst_err;
 
@@ -490,6 +560,8 @@ int main(int argc, char* argv[]) {
         delete weight_trigger_slice;
         delete closure_MC_slice;
         delete weight_syst_err_slice;
+        delete valid_weight_slice;
+        delete valid_method_slice;
     }
 
     return 0;
