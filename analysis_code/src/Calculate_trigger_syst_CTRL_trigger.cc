@@ -24,7 +24,7 @@ std::string toStringWithPrecision(double value, int precision) {
     return out.str();
 }
 
-void DrawValidTH2D(TH2D* histogram_, TH2D* valid_ = nullptr) {
+void DrawValidTH2D(TH2D* histogram_, TH2D* valid_ = nullptr, const std::vector<TH2D*>& range_histograms_ = {}) {
     TH2D* plot = static_cast<TH2D*>(histogram_->Clone((std::string(histogram_->GetName()) + "_plot").c_str()));
     plot->SetDirectory(nullptr);
 
@@ -51,6 +51,28 @@ void DrawValidTH2D(TH2D* histogram_, TH2D* valid_ = nullptr) {
             else {
                 if (value < min_value) min_value = value;
                 if (value > max_value) max_value = value;
+            }
+        }
+    }
+
+    // get common range for comparison
+    for (int i = 0; i < range_histograms_.size(); i++) {
+        TH2D* histogram = range_histograms_.at(i);
+        if (histogram == histogram_) continue;
+        for (int ix = 1; ix <= histogram->GetNbinsX(); ix++) {
+            for (int iy = 1; iy <= histogram->GetNbinsY(); iy++) {
+                const double value = histogram->GetBinContent(ix, iy);
+                if (!std::isfinite(value) || value < 0.0) continue;
+
+                if (!found_valid) {
+                    min_value = value;
+                    max_value = value;
+                    found_valid = true;
+                }
+                else {
+                    if (value < min_value) min_value = value;
+                    if (value > max_value) max_value = value;
+                }
             }
         }
     }
@@ -418,6 +440,9 @@ int main(int argc, char* argv[]) {
     const std::size_t extension_pos = plot_name.find_last_of('.');
     if (extension_pos != std::string::npos) plot_name = plot_name.substr(0, extension_pos);
 
+    // common color range for trigger efficiencies
+    std::vector<TH2D*> eff_plot_histograms = { eff_trigger_MC, eff_trigger_1ineff_MC, eff_trigger_1ineff_data };
+
     // trigger eff for MC
     TCanvas* c_eff_trigger_MC = new TCanvas("c_eff_trigger_MC", "", 900, 800);
     c_eff_trigger_MC->cd();
@@ -426,7 +451,7 @@ int main(int argc, char* argv[]) {
     c_eff_trigger_MC->SetFrameFillColor(0);
     eff_trigger_MC->SetStats(false);
     eff_trigger_MC->GetZaxis()->SetTitle("Trigger efficiency");
-    DrawValidTH2D(eff_trigger_MC);
+    DrawValidTH2D(eff_trigger_MC, nullptr, eff_plot_histograms);
     c_eff_trigger_MC->SaveAs((std::string(argv[5]) + "/" + plot_name + "_eff_trigger_MC.png").c_str());
     delete c_eff_trigger_MC;
 
@@ -438,7 +463,7 @@ int main(int argc, char* argv[]) {
     c_eff_trigger_1ineff_MC->SetFrameFillColor(0);
     eff_trigger_1ineff_MC->SetStats(false);
     eff_trigger_1ineff_MC->GetZaxis()->SetTitle("Trigger efficiency (1-inefficiency, MC)");
-    DrawValidTH2D(eff_trigger_1ineff_MC);
+    DrawValidTH2D(eff_trigger_1ineff_MC, nullptr, eff_plot_histograms);
     c_eff_trigger_1ineff_MC->SaveAs((std::string(argv[5]) + "/" + plot_name + "_eff_trigger_1ineff_MC.png").c_str());
     delete c_eff_trigger_1ineff_MC;
 
@@ -450,7 +475,7 @@ int main(int argc, char* argv[]) {
     c_eff_trigger_1ineff_data->SetFrameFillColor(0);
     eff_trigger_1ineff_data->SetStats(false);
     eff_trigger_1ineff_data->GetZaxis()->SetTitle("Trigger efficiency (1-inefficiency, data)");
-    DrawValidTH2D(eff_trigger_1ineff_data);
+    DrawValidTH2D(eff_trigger_1ineff_data, nullptr, eff_plot_histograms);
     c_eff_trigger_1ineff_data->SaveAs((std::string(argv[5]) + "/" + plot_name + "_eff_trigger_1ineff_data.png").c_str());
     delete c_eff_trigger_1ineff_data;
 
