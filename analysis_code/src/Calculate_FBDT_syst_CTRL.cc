@@ -76,6 +76,7 @@ int main(int argc, char* argv[]) {
     EventWeights::Register("muonID_01_prompt", muonID_01_prompt);
     EventWeights::Register("muonID_05_prompt", muonID_05_prompt);
     EventWeights::Register("pionID_09_prompt", pionID_09_prompt);
+    EventWeights::Register("pionID_09_prompt_fromKaon", pionID_09_prompt_fromKaon);
 
     // signal MC
     TH1D before_BDT("before_BDT", ";bin index;", 8, 0.5, 8.5);
@@ -135,8 +136,11 @@ int main(int argc, char* argv[]) {
         loader_MC.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
         loader_MC.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)} });
         loader_MC.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+        loader_MC.AddWeight("pionID_09_prompt_fromKaon", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
         loader_MC.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+        loader_MC.AddWeight("pionID_09_prompt_fromKaon", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
         loader_MC.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+        loader_MC.AddWeight("pionID_09_prompt_fromKaon", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
         loader_MC.AddWeight(weight_name.c_str(), { {var1, var1}, {var2, var2} });
         loader_MC.FillTH1D(&FBDT_MC, BDT_names.at(i));
         loader_MC.end();

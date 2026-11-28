@@ -95,6 +95,7 @@ int main(int argc, char* argv[]) {
     EventWeights::Register("muonID_01_prompt", muonID_01_prompt);
     EventWeights::Register("muonID_05_prompt", muonID_05_prompt);
     EventWeights::Register("pionID_09_prompt", pionID_09_prompt);
+    EventWeights::Register("pionID_09_prompt_fromKaon", pionID_09_prompt_fromKaon);
 
     std::string variable_name(argv[1]);
 
@@ -116,8 +117,11 @@ int main(int argc, char* argv[]) {
     loader_sample1_test.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)} });
     loader_sample1_test.AddWeight("CTRL_weight", { {compare_variables.at(0), compare_variables.at(0)}, {compare_variables.at(1), compare_variables.at(1)} });
     loader_sample1_test.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_sample1_test.AddWeight("pionID_09_prompt_fromKaon", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
     loader_sample1_test.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_sample1_test.AddWeight("pionID_09_prompt_fromKaon", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
     loader_sample1_test.AddWeight("pionID_09_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+    loader_sample1_test.AddWeight("pionID_09_prompt_fromKaon", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
     loader_sample1_test.FillTH1D(sample1_test_th, variable_name);
     loader_sample1_test.FillTH1D(sample1_test_th_KS, variable_name);
     loader_sample1_test.end();

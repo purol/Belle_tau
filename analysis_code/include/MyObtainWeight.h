@@ -248,6 +248,40 @@ EventWeight pionID_09_ALP(
     true
 );
 
+// K -> pi misidentification corrections; CSV PID ranges select true kaons.
+EventWeight pionID_09_prompt_fromKaon(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/PionEff09_prompt_fromKaon.csv",
+    {
+        {"sample", "sample_min", "sample_max"},
+        {"PID", "PID_min", "PID_max"},
+        { "momentum", "p_min", "p_max" },
+        {"Theta", "Theta_min", "Theta_max"}
+    },
+    "data_MC_ratio",
+    {
+        {"stat", "data_MC_uncertainty_stat_up", "data_MC_uncertainty_stat_dn", false},
+        {"syst", "data_MC_uncertainty_sys_up",  "data_MC_uncertainty_sys_dn",  false}
+    },
+    true
+);
+
+EventWeight pionID_09_ALP_fromKaon(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/PionEff09_ALP_fromKaon.csv",
+    {
+        {"sample", "sample_min", "sample_max"},
+        {"index", "index_min", "index_max"},
+        {"PID", "PID_min", "PID_max"},
+        { "momentum", "p_min", "p_max" },
+        {"Theta", "Theta_min", "Theta_max"}
+    },
+    "data_MC_ratio",
+    {
+        {"stat", "data_MC_uncertainty_stat_up", "data_MC_uncertainty_stat_dn", false},
+        {"syst", "data_MC_uncertainty_sys_up",  "data_MC_uncertainty_sys_dn",  false}
+    },
+    true
+);
+
 EventWeight luminosity_scale(
     { "MyEnergyType" },
     {
