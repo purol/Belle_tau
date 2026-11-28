@@ -96,7 +96,9 @@ int main(int argc, char* argv[]) {
 
     EventWeights::Register("MC_weight", MC_weight);
     EventWeights::Register("muonID_01_prompt", muonID_01_prompt);
+    EventWeights::Register("muonID_01_prompt_fromPion", muonID_01_prompt_fromPion);
     EventWeights::Register("muonID_05_prompt", muonID_05_prompt);
+    EventWeights::Register("muonID_05_prompt_fromPion", muonID_05_prompt_fromPion);
     EventWeights::Register("pionID_09_prompt", pionID_09_prompt);
     EventWeights::Register("pionID_09_prompt_fromKaon", pionID_09_prompt_fromKaon);
 
@@ -170,8 +172,11 @@ int main(int argc, char* argv[]) {
         loader_sample2.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
         loader_sample2.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)} });
         loader_sample2.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+        loader_sample2.AddWeight("muonID_05_prompt_fromPion", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
         loader_sample2.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+        loader_sample2.AddWeight("muonID_05_prompt_fromPion", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
         loader_sample2.AddWeight("muonID_01_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+        loader_sample2.AddWeight("muonID_01_prompt_fromPion", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
         loader_sample2.Cut(GetBCSCut(deltaE_peak, deltaE_left_sigma, deltaE_right_sigma, M_peak, M_left_sigma, M_right_sigma).c_str());
         loader_sample2.RandomBCS();
         loader_sample2.IsBCSValid();
@@ -261,8 +266,11 @@ int main(int argc, char* argv[]) {
         loader_target_sample2.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
         loader_target_sample2.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)} });
         loader_target_sample2.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+        loader_target_sample2.AddWeight("muonID_05_prompt_fromPion", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
         loader_target_sample2.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+        loader_target_sample2.AddWeight("muonID_05_prompt_fromPion", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
         loader_target_sample2.AddWeight("muonID_01_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+        loader_target_sample2.AddWeight("muonID_01_prompt_fromPion", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
         loader_target_sample2.Cut(GetBCSCut(deltaE_peak, deltaE_left_sigma, deltaE_right_sigma, M_peak, M_left_sigma, M_right_sigma).c_str());
         loader_target_sample2.RandomBCS();
         loader_target_sample2.IsBCSValid();
@@ -355,8 +363,11 @@ int main(int argc, char* argv[]) {
     loader_sample2.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader_sample2.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)} });
     loader_sample2.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_sample2.AddWeight("muonID_05_prompt_fromPion", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
     loader_sample2.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_sample2.AddWeight("muonID_05_prompt_fromPion", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
     loader_sample2.AddWeight("muonID_01_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+    loader_sample2.AddWeight("muonID_01_prompt_fromPion", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
     loader_sample2.Cut(GetBCSCut(deltaE_peak, deltaE_left_sigma, deltaE_right_sigma, M_peak, M_left_sigma, M_right_sigma).c_str());
     loader_sample2.RandomBCS();
     loader_sample2.IsBCSValid();

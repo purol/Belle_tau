@@ -41,8 +41,11 @@ void GetABCDBoundary(const char* input_path_1_, const char* input_path_2_, const
     for (int i = 0; i < background_list_.size(); i++) loader_bkg.Load((input_path_1_ + std::string("/") + background_list_.at(i) + std::string("/") + std::string(input_path_2_)).c_str(), "root", background_list_.at(i).c_str());
     loader_bkg.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader_bkg.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_bkg.AddWeight("muonID_05_prompt_fromPion", { {"sample", "MySampleType"}, {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
     loader_bkg.AddWeight("muonID_05_prompt", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_bkg.AddWeight("muonID_05_prompt_fromPion", { {"sample", "MySampleType"}, {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
     loader_bkg.AddWeight("muonID_01_prompt", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+    loader_bkg.AddWeight("muonID_01_prompt_fromPion", { {"sample", "MySampleType"}, {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
     loader_bkg.Cut(cut_region.c_str());
     loader_bkg.RandomBCS();
     loader_bkg.IsBCSValid();
@@ -97,7 +100,9 @@ int main(int argc, char* argv[]) {
 
     EventWeights::Register("MC_weight", MC_weight);
     EventWeights::Register("muonID_01_prompt", muonID_01_prompt);
+    EventWeights::Register("muonID_01_prompt_fromPion", muonID_01_prompt_fromPion);
     EventWeights::Register("muonID_05_prompt", muonID_05_prompt);
+    EventWeights::Register("muonID_05_prompt_fromPion", muonID_05_prompt_fromPion);
 
     // Save one set of boundaries for every workspace and systematic calculator.
     GetABCDBoundary(argv[1], argv[2], (std::string(argv[1]) + "/ABCD_boundary.txt").c_str(), background_list);

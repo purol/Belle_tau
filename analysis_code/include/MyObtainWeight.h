@@ -215,6 +215,73 @@ EventWeight muonID_05_prompt(
     true
 );
 
+// pi -> mu misidentification corrections; CSV PID ranges select true pions.
+EventWeight muonID_01_ALP_fromPion(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/MuonEff01_ALP_fromPion.csv",
+    {
+        {"sample", "sample_min", "sample_max"},
+        {"index", "index_min", "index_max"},
+        {"PID", "PID_min", "PID_max"},
+        {"momentum", "p_min", "p_max"},
+        {"Theta", "Theta_min", "Theta_max"}
+    },
+    "data_MC_ratio",
+    {
+        {"stat", "data_MC_uncertainty_stat_up", "data_MC_uncertainty_stat_dn", false},
+        {"syst", "data_MC_uncertainty_sys_up",  "data_MC_uncertainty_sys_dn",  false}
+    },
+    true
+);
+
+EventWeight muonID_05_ALP_fromPion(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/MuonEff05_ALP_fromPion.csv",
+    {
+        {"sample", "sample_min", "sample_max"},
+        {"index", "index_min", "index_max"},
+        {"PID", "PID_min", "PID_max"},
+        { "momentum", "p_min", "p_max" },
+        {"Theta", "Theta_min", "Theta_max"}
+    },
+    "data_MC_ratio",
+    {
+        {"stat", "data_MC_uncertainty_stat_up", "data_MC_uncertainty_stat_dn", false},
+        {"syst", "data_MC_uncertainty_sys_up",  "data_MC_uncertainty_sys_dn",  false}
+    },
+    true
+);
+
+EventWeight muonID_01_prompt_fromPion(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/MuonEff01_prompt_fromPion.csv",
+    {
+        {"sample", "sample_min", "sample_max"},
+        {"PID", "PID_min", "PID_max"},
+        { "momentum", "p_min", "p_max" },
+        {"Theta", "Theta_min", "Theta_max"}
+    },
+    "data_MC_ratio",
+    {
+        {"stat", "data_MC_uncertainty_stat_up", "data_MC_uncertainty_stat_dn", false},
+        {"syst", "data_MC_uncertainty_sys_up",  "data_MC_uncertainty_sys_dn",  false}
+    },
+    true
+);
+
+EventWeight muonID_05_prompt_fromPion(
+    "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/MuonEff05_prompt_fromPion.csv",
+    {
+        {"sample", "sample_min", "sample_max"},
+        {"PID", "PID_min", "PID_max"},
+        { "momentum", "p_min", "p_max" },
+        {"Theta", "Theta_min", "Theta_max"}
+    },
+    "data_MC_ratio",
+    {
+        {"stat", "data_MC_uncertainty_stat_up", "data_MC_uncertainty_stat_dn", false},
+        {"syst", "data_MC_uncertainty_sys_up",  "data_MC_uncertainty_sys_dn",  false}
+    },
+    true
+);
+
 EventWeight pionID_09_prompt(
     "/home/belle2/junewoo/storage_b2/tau_workspace/tables/muonID_csv/MC16rd/PionEff09_prompt.csv",
     {

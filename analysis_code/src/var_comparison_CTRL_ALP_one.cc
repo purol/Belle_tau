@@ -107,7 +107,9 @@ int main(int argc, char* argv[]) {
 
     EventWeights::Register("MC_weight", MC_weight);
     EventWeights::Register("muonID_01_ALP", muonID_01_ALP);
+    EventWeights::Register("muonID_01_ALP_fromPion", muonID_01_ALP_fromPion);
     EventWeights::Register("muonID_05_ALP", muonID_05_ALP);
+    EventWeights::Register("muonID_05_ALP_fromPion", muonID_05_ALP_fromPion);
     EventWeights::Register("KS0_tracking_run1", KS0_tracking_MC16rd_run1);
     EventWeights::Register("KS0_tracking_run2", KS0_tracking_MC16rd_run2);
     EventWeights::Register("pionID_09_ALP", pionID_09_ALP);
@@ -149,8 +151,11 @@ int main(int argc, char* argv[]) {
     loader_sample2_test.AddWeight("MC_weight", { {"MySampleType", "MySampleType"}, {"MyEventType", "MyEventType"}, {"MyEnergyType", "MyEnergyType"}, {"MyALPLife", "MyALPLife"} });
     loader_sample2_test.AddWeight("trigger_weight", { {"sample", "MySampleType"}, {trigger_variables.at(0), trigger_variables.at(0)}, {trigger_variables.at(1), trigger_variables.at(1)}, {trigger_variables.at(2), trigger_variables.at(2)} });
     loader_sample2_test.AddWeight("muonID_05_ALP", { {"sample", "MySampleType"}, {"index", "first_muon_index"},  {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
+    loader_sample2_test.AddWeight("muonID_05_ALP_fromPion", { {"sample", "MySampleType"}, {"index", "first_muon_index"},  {"PID", "first_muon_mcPDG"}, {"momentum", "first_muon_p"}, {"Theta", "first_muon_theta"} });
     loader_sample2_test.AddWeight("muonID_05_ALP", { {"sample", "MySampleType"}, {"index", "second_muon_index"},  {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
+    loader_sample2_test.AddWeight("muonID_05_ALP_fromPion", { {"sample", "MySampleType"}, {"index", "second_muon_index"},  {"PID", "second_muon_mcPDG"}, {"momentum", "second_muon_p"}, {"Theta", "second_muon_theta"} });
     loader_sample2_test.AddWeight("muonID_01_ALP", { {"sample", "MySampleType"}, {"index", "third_muon_index"},  {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
+    loader_sample2_test.AddWeight("muonID_01_ALP_fromPion", { {"sample", "MySampleType"}, {"index", "third_muon_index"},  {"PID", "third_muon_mcPDG"}, {"momentum", "third_muon_p"}, {"Theta", "third_muon_theta"} });
     loader_sample2_test.AddWeight("KS0_tracking_run1", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
     loader_sample2_test.AddWeight("KS0_tracking_run2", { {"sample", "MySampleType"}, {"experiment", "__experiment__"}, {"costheta", "extraInfo__boALP_cosTheta__bc"}, {"momentum", "extraInfo__boALP_p__bc"}, {"distance", "extraInfo__boALP_distance__bc"} });
     loader_sample2_test.Cut(GetBCSCut(deltaE_peak, deltaE_left_sigma, deltaE_right_sigma, M_peak, M_left_sigma, M_right_sigma).c_str());
