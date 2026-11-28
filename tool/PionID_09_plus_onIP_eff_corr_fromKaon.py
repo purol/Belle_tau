@@ -14,6 +14,7 @@ from show_db_content import show_db_content
 from show_variables import show_ntuple_variables
 
 ratio_cfg = {
+    "display_plots": False,
     "cut": "pionID > 0.9",
     "particle_type": "K",
     "data_collection": "proc16+prompt",
@@ -27,6 +28,8 @@ ratio_cfg = {
 }
 
 efficiency = wm.produce_data_mc_ratio(**ratio_cfg)
-efficiency.plot()
+fig, ax = plt.subplots()
+efficiency.plot(display_plots=False, fig=fig, ax=ax)
 
-plt.savefig("PionEff09_on_plus_fromKaon.png", dpi=400, bbox_inches="tight")
+fig.savefig("PionEff09_on_plus_fromKaon.png", dpi=400, bbox_inches="tight")
+plt.close(fig)
