@@ -179,6 +179,9 @@ int main(int argc, char* argv[]) {
     loader.Cut("missingEnergyOfEventCMS > 0.5");
     loader.PrintInformation("========== missing Energy CMS > 0.5 GeV ==========");
 
+    loader.Cut("cosTBTO__bocleanMask__bc < 0.98");
+    loader.PrintInformation("========== cosTBTO < 0.98 ==========");
+
     loader.Cut("extraInfo__bonROE_RemainingTracks_cleanMask__bc < 1.5");
     loader.PrintInformation("========== nROE track < 1.5 ==========");
 
