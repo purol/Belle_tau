@@ -206,6 +206,9 @@ int main(int argc, char* argv[]) {
     loader.Cut("thrustOm__bocleanMask__bc > 0.95");
     loader.PrintInformation("========== thrustOm > 0.95 ==========");
 
+    loader.Cut("charge_times_ROEcharge < -0.5");
+    loader.PrintInformation("========== charge x roe charge < -0.5 ==========");
+
     loader.Cut("extraInfo__bonROE_RemainingTracks_cleanMask__bc < 1.5");
     loader.PrintInformation("========== nROE track < 1.5 ==========");
 
