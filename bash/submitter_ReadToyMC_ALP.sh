@@ -1,0 +1,78 @@
+#!/bin/bash
+
+get_params() {
+  local dir="$1"
+
+  ls "$dir" | \
+  sed -n 's/.*alpha_mass\([0-9.+-eE]\+\)_life\([0-9.+-eE]\+\)_A\([0-9+-]\+\)_B\([0-9+-]\+\).*/\1 \2 \3 \4/p' | \
+  sort -u
+}
+
+submit_code() {
+  local Code=$1 # ex. ./bin/Analysis_main
+  local VerName=$2 # ex. Alice
+
+  local NToys=${ToyMC_NToys:-10000} # number of toys per injected mu
+  local ToysPerJob=${ToyMC_ToysPerJob:-10} # number of toys in one batch job
+
+  if (( NToys < 1 || NToys > 10000 || ToysPerJob < 1 )); then
+    echo "Invalid ToyMC batch size."
+    return 1
+  fi
+
+  local Params
+  Params=$(get_params "./${VerName}/${Analysis_VerName}/ALP/final_output")
+  if [[ -z "$Params" ]]; then
+    echo "No ALP samples found."
+    return 1
+  fi
+
+  while read mass life A B; do
+    local InjectionStep=0.3 # injected mu step; 11 points from zero
+    if awk -v life="$life" 'BEGIN { exit !(life >= 700) }'; then
+      InjectionStep=4
+    elif awk -v life="$life" 'BEGIN { exit !(life >= 500 && life < 700) }'; then
+      InjectionStep=2
+    elif awk -v life="$life" 'BEGIN { exit !(life >= 200 && life < 500) }'; then
+      InjectionStep=1
+    elif awk -v life="$life" 'BEGIN { exit !(life >= 50 && life < 200) }'; then
+      InjectionStep=0.6
+    elif awk -v life="$life" 'BEGIN { exit !(life >= 10 && life < 50) }'; then
+      InjectionStep=0.4
+    fi
+    local MuMax
+    MuMax=$(awk -v step="$InjectionStep" 'BEGIN { print 10 * step }')
+
+    mkdir -p "./${VerName}/${Analysis_VerName}/ToyMC_${mass}_${life}_${A}_${B}"
+
+    for mu in $(seq 0 ${InjectionStep} ${MuMax})
+    do
+      for (( index=0; index<NToys; index+=ToysPerJob )); do
+        local LogFile="./${VerName}/${Analysis_VerName}/ToyMC_${mass}_${life}_${A}_${B}/log/${mu}_${index}.log"
+        if [[ ! -f "$LogFile" ]] || ! grep -Fxq "Successfully completed." "$LogFile"; then
+          echo "Unsuccessful log found in: $LogFile"
+          return 1
+        fi
+      done
+    done
+
+    : > "./${VerName}/${Analysis_VerName}/ToyMC_${mass}_${life}_${A}_${B}/ToyMC.log" || return 1
+    bsub -q s \
+    -J READTOY \
+    -o "./${VerName}/${Analysis_VerName}/ToyMC_${mass}_${life}_${A}_${B}/ToyMC.log" \
+    ${Code} \
+    "./${VerName}/${Analysis_VerName}/ToyMC_${mass}_${life}_${A}_${B}/out" \
+    "./${VerName}/${Analysis_VerName}/ToyMC_${mass}_${life}_${A}_${B}" \
+    ${ToyMC_NToys:-10000} \
+    ${InjectionStep}
+    if [[ $? -ne 0 ]]; then
+      echo "Failed to submit ReadToyMC job."
+      return 1
+    fi
+
+  done <<< "$Params"
+}
+
+
+code="${Belle_tau_DIR}/analysis_code/bin/ReadToyMC"
+submit_code ${code} ${Analysis_Name}

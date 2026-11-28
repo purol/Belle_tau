@@ -402,44 +402,31 @@ struct ABCDValidation {
     double discrepancy;
 };
 
-inline double ABCD_validation_kappa(const std::vector<double>& observed_) {
-    double mean_A = observed_.at(0);
-    double mean_B = observed_.at(1);
-    double mean_C = observed_.at(2);
-    double mean_D = observed_.at(3);
-    if (mean_B == 0.0 || mean_C == 0.0) {
-        if (mean_A == 0.0 || mean_D == 0.0) return NAN;
-        return std::numeric_limits<double>::infinity();
-    }
-    return (mean_A / mean_B) * (mean_D / mean_C);
-}
-
-inline ABCDValidation Calculate_ABCD_nonclosure(const std::vector<double>& observed_) {
-    if (observed_.size() != 4) throw std::runtime_error("[Calculate_ABCD_nonclosure] four observations are required");
-    for (double observed : observed_) {
-        if (!std::isfinite(observed) || observed < 0.0) throw std::runtime_error("[Calculate_ABCD_nonclosure] invalid observation");
-    }
-
-    ABCDValidation result;
-    // The signal-free Poisson model gives kappa_hat = N_A * N_D / (N_B * N_C).
-    result.kappa = ABCD_validation_kappa(observed_);
-    result.discrepancy = std::numeric_limits<double>::infinity();
-
-    // Use abs(kappa_hat - 1), calculated directly from the validation yields, for the systematic.
-    if (std::isfinite(result.kappa)) {
-        result.discrepancy = std::fabs(result.kappa - 1.0);
-    }
-    return result;
-}
-
 inline std::vector<ABCDValidation> Validate_ABCD(TH1* validation_, const char* filename_, const std::vector<double>& sideband_BDT_cuts_, const std::vector<double>& validation_BDT_cuts_) {
     if (validation_->GetNbinsX() != 8) throw std::runtime_error("[Validate_ABCD] eight validation bins are required");
 
     std::vector<ABCDValidation> results;
     for (int region = 1; region <= 2; region++) {
-        std::vector<double> observed;
-        for (int j = 1; j <= 4; j++) observed.push_back(validation_->GetBinContent(4 * (region - 1) + j));
-        results.push_back(Calculate_ABCD_nonclosure(observed));
+        const double Nevt_A = validation_->GetBinContent(4 * (region - 1) + 1);
+        const double Nevt_B = validation_->GetBinContent(4 * (region - 1) + 2);
+        const double Nevt_C = validation_->GetBinContent(4 * (region - 1) + 3);
+        const double Nevt_D = validation_->GetBinContent(4 * (region - 1) + 4);
+
+        ABCDValidation result;
+
+        // The signal-free Poisson model gives kappa_hat = N_A * N_D / (N_B * N_C).
+        if (Nevt_B != 0.0 && Nevt_C != 0.0) {
+            result.kappa = (Nevt_A / Nevt_B) * (Nevt_D / Nevt_C);
+            result.discrepancy = std::fabs(result.kappa - 1.0);
+        }
+        else {
+            if (Nevt_A == 0.0 || Nevt_D == 0.0) result.kappa = NAN;
+            else result.kappa = std::numeric_limits<double>::infinity();
+
+            result.discrepancy = std::numeric_limits<double>::infinity();
+        }
+
+        results.push_back(result);
     }
 
     FILE* fp = fopen(filename_, "w");
